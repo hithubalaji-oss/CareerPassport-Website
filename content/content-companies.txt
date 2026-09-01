@@ -1,0 +1,325 @@
+CAREERPASSPORT / FOR COMPANIES
+Final Website Content & Experience Direction
+A six-screen design handoff for the Companies page
+CORE
+CareerPassport takes a hiring manager's intent, turns it into a structured hiring journey, helps execute
+that journey across candidates and partners, assembles the evidence, and brings humans in where
+human judgment matters most.
+FINAL HANDOFF | 6-SCREEN PAGE
+NORTH STAR
+One story. Six screens. One continuous product journey.
+CareerPassport's story is strongest when the capabilities appear as one connected system, not as
+isolated features.
+01 — Hiring Intent
+Understand what the organisation wants.
+02 — Hiring Design
+Create the role, competency framework, evaluation framework and Candidate Journey.
+03 — Agentic Execution
+Operate communications, progression, coordination and scheduling.
+04 — Source-Agnostic Orchestration
+Bring candidates from internal databases, partners or CareerPassport into one process.
+05 — Evidence
+Assemble richer signals and supporting proof.
+06 — Human Judgment
+Give the hiring manager better context for the decisions that need them.
+1
+
+-- 1 of 11 --
+
+Experience Principles
+One object keeps evolving
+The Hiring Blueprint becomes the role, the journey, the live workflow, the evidence view and finally the
+interview brief.
+The product does the explaining
+Prefer visible product-state changes over long explanatory copy or separate feature grids.
+The hiring manager stays the protagonist
+Every screen should answer: What work disappears? What becomes clearer? Where does the manager
+now add value?
+Human judgment is the destination
+Automation should culminate in a better human decision, not in the impression that AI is making the
+hiring decision.
+SCREEN 01 / HERO
+Hiring Intent → Hiring Design
+Tell us who you need.
+Meet the people worth your time.
+CareerPassport turns a hiring manager's intent into a structured hiring journey — and helps run that
+journey until human judgment matters.
+From role creation to candidate evidence. One connected process.
+Book a demo
+Post a role
+Product Screen Concept
+Start with a conversational hiring-manager input:
+“I need a senior product leader who has built enterprise products, worked through ambiguity and
+can operate across engineering, sales and customers.”
+As the requirement is expressed, build a live Hiring Blueprint beside it:
+Role · Competencies · Candidate Journey · Evaluation Matrix · Communications
+2
+
+-- 2 of 11 --
+
+The blueprint should visibly assemble in real time, proving that CareerPassport is converting intent into
+a hiring system rather than simply returning advice.
+Transition
+The Hiring Blueprint completes, then expands into a final role preview.
+The next scroll should feel like opening that same blueprint rather than loading a completely new
+section.
+Creative Direction
+Keep the hero focused on one input and one evolving product object.
+The hiring manager acts once; the product visibly does the work.
+Avoid surrounding the hero with disconnected feature cards.
+SCREEN 02 / CANDIDATE JOURNEY
+Hiring Design
+Decide what you need to know before you meet
+them.
+CareerPassport creates a Candidate Journey around what matters for the role.
+Candidates can be asked to demonstrate relevant experience, complete role-specific activities, provide
+evidence or undertake assessments before progressing.
+Use CareerPassport-native journeys and integrate third-party assessments where required.
+Product Screen Concept
+Show a visual journey builder with five stages:
+01 Introduction
+→ 02 Experience Evidence
+→ 03 Role Exercise
+→ 04 Assessment
+3
+
+-- 3 of 11 --
+
+→ 05 Review
+Each journey step should visibly connect back to the competency or success criterion it evaluates.
+End the interaction with a resolved product state:
+✓ Trip finalised
+followed by:
+Launch hiring journey
+Transition
+The finalised Candidate Journey changes from design mode to live mode.
+The same journey stays on screen as candidates and agent actions begin moving through it.
+Creative Direction
+Do not make this feel like a generic assessment builder.
+The key visual idea is intentionality: every candidate interaction exists because it answers something
+the hiring manager needs to know.
+SCREEN 03 / LET THE PROCESS MOVE
+Agentic Execution → Source-Agnostic Orchestration
+Once the role is live, CareerPassport agents can
+help manage the repetitive work required to
+keep hiring moving.
+Engage candidates
+Send follow-ups
+Progress candidates
+Coordinate assessments
+Manage communication
+Schedule next steps
+Connected across: Gmail · WhatsApp · LinkedIn · Calendar
+•
+•
+•
+•
+•
+•
+4
+
+-- 4 of 11 --
+
+Product Screen Concept
+Show one live-role Agent Activity timeline:
+09:42 — Candidate approached
+11:18 — Response received
+11:19 — Candidate Journey shared
+14:32 — Follow-up scheduled
+20: 00 - Journey completed, artifact reviewed
+9 AM, next day — Hiring manager approval requested
+Without adding another page section, show candidate-source labels feeding the same live role:
+Company Database and internal recruiter
+Recruitment Partners
+Agent actions should mix automatic events with an explicit approval request so autonomy feels
+configurable, not absolute.
+The visual should make it clear that candidates can come from different sources while moving through
+one consistent hiring process.
+Transition
+The activity timeline reaches:
+Hiring manager approval requested
+On approval, the operational activity recedes and the strongest candidate expands into an evidence-rich
+profile.
+The page moves naturally from process to signal.
+Creative Direction
+This screen should communicate motion and orchestration, not dashboard complexity.
+Many sources and actions converge into one controlled hiring flow.
+The hiring manager should feel that work is progressing even when they are not manually operating
+each step.
+5
+
+-- 5 of 11 --
+
+SCREEN 04 / THE SIGNAL
+Evidence
+See why someone is worth meeting.
+Don't stop at CVs and recruiter comments.
+CareerPassport brings together the evidence, context and signals behind a candidate's experience — so
+you can understand more before spending an interview.
+Review relevant:
+Work and project evidence
+Candidate Journey outcomes
+Supporting artefacts
+Experience context
+Competency signals
+Verification signals, where available
+Trust Line
+CareerPassport assembles the evidence.
+Hiring manager make the judgment.
+Product Screen Concept
+Show one recommended candidate in a Candidate Evidence View, rather than a traditional CV.
+Primary modules:
+Why this candidate
+Competency fit
+Journey completed
+Evidence submitted
+Experience context
+Evidence should feel inspectable.
+Each signal should be capable of revealing its supporting artefact, journey response or context rather
+than presenting an unexplained score.
+•
+•
+•
+•
+•
+•
+6
+
+-- 6 of 11 --
+
+Transition
+The evidence view progressively condenses into a concise Interview Brief.
+What was previously operational detail becomes a small set of high-value questions and evidence to
+explore with the candidate.
+Creative Direction
+This is the clarity moment.
+Reduce motion and increase focus.
+The candidate should visually come into sharper resolution as evidence replaces claims.
+Avoid an overall “Verified Candidate” badge.
+Show evidence, context and verification signals instead.
+SCREEN 05 / THE HUMAN MOMENT
+Human Judgment
+Meet fewer candidates.
+Know more about the ones you do.
+By the time the hiring manager steps in, the role is structured, the process has moved and the evidence
+is assembled.
+The conversation can start where human judgment actually matters.
+Less hiring administration
+One consistent hiring standard
+Better signal before the interview
+Higher-value interview time
+Better coordination across recruitment partners
+Product Screen Concept
+Show the Interview Brief created from the preceding evidence screen.
+The brief should answer three things at a glance:
+Why this person is here
+•
+•
+•
+•
+•
+7
+
+-- 7 of 11 --
+
+What the evidence already shows
+What the hiring manager should explore next
+The product UI can then resolve into a scheduled conversation or calendar moment, making human
+interaction the destination of the automated journey.
+Transition
+The Interview Brief resolves into the human meeting moment.
+Then strip away most interface detail and move into the final statement.
+The hiring manager should be left with the feeling that CareerPassport has carried the process to the
+point where their judgment is most valuable.
+Creative Direction
+The emotional payoff is not:
+“AI did everything.”
+It is:
+“I get to spend my time on the part only I should do.”
+Make this screen calmer and more human than the execution screens before it.
+SCREEN 06 / FINAL CTA
+The promise, resolved
+Your next hire shouldn't require you to run the
+entire hiring process and yet get the evidence
+you want
+Tell CareerPassport who you need.
+Book a demo
+Post a role
+8
+
+-- 8 of 11 --
+
+Product Screen Concept
+Keep the final screen deliberately simple.
+A faint trace of the completed journey can remain in the background:
+Intent → Journey → Execution → Evidence → Interview
+Do not introduce a new product idea here.
+The CTA should feel like the natural next action after seeing the complete hiring journey.
+Transition
+End on the same action the page began with:
+Tell CareerPassport who you need.
+This creates a closed narrative loop from hiring intent to human decision — and back to the next role.
+Creative Direction
+Use restraint.
+The final screen should feel resolved, not like another marketing section.
+One statement. Two actions. And the memory of the journey the visitor has just seen.
+END-TO-END CONTINUITY
+The page should behave like one product demonstration.
+The user should never feel that they are scrolling through six unrelated feature sections.
+Each screen inherits an object or state from the previous one.
+01 — Intent
+Hiring-manager prompt
+↓
+02 — Design
+Hiring Blueprint → Candidate Journey
+9
+
+-- 9 of 11 --
+
+↓
+03 — Execution
+Live role + agents + multiple candidate sources
+↓
+04 — Evidence
+Candidate Evidence View
+↓
+05 — Judgment
+Interview Brief → Human conversation
+↓
+06 — Action
+Book a demo / Post a role
+IMPLEMENTATION RULES
+Keep the primary narrative to six screens. Do not add separate feature, integration, automation-
+control or recruitment-partner sections unless evidence from user testing requires them.
+Use scroll progression to transform the same product state. Avoid hard visual resets between
+sections.
+Keep candidate sources and partner orchestration visible inside Screen 03 so the source-
+agnostic promise is understood without expanding the page.
+Make autonomy visible through a mix of automatic agent events and selected human approvals
+rather than a long explanation of controls.
+Do not label candidates as “verified.” Show evidence, context and verification signals where
+available; the company makes the judgment.
+Do not let integrations become the proposition. Gmail, WhatsApp, LinkedIn and Calendar appear
+as supporting execution channels.
+The CTA hierarchy stays consistent from start to finish: Book a demo as primary; Post a role as
+secondary.
+DESIGNER CHECK
+At every scroll point, the visitor should be able to answer:
+What did CareerPassport just do for the hiring manager?
+•
+•
+•
+•
+•
+•
+•
+10
+
+-- 10 of 11 --
+
+At the end of the page, the visitor should understand the entire system without needing a separate
+feature inventory.
+11
+
+-- 11 of 11 --
+

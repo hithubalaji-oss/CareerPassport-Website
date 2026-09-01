@@ -1,0 +1,211 @@
+
+========== PAGE 1 ==========
+CareerPassport — Professional Homepage
+Global Navigation
+CareerPassport
+For Companies
+For Recruitment Partners
+Why CareerPassport
+Sign up
+SCREEN 01 — HERO
+Eyebrow
+Built on real experiences
+Headline
+The professional identity for ambitious people
+Supporting copy
+CareerPassport brings together the experiences you've lived, the work you've created and the
+capabilities you've built — and helps turn them into an identity backed by evidence.
+One that keeps growing with you.
+Primary CTA
+Reserve your Passport handle
+careerpassport.ai/yourname
+Reserve →
+Secondary CTA
+See how it works : (This will have mobile compatible concept video of how it works) ---- this may
+come in phase 2.
+1
+
+========== PAGE 2 ==========
+Design cue
+The Passport cover is the hero object. As someone enters a handle, their handle name subtly appears
+on the Passport. The interaction can then naturally move to email capture. The website shows the
+availability and count of passport handle issued.
+The first screen should make someone imagine owning their CareerPassport before explaining how it
+works.
+Transition : 
+From right side passport on screen 1 to passport becoming the central object
+And this statement comes "What you truly are has never been easier to paint."
+Design thought
+The hero should make the Passport itself feel like a desirable object.
+Do not explain every feature.
+Show enough to create intrigue: the person's identity, an experience, perhaps a Visa, an earned Stamp
+and a glimpse of evidence.
+The handle interaction should make the concept instantly personal:
+careerpassport.ai/me
+This screen should create desire before explanation.
+SCREEN 02 — THE WORLD OF CLAIMS HAS
+CHANGED
+Headline
+When anyone can claim anything,
+Copy
+Everyone can sound exceptional.
+AI can turn almost any experience into an impressive profile, polished résumé or perfectly worded claim
+in seconds.
+That makes it harder for people with real experience to stand out.
+2
+
+========== PAGE 3 ==========
+Design cue
+Create the feeling of an increasingly crowded world of polished professional claims. The individual with
+genuine experience should almost disappear into this sameness.
+Avoid making this anti-AI. The problem is not AI itself. The problem is that polish is no longer proof.
+SCREEN 03 — SHOW BETTER
+Headline
+Standing out isn't about saying more; it's about
+showing better.
+Copy
+You are more than one page of bullet points.
+More than your latest title.
+More than five skills selected from a list.
+There are projects behind those bullets.
+Decisions behind those projects.
+Challenges behind those decisions.
+And years of experience behind the things you now make look easy.
+Closing statement
+Your professional identity should truly reveal
+more of what makes you, you.
+Not by making bigger claims.
+By giving your real potential something to stand on.
+Design cue
+Take something ordinary from a résumé — one title, one bullet or one claimed skill — and reveal the
+richness underneath it.
+3
+
+========== PAGE 4 ==========
+The project. The decisions. The context. The work. The evidence.
+The visual thought is simple:
+There was always more behind the sentence.
+Show the claims on left side and how the evidence for the claim looks and how different they are.
+Transition
+That's what CareerPassport helps you keep building.
+SCREEN 04 — HOW CAREERPASSPORT WORKS
+Headline
+Career Passport converts your lived experience
+into  consumable evidence packs
+Copy
+Start with what you already have — your CV, LinkedIn, GitHub, writing, projects, documents, demos and
+more.
+Then simply talk to your Companion about the work you're doing and the experiences you're living.
+It listens.
+It remembers.
+It asks.
+It nudges.
+And when something in your journey deserves to be explored further , it helps you take a small, curated
+journey to show what sits behind it.
+You might revisit something you've built.
+Explain a decision you've made.
+Solve something.
+Create something.
+Or simply bring forward evidence that already exists.
+4
+
+========== PAGE 5 ==========
+CareerPassport helps turn those moments into artifacts and evidence of what you can actually do.
+And when that evidence demonstrates real depth, you can earn a Stamp that carries that signal
+forward.
+The loop
+Connect what already exists
+→ Talk about what you're living
+→ Follow a curated journey
+→ Create evidence
+→ Earn meaningful signals
+→ Grow your CareerPassport
+Design cue
+This should be one seamless visual loop rather than six feature cards.
+Begin with existing resources flowing into the Passport.
+Move naturally into a Companion conversation.
+Let one interesting experience emerge from that conversation.
+Show a small journey being suggested.
+Show the resulting artifact or evidence.
+Then let that evidence resolve into a Stamp and become part of the Passport.
+The experience should feel effortless on the user's side:
+talk, participate, keep moving.
+The intelligence and structure happen around them.
+Transition
+So when something worth pursuing appears, you're already ready.
+5
+
+========== PAGE 6 ==========
+SCREEN 05 — WHAT THIS CHANGES FOR YOU
+Headline
+Be ready for what's next — before it arrives.
+Always ready and keep growing
+Your Passport keeps growing with the work you're doing, the things you're learning and the capabilities
+you're building.
+So when the right role, project, collaboration or conversation appears, you don't have to stop and
+reconstruct who you've become.
+Your latest work is already there.
+Your evidence is already there.
+Your story has already moved forward.
+And when you show your real depth better , better opportunities have more reasons to find you and
+better doors opens and better conversations happens
+Enhanced AI discoverability
+The next generation of opportunity discovery will increasingly involve AI agents searching for ,
+understanding and recommending people.
+CareerPassport is built to make your professional identity understandable beyond job titles, keywords
+and polished claims.
+It gives intelligent systems richer context around:
+what you've done,
+what you've demonstrated,
+and where your real depth lies.
+Closing statement
+Better opportunities. Better conversations. Better reasons to be discovered.
+Design cue
+Divide the screen into two clear outcomes, not feature lists.
+6
+
+========== PAGE 7 ==========
+For the first, show opportunities beginning to connect with an already-current Passport rather than a
+professional browsing through hundreds of jobs.
+For the second, show the Passport being understood through experiences, Stamps and evidence — not
+scraped as a collection of keywords.
+The overall feeling should be:
+CareerPassport keeps me ready while I'm busy building my career.
+Transition
+Because the journey you're living today is already shaping what becomes possible tomorrow.
+SCREEN 06 — FINAL CTA
+Eyebrow:
+You are far more capable 
+or , 
+you are way better than what you think you are
+Headline
+Let the experiences you've lived showcase who
+you really are.
+Copy
+Every project you've taken further .
+Every difficult problem you've figured out.
+Every new capability you've picked up.
+Every experience that changed how you work.
+They're already shaping the professional you're becoming.
+CareerPassport gives those experiences somewhere to grow into something more — evidence of what
+you can do, a clearer understanding of who you're becoming, and a professional identity ready for
+wherever you choose to go next.
+7
+
+========== PAGE 8 ==========
+Primary CTA
+Join the waitlist
+Supporting copy
+Be among the first professionals to build their CareerPassport.
+careerpassport.ai
+Final brand line
+Your career deserves more than a profile.
+Design cue
+Keep the final screen quiet and personal.
+Bring back the Passport from the opening screen — except it is no longer empty.
+It now carries traces of experiences, work, evidence and earned signals accumulated through the page.
+The object the visitor first wanted now has meaning.
+The final feeling should be:
+I have already done more than my current professional identity shows. I should start building
+this.
+8

@@ -1,0 +1,31 @@
+:root{
+/* ---- base neutrals: dark-first. The canvas is near-black, the ink is near-white. ---- */
+--void:#0a0c0b;--panel:#121514;--panel-raised:#181c1a;--hairline-soft:#1c211f;--hairline:#262c29;
+--canvas:#0a0c0b;--canvas-elevated:#121514;
+--ink:#f4f7f5;--body:#a6afab;--mute:#7a8480;--faint:#5b6562;
+--white:#ffffff;--black:#000000;
+/* ---- accent family: Navy & Gold Foil — passport cover, embossed seal ---- */
+--emerald-deep:#10203f;--emerald-mid:#1b3564;--emerald:#d8b877;--mint:#e9d6aa;--emerald-tint:#fdfaf1;
+--link:#7ba4ff;--link-deep:#b9cdff;--link-soft:#0f1a33;
+/* ---- semantic (tuned for dark surfaces) ---- */
+--error:#f2544a;--error-deep:#ffa39c;--error-soft:#2b1614;
+--warning:#e8a93a;--warning-soft:#2a2113;--warning-deep:#f0b849;
+--success:var(--emerald);
+/* ---- brand gradient trio (Navy & Gold ramp) ---- */
+--gradient-transit-start:#091530;--gradient-transit-end:#1b3564;
+--gradient-growth-start:#1b3564;--gradient-growth-end:#d8b877;
+--gradient-signal-start:#d8b877;--gradient-signal-end:#e9d6aa;
+--gradient-transit:linear-gradient(90deg,var(--gradient-transit-start),var(--gradient-transit-end));
+--gradient-growth:linear-gradient(90deg,var(--gradient-growth-start),var(--gradient-growth-end));
+--gradient-signal:linear-gradient(90deg,var(--gradient-signal-start),var(--gradient-signal-end));
+/* the hero mesh: the brand's only decorative system — navy cover-light with a gold foil bloom */
+--gradient-mesh:radial-gradient(42% 62% at 16% 26%,rgba(27,53,100,.9) 0%,rgba(27,53,100,0) 70%),radial-gradient(46% 66% at 40% 8%,rgba(123,164,255,.3) 0%,rgba(123,164,255,0) 72%),radial-gradient(40% 60% at 64% 30%,rgba(216,184,119,.28) 0%,rgba(216,184,119,0) 70%),radial-gradient(38% 58% at 86% 16%,rgba(233,214,170,.22) 0%,rgba(233,214,170,0) 70%),radial-gradient(50% 72% at 96% 54%,rgba(9,21,48,.92) 0%,rgba(9,21,48,0) 74%); /* @kind color */
+/* ---- semantic aliases (use these in components) ---- */
+--primary:var(--emerald);--on-primary:var(--emerald-deep);
+--text-heading:var(--ink);--text-body:var(--body);--text-mute:var(--mute);--text-faint:var(--faint);
+--text-link:var(--link);--text-link-press:var(--link-deep);--text-on-dark:var(--ink);
+--surface-page:var(--void);--surface-card:var(--panel);--surface-well:var(--hairline-soft);
+--surface-input:var(--panel-raised);--surface-code:var(--panel);
+--border-hairline:var(--hairline);--border-strong:var(--emerald);
+--focus-ring:var(--emerald)
+}

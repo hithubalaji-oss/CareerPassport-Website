@@ -1,0 +1,375 @@
+CareerPassport for Recruitment Partners
+Condensed 6-Screen Website Direction
+Overall feeling: Premium, intelligent, controlled, commercially powerful.
+Core visual idea: One private recruitment network evolves throughout the page. We never abandon it
+and introduce random feature graphics. It begins as the recruiter's private database, becomes
+intelligent, begins processing a role, gains agents, connects selectively to the marketplace, and
+ultimately delivers a candidate to the client.
+SCREEN 01 — HERO
+Exact website copy
+CAREERPASSPORT FOR RECRUITMENT PARTNERS
+Build your recruitment business in the AI era.
+Turn the candidates, relationships and expertise you already own into a more intelligent way to recruit.
+Private talent intelligence.
+Applicant processing.
+Agentic workflows.
+Trusted collaboration.
+[ Book a Partner Demo ]
+[ Join CareerPassport ]
+Your candidates stay private. You decide when to collaborate.
+Design cue
+This should feel exceptionally minimal.
+Large headline occupying approximately half the viewport.
+Beside it, show a private talent universe belonging to one fictional recruitment company.
+Not a dashboard.
+Think of a controlled constellation/network containing:
+candidates;	•
+1
+
+-- 1 of 13 --
+
+relationships;
+one or two client nodes;
+dormant role nodes.
+Visually mark the boundary as:
+Private Talent Network
+The object should feel valuable and proprietary.
+Transition cue
+As the user scrolls, a new client requirement enters the network.
+The system responds.
+Relevant candidate nodes begin to illuminate.
+The hero headline moves away, but the network remains.
+That same visual object now takes us into Screen 02.
+SCREEN 02 — YOUR PRIVATE TALENT
+INTELLIGENCE
+Exact website copy
+The best candidate for your next role may
+already be someone you know.
+Years of conversations, relationships and candidate data shouldn't sit waiting inside an ATS.
+CareerPassport turns your private database into talent intelligence you can actually ask questions of.
+“Who have we spoken to who has built enterprise sales teams?”
+“Find product leaders with payments experience.”
+“Who in our network could fit this role now?”
+•
+•
+•
+2
+
+-- 2 of 13 --
+
+Your database stops being an archive.
+It becomes an active business asset.
+Private by default. Your uploaded candidate database is never visible to other partners or
+companies.
+Design cue
+The private network from Screen 01 expands.
+Introduce one large conversational search field floating over it.
+Avoid conventional filter menus and dense database tables.
+Show a natural-language query being entered.
+Candidate profiles should surface based on relevance.
+When one candidate is selected, briefly show context such as:
+Spoke with · 8 months ago
+Relevant experience · B2B SaaS
+Work context · Built 0→1 sales team
+Keep it elegant and sparse.
+Transition cue
+One candidate search should lead naturally into a role.
+The search query disappears.
+A structured hiring flow starts building around that role.
+The private database becomes the input into the next screen.
+3
+
+-- 3 of 13 --
+
+SCREEN 03 — FROM APPLICANT TRACKING TO
+APPLICANT PROCESSING
+Exact website copy
+FROM SYSTEM OF RECORD TO SYSTEM OF ACTION
+Applicant processing, not applicant tracking.
+Traditional ATS products tell you where a candidate is.
+CareerPassport helps move the hiring process forward.
+Tell us what the client needs.
+CareerPassport can help structure the role, define evaluation, create the candidate journey, activate
+outreach, coordinate the process and bring the right people forward.
+Requirement → Role → Search → Outreach → Evaluation → Interview
+Your recruiting system should participate in the
+work — not just record it.
+A sleek, AI-native Applicant Processing System built for modern recruitment businesses.
+Design cue
+This is an important category moment.
+Briefly show a conventional ATS-style board:
+Sourced | Contacted | Screening | Submitted | Interview
+Then simplify it.
+The columns should collapse into an active workflow.
+Instead of statuses, the visitor sees actions happening:
+Role created
+→ Candidates identified
+→ Outreach initiated
+4
+
+-- 4 of 13 --
+
+→ Journey completed
+→ Evidence reviewed
+→ Interview ready
+The CareerPassport experience should visually look simpler than the ATS, not busier.
+Transition cue
+Once the process begins moving, introduce subtle agent markers working around it.
+The user should realise:
+"The software isn't only organising the process. It is executing parts of it."
+That takes us directly into Screen 04.
+SCREEN 04 — YOUR AGENTIC RECRUITING
+WORKFORCE
+Exact website copy
+Recruiting that keeps moving without you
+touching every step.
+Discovery.
+Outreach.
+Email.
+WhatsApp.
+Calls.
+Follow-ups.
+Candidate conversations.
+Evaluation.
+Scheduling.
+5
+
+-- 5 of 13 --
+
+Coordination.
+CareerPassport agents can take on the repetitive operating work around recruitment while your
+recruiters stay focused on what humans do best.
+Judgement. Relationships. Persuasion. Closing.
+You decide where agents can act — and where human approval is required.
+More capacity.
+Without making recruitment less human.
+Design cue
+Do not represent agents as robots, people, avatars or AI assistants.
+Agents should be represented as actions occurring within the workflow.
+Example sequence:
+17 candidates identified
+8 personalised messages sent
+WhatsApp follow-up completed
+3 candidate conversations summarised
+2 candidates ready for review
+Then show:
+Recruiter approval required
+The system pauses.
+Recruiter approves.
+Process continues.
+That single interaction explains configurable autonomy.
+6
+
+-- 6 of 13 --
+
+Transition cue
+One role reaches a point where the agency does not have enough relevant candidates.
+Do not present this as failure.
+The private network remains intact.
+A new possibility appears outside the private boundary:
+Expand fulfilment
+This opens Screen 05.
+SCREEN 05 — COLLABORATE WITHOUT LOSING
+CONTROL
+Exact website copy
+Your database is private.
+Your opportunities don't have to be limited by it.
+CareerPassport gives recruitment partners three ways to work.
+Your client. Your role.
+Run your own mandate and invite another partner when additional reach can accelerate fulfilment.
+Company opportunity.
+Work on roles opened directly by companies on CareerPassport.
+Partner opportunity.
+Bring relevant talent to a mandate opened by another recruitment partner.
+Your private candidates never become a public database. You decide what you submit and where
+you participate.
+Collaboration with the commercial truth built in.
+Candidate ownership · Role ownership · Fee · Commission split · Replacement terms
+7
+
+-- 7 of 13 --
+
+Submission → Joining → Invoice → Payout
+Everyone knows who owns what, who earns what and where the process stands.
+When you can't fulfil alone, you shouldn't always
+have to walk away.
+Share the fulfilment. Share the value.
+Design cue
+This should be the most visually sophisticated screen.
+Begin with the agency's PRIVATE NETWORK on the left.
+Outside sits the wider CAREERPASSPORT NETWORK.
+Nothing crosses automatically.
+Show three external entry points:
+MY CLIENT ROLE
+COMPANY ROLE
+PARTNER ROLE
+A deliberate action connects one specific candidate or role across the boundary.
+Then reveal a compact collaboration agreement:
+Role owner
+ABC Search
+Candidate owner
+XYZ Partners
+Fee
+Split
+Replacement terms
+Underneath, show a live commercial journey:
+Submitted → Interviewing → Joined → Invoice → Payout
+8
+
+-- 8 of 13 --
+
+The visual character here should feel closer to deal infrastructure / fintech than an HR marketplace.
+Transition cue
+Follow the successful candidate through the collaboration flow.
+Once the candidate reaches Recommended, rotate the perspective.
+We stop looking at CareerPassport from the recruiter's side.
+We now see what the client experiences.
+SCREEN 06 — YOUR CLIENT SEES A BETTER
+RECRUITMENT PARTNER
+Exact website copy
+Give your clients more than CVs.
+A CareerPassport-powered recruitment process can bring together the requirement, evaluation,
+candidate coordination and richer professional evidence in one place.
+Instead of:
+CV + recruiter comment
+Give the client:
+Candidate + Context + Evidence
+Relevant experience.
+Work samples.
+Candidate journeys.
+Structured evaluation.
+The context behind your recommendation.
+Look like a better recruitment partner because
+you are running a better process.
+More organised.
+More responsive.
+More credible.
+9
+
+-- 9 of 13 --
+
+Whether you're an independent headhunter or a recruitment business, CareerPassport gives you more
+leverage from the network and relationships you have already built.
+THE NEXT RECRUITMENT BUSINESS
+Your candidates.
+Your relationships.
+Your business.
+More leverage from all three.
+[ Book a Partner Demo ]
+[ Join CareerPassport ]
+Design cue
+Start with a simple comparison.
+On the left:
+candidate_final_v4.pdf
+Recruiter note.
+On the right:
+A beautifully curated CareerPassport candidate view showing:
+Why this person
+Relevant experience
+Evidence
+Candidate journey
+Evaluation
+Then zoom out.
+Show:
+10
+
+-- 10 of 13 --
+
+Candidate
+→ Recruitment Partner
+→ Client
+all participating around the same role.
+Finally return to the original network from Screen 01.
+It is now fully activated:
+private talent;
+live roles;
+agents;
+collaborators;
+clients;
+commercial flows.
+Then remove everything.
+Leave only the final headline and CTAs.
+Motion stops completely.
+Global designer direction
+One visual story, not six feature sections
+The biggest design principle is continuity.
+The same visual system should evolve:
+Screen 01
+Private network
+↓
+Screen 02
+Private network becomes searchable
+↓
+Screen 03
+A role begins processing through it
+↓
+•
+•
+•
+•
+•
+•
+11
+
+-- 11 of 13 --
+
+Screen 04
+Agents start executing around that role
+↓
+Screen 05
+The private system selectively connects into the wider network
+↓
+Screen 06
+The output becomes a richer client experience
+The user should feel as though they have watched one recruitment business transform over the
+course of the page.
+Visual language
+The site should feel:
+Premium
+Intelligent
+Controlled
+Private
+Commercial
+AI-native
+Human-led
+Avoid:
+stock recruiter photography;
+generic blue/purple AI gradients;
+robots;
+AI sparkles;
+floating SaaS cards;
+generic dashboards;
+endless feature tiles;
+handshake imagery;
+busy job marketplace grids.
+The product itself should be the visual language.
+•
+•
+•
+•
+•
+•
+•
+•
+•
+12
+
+-- 12 of 13 --
+
+The six messages the visitor should leave with
+01
+CareerPassport is a new operating model for recruitment.
+02
+My database becomes dramatically more useful — and remains private.
+03
+This is Applicant Processing, not another heavyweight ATS.
+04
+Agents can meaningfully increase my recruiting capacity.
+05
+I can access and share opportunities without giving up ownership or commercial clarity.
+06
+CareerPassport can make my recruitment business look significantly better in front of clients.
+13
+
+-- 13 of 13 --
+

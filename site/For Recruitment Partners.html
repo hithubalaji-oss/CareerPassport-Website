@@ -1,0 +1,538 @@
+<title>CareerPassport — For Recruitment Partners</title>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#0a0c0b"/><rect x="70" y="118" width="180" height="164" rx="14" fill="none" stroke="#fdb23c" stroke-opacity=".5" stroke-dasharray="6 5"/><circle cx="110" cy="158" r="7" fill="#fdb23c"/><circle cx="168" cy="142" r="5" fill="#e9d6aa" opacity=".8"/><circle cx="212" cy="182" r="6" fill="#fdb23c" opacity=".7"/><circle cx="132" cy="212" r="5" fill="#e9d6aa" opacity=".6"/><circle cx="196" cy="246" r="7" fill="#fdb23c" opacity=".85"/><path d="M110 158L168 142M168 142L212 182M110 158L132 212M132 212L196 246M212 182L196 246" stroke="#fdb23c" stroke-opacity=".35"/><circle cx="316" cy="200" r="26" fill="none" stroke="#7ba4ff" stroke-opacity=".5"/><path d="M250 200h40" stroke="#7ba4ff" stroke-opacity=".5" stroke-dasharray="4 4"/></svg></template>
+<link rel="stylesheet" href="_ds/careerpassport-design-system-a8d325d2-717b-4d0b-85f0-302544f1ad1d/styles.css">
+<link rel="stylesheet" href="cp-shared.css">
+<style>
+/* page-specific: the private network, the board collapse, the collaboration boundary */
+.net{position:relative;flex:1;min-height:0}
+.net svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.nbound{fill:rgba(253,178,60,.03);stroke:rgba(253,178,60,.4);stroke-width:1;stroke-dasharray:6 5;vector-effect:non-scaling-stroke}
+.nlink{stroke:rgba(253,178,60,.16);stroke-width:1;fill:none;vector-effect:non-scaling-stroke;
+  transition:stroke .6s var(--ease)}
+.nnode{fill:rgba(233,214,170,.34);transition:fill .6s var(--ease),r .6s var(--ease)}
+.nrole{fill:none;stroke:rgba(122,132,128,.5);stroke-width:1;vector-effect:non-scaling-stroke;transition:stroke .6s var(--ease)}
+.nclient{fill:none;stroke:rgba(123,164,255,.55);stroke-width:1;vector-effect:non-scaling-stroke}
+.on .nnode.hot{fill:var(--emerald)}
+.on .nlink.hot{stroke:rgba(253,178,60,.55)}
+.on .nrole.hot{stroke:rgba(253,178,60,.8)}
+.nlbl{font-family:var(--mono);font-size:7.5px;letter-spacing:.2em;fill:rgba(253,178,60,.8)}
+.nlbl.mute{fill:rgba(122,132,128,.75)}
+.nlbl.blue{fill:rgba(123,164,255,.8)}
+.search{display:flex;align-items:center;gap:9px;padding:11px 14px;border-radius:100px;
+  background:var(--panel-raised);border:1px solid rgba(253,178,60,.34);box-shadow:0 0 26px rgba(253,178,60,.1)}
+.search i{width:5px;height:5px;border-radius:50%;background:var(--emerald);flex-shrink:0;box-shadow:0 0 8px rgba(253,178,60,.8)}
+.search span{font-size:12.5px;line-height:1.35;color:var(--ink)}
+.ctx{display:flex;flex-direction:column;gap:5px}
+.ctxr{display:flex;align-items:baseline;gap:10px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em}
+.ctxr b{font-weight:400;color:var(--meta);width:82px;flex-shrink:0}
+.ctxr span{color:var(--emerald)}
+.swap{opacity:0;transition:opacity .55s var(--ease)}
+.swap.on{opacity:1}
+.stack{position:relative;flex:1;min-height:0}
+.lay{position:absolute;inset:0;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.ctx,.net,.split,.acts,.vs,.agree{min-height:0}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;flex:1;min-height:0}
+.bcol{display:flex;flex-direction:column;gap:4px;min-width:0}
+.bcol b{font-family:var(--mono);font-size:7px;font-weight:400;letter-spacing:.1em;color:var(--meta);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bcol i{height:11px;border-radius:3px;background:var(--panel-raised);border:1px solid var(--hairline)}
+.acts{display:flex;flex-direction:column;gap:6px}
+.act{display:flex;align-items:center;gap:9px;padding:8px 12px;border:1px solid var(--hairline);border-radius:7px;background:var(--panel-raised)}
+.act.on{border-color:rgba(253,178,60,.34)}
+.act b{font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.14em;color:rgba(253,178,60,.6);width:18px;flex-shrink:0}
+.act span{font-size:12.5px;font-weight:500;letter-spacing:-.01em;color:var(--ink)}
+.act em{margin-left:auto;font-style:normal;font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:var(--meta)}
+.act.on em{color:var(--emerald)}
+.pause{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:8px;
+  border:1px dashed rgba(253,178,60,.55);background:rgba(253,178,60,.06)}
+.pause b{font-family:var(--mono);font-size:9.5px;font-weight:400;letter-spacing:.16em;color:var(--emerald)}
+.pause em{margin-left:auto;font-style:normal;font-size:10.5px;font-weight:600;letter-spacing:.06em;
+  padding:5px 11px;border-radius:100px;background:var(--emerald);color:var(--emerald-deep);white-space:nowrap}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:9px;flex:1;min-height:0}
+.zoneb{display:flex;flex-direction:column;gap:6px;padding:11px;border-radius:9px;min-width:0}
+.zoneb.priv{border:1px dashed rgba(253,178,60,.45);background:rgba(253,178,60,.03)}
+.zoneb.pub{border:1px solid rgba(123,164,255,.3);background:rgba(123,164,255,.03)}
+.zoneb>b{font-family:var(--mono);font-size:7.5px;font-weight:400;letter-spacing:.18em;color:rgba(253,178,60,.8)}
+.zoneb.pub>b{color:rgba(123,164,255,.85)}
+.ent{display:flex;flex-direction:column;gap:4px}
+.ent span{padding:5px 8px;border:1px solid var(--hairline);border-radius:5px;font-family:var(--mono);
+  font-size:8px;letter-spacing:.12em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:.5s var(--ease)}
+.ent span.on{border-color:rgba(123,164,255,.5);color:var(--link)}
+.dots{display:flex;flex-wrap:wrap;gap:5px}
+.dots i{width:7px;height:7px;border-radius:50%;background:rgba(233,214,170,.3)}
+.dots i.hot{background:var(--emerald);box-shadow:0 0 6px rgba(253,178,60,.7)}
+.agree{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;padding:11px 13px;border-radius:8px;
+  border:1px solid rgba(253,178,60,.28);background:var(--panel-raised)}
+.agree div{display:flex;flex-direction:column;gap:1px;min-width:0}
+.agree b{font-family:var(--mono);font-size:7.5px;font-weight:400;letter-spacing:.16em;color:var(--meta)}
+.agree span{font-size:11.5px;font-weight:600;letter-spacing:-.01em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pipe{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-family:var(--mono);font-size:8.5px;letter-spacing:.14em}
+.pipe b{font-weight:400;padding:5px 9px;border:1px solid var(--hairline);border-radius:100px;color:var(--meta);
+  white-space:nowrap;transition:.5s var(--ease)}
+.pipe b.on{border-color:rgba(253,178,60,.4);color:var(--emerald)}
+.pipe em{font-style:normal;color:rgba(253,178,60,.4)}
+.vs{display:grid;grid-template-columns:.8fr 1.2fr;gap:10px;flex:1;min-height:0}
+.old{display:flex;flex-direction:column;gap:7px;padding:12px;border:1px solid var(--hairline);border-radius:9px;
+  background:var(--panel-raised);opacity:.5}
+.old b{font-family:var(--mono);font-size:8.5px;font-weight:400;letter-spacing:.1em;color:var(--muted);word-break:break-all}
+.old p{font-size:11px;line-height:1.4;color:var(--muted)}
+.new{display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid rgba(253,178,60,.32);border-radius:9px;
+  background:var(--panel-raised);box-shadow:0 0 24px rgba(253,178,60,.08);min-width:0}
+.new>b{font-family:var(--mono);font-size:8px;font-weight:400;letter-spacing:.18em;color:rgba(253,178,60,.8)}
+.nr{display:flex;flex-direction:column;gap:1px;padding:6px 0;border-top:1px solid var(--hairline)}
+.nr:first-of-type{border-top:0;padding-top:0}
+.nr b{font-family:var(--mono);font-size:7.5px;font-weight:400;letter-spacing:.16em;color:var(--meta)}
+.nr span{font-size:11.5px;line-height:1.35;color:var(--ink)}
+.trace{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:clamp(9px,.78vw,11px);letter-spacing:.2em;color:var(--faint)}
+.trace em{font-style:normal;color:rgba(253,178,60,.5)}
+.trace b{font-weight:400;color:var(--muted)}
+.ways{display:flex;flex-direction:column;gap:13px}
+.way{display:flex;flex-direction:column;gap:3px}
+.way b{font-size:clamp(16px,1.24vw,19px);font-weight:600;letter-spacing:-.02em;color:var(--gold)}
+.way p{font-size:clamp(14px,1.05vw,16.5px);line-height:1.5;color:var(--muted)}
+@media (max-width:1024px){
+  [data-mob="off"]{display:none!important}
+  .acts,.ctx,.ent{flex:1;min-height:0;overflow:hidden;justify-content:center}
+  .acts{gap:4px}
+  .act{padding:3px 7px;gap:6px}
+  .act span{font-size:10.5px}
+  .act b{font-size:8px;width:14px}
+  .act em{font-size:7px}
+  .pause{padding:7px 9px}.pause b{font-size:8.5px}.pause em{font-size:9px;padding:4px 8px}
+  .search{padding:8px 11px}.search span{font-size:10.5px}
+  .ctxr{font-size:8px}.ctxr b{width:62px}
+  .board{gap:3px}.bcol b{font-size:6px}.bcol i{height:8px}
+  .split{gap:6px;flex:1;min-height:0}
+  .vs{grid-auto-rows:minmax(0,1fr)}
+  .old,.new{overflow:hidden;min-height:0}
+  .new .nr:nth-of-type(n+4){display:none}
+  .vs{align-items:stretch}
+  .vs>*{align-self:stretch}
+  .dots i{width:6px;height:6px}.zoneb{padding:8px;gap:4px}.zoneb>b{font-size:6.5px;letter-spacing:.14em}
+  .ent span{font-size:7px;padding:4px 6px}
+  .agree{padding:7px 9px;gap:3px 8px;grid-auto-rows:minmax(0,1fr);min-height:0;overflow:hidden}
+  .ctx,.net,.split,.acts,.vs{min-height:0;overflow:hidden}
+  .pipe{flex-shrink:0}
+
+.agree span{font-size:9.5px}.agree b{font-size:6.5px}
+  .pipe{font-size:7px;gap:4px}.pipe b{padding:4px 7px}
+  .vs{gap:7px}.old,.new{padding:8px;gap:4px}
+  .old b{font-size:7px}.old p{font-size:9.5px}
+  .new>b{font-size:7px}.nr{padding:4px 0}.nr b{font-size:6.5px}.nr span{font-size:9.5px;line-height:1.25}
+  .ways{gap:8px}.way b{font-size:13.5px}.way p{font-size:11.5px;line-height:1.35}
+  .nlbl{font-size:6px}
+}
+
+/* ---------- shared header, matched to For Companies.html ---------- */
+.hdr{position:fixed;inset:0 0 auto;z-index:80;display:flex;align-items:center;
+  justify-content:space-between;gap:20px;padding:16px var(--gut);
+  background:linear-gradient(180deg,rgba(10,12,11,.92),transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--hairline)}
+.brand{display:flex;align-items:center;gap:11px;color:var(--ink)}
+.brand i{width:20px;height:27px;border-radius:3px 6px 6px 3px;background:var(--gradient-transit);
+  border:1px solid color-mix(in srgb,var(--emerald) 50%,transparent)}
+.brand span{font-size:clamp(13.5px,1.12vw,16px);font-weight:600;letter-spacing:.1em;
+  white-space:nowrap}
+.nav{display:flex;align-items:center;gap:clamp(14px,1.6vw,26px);font-size:14px;font-weight:500;
+  letter-spacing:-.01em;white-space:nowrap}
+.nav a{color:var(--mute)}
+.nav a:hover{color:var(--ink)}
+.nav a.here{color:var(--emerald)}
+.burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;
+  padding:0 9px;border:0;background:transparent}
+.burger i{height:1.5px;background:var(--ink)}
+.mnav{display:none;position:fixed;inset:58px 0 auto;z-index:79;flex-direction:column;
+  padding:12px var(--gut) 20px;background:rgba(10,12,11,.97);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--hairline)}
+.mnav.open{display:flex}
+.mnav a{display:flex;align-items:center;min-height:52px;font-size:15.5px;font-weight:600;
+  letter-spacing:.08em;color:var(--mute);border-bottom:1px solid var(--hairline)}
+.mnav a:last-child{border:0}
+@media (max-width:900px){ .nav{display:none} .burger{display:flex} }
+
+/* ---------- shared footer, matched to For Companies.html ---------- */
+.ftr{position:relative;z-index:10;display:flex;flex-direction:column;gap:clamp(30px,5vh,54px);
+  margin-top:var(--sec);padding:28px var(--gut) 0;border-top:1px solid var(--hairline);
+  background:var(--void);overflow:hidden}
+.ftop{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.fright{display:flex;flex-direction:column;align-items:flex-end;gap:14px}
+.fsoc{display:flex;align-items:center;gap:8px}
+.fsoc a{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--hairline-soft);color:var(--faint);transition:.16s var(--ease)}
+.fsoc a:hover{color:var(--emerald);border-color:color-mix(in srgb,var(--emerald) 45%,transparent);background:var(--panel-raised)}
+.fsoc svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+.fnav{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.fnav a{font-size:12.5px;color:var(--mute);text-decoration:none}.fnav a:hover{color:var(--emerald)}
+.fmark{display:block;width:100%;height:auto}
+.fmark text{fill:url(#fmg);font-family:var(--sans)}
+.fcr{padding-bottom:22px;text-align:center;font-size:12.5px;color:var(--faint)}
+.ftr .brand span{font-family:var(--mono);font-size:13px;font-weight:400;letter-spacing:.16em;
+  color:var(--faint)}
+</style>
+
+<div class="paper" aria-hidden="true"></div>
+<div class="rose" aria-hidden="true"></div>
+<div class="prog"></div>
+<header class="hdr">
+  <a class="brand" href="Homepage.html"><i></i><span>CAREERPASSPORT</span></a>
+  <nav class="nav">
+    <a href="Homepage.html">For individuals</a>
+    <a href="For Companies.html">For companies</a>
+    <a class="here" href="For Recruitment Partners.html">For recruitment partners</a>
+  </nav>
+  <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
+</header>
+<nav class="mnav" id="mnav">
+  <a href="Homepage.html">For individuals</a>
+  <a href="For Companies.html">For companies</a>
+  <a href="For Recruitment Partners.html">For recruitment partners</a>
+</nav>
+
+<!-- ============ ONE PRIVATE NETWORK, EVOLVING ============ -->
+<div class="stage" id="stage" aria-hidden="true">
+  <div class="zone">
+    <div class="dev">
+      <div class="devglow"></div>
+      <div class="devbar" id="devbar"><i></i><b>PRIVATE TALENT NETWORK</b><small>ABC SEARCH</small></div>
+      <div class="scenes">
+
+        <!-- 01 the private network -->
+        <div class="scene" data-fold="f1">
+          <span class="ph">ABC SEARCH &middot; PRIVATE TALENT NETWORK</span>
+          <div class="net stp on" data-step="0">
+            <svg viewBox="0 0 420 300" preserveAspectRatio="xMidYMid meet">
+              <rect class="nbound" x="14" y="26" width="286" height="252" rx="16"/>
+              <text class="nlbl" x="24" y="20">PRIVATE TALENT NETWORK</text>
+              <g class="nlink hot" stroke="rgba(253,178,60,.16)">
+                <path d="M70 92L138 62M138 62L216 96M70 92L96 168M96 168L182 208M216 96L182 208M182 208L262 170M138 62L262 96M96 168L46 226M262 170L262 96"/>
+              </g>
+              <circle class="nnode hot" cx="70" cy="92" r="6"/><circle class="nnode" cx="138" cy="62" r="4.5"/>
+              <circle class="nnode hot" cx="216" cy="96" r="5.5"/><circle class="nnode" cx="96" cy="168" r="4.5"/>
+              <circle class="nnode hot" cx="182" cy="208" r="6.5"/><circle class="nnode" cx="262" cy="170" r="4.5"/>
+              <circle class="nnode" cx="262" cy="96" r="4"/><circle class="nnode" cx="46" cy="226" r="4"/>
+              <circle class="nnode" cx="150" cy="128" r="3.5"/><circle class="nnode" cx="228" cy="240" r="3.5"/>
+              <circle class="nnode" cx="60" cy="140" r="3"/><circle class="nnode" cx="200" cy="152" r="3"/>
+              <circle class="nrole hot" cx="118" cy="252" r="9"/><text class="nlbl mute" x="132" y="256">ROLE · DORMANT</text>
+              <rect class="nclient" x="244" y="222" width="16" height="16" rx="3"/><text class="nlbl blue" x="266" y="234">CLIENT</text>
+              <rect class="nclient" x="36" y="44" width="16" height="16" rx="3"/><text class="nlbl blue" x="58" y="56">CLIENT</text>
+              <text class="nlbl mute" x="326" y="150">OUTSIDE</text>
+              <path class="nlink" d="M310 100v104" stroke-dasharray="4 5"/>
+            </svg>
+          </div>
+          <div class="pchips">
+            <span class="pchip gold stp on" data-step="0.02">PRIVATE TALENT INTELLIGENCE</span>
+            <span class="pchip stp" data-step="0.32">APPLICANT PROCESSING</span>
+            <span class="pchip stp" data-step="0.5">AGENTIC WORKFLOWS</span>
+            <span class="pchip stp" data-step="0.66">TRUSTED COLLABORATION</span>
+          </div>
+        </div>
+
+        <!-- 02 ask your own database -->
+        <div class="scene" data-fold="f2">
+          <div class="search stp on" data-step="0.02"><i></i><span>&ldquo;Who have we spoken to who has built enterprise sales teams?&rdquo;</span></div>
+          <div class="stack">
+            <div class="lay swap on" data-step="0" data-off="0.44">
+              <span class="ph">ASKING YOUR NETWORK</span>
+              <div class="net stp" data-step="0.06">
+            <svg viewBox="0 0 420 220" preserveAspectRatio="xMidYMid meet">
+              <rect class="nbound" x="14" y="14" width="392" height="192" rx="16"/>
+              <g class="nlink hot"><path d="M86 68L164 44M164 44L248 76M86 68L112 138M112 138L206 168M248 76L206 168M206 168L306 132M164 44L332 70"/></g>
+              <circle class="nnode hot" cx="86" cy="68" r="7"/><circle class="nnode" cx="164" cy="44" r="4.5"/>
+              <circle class="nnode hot" cx="248" cy="76" r="6"/><circle class="nnode" cx="112" cy="138" r="4.5"/>
+              <circle class="nnode hot" cx="206" cy="168" r="7.5"/><circle class="nnode" cx="306" cy="132" r="4.5"/>
+              <circle class="nnode" cx="332" cy="70" r="4"/><circle class="nnode" cx="60" cy="164" r="3.5"/>
+              <circle class="nnode" cx="368" cy="170" r="3.5"/><circle class="nnode" cx="270" cy="36" r="3"/>
+            </svg>
+          </div>
+            </div>
+            <div class="lay swap" data-step="0.44">
+              <span class="ph">SELECTED CANDIDATE &middot; CONTEXT</span>
+              <div class="ctx">
+                <div class="ctxr stp" data-step="0.48"><b>SPOKE WITH</b><span>8 months ago</span></div>
+                <div class="ctxr stp" data-step="0.6"><b>RELEVANT EXP</b><span>B2B SaaS</span></div>
+                <div class="ctxr stp" data-step="0.72"><b>WORK CONTEXT</b><span>Built 0&rarr;1 sales team</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03 record -> action -->
+        <div class="scene" data-fold="f3">
+          <span class="ph" data-mob="off">SYSTEM OF RECORD &rarr; SYSTEM OF ACTION</span>
+          <div class="stack">
+            <div class="lay swap on" data-step="0" data-off="0.42">
+              <span class="ph">TRADITIONAL ATS &middot; STATUSES</span>
+              <div class="board">
+                <div class="bcol"><b>SOURCED</b><i></i><i></i><i></i><i></i><i></i></div>
+                <div class="bcol"><b>CONTACTED</b><i></i><i></i><i></i><i></i></div>
+                <div class="bcol"><b>SCREENING</b><i></i><i></i><i></i></div>
+                <div class="bcol"><b>SUBMITTED</b><i></i><i></i></div>
+                <div class="bcol"><b>INTERVIEW</b><i></i></div>
+              </div>
+            </div>
+            <div class="lay swap" data-step="0.42">
+              <span class="ph">CAREERPASSPORT &middot; ACTIONS</span>
+              <div class="acts">
+                <div class="act stp" data-step="0.44"><b>01</b><span>Role created</span><em>DONE</em></div>
+                <div class="act stp" data-step="0.52"><b>02</b><span>Candidates identified</span><em>17</em></div>
+                <div class="act stp" data-step="0.6"><b>03</b><span>Outreach initiated</span><em>RUNNING</em></div>
+                <div class="act stp" data-step="0.68"><b>04</b><span>Journey completed</span><em>6 OF 8</em></div>
+                <div class="act stp" data-step="0.76"><b>05</b><span>Evidence reviewed</span><em>READY</em></div>
+                <div class="act stp" data-step="0.84"><b>06</b><span>Interview ready</span><em>3</em></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 04 agentic workforce -->
+        <div class="scene" data-fold="f4">
+          <span class="ph">AGENT ACTIVITY &middot; ONE MANDATE</span>
+          <div class="scroller"><div class="slist">
+            <p><b>08:10</b><span>17 candidates identified</span></p>
+            <p><b>09:24</b><span>8 personalised messages sent</span></p>
+            <p><b>12:02</b><span>WhatsApp follow-up completed</span></p>
+            <p><b>15:41</b><span>3 candidate conversations summarised</span></p>
+            <p class="key"><b>17:15</b><span>2 candidates ready for review</span></p>
+            <p class="key"><b>17:16</b><span>Recruiter approval required</span></p>
+          </div></div>
+          <div class="pchips" data-mob="off">
+            <span class="pchip">DISCOVERY</span><span class="pchip">OUTREACH</span><span class="pchip">EMAIL</span>
+            <span class="pchip">WHATSAPP</span><span class="pchip">CALLS</span><span class="pchip">FOLLOW-UPS</span>
+            <span class="pchip">EVALUATION</span><span class="pchip">SCHEDULING</span>
+          </div>
+          <div class="pause stp" data-step="0.5" style="margin-top:auto"><b>RECRUITER APPROVAL REQUIRED</b><em>Approve</em></div>
+          <span class="ph stp" data-step="0.76" data-mob="off">APPROVED &middot; PROCESS CONTINUES</span>
+        </div>
+
+        <!-- 05 collaborate without losing control -->
+        <div class="scene" data-fold="f5">
+          <div class="stack">
+            <div class="lay swap on" data-step="0" data-off="0.5">
+              <span class="ph">FULFILMENT BOUNDARY</span>
+              <div class="split">
+                <div class="zoneb priv"><b>PRIVATE NETWORK</b>
+                  <div class="dots"><i class="hot"></i><i class="hot"></i><i></i><i></i><i class="hot"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                  <span class="pmono" style="margin-top:auto">NEVER PUBLIC</span>
+                </div>
+                <div class="zoneb pub"><b>CAREERPASSPORT NETWORK</b>
+                  <div class="ent">
+                    <span class="stp on" data-step="0.04">MY CLIENT ROLE</span>
+                    <span class="stp" data-step="0.16">COMPANY ROLE</span>
+                    <span class="stp" data-step="0.28">PARTNER ROLE</span>
+                  </div>
+                  <span class="pmono" style="margin-top:auto">NOTHING CROSSES AUTOMATICALLY</span>
+                </div>
+              </div>
+            </div>
+            <div class="lay swap" data-step="0.5">
+              <span class="ph">COLLABORATION AGREEMENT</span>
+              <div class="agree">
+                <div><b>ROLE OWNER</b><span>ABC Search</span></div>
+                <div><b>CANDIDATE OWNER</b><span>XYZ Partners</span></div>
+                <div><b>FEE</b><span>Agreed</span></div>
+                <div><b>SPLIT</b><span>60 / 40</span></div>
+                <div><b>REPLACEMENT TERMS</b><span>90 days</span></div>
+                <div><b>COMMISSION</b><span>On invoice</span></div>
+              </div>
+              <div class="pipe" style="margin-top:auto">
+                <b class="stp on" data-step="0.56">Submitted</b><em>&rarr;</em>
+                <b class="stp" data-step="0.64">Interviewing</b><em>&rarr;</em>
+                <b class="stp" data-step="0.72">Joined</b><em>&rarr;</em>
+                <b class="stp" data-step="0.8">Invoice</b><em>&rarr;</em>
+                <b class="stp" data-step="0.88">Payout</b>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 06 what the client sees -->
+        <div class="scene" data-fold="f6">
+          <span class="ph">WHAT THE CLIENT RECEIVES</span>
+          <div class="vs">
+            <div class="old"><b>candidate_final_v4.pdf</b><p>Recruiter note.</p>
+              <span class="pmono" style="margin-top:auto">BEFORE</span></div>
+            <div class="new"><b>CAREERPASSPORT CANDIDATE VIEW</b>
+              <div class="nr stp on" data-step="0.04"><b>WHY THIS PERSON</b><span>Built the enterprise motion this role needs.</span></div>
+              <div class="nr stp" data-step="0.18"><b>RELEVANT EXPERIENCE</b><span>Two B2B SaaS teams, 0&rarr;1 and scale.</span></div>
+              <div class="nr stp" data-step="0.32"><b>EVIDENCE</b><span>Work samples, pipeline model, references.</span></div>
+              <div class="nr stp" data-step="0.46"><b>CANDIDATE JOURNEY</b><span>Completed, 4 of 4 stages.</span></div>
+              <div class="nr stp" data-step="0.6"><b>EVALUATION</b><span>Structured against the client's criteria.</span></div>
+            </div>
+          </div>
+          <div class="pipe stp" data-step="0.74" style="justify-content:center">
+            <b class="on">Candidate</b><em>&rarr;</em><b class="on">Recruitment Partner</b><em>&rarr;</em><b class="on">Client</b>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FOLDS ============ -->
+<main>
+
+<section class="fold" id="f1" style="--h:220" data-bar="PRIVATE TALENT NETWORK" data-meta="ABC SEARCH" data-screen-label="01">
+  <div class="pin"><div class="mesh" aria-hidden="true"></div><div class="col dense">
+    <p class="eyebrow gold"><i></i>CareerPassport for recruitment partners</p>
+    <h1>Build your recruitment business in the <em class="serif">AI era.</em></h1>
+    <p class="lede">Turn the candidates, relationships and expertise you already own into a more intelligent way to recruit.</p>
+    <div class="step">
+      <p class="hi">Private talent intelligence.</p>
+      <p class="hi">Applicant processing.</p>
+      <p class="hi">Agentic workflows.</p>
+      <p class="hi">Trusted collaboration.</p>
+    </div>
+    <div class="ctas">
+      <a class="btn" href="#outro">Book a Partner Demo</a>
+      <a class="btn sec" href="#outro">Join CareerPassport</a>
+    </div>
+    <p class="fine">Your candidates stay private. You decide when to collaborate.</p>
+  </div></div>
+</section>
+
+<section class="fold" id="f2" style="--h:250" data-bar="TALENT INTELLIGENCE" data-meta="NATURAL LANGUAGE" data-screen-label="02">
+  <div class="pin"><div class="col tight dense">
+    <p class="eyebrow"><i></i>Your private talent intelligence</p>
+    <h2>The best candidate for your next role may already be someone you know.</h2>
+    <p class="fine">Years of conversations, relationships and candidate data shouldn't sit waiting inside an ATS.</p>
+    <p class="lede">CareerPassport turns your private database into talent intelligence you can actually ask questions of.</p>
+    <div class="quotes">
+      <p>&ldquo;Who have we spoken to who has built enterprise sales teams?&rdquo;</p>
+      <p data-mob="off">&ldquo;Find product leaders with payments experience.&rdquo;</p>
+      <p data-mob="off">&ldquo;Who in our network could fit this role now?&rdquo;</p>
+    </div>
+    <div class="step">
+      <p>Your database stops being an archive.</p>
+      <p class="hi">It becomes an active business asset.</p>
+    </div>
+    <div class="note" data-mob="off"><b>PRIVATE BY DEFAULT</b><span>Your uploaded candidate database is never visible to other partners or companies.</span></div>
+  </div></div>
+</section>
+
+<section class="fold" id="f3" style="--h:260" data-bar="APPLICANT PROCESSING" data-meta="SYSTEM OF ACTION" data-screen-label="03">
+  <div class="pin"><div class="col dense">
+    <p class="eyebrow gold"><i></i>From system of record to system of action</p>
+    <h2>Applicant processing, not applicant tracking.</h2>
+    <p class="fine">Traditional ATS products tell you where a candidate is. CareerPassport helps move the hiring process forward.</p>
+    <p class="lede">Tell us what the client needs. CareerPassport can help structure the role, define evaluation, create the candidate journey, activate outreach, coordinate the process and bring the right people forward.</p>
+    <div class="rail"><b>Requirement</b><em>&rarr;</em><b>Role</b><em>&rarr;</em><b>Search</b><em>&rarr;</em><b>Outreach</b><em>&rarr;</em><b>Evaluation</b><em>&rarr;</em><b>Interview</b></div>
+    <p class="kicker">Your recruiting system should participate in the work — not just record it.</p>
+    <p class="fine" data-mob="off">A sleek, AI-native Applicant Processing System built for modern recruitment businesses.</p>
+  </div></div>
+</section>
+
+<section class="fold" id="f4" style="--h:250" data-bar="AGENTIC WORKFORCE" data-meta="CONFIGURABLE AUTONOMY" data-screen-label="04">
+  <div class="pin"><div class="col tight">
+    <p class="eyebrow"><i></i>Your agentic recruiting workforce</p>
+    <h2>Recruiting that keeps moving without you touching every step.</h2>
+    <div class="tags" data-mob="off">
+      <span class="tag">Discovery</span><span class="tag">Outreach</span><span class="tag">Email</span>
+      <span class="tag">WhatsApp</span><span class="tag">Calls</span><span class="tag">Follow-ups</span>
+      <span class="tag">Candidate conversations</span><span class="tag">Evaluation</span>
+      <span class="tag">Scheduling</span><span class="tag">Coordination</span>
+    </div>
+    <p class="lede">CareerPassport agents can take on the repetitive operating work around recruitment while your recruiters stay focused on what humans do best.</p>
+    <p class="kicker">Judgement. Relationships. Persuasion. Closing.</p>
+    <p class="fine">You decide where agents can act — and where human approval is required.</p>
+    <div class="step">
+      <p>More capacity.</p>
+      <p class="hi">Without making recruitment less human.</p>
+    </div>
+  </div></div>
+</section>
+
+<section class="fold" id="f5" style="--h:300" data-bar="COLLABORATION" data-meta="COMMERCIAL TRUTH" data-screen-label="05">
+  <div class="pin"><div class="col tight dense">
+    <p class="eyebrow"><i></i>Collaborate without losing control</p>
+    <h2>Your database is private. <em class="serif">Your opportunities don't have to be limited by it.</em></h2>
+    <p class="fine">CareerPassport gives recruitment partners three ways to work.</p>
+    <div class="ways">
+      <div class="way"><b>Your client. Your role.</b><p>Run your own mandate and invite another partner when additional reach can accelerate fulfilment.</p></div>
+      <div class="way"><b>Company opportunity.</b><p>Work on roles opened directly by companies on CareerPassport.</p></div>
+      <div class="way"><b>Partner opportunity.</b><p>Bring relevant talent to a mandate opened by another recruitment partner.</p></div>
+    </div>
+    <div class="note" data-mob="off"><b>YOUR CALL</b><span>Your private candidates never become a public database. You decide what you submit and where you participate.</span></div>
+    <p class="kicker">Collaboration with the commercial truth built in.</p>
+    <div class="rail" data-mob="off"><b>Candidate ownership</b><em>&middot;</em><b>Role ownership</b><em>&middot;</em><b>Fee</b><em>&middot;</em><b>Commission split</b><em>&middot;</em><b>Replacement terms</b></div>
+    <p class="fine" data-mob="off">Everyone knows who owns what, who earns what and where the process stands.</p>
+  </div></div>
+</section>
+
+<section class="fold" id="f6" style="--h:260" data-bar="CLIENT VIEW" data-meta="CANDIDATE + CONTEXT + EVIDENCE" data-screen-label="06">
+  <div class="pin"><div class="col tight dense">
+    <p class="eyebrow"><i></i>Your client sees a better recruitment partner</p>
+    <h2>Give your clients more than CVs.</h2>
+    <p class="fine">A CareerPassport-powered recruitment process can bring together the requirement, evaluation, candidate coordination and richer professional evidence in one place.</p>
+    <div class="step">
+      <p>Instead of: CV + recruiter comment</p>
+      <p class="hi">Give the client: Candidate + Context + Evidence</p>
+    </div>
+    <ul class="plain row2" data-mob="off">
+      <li>Relevant experience</li>
+      <li>Work samples</li>
+      <li>Candidate journeys</li>
+      <li>Structured evaluation</li>
+      <li>The context behind your recommendation</li>
+    </ul>
+    <p class="kicker" data-mob="off">Look like a better recruitment partner because you are running a better process.</p>
+    <div class="rail" data-mob="off"><b>More organised</b><em>&middot;</em><b>More responsive</b><em>&middot;</em><b>More credible</b></div>
+  </div></div>
+</section>
+
+</main>
+
+<!-- ============ THE NEXT RECRUITMENT BUSINESS ============ -->
+<section class="outro" id="outro">
+  <div class="ocopy">
+    <p class="eyebrow gold reveal"><i></i>The next recruitment business</p>
+    <h2 class="reveal">Your candidates. Your relationships. <em class="serif">Your business.</em></h2>
+    <p class="lede reveal">Whether you're an independent headhunter or a recruitment business, CareerPassport gives you more leverage from the network and relationships you have already built.</p>
+    <div class="ctas reveal">
+      <a class="btn" href="#outro">Book a Partner Demo</a>
+      <a class="btn sec" href="#outro">Join CareerPassport</a>
+    </div>
+    <div class="wait reveal" data-capture>
+      <input type="email" placeholder="you@agency.com" aria-label="Your work email">
+      <button data-done="REQUEST SENT">BOOK A PARTNER DEMO</button>
+    </div>
+    <p class="brandline reveal">More leverage from all three.</p>
+  </div>
+  <div class="oart" aria-hidden="true">
+    <div class="oring"></div>
+    <div class="trace" style="position:relative;z-index:2;max-width:320px">
+      <b>Network</b><em>&rarr;</em><b>Intelligence</b><em>&rarr;</em><b>Processing</b><em>&rarr;</em><b>Agents</b><em>&rarr;</em><b>Collaboration</b><em>&rarr;</em><b>Client</b>
+    </div>
+  </div>
+</section>
+
+<footer class="ftr">
+  <div class="ftop">
+    <a class="brand" href="Homepage.html"><i></i><span>careerpassport.ai</span></a>
+    <div class="fright">
+      <div class="fsoc">
+        <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9v9M6.5 5.6v.1M11 18v-5a3 3 0 0 1 6 0v5"/></svg></a>
+        <a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></a>
+        <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4 1.2-4-2.2-5.5-2.8M15 21v-3.2a2.9 2.9 0 0 0-.8-2.2c2.7-.3 4.5-1.4 4.5-5a4 4 0 0 0-1.1-2.7 3.7 3.7 0 0 0-.1-2.8s-1.2-.3-3.7 1.4a9.3 9.3 0 0 0-5 0C6.3 3.8 5.1 4.1 5.1 4.1a3.7 3.7 0 0 0-.1 2.8A4 4 0 0 0 3.9 9.6c0 3.6 1.8 4.7 4.5 5A2.9 2.9 0 0 0 7.6 17V21"/></svg></a>
+        <a href="#" aria-label="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17zM3.5 7l8.5 6 8.5-6"/></svg></a>
+      </div>
+      <nav class="fnav"><a href="Homepage.html">For individuals</a><a href="For Companies.html">For companies</a><a href="For Recruitment Partners.html">For recruitment partners</a></nav>
+    </div>
+  </div>
+  <svg class="fmark" viewBox="0 0 1000 96" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <defs><linearGradient id="fmg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="var(--ink)" stop-opacity=".14"/>
+      <stop offset=".62" stop-color="var(--ink)" stop-opacity=".03"/>
+      <stop offset="1" stop-color="var(--ink)" stop-opacity="0"/>
+    </linearGradient></defs>
+    <text x="500" y="104" text-anchor="middle" textLength="1000" lengthAdjust="spacingAndGlyphs"
+      font-size="130" font-weight="900" letter-spacing="-4">CAREERPASSPORT</text>
+  </svg>
+  <p class="fcr">&copy; 2026 CareerPassport Technologies Inc.</p>
+</footer>
+
+<script src="cp-page.js"></script>

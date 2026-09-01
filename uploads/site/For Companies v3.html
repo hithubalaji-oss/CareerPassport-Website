@@ -1,0 +1,897 @@
+<title>CareerPassport — For Companies</title>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="var(--void)"/><g stroke="#2a3348" stroke-width="1.5"><path d="M40 120h320M40 180h320M40 240h320M40 300h320"/></g><rect x="40" y="92" width="88" height="236" rx="6" fill="#12203f" stroke="var(--emerald)" stroke-width="1.5"/><g fill="var(--emerald)"><circle cx="84" cy="150" r="7"/><circle cx="84" cy="210" r="7"/><circle cx="84" cy="270" r="7"/></g><g fill="#3a4356"><circle cx="190" cy="150" r="6"/><circle cx="272" cy="210" r="6"/><circle cx="190" cy="270" r="6"/></g><g stroke="#3a4356" stroke-width="2"><path d="M262 144h20M182 204h20M262 264h20"/></g></svg></template>
+<link rel="stylesheet" href="_ds/careerpassport-design-system-a8d325d2-717b-4d0b-85f0-302544f1ad1d/styles.css">
+<style>
+/* ============================================================================
+   FOR COMPANIES — v3
+   Same foundation as v2 (the project's DC artboards for structure, with
+   Homepage.html's design-system tokens for palette and type: 72px gutter, 664px copy column,
+   header in normal flow so nothing can hide behind it).
+
+   Three modules are new, taken from the getblue.com structure:
+     · a category comparison table — us against four things a company already does
+     · verb-led process steps, each carrying a product frame and a human frame
+     · the closing CTA as an issued object rather than a form field
+   ============================================================================ */
+:root{
+  --gut:clamp(20px,5vw,72px);
+  --measure:1296px;
+  --copy:664px;
+  --copy2:640px;
+  --sec:clamp(80px,10.5vh,124px);
+  --hdr:83px;
+  /* palette and type resolve to the same tokens Homepage.html uses */
+  --bg:var(--void); --card:var(--panel-raised);
+  --tx:var(--ink); --muted:var(--mute); --meta:var(--faint);
+  --mute2:var(--mute); --dim:var(--faint);
+  --hair:var(--hairline); --hair2:var(--hairline-soft);
+  --panel2:var(--panel-raised);
+  --blue:var(--emerald); --gold:var(--emerald); --gold-ink:var(--mint);
+  --gold-lo:rgba(253,178,60,.35);
+  --paper:var(--emerald-tint); --navy:#10203f;
+  --line:var(--hairline);
+  --cover:linear-gradient(155deg,#1b3564 0%,#0d1c3a 55%,#091530 100%);
+  --pnavy:#10203f; --pgold:#fdb23c; --pblue:var(--emerald);
+  --ease:cubic-bezier(.4,0,.2,1);
+  --sans:var(--font-sans); --serif:var(--font-sans); --mono:var(--font-mono);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hdr) + 20px)}
+body{margin:0;background:var(--void);color:var(--ink);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--text-link);text-decoration:none}a:hover{color:var(--text-link-press);text-decoration:none}
+a.brand,a.brand:hover,a.brand:focus{color:var(--tx);text-decoration:none}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:6px}
+::selection{background:var(--emerald);color:var(--emerald-deep)}
+h1,h2,h3{margin:0;text-wrap:pretty}p{margin:0}
+i,em{font-style:normal}
+button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{outline:none}
+img{display:block;max-width:100%}
+
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:120px 120px;
+  mask-image:radial-gradient(120% 80% at 50% 10%,#000 25%,transparent 78%);
+  -webkit-mask-image:radial-gradient(120% 80% at 50% 10%,#000 25%,transparent 78%)}
+.bloom{position:absolute;top:-34vh;left:50%;width:130%;height:900px;translate:-50% 0;z-index:0;
+  pointer-events:none;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(47,107,255,.26),rgba(47,107,255,0) 70%)}
+
+/* ---------- header ---------- */
+.hdr{position:fixed;inset:0 0 auto;z-index:80;display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:16px var(--gut);background:linear-gradient(180deg,rgba(10,12,11,.92),transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:11px;color:var(--tx)}
+.brand i{width:20px;height:27px;border-radius:3px 6px 6px 3px;background:var(--gradient-transit);border:1px solid rgba(253,178,60,.5)}
+.brand span{font-size:clamp(13.5px,1.12vw,16px);font-weight:600;letter-spacing:.1em;white-space:nowrap}
+.nav{display:flex;align-items:center;gap:clamp(14px,1.6vw,26px);font-size:14px;font-weight:600;letter-spacing:.08em;white-space:nowrap}
+.nav a{color:var(--mute)}.nav a:hover{color:var(--tx)}
+.burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:0 9px;border:0;background:transparent}
+.burger i{height:1.5px;background:var(--ink)}
+.mnav{display:none;position:fixed;inset:58px 0 auto;z-index:79;flex-direction:column;padding:12px var(--gut) 20px;
+  background:rgba(10,12,11,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.mnav.open{display:flex}
+.mnav a{display:flex;align-items:center;min-height:52px;font-size:15.5px;font-weight:600;letter-spacing:.08em;color:var(--mute);border-bottom:1px solid var(--line)}
+.mnav a:last-child{border:0}
+.prog{position:fixed;left:0;top:0;height:2px;z-index:90;width:var(--pw,0%);
+  background:var(--gradient-growth);transition:width .1s linear}
+
+/* ---------- section shell ---------- */
+.sec{position:relative;z-index:10;padding:var(--sec) var(--gut);scroll-margin-top:var(--hdr)}
+.sec.tight{padding-top:calc(var(--sec) * .58)}
+.inner{width:min(var(--measure),100%);margin-inline:auto}
+.eyebrow{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--faint)}
+.eyebrow i{display:block;width:26px;height:1px;background:rgba(255,255,255,.22);flex-shrink:0}
+.eyebrow.gold{color:var(--gold)}.eyebrow.gold i{background:rgba(253,178,60,.6)}
+h1{font-size:clamp(38px,5.1vw,74px);font-weight:600;letter-spacing:-.05em;line-height:.96}
+h2{font-size:clamp(30px,4.1vw,60px);font-weight:600;letter-spacing:-.045em;line-height:1.02}
+h3{font-size:clamp(21px,2.1vw,32px);font-weight:600;letter-spacing:-.035em;line-height:1.08}
+.serif{font-style:normal;font-weight:600;letter-spacing:-.03em;color:var(--ink)}
+.lede{font-size:clamp(16px,1.22vw,17.5px);line-height:1.62;color:var(--mute);max-width:590px}
+.lede b{font-weight:400;color:var(--body)}
+.split{display:flex;gap:clamp(28px,3vw,40px);align-items:flex-start}
+.split>.sh{width:min(var(--copy2),100%);flex-shrink:0;display:flex;flex-direction:column;gap:26px}
+.split>.sl{flex:1;min-width:0;display:flex;flex-direction:column;gap:11px;
+  padding-top:clamp(0px,3.4vw,58px)}
+.sl p{font-size:clamp(15px,1.25vw,18px);line-height:1.5;color:var(--mute2)}
+.sl .gap{height:18px}
+.sl p.q{color:var(--body);padding-left:20px;border-left:1px solid var(--gold-lo)}
+.sl p.q.hi{color:var(--ink)}
+.ctas{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:50px;padding:0 26px;border:0;
+  border-radius:100px;background:var(--blue);color:var(--emerald-deep);font-family:var(--sans);font-size:13.5px;
+  font-weight:600;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap;
+  transition:background .16s var(--ease)}
+.btn:hover{background:#ffc46a;color:var(--emerald-deep)}
+.btn.gh{background:transparent;color:var(--mute);border:1px solid var(--hair2)}
+.btn.gh:hover{background:var(--panel2);border-color:var(--gold-lo);color:var(--ink)}
+.pmono{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;color:var(--faint)}
+.pmono.gold{color:rgba(253,178,60,.85)}
+
+/* ---------- 01 hero, with a product moment on the field ---------- */
+.hero{position:relative;z-index:10;display:flex;align-items:center;gap:clamp(24px,3vw,40px);
+  padding:calc(var(--hdr) + clamp(30px,4vh,54px)) var(--gut) clamp(54px,7.4vh,86px)}
+.hcopy{width:min(var(--copy),100%);flex:0 1 var(--copy);min-width:0;display:flex;
+  flex-direction:column;gap:26px}
+.hart{position:relative;flex:1 1 460px;min-width:400px;height:clamp(340px,56vh,620px);
+  overflow:hidden}
+.hart::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:radial-gradient(112% 100% at 50% 54%,transparent 34%,rgba(10,12,11,.5) 70%,var(--void) 96%),
+    linear-gradient(90deg,var(--void),transparent 14%,transparent 86%,var(--void))}
+/* The hall plate. Portrait footage in a landscape slot: height follows the aspect ratio,
+   so the frame overflows vertically and --vy pans up through that excess as the hero
+   scrolls.
+
+   --overscan is why the width is not simply 100%: the source has a white feathered
+   vignette burnt into its own edges, which would halo against this near-black page. The
+   plate is drawn wider than the slot so that feather falls outside the frame and only the
+   clean centre is seen. The slot clips the rest.
+
+   The grade sits the footage on the page's ground — the source is a bright, warm-white
+   render and the page is #0a0c0b. Dial --plate-* to taste; none of it is load-bearing. */
+.hart{--overscan:1.34;--plate-bright:.78;--plate-contrast:1.14;--plate-sat:.86}
+.hplate{position:absolute;left:50%;top:0;z-index:1;display:block;
+  width:calc(100% * var(--overscan));height:auto;
+  /* the fallback already lands on the desk field, so the pre-script frame is framed
+     correctly rather than showing the atrium */
+  translate:-50% var(--vy,-43%);
+  filter:brightness(var(--plate-bright)) contrast(var(--plate-contrast)) saturate(var(--plate-sat));
+  /* a downscaled frame on its own compositor layer, so the pan stays smooth */
+  backface-visibility:hidden;will-change:translate}
+
+/* ---------- 02 companies strip ---------- */
+.strip{position:relative;z-index:10;padding:clamp(24px,3.2vh,36px) 0;
+  border-block:1px solid var(--hair);background:rgba(255,255,255,.012);overflow:hidden}
+.striplbl{display:flex;justify-content:center;font-family:var(--mono);font-size:10px;
+  letter-spacing:.26em;color:var(--faint);margin-bottom:clamp(16px,2vh,24px)}
+.track{display:flex;gap:clamp(28px,4vw,64px);width:max-content;animation:marq 46s linear infinite}
+.strip:hover .track{animation-play-state:paused}
+@keyframes marq{to{translate:-50% 0}}
+.track .lg{width:clamp(108px,9.6vw,146px);height:clamp(32px,3.2vw,44px);flex-shrink:0;
+  opacity:.45;transition:opacity .3s var(--ease)}
+.track .lg:hover{opacity:1}
+.track image-slot{width:100%;height:100%}
+
+/* ============================================================================
+   03 · THE PROCESS, PINNED
+   One tall section holds all five steps. A sticky stage fills the viewport: the visual
+   on the left, the copy on the right, a step rail on the far edge. Scrolling the section
+   advances the active step — the stage itself never moves, only its contents change, so
+   the five steps read as one continuous surface instead of five stacked blocks.
+   ============================================================================ */
+.proc{position:relative;z-index:10}
+.procpin{position:sticky;top:0;height:100svh;display:grid;
+  grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);align-items:stretch;overflow:hidden;
+  border-block:1px solid var(--hairline)}
+/* left: the visual, cross-fading in place */
+.procart{position:relative;overflow:hidden;background:var(--panel);
+  border-right:1px solid var(--hairline)}
+.pslide{position:absolute;inset:0;opacity:0;transition:opacity .6s var(--ease);
+  will-change:opacity}
+.pslide.on{opacity:1}
+.pslide>image-slot{position:absolute;inset:0}
+.pslide .lbl{position:absolute;left:22px;top:20px;z-index:5;display:flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--emerald);pointer-events:none}
+.pslide .lbl i{width:4px;height:4px;border-radius:50%;background:var(--emerald);
+  box-shadow:0 0 6px rgba(253,178,60,.9)}
+/* the human frame sits over the product plate */
+.pfloat{position:absolute;left:22px;bottom:22px;z-index:6;width:min(48%,248px);aspect-ratio:16/10;
+  border-radius:11px;overflow:hidden;border:1px solid var(--hairline-soft);
+  box-shadow:0 24px 50px -14px rgba(0,0,0,.9);background:var(--panel-raised)}
+.pfloat image-slot{position:absolute;inset:0}
+/* right: the copy, cross-fading against one fixed baseline */
+.proccopy{position:relative;display:grid;align-items:center;
+  padding:clamp(26px,4vw,64px) clamp(78px,7.4vw,132px) clamp(26px,4vw,64px) clamp(26px,3.6vw,60px)}
+.ptxt{grid-area:1/1;display:flex;flex-direction:column;gap:16px;opacity:0;translate:0 14px;
+  transition:opacity .5s var(--ease),translate .55s var(--ease);pointer-events:none}
+.ptxt.on{opacity:1;translate:0 0;pointer-events:auto}
+/* the verb, set in a chip as the reference does */
+.pverb{align-self:flex-start;padding:8px 14px;border-radius:6px;background:var(--panel-raised);
+  border:1px solid var(--hairline);font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--emerald)}
+.ptxt h3{font-size:clamp(30px,3.7vw,56px);font-weight:600;letter-spacing:-.048em;line-height:1.01;
+  color:var(--ink)}
+.ptxt p{font-size:clamp(15px,1.16vw,17px);line-height:1.6;color:var(--mute);max-width:38ch}
+/* the rail: a dotted spine carrying one live dot */
+.prail{position:absolute;right:clamp(16px,2vw,32px);top:50%;translate:0 -50%;z-index:8;
+  display:flex;flex-direction:column;gap:clamp(26px,5.4vh,58px);padding-right:22px;
+  pointer-events:none}
+.prail::after{content:"";position:absolute;right:6px;top:-5%;bottom:-5%;width:1px;
+  background:repeating-linear-gradient(180deg,var(--hairline) 0 3px,transparent 3px 8px)}
+.prail b{position:relative;font-family:var(--mono);font-size:10.5px;font-weight:400;
+  letter-spacing:.22em;color:var(--faint);opacity:.4;white-space:nowrap;
+  transition:opacity .4s var(--ease),color .4s var(--ease)}
+.prail b::after{content:"";position:absolute;right:-22px;top:50%;width:7px;height:7px;
+  translate:50% -50%;border-radius:50%;background:var(--faint);opacity:0;
+  transition:opacity .4s var(--ease),background .4s var(--ease)}
+.prail b.on{opacity:1;color:var(--emerald)}
+.prail b.on::after{opacity:1;background:var(--emerald);box-shadow:0 0 9px rgba(253,178,60,.8)}
+
+/* ============================================================================
+   04 · THE COMPARISON
+   Us against four things a company already does. Every cell states what that
+   category actually gives you, so the contrast names itself.
+   ============================================================================ */
+.cmp{position:relative;border:1px solid var(--hair);border-radius:14px;overflow:hidden;
+  background:var(--panel)}
+.cmpg{display:grid;grid-template-columns:minmax(190px,1.25fr) repeat(4,minmax(0,1fr));
+  min-width:0}
+/* the head row */
+.cmph{display:flex;flex-direction:column;gap:3px;padding:20px 18px 18px;
+  border-bottom:1px solid var(--hair2)}
+.cmph b{font-size:clamp(13px,1.1vw,16px);font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.cmph span{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:var(--dim)}
+/* our column is lifted by styling the cells themselves, so nothing occupies a grid slot
+   that a header or a value needs */
+.cmph.us,.cell.us{background:rgba(253,178,60,.05);
+  border-inline:1px solid rgba(253,178,60,.28)}
+.cmph.us{border-top:1px solid rgba(253,178,60,.28)}
+.cmpg>.cell.us:last-of-type{border-bottom:1px solid rgba(253,178,60,.28)}
+.cmph.us b{color:var(--gold-ink)}
+.cmph.us span{color:rgba(253,178,60,.75)}
+.cmpr{display:flex;flex-direction:column;gap:3px;padding:16px 18px;
+  border-bottom:1px solid var(--hair);border-right:1px solid var(--hair)}
+.cmpr>b{font-size:clamp(13px,1.05vw,15px);font-weight:600;letter-spacing:-.018em;color:var(--body)}
+.cmpr>span{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:var(--dim)}
+.cell{display:flex;align-items:flex-start;gap:9px;padding:16px 14px;
+  border-bottom:1px solid var(--hair);position:relative;z-index:2}
+.cell.q{background:transparent}
+.cell svg{width:13px;height:13px;flex-shrink:0;margin-top:2px;fill:none;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+.cell.yes svg{stroke:var(--gold)}
+.cell.no svg{stroke:var(--dim)}
+.cell p{font-size:11.5px;line-height:1.42;color:var(--faint)}
+.cell.yes p{color:var(--body)}
+.cmpg>.cell:last-child,.cmpg>.cmpr:last-of-type{border-bottom:0}
+/* the stacked reading of the same table */
+.cmpm{display:none;flex-direction:column;gap:10px}
+.cmpb{border:1px solid var(--hair);border-radius:11px;overflow:hidden;background:var(--panel)}
+.cmpb>b{display:block;padding:13px 15px 12px;font-size:14px;font-weight:600;letter-spacing:-.02em;
+  color:var(--ink);border-bottom:1px solid var(--hair)}
+.cmpb .mus{display:flex;align-items:flex-start;gap:9px;padding:12px 15px;
+  background:rgba(253,178,60,.06);border-bottom:1px solid var(--hair)}
+.cmpb .mus svg{width:13px;height:13px;flex-shrink:0;margin-top:2px;fill:none;stroke:var(--gold);
+  stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.cmpb .mus div{display:flex;flex-direction:column;gap:2px}
+.cmpb .mus em{font-style:normal;font-family:var(--mono);font-size:8px;letter-spacing:.16em;
+  color:rgba(253,178,60,.8)}
+.cmpb .mus p{font-size:12.5px;line-height:1.42;color:var(--body)}
+.cmpb .mo{display:flex;gap:10px;padding:9px 15px;border-top:1px solid rgba(255,255,255,.04)}
+.cmpb .mo em{flex:0 0 40%;font-style:normal;font-family:var(--mono);font-size:8px;
+  letter-spacing:.14em;color:var(--dim);padding-top:1px}
+.cmpb .mo p{flex:1;font-size:11.5px;line-height:1.4;color:var(--faint)}
+
+/* ============================================================================
+   05 · THE CLOSING CTA AS AN ISSUED OBJECT
+   Not an email field in a pill: a numbered artefact you are issued, which turns
+   over to take the address.
+   ============================================================================ */
+.issue{position:relative;z-index:10;display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,.86fr);gap:clamp(28px,4.4vw,72px);
+  align-items:center;padding:var(--sec) var(--gut) 0;scroll-margin-top:var(--hdr)}
+.icopy{display:flex;flex-direction:column;gap:22px;max-width:620px}
+.brandline{font-weight:600;font-size:clamp(24px,3vw,44px);letter-spacing:-.045em;line-height:1.1;
+  color:var(--gold)}
+.iart{position:relative;display:grid;place-items:center;justify-items:center;
+  min-height:min(56vh,440px)}
+.iglow{position:absolute;width:min(38vw,380px);aspect-ratio:1;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(253,178,60,.16),rgba(253,178,60,.04) 54%,transparent 76%)}
+/* the card itself: it flips to reveal the field on its reverse */
+/* the wrapper owns the measure, so the card never has to resolve a percentage against an
+   indefinite parent */
+/* the perspective must live on the card's DIRECT parent, or it never reaches the faces */
+.iwrap{width:min(360px,100%);display:flex;flex-direction:column;align-items:stretch;
+  perspective:1600px}
+/* the card is a div acting as a button: a real <button> cannot contain the SEND button */
+.card3d{-webkit-tap-highlight-color:transparent}
+.card3d{position:relative;width:100%;aspect-ratio:1.62/1;transform-style:preserve-3d;
+  transition:rotate .7s var(--ease);cursor:pointer;border:0;padding:0;background:none}
+.card3d.turn{rotate:y 180deg}
+.face{position:absolute;inset:0;border-radius:14px;overflow:hidden;backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  box-shadow:0 40px 80px -18px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.08);
+  /* which face is showing is driven by the .turn class, not by backface culling alone:
+     culling does nothing in a flattened context (print, PDF, capture) and the later
+     sibling would otherwise paint over the front */
+  opacity:0;visibility:hidden;
+  transition:opacity .3s var(--ease) .18s,visibility 0s linear .18s}
+.card3d:not(.turn) .face.front,.card3d.turn .face.back{opacity:1;visibility:visible}
+.face.front{background:var(--cover);border:1px solid rgba(253,178,60,.42);
+  display:flex;flex-direction:column;justify-content:space-between;padding:20px 22px;text-align:left}
+.face.back{rotate:y 180deg;background:linear-gradient(200deg,var(--paper),#e8e2d2);
+  border:1px solid rgba(253,178,60,.5);display:flex;flex-direction:column;
+  justify-content:center;gap:11px;padding:22px}
+.face .ftex{position:absolute;inset:0;opacity:.5;pointer-events:none;
+  background-image:repeating-linear-gradient(45deg,rgba(253,178,60,.07) 0 1px,transparent 1px 10px)}
+.face .ffoil{position:absolute;top:0;bottom:0;left:0;width:55%;pointer-events:none;
+  background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.14) 50%,transparent 62%);
+  animation:cp-foil 6.5s ease-in-out infinite}
+@keyframes cp-foil{0%{translate:-45% 0}100%{translate:145% 0}}
+.fr1{position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.fr1 b{font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.26em;
+  color:rgba(253,178,60,.85)}
+.fr1 i{display:block;width:20px;height:26px;border-radius:2px 6px 6px 2px;
+  background:rgba(253,178,60,.8);flex-shrink:0}
+.fr2{position:relative;display:flex;flex-direction:column;gap:5px}
+.fr2 strong{font-size:clamp(17px,1.9vw,23px);font-weight:600;letter-spacing:-.03em;
+  color:var(--gold-ink);line-height:1.06}
+.fr2 span{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:rgba(253,178,60,.6)}
+.fr3{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding-top:11px;border-top:1px solid rgba(253,178,60,.25)}
+.fr3 span{font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;
+  color:rgba(253,178,60,.55)}
+.fr3 em{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;
+  border:1px solid rgba(253,178,60,.5);flex-shrink:0}
+.fr3 em svg{width:12px;height:12px;fill:none;stroke:var(--gold);stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.face.back .bl{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:rgba(23,48,95,.6)}
+.face.back .bw{display:flex;align-items:center;gap:7px;height:46px;padding:0 5px 0 15px;
+  border-radius:100px;background:rgba(23,48,95,.06);border:1px solid rgba(23,48,95,.24)}
+.face.back input{flex:1;min-width:0;height:38px;border:0;background:transparent;
+  font-family:var(--mono);font-size:13px;color:var(--navy)}
+.face.back input::placeholder{color:rgba(23,48,95,.4)}
+.face.back button{flex-shrink:0;height:36px;padding:0 15px;border:0;border-radius:100px;
+  background:var(--navy);color:var(--paper);font-family:var(--sans);font-size:10.5px;
+  font-weight:600;letter-spacing:.1em}
+.face.back .bf{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:rgba(23,48,95,.5)}
+.iturn{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;
+  font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--dim)}
+
+/* ---------- footer ---------- */
+.ftr{position:relative;z-index:10;display:flex;flex-direction:column;gap:clamp(30px,5vh,54px);
+  margin-top:var(--sec);padding:28px var(--gut) 0;border-top:1px solid var(--hair);
+  background:var(--void);overflow:hidden}
+.ftop{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.fright{display:flex;flex-direction:column;align-items:flex-end;gap:14px}
+.fsoc{display:flex;align-items:center;gap:8px}
+.fsoc a{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--hair2);color:var(--faint);transition:.16s var(--ease)}
+.fsoc a:hover{color:var(--gold);border-color:rgba(253,178,60,.45);background:var(--panel2)}
+.fsoc svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+.fnav{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.fnav a{font-size:12.5px;color:var(--mute);text-decoration:none}.fnav a:hover{color:var(--gold)}
+.fmark{display:block;width:100%;height:auto}
+.fmark text{fill:url(#fmg);font-family:var(--sans)}
+.fcr{padding-bottom:22px;text-align:center;font-size:12.5px;color:var(--dim)}
+.ftr .brand span{font-family:var(--mono);font-size:13px;font-weight:400;letter-spacing:.16em;
+  color:var(--faint)}
+
+/* ---------- reveal: visible by default, animation is opt-in ---------- */
+.rv{opacity:1;translate:none}
+.rv-armed .rv{opacity:0;translate:0 20px;
+  transition:opacity .7s var(--ease),translate .8s var(--ease)}
+.rv-armed .rv.in{opacity:1;translate:0 0}
+@media print{.rv{opacity:1!important;translate:none!important}}
+
+/* ---------- responsive, per the artboards' plan ---------- */
+@media (max-width:1199px){
+  :root{--gut:40px}
+  .hero{flex-direction:column;align-items:stretch;gap:clamp(26px,3.4vh,38px)}
+  .hcopy{width:100%;flex:0 0 auto}
+  .hart{flex:0 0 auto;min-width:0;width:100%;height:clamp(320px,44vh,440px)}
+  .split{flex-direction:column;gap:clamp(20px,2.6vh,30px)}
+  .split>.sh{width:100%}.split>.sl{padding-top:0}
+  /* the stage stacks: visual over copy, and the rail becomes a row of markers under it */
+  .procpin{grid-template-columns:1fr;grid-template-rows:minmax(0,.92fr) minmax(0,1.08fr)}
+  .procart{border-right:0;border-bottom:1px solid var(--hairline)}
+  .pfloat{left:14px;bottom:14px;width:min(52%,190px)}
+  .pslide .lbl{left:14px;top:13px;font-size:8px}
+  .proccopy{padding:clamp(46px,7vh,64px) var(--gut) clamp(22px,3.4vh,32px);align-items:start}
+  .ptxt{gap:12px}
+  .ptxt h3{font-size:clamp(25px,5.4vw,36px);line-height:1.06}
+  .ptxt p{font-size:14.5px;line-height:1.52;max-width:46ch}
+  .pverb{padding:6px 11px;font-size:9.5px}
+  /* horizontal rail, pinned to the top of the copy pane */
+  .prail{right:auto;left:var(--gut);top:clamp(16px,2.4vh,22px);translate:0 0;
+    flex-direction:row;align-items:center;gap:14px;padding-right:0}
+  .prail::after{right:auto;left:0;top:50%;bottom:auto;width:100%;height:1px;
+    background:repeating-linear-gradient(90deg,var(--hairline) 0 3px,transparent 3px 8px)}
+  .prail b{font-size:0;letter-spacing:0;width:26px;height:2px;border-radius:2px;
+    background:var(--hairline);opacity:1;transition:background .4s var(--ease)}
+  .prail b::after{display:none}
+  .prail b.on{background:var(--emerald);box-shadow:0 0 8px rgba(253,178,60,.6)}
+  /* the table stops being a table and becomes one block per capability */
+  .cmp{display:none}
+  .cmpm{display:flex}
+  .issue{grid-template-columns:1fr;gap:30px;text-align:center}
+  .icopy{align-items:center;margin-inline:auto}
+  .iart{order:-1;min-height:min(38vh,300px)}
+}
+@media (max-width:900px){
+  .nav{display:none}.burger{display:flex}
+  .hart{height:min(42vh,320px)}
+  .ctas{justify-content:center}
+  .ftop{flex-direction:column;align-items:center;text-align:center}
+  .fright,.fnav{align-items:center}
+}
+@media (max-width:767px){
+  .iwrap{width:min(320px,100%)}
+  .cmpb .mo{flex-direction:column;gap:2px}
+  .cmpb .mo em{flex:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important}
+  .rv{opacity:1;translate:none}
+  .card3d{transition:none}
+}
+</style>
+
+<div class="grid-bg" aria-hidden="true"></div>
+
+<div class="prog"></div>
+<header class="hdr">
+  <a class="brand" href="Homepage.html"><i></i><span>CAREERPASSPORT</span></a>
+  <nav class="nav">
+    <a href="For Companies v3.html">FOR COMPANIES</a><a href="For Recruitment Partners.html">FOR RECRUITMENT PARTNERS</a>
+  </nav>
+  <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
+</header>
+<nav class="mnav" id="mnav">
+  <a href="For Companies v3.html">FOR COMPANIES</a><a href="For Recruitment Partners.html">FOR RECRUITMENT PARTNERS</a>
+</nav>
+
+<!-- ============ 01 · HERO ============ -->
+<section class="hero" data-screen-label="01">
+  <div class="bloom" aria-hidden="true"></div>
+  <div class="hcopy">
+    <p class="eyebrow gold"><i></i>Hiring intent &rarr; Hiring design</p>
+    <h1>Evidence today. <span class="serif">Better hires tomorrow.</span></h1>
+    <p class="lede">Tell us who you need. We structure the journey, run it, and bring you people with the evidence already attached.</p>
+    <div class="ctas">
+      <a class="btn" href="#issue">BOOK A DEMO &rarr;</a>
+      <a class="btn gh" href="#issue">POST A ROLE</a>
+    </div>
+    <p class="pmono">IN AN OCEAN OF CLAIMS &middot; ONE RECORD YOU CAN INSPECT</p>
+  </div>
+  <div class="hart">
+    <video class="hplate" id="heroPlate" src="assets/hero-hall.mp4"
+      poster="assets/hero-hall-poster.jpg"
+      width="1248" height="1656" muted loop playsinline autoplay preload="auto"
+      aria-label="An open-plan office of identical occupied desks, with one empty chair lit by a single spotlight at the centre"></video>
+  </div>
+</section>
+
+<!-- ============ 02 · COMPANIES STRIP ============ -->
+<section class="strip" aria-label="Companies hiring with CareerPassport">
+  <p class="striplbl">HIRING WITH CAREERPASSPORT</p>
+  <div class="track" id="logoTrack"></div>
+</section>
+
+<!-- ============ 03 · THE PROCESS, PINNED ============ -->
+<section class="sec" style="padding-bottom:clamp(30px,4.4vh,54px)" data-screen-label="03">
+  <div class="inner">
+    <div class="split rv">
+      <div class="sh">
+        <p class="eyebrow gold"><i></i>How the system works</p>
+        <h2>Five moves from one sentence to <span class="serif">one good conversation.</span></h2>
+      </div>
+      <div class="sl">
+        <p>A role opens. Someone writes a description.</p>
+        <p>Everyone interviews for something different.</p>
+        <div class="gap"></div>
+        <p class="q hi">CareerPassport gives the process a shape, then keeps it moving.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="proc" id="process" aria-label="How the system works, step by step">
+  <div class="procpin">
+    <div class="procart">
+      <div class="pslide on" data-i="0">
+        <image-slot id="v3-prod-1" shape="rect" placeholder="Blueprint build recording"></image-slot>
+        <span class="lbl"><i></i>PRODUCT &middot; BLUEPRINT BUILD</span>
+        <div class="pfloat"><image-slot id="v3-hum-1" shape="rect" placeholder="Human frame 1"></image-slot></div>
+      </div>
+      <div class="pslide" data-i="1">
+        <image-slot id="v3-prod-2" shape="rect" placeholder="Journey builder recording"></image-slot>
+        <span class="lbl"><i></i>PRODUCT &middot; JOURNEY BUILDER</span>
+        <div class="pfloat"><image-slot id="v3-hum-2" shape="rect" placeholder="Human frame 2"></image-slot></div>
+      </div>
+      <div class="pslide" data-i="2">
+        <image-slot id="v3-prod-3" shape="rect" placeholder="Agent activity recording"></image-slot>
+        <span class="lbl"><i></i>PRODUCT &middot; AGENT ACTIVITY</span>
+        <div class="pfloat"><image-slot id="v3-hum-3" shape="rect" placeholder="Human frame 3"></image-slot></div>
+      </div>
+      <div class="pslide" data-i="3">
+        <image-slot id="v3-prod-4" shape="rect" placeholder="Evidence view recording"></image-slot>
+        <span class="lbl"><i></i>PRODUCT &middot; EVIDENCE VIEW</span>
+        <div class="pfloat"><image-slot id="v3-hum-4" shape="rect" placeholder="Human frame 4"></image-slot></div>
+      </div>
+      <div class="pslide" data-i="4">
+        <image-slot id="v3-prod-5" shape="rect" placeholder="Interview brief recording"></image-slot>
+        <span class="lbl"><i></i>PRODUCT &middot; INTERVIEW BRIEF</span>
+        <div class="pfloat"><image-slot id="v3-hum-5" shape="rect" placeholder="Human frame 5"></image-slot></div>
+      </div>
+    </div>
+    <div class="proccopy">
+      <article class="ptxt on" data-i="0">
+        <span class="pverb">Define</span>
+        <h3>What the work actually is</h3>
+        <p>Describe the role in your own words. CareerPassport turns it into a blueprint: the role, the competencies that matter, and how evidence gets weighed.</p>
+      </article>
+      <article class="ptxt" data-i="1">
+        <span class="pverb">Design</span>
+        <h3>What you need to know first</h3>
+        <p>A journey built around the role. Candidates show relevant experience, complete activities or take assessments before they progress.</p>
+      </article>
+      <article class="ptxt" data-i="2">
+        <span class="pverb">Activate</span>
+        <h3>The process keeps moving</h3>
+        <p>Agents engage candidates, follow up, coordinate assessments and schedule next steps. Every source runs through the same process.</p>
+      </article>
+      <article class="ptxt" data-i="3">
+        <span class="pverb">Evidence</span>
+        <h3>Why someone is worth meeting</h3>
+        <p>Not a CV and a recruiter’s note. The projects behind the bullets, the artefacts they produced, the journey they completed — each open to inspect.</p>
+      </article>
+      <article class="ptxt" data-i="4">
+        <span class="pverb">Decide</span>
+        <h3>Meet fewer, know more</h3>
+        <p>The role is structured, the process has moved, the evidence is assembled. The brief says why this person is here and what is left to explore.</p>
+      </article>
+      <nav class="prail" aria-hidden="true">
+        <b class="on" data-i="0">STEP 01</b>
+        <b class="" data-i="1">STEP 02</b>
+        <b class="" data-i="2">STEP 03</b>
+        <b class="" data-i="3">STEP 04</b>
+        <b class="" data-i="4">STEP 05</b>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 · THE COMPARISON ============ -->
+<section class="sec" id="difference" data-screen-label="04">
+  <div class="inner">
+    <div class="split rv" style="margin-bottom:clamp(30px,4.4vh,52px)">
+      <div class="sh">
+        <p class="eyebrow gold"><i></i>The difference</p>
+        <h2>You already have tools. <span class="serif">None of them do this.</span></h2>
+      </div>
+      <div class="sl">
+        <p class="q hi">Every column is something you already pay for. The question is what each gives a hiring manager on the day.</p>
+      </div>
+    </div>
+
+    <!-- the table -->
+    <div class="cmp rv">
+      <div class="cmpg">
+        <div class="cmph"><b>Compare</b><span>WHAT YOU GET</span></div>
+        <div class="cmph us"><b>CareerPassport</b><span>A NEW STANDARD</span></div>
+        <div class="cmph"><b>Your ATS</b><span>SYSTEM OF RECORD</span></div>
+        <div class="cmph"><b>Job boards</b><span>REACH</span></div>
+        <div class="cmph"><b>CV screening</b><span>FILTERING</span></div>
+
+        <div class="cmpr"><b>Role definition</b><span>WHERE IT STARTS</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Built from your own words, competencies mapped</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A free-text job description field</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A template you fill in</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A keyword list</p></div>
+
+        <div class="cmpr"><b>Candidate journey</b><span>WHAT THEY ARE ASKED</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Evidence, activities and assessments, in sequence</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Pipeline statuses only</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>An application form</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>None</p></div>
+
+        <div class="cmpr"><b>Evidence of the work</b><span>WHAT YOU CAN INSPECT</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Artefacts, responses and the context behind each claim</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Whatever was attached</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A CV</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A ranked CV</p></div>
+
+        <div class="cmpr"><b>Running the process</b><span>WHO DOES THE WORK</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Agents handle outreach, coordination and scheduling</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Your team, manually</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Your team, manually</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Screening only</p></div>
+
+        <div class="cmpr"><b>One standard across sources</b><span>DATABASE, RECRUITERS, PARTNERS</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Every source evaluated the same way</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Each source arrives in its own format</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>One source only</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Applies to inbound CVs</p></div>
+
+        <div class="cmpr"><b>What the interviewer gets</b><span>ON THE DAY</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Why this person, what the evidence shows, what to explore</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A CV and a calendar invite</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A CV</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A score</p></div>
+      </div>
+    </div>
+
+    <!-- the same table, read one capability at a time -->
+    <div class="cmpm rv" id="cmpStack"></div>
+  </div>
+</section>
+
+<!-- ============ 05 · THE ISSUED OBJECT ============ -->
+<section class="issue" id="issue" data-screen-label="05">
+  <div class="icopy">
+    <p class="eyebrow gold rv"><i></i>The promise, resolved</p>
+    <h2 class="rv">Your next hire shouldn't require you to run the entire hiring process</h2>
+    <p class="lede rv">One sentence in. A shortlist you can inspect out.</p>
+    <div class="ctas rv">
+      <a class="btn gh" href="#process">SEE THE PROCESS</a>
+      <a class="btn gh" href="For Recruitment Partners.html">FOR RECRUITMENT PARTNERS</a>
+    </div>
+    <p class="brandline rv">Intent in. Evidence out.</p>
+  </div>
+  <div class="iart">
+    <div class="iglow" aria-hidden="true"></div>
+    <div class="iwrap rv">
+      <div class="card3d" id="card3d">
+        <div class="face front" id="cardFront" role="button" tabindex="0"
+          aria-label="Turn the card over to request access" aria-pressed="false">
+          <div class="ftex" aria-hidden="true"></div>
+          <div class="ffoil" aria-hidden="true"></div>
+          <div class="fr1"><b>CAREERPASSPORT</b><i aria-hidden="true"></i></div>
+          <div class="fr2">
+            <strong>Founding<br>Hiring Cohort</strong>
+            <span>2026 &middot; NO. 000&mdash;144</span>
+          </div>
+          <div class="fr3">
+            <span>TURN TO REQUEST ACCESS</span>
+            <em aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M17 7H9M17 7v8"/></svg></em>
+          </div>
+        </div>
+        <div class="face back">
+          <span class="bl">REQUEST ACCESS</span>
+          <div class="bw" data-capture>
+            <input type="email" placeholder="you@company.com" aria-label="Your work email">
+            <button type="button" data-done="SENT">SEND</button>
+          </div>
+          <span class="bf">WE ONLY USE THIS TO ARRANGE THE CALL.</span>
+        </div>
+      </div>
+      <p class="iturn"><span id="turnHint">CLICK THE CARD</span></p>
+    </div>
+  </div>
+</section>
+
+<footer class="ftr">
+  <div class="ftop">
+    <a class="brand" href="Homepage.html"><i></i><span>careerpassport.ai</span></a>
+    <div class="fright">
+      <div class="fsoc">
+        <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9v9M6.5 5.6v.1M11 18v-5a3 3 0 0 1 6 0v5"/></svg></a>
+        <a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></a>
+        <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4 1.2-4-2.2-5.5-2.8M15 21v-3.2a2.9 2.9 0 0 0-.8-2.2c2.7-.3 4.5-1.4 4.5-5a4 4 0 0 0-1.1-2.7 3.7 3.7 0 0 0-.1-2.8s-1.2-.3-3.7 1.4a9.3 9.3 0 0 0-5 0C6.3 3.8 5.1 4.1 5.1 4.1a3.7 3.7 0 0 0-.1 2.8A4 4 0 0 0 3.9 9.6c0 3.6 1.8 4.7 4.5 5A2.9 2.9 0 0 0 7.6 17V21"/></svg></a>
+        <a href="#" aria-label="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17zM3.5 7l8.5 6 8.5-6"/></svg></a>
+      </div>
+      <nav class="fnav"><a href="Homepage.html">Home</a><a href="For Companies v3.html">For companies</a><a href="For Recruitment Partners.html">For recruitment partners</a></nav>
+    </div>
+  </div>
+  <svg class="fmark" viewBox="0 0 1000 96" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <defs><linearGradient id="fmg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="var(--ink)" stop-opacity=".14"/>
+      <stop offset=".62" stop-color="var(--ink)" stop-opacity=".03"/>
+      <stop offset="1" stop-color="var(--ink)" stop-opacity="0"/>
+    </linearGradient></defs>
+    <text x="500" y="104" text-anchor="middle" textLength="1000" lengthAdjust="spacingAndGlyphs"
+      font-size="130" font-weight="900" letter-spacing="-4">CAREERPASSPORT</text>
+  </svg>
+  <p class="fcr">&copy; 2026 CareerPassport Technologies Inc.</p>
+</footer>
+
+<script src="image-slot.js"></script>
+<script>
+/* ---- the scroll progress bar, driven as it is on Homepage ---- */
+(function(){
+  var bar=document.querySelector('.prog'); if(!bar) return;
+  var de=document.documentElement;
+  var tick=function(){
+    var span=de.scrollHeight - (de.clientHeight || innerHeight);
+    /* a frame sized to the whole document has nothing to scroll: keep the bar at zero
+       rather than dividing by it */
+    var p = span > 0 ? Math.min(1,Math.max(0,(scrollY||pageYOffset)/span)) : 0;
+    bar.style.setProperty('--pw',(p*100).toFixed(2)+'%');
+  };
+  tick();
+  addEventListener('scroll',tick,{passive:true});
+  addEventListener('resize',tick,{passive:true});
+})();
+
+/* ---- the hero plate: a looping clip, cropped to the desk field ----
+   The footage now plays on its own loop rather than being scrubbed by scroll. --vy is
+   still computed, because portrait footage in a landscape slot has to be told WHICH band
+   to show: FRAME_TOP lands on the occupied desks and LIFT_PX raises it another 50px. */
+(function(){
+  var art=document.querySelector('.hart'), vid=document.getElementById('heroPlate');
+  if(!art||!vid) return;
+  var FRAME_TOP=0.45, LIFT_PX=50;
+  var place=function(){
+    var ar=art.getBoundingClientRect();
+    if(ar.width<1||ar.height<1) return;
+    var over=parseFloat(getComputedStyle(art).getPropertyValue('--overscan'))||1;
+    var excess=ar.width*over*(1656/1248)-ar.height;
+    if(excess<=0) return;
+    var y=-(FRAME_TOP*excess)-LIFT_PX;
+    vid.style.setProperty('--vy',Math.max(-excess,Math.min(0,y)).toFixed(1)+'px');
+  };
+  requestAnimationFrame(place);
+  addEventListener('load',place);
+  addEventListener('resize',place,{passive:true});
+  if(window.ResizeObserver) new ResizeObserver(place).observe(art);
+  var play=function(){ var p=vid.play(); if(p&&p.catch) p.catch(function(){}) };
+  play(); vid.addEventListener('loadeddata',play);
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) play() });
+})();
+
+/* ---- the companies strip ---- */
+(function(){
+  var track=document.getElementById('logoTrack'); if(!track) return;
+  var N=7, html='';
+  for(var pass=0;pass<2;pass++){
+    for(var i=1;i<=N;i++){
+      html+='<div class="lg"><image-slot id="v3-logo-'+i+'" shape="rect" '+
+        (pass?'aria-hidden="true" ':'')+'placeholder="Logo '+i+'"></image-slot></div>';
+    }
+  }
+  track.innerHTML=html;
+})();
+
+/* ---- the pinned process: scroll position drives which step is shown ----
+   The section is made tall enough for one viewport per step, then the sticky stage reads
+   its own progress. Height is set here rather than in CSS so the step count stays a
+   property of the markup: add a slide and the scroll length follows. */
+(function(){
+  var sec=document.getElementById('process'); if(!sec) return;
+  var pin=sec.querySelector('.procpin'); if(!pin) return;
+  var slides=[].slice.call(sec.querySelectorAll('.pslide'));
+  var texts=[].slice.call(sec.querySelectorAll('.ptxt'));
+  var marks=[].slice.call(sec.querySelectorAll('.prail b'));
+  var N=slides.length; if(!N) return;
+
+  /* one viewport of scroll per step, plus one to read the last one */
+  var setH=function(){ sec.style.height=(N * 100)+'svh'; };
+  setH(); addEventListener('resize',setH,{passive:true});
+
+  var cur=-1;
+  var apply=function(i){
+    if(i===cur) return; cur=i;
+    slides.forEach(function(el,k){ el.classList.toggle('on',k===i) });
+    texts.forEach(function(el,k){ el.classList.toggle('on',k===i) });
+    marks.forEach(function(el,k){ el.classList.toggle('on',k===i) });
+  };
+  var frame=function(){
+    var r=sec.getBoundingClientRect();
+    /* the pin is exactly one viewport tall, so measuring IT is both self-consistent and
+       correct in hosts that size the frame to the whole document (where clientHeight
+       would report the full page and the span would go negative) */
+    var vh=pin.getBoundingClientRect().height||document.documentElement.clientHeight||innerHeight;
+    var span=r.height-vh;
+    /* progress through the pinned run, 0 as it engages and 1 as it releases */
+    var p=span>0 ? Math.min(1,Math.max(0,-r.top/span)) : 0;
+    /* exact boundaries: step k owns [k/N, (k+1)/N), and the clamp catches p === 1 */
+    apply(Math.min(N-1,Math.floor(p*N)));
+  };
+  frame();
+  addEventListener('scroll',frame,{passive:true});
+  addEventListener('resize',frame,{passive:true});
+})();
+
+/* ---- the stacked reading of the comparison, generated FROM the table ----
+   One source of truth: edit a cell in the markup above and the stacked version follows,
+   so the two readings can never drift apart. */
+(function(){
+  var grid=document.querySelector('.cmpg'), out=document.getElementById('cmpStack');
+  if(!grid||!out) return;
+  var kids=[].slice.call(grid.children);
+  /* head: [Compare][liftcol][us][3 others] then repeating [rowlabel][4 cells] */
+  var heads=kids.filter(function(k){ return k.classList.contains('cmph') })
+                .map(function(k){ return k.querySelector('b').textContent });
+  var cols=heads.slice(1);                       /* CareerPassport + the three others */
+  var rows=[],cur=null;
+  kids.forEach(function(k){
+    if(k.classList.contains('cmpr')){
+      cur={label:k.querySelector('b').textContent,cells:[]};
+      rows.push(cur);
+    } else if(k.classList.contains('cell') && cur){
+      cur.cells.push(k.querySelector('p').textContent);
+    }
+  });
+  out.innerHTML=rows.map(function(r){
+    var others=r.cells.slice(1).map(function(c,i){
+      return '<div class="mo"><em>'+(cols[i+1]||'').toUpperCase()+'</em><p>'+c+'</p></div>';
+    }).join('');
+    return '<div class="cmpb"><b>'+r.label+'</b>'+
+      '<div class="mus"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'+
+      '<div><em>CAREERPASSPORT</em><p>'+r.cells[0]+'</p></div></div>'+others+'</div>';
+  }).join('');
+})();
+
+/* ---- the issued card turns over to take the address ---- */
+(function(){
+  var card=document.getElementById('card3d'), front=document.getElementById('cardFront'),
+      hint=document.getElementById('turnHint');
+  if(!card||!front) return;
+  var input=card.querySelector('.face.back input'), send=card.querySelector('.face.back button');
+  var turn=function(on){
+    card.classList.toggle('turn',on);
+    front.setAttribute('aria-pressed',on?'true':'false');
+    /* the front face is only a control while it is the face on show */
+    front.tabIndex = on ? -1 : 0;
+    /* a hidden face must not be tabbable */
+    [input,send].forEach(function(el){ if(el) el.tabIndex = on ? 0 : -1 });
+    if(hint) hint.textContent = on ? 'PRESS ESC OR CLICK THE CARD TO GO BACK' : 'CLICK THE CARD';
+    if(on) setTimeout(function(){ if(input) input.focus() },720);
+  };
+  turn(false);
+  front.addEventListener('click',function(){ turn(true) });
+  /* the reverse turns back on a click outside the form, so a mouse user is not stranded
+     on a face whose only exit is a keyboard shortcut */
+  var back=card.querySelector('.face.back');
+  if(back) back.addEventListener('click',function(e){
+    if(e.target.closest('.bw')) return;      /* the form keeps its own clicks */
+    turn(false); front.focus();
+  });
+  /* role="button" carries no implicit key handling, so Enter and Space are wired back */
+  front.addEventListener('keydown',function(e){
+    if(e.key==='Enter'||e.key===' '||e.key==='Spacebar'){ e.preventDefault(); turn(true) }
+  });
+  /* Escape returns the card, so the reverse is not a trap */
+  card.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&card.classList.contains('turn')){ turn(false); front.focus() }
+  });
+})();
+
+/* ---- reveal: only armed when the document can actually scroll ---- */
+(function(){
+  var els=[].slice.call(document.querySelectorAll('.rv'));
+  if(!els.length || !('IntersectionObserver' in window)) return;
+  var de=document.documentElement;
+  var vp=function(){ return de.clientHeight || innerHeight };
+  var scrollable=function(){ return de.scrollHeight > vp() + 80 };
+  if(!scrollable()) return;
+  de.classList.add('rv-armed');
+  var show=function(e){ e.classList.add('in') };
+  var sweep=function(){
+    var h=vp();
+    els.forEach(function(e){
+      if(e.classList.contains('in')) return;
+      var r=e.getBoundingClientRect();
+      if(r.top < h * 1.02 && r.bottom > -40) show(e);
+    });
+  };
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(en){ if(en.isIntersecting){ show(en.target); io.unobserve(en.target) } });
+  },{threshold:0,rootMargin:'0px 0px -6% 0px'});
+  els.forEach(function(e){ io.observe(e) });
+  requestAnimationFrame(function(){ requestAnimationFrame(sweep) });
+  addEventListener('load',sweep);
+  addEventListener('scroll',sweep,{passive:true});
+  addEventListener('resize',function(){ if(!scrollable()) els.forEach(show); sweep(); },{passive:true});
+  setTimeout(sweep,1000);
+})();
+
+/* ---- mobile nav ---- */
+(function(){
+  var b=document.getElementById('burger'), m=document.getElementById('mnav');
+  if(!b||!m) return;
+  b.addEventListener('click',function(){
+    var o=m.classList.toggle('open'); b.setAttribute('aria-expanded',o?'true':'false');
+  });
+  [].slice.call(m.querySelectorAll('a')).forEach(function(a){
+    a.addEventListener('click',function(){ m.classList.remove('open'); b.setAttribute('aria-expanded','false'); });
+  });
+})();
+
+/* ---- capture ---- */
+(function(){
+  [].slice.call(document.querySelectorAll('[data-capture]')).forEach(function(f){
+    var i=f.querySelector('input'), b=f.querySelector('button'); if(!i||!b) return;
+    var done=b.getAttribute('data-done')||'SENT';
+    var go=function(){
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(i.value.trim())) return i.focus();
+      b.textContent=done; b.style.background='#1b3564'; i.readOnly=true;
+    };
+    b.addEventListener('click',function(e){ e.stopPropagation(); go(); });
+    i.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); go(); } });
+  });
+})();
+</script>

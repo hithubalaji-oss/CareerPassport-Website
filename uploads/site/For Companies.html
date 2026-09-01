@@ -1,0 +1,1303 @@
+<title>CareerPassport — For Companies</title>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="var(--void)"/><g fill="#2a3348"><rect x="24" y="70" width="52" height="26" rx="3"/><rect x="92" y="62" width="52" height="26" rx="3"/><rect x="300" y="70" width="52" height="26" rx="3"/><rect x="24" y="300" width="52" height="26" rx="3"/><rect x="300" y="300" width="52" height="26" rx="3"/></g><rect x="146" y="150" width="108" height="130" rx="6" fill="#12203f" stroke="var(--emerald)" stroke-width="2"/><circle cx="200" cy="200" r="22" fill="none" stroke="var(--emerald)" stroke-width="1.5"/><rect x="191" y="190" width="18" height="20" rx="2" fill="var(--emerald)"/><rect x="168" y="248" width="64" height="6" rx="3" fill="var(--emerald)" opacity=".7"/></svg></template>
+<link rel="stylesheet" href="_ds/careerpassport-design-system-a8d325d2-717b-4d0b-85f0-302544f1ad1d/styles.css">
+<style>
+/* ============================================================================
+   FOR COMPANIES
+   Structure comes from the project's own DC artboards (artboards/Main, Claims, ShowBetter,
+   Loop, Ready, Invitation). Palette and type come from the design system, matching
+   Homepage.html exactly: --font-sans headings, --font-mono eyebrows, the --void ground and
+   the amber --emerald accent. From the artboards: the
+   72px gutter with a 664px copy column, the split header (headline left, supporting
+   lines right against a gold rule), and the cream evidence pack on navy ink.
+
+   Structurally it follows the artboards too: the header is in normal flow and every
+   section is an ordinary block. Nothing is pinned to the viewport and no band heights
+   are computed, so a heading cannot slide under the header and no two sections can
+   disagree about how much room they have.
+   ============================================================================ */
+:root{
+  /* the artboard grid */
+  --gut:clamp(20px,5vw,72px);
+  --measure:1296px;   /* 1440 − 2×72 */
+  --copy:664px;       /* the hero copy column */
+  --copy2:640px;      /* the section headline column */
+  --sec:clamp(96px,13vh,152px);
+  --hdr:83px;
+  /* the artboard palette */
+  /* palette and type resolve to the same tokens Homepage.html uses */
+  --bg:var(--void); --card:var(--panel-raised);
+  --tx:var(--ink); --muted:var(--mute); --meta:var(--faint);
+  --mute2:var(--mute); --dim:var(--faint);
+  --hair:var(--hairline); --hair2:var(--hairline-soft);
+  --panel2:var(--panel-raised);
+  --blue:var(--emerald); --gold:var(--emerald); --gold-ink:var(--mint);
+  --gold-lo:rgba(253,178,60,.35);
+  --paper:var(--emerald-tint); --navy:#10203f;
+  --line:var(--hairline);
+  --cover:linear-gradient(155deg,#1b3564 0%,#0d1c3a 55%,#091530 100%);
+  --pnavy:#10203f; --pgold:#fdb23c; --pblue:var(--emerald);
+  --ease:cubic-bezier(.4,0,.2,1);
+  --sans:var(--font-sans); --serif:var(--font-sans); --mono:var(--font-mono);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hdr) + 20px)}
+body{margin:0;background:var(--void);color:var(--ink);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--text-link);text-decoration:none}a:hover{color:var(--text-link-press);text-decoration:none}
+a.brand,a.brand:hover,a.brand:focus{color:var(--tx);text-decoration:none}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:6px}
+::selection{background:var(--emerald);color:var(--emerald-deep)}
+h1,h2,h3{margin:0;text-wrap:pretty}p{margin:0}
+i,em{font-style:normal}
+button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{outline:none}
+img{display:block;max-width:100%}
+
+/* ---------- the artboards' ground: 120px rule grid + one blue bloom ---------- */
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:120px 120px;
+  mask-image:radial-gradient(120% 80% at 50% 10%,#000 25%,transparent 78%);
+  -webkit-mask-image:radial-gradient(120% 80% at 50% 10%,#000 25%,transparent 78%)}
+.bloom{position:absolute;top:-34vh;left:50%;width:130%;height:900px;translate:-50% 0;
+  z-index:0;pointer-events:none;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(47,107,255,.26),rgba(47,107,255,0) 70%)}
+
+/* ---------- header: in flow, per the artboards ---------- */
+.hdr{position:fixed;inset:0 0 auto;z-index:80;display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:16px var(--gut);background:linear-gradient(180deg,rgba(10,12,11,.92),transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:11px;color:var(--tx)}
+.brand i{width:20px;height:27px;border-radius:3px 6px 6px 3px;background:var(--gradient-transit);border:1px solid rgba(253,178,60,.5)}
+.brand span{font-size:clamp(13.5px,1.12vw,16px);font-weight:600;letter-spacing:.1em;white-space:nowrap}
+.nav{display:flex;align-items:center;gap:clamp(14px,1.6vw,26px);font-size:14px;font-weight:600;letter-spacing:.08em;white-space:nowrap}
+.nav a{color:var(--mute)}.nav a:hover{color:var(--tx)}
+.burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:0 9px;border:0;background:transparent}
+.burger i{height:1.5px;background:var(--ink)}
+.mnav{display:none;position:fixed;inset:58px 0 auto;z-index:79;flex-direction:column;padding:12px var(--gut) 20px;
+  background:rgba(10,12,11,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.mnav.open{display:flex}
+.mnav a{display:flex;align-items:center;min-height:52px;font-size:15.5px;font-weight:600;letter-spacing:.08em;color:var(--mute);border-bottom:1px solid var(--line)}
+.mnav a:last-child{border:0}
+.prog{position:fixed;left:0;top:0;height:2px;z-index:90;width:var(--pw,0%);
+  background:var(--gradient-growth);transition:width .1s linear}
+
+/* ---------- one section shell ---------- */
+.sec{position:relative;z-index:10;padding:var(--sec) var(--gut);scroll-margin-top:var(--hdr)}
+.sec.tight{padding-top:calc(var(--sec) * .58)}
+.inner{width:min(var(--measure),100%);margin-inline:auto}
+.eyebrow{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--faint)}
+.eyebrow i{display:block;width:26px;height:1px;background:rgba(255,255,255,.22);flex-shrink:0}
+.eyebrow.gold{color:var(--gold)}
+.eyebrow.gold i{background:rgba(253,178,60,.6)}
+h1{font-size:clamp(38px,5.1vw,74px);font-weight:600;letter-spacing:-.05em;line-height:.96}
+h2{font-size:clamp(30px,4.1vw,60px);font-weight:600;letter-spacing:-.045em;line-height:1.02}
+.serif{font-style:normal;font-weight:600;letter-spacing:-.03em;color:var(--ink)}
+.lede{font-size:clamp(16px,1.22vw,17.5px);line-height:1.62;color:var(--mute);max-width:590px}
+.lede b{font-weight:400;color:var(--body)}
+
+/* the artboards' split header: headline left, supporting lines right on a gold rule */
+.split{display:flex;gap:clamp(28px,3vw,40px);align-items:flex-start}
+.split>.sh{width:min(var(--copy2),100%);flex-shrink:0;display:flex;flex-direction:column;gap:26px}
+.split>.sl{flex:1;min-width:0;display:flex;flex-direction:column;gap:11px;padding-top:clamp(0px,3.4vw,58px)}
+.sl p{font-size:clamp(15px,1.25vw,18px);line-height:1.5;color:var(--mute2)}
+.sl .gap{height:18px}
+.sl p.q{color:var(--body);padding-left:20px;border-left:1px solid var(--gold-lo)}
+.sl p.q.hi{color:var(--ink)}
+
+.ctas{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:50px;padding:0 26px;border:0;
+  border-radius:100px;background:var(--blue);color:var(--emerald-deep);font-family:var(--sans);
+  font-size:13.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap;
+  transition:background .16s var(--ease)}
+.btn:hover{background:#ffc46a;color:var(--emerald-deep)}
+.btn.gh{background:transparent;color:var(--mute);border:1px solid var(--hair2)}
+.btn.gh:hover{background:var(--panel2);border-color:var(--gold-lo);color:var(--ink)}
+.plain{list-style:none;display:flex;flex-direction:column;gap:11px;margin:0;padding:0}
+.plain li{display:flex;gap:13px;align-items:baseline;font-size:clamp(15px,1.15vw,17px);
+  line-height:1.5;color:var(--body)}
+.plain li::before{content:"";width:12px;height:1px;background:var(--gold);opacity:.75;
+  flex-shrink:0;translate:0 -5px}
+.plain.two{display:grid;grid-template-columns:1fr 1fr;gap:11px clamp(18px,2.4vw,34px)}
+.pmono{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;color:var(--faint)}
+.pmono.gold{color:rgba(253,178,60,.85)}
+.ruled{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.ruled i{display:block;flex:1;height:1px;background:rgba(253,178,60,.2)}
+
+/* ---------- 01 hero: the résumé ocean ---------- */
+.hero{position:relative;z-index:10;display:flex;align-items:center;gap:clamp(24px,3vw,40px);
+  padding:calc(var(--hdr) + clamp(30px,4vh,54px)) var(--gut) clamp(54px,7.4vh,86px)}
+/* the copy column may shrink: below ~1250px a fixed 664px starves the art column */
+.hcopy{width:min(var(--copy),100%);flex:0 1 var(--copy);min-width:0;
+  display:flex;flex-direction:column;gap:26px}
+/* the art needs a real floor, or the passport is clipped rather than scaled */
+.hart{position:relative;flex:1 1 460px;min-width:400px;height:clamp(340px,56vh,620px);
+  overflow:hidden}
+.hart::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:radial-gradient(112% 100% at 50% 54%,transparent 34%,rgba(10,12,11,.5) 70%,var(--void) 96%),
+    linear-gradient(90deg,var(--void),transparent 14%,transparent 86%,var(--void))}
+/* The hall plate. Portrait footage in a landscape slot: height follows the aspect ratio,
+   so the frame is taller than the slot and --vy chooses which band of it is seen.
+
+   --overscan is why the width is not simply 100%: the source has a white feathered
+   vignette burnt into its own edges, which would halo against this near-black page. The
+   plate is drawn wider than the slot so that feather falls outside the frame.
+
+   The grade sits the footage on the page's ground; the source is a bright warm-white
+   render. Dial --plate-* to taste. */
+.hart{--overscan:1.34;--plate-bright:.78;--plate-contrast:1.14;--plate-sat:.86}
+.hplate{position:absolute;left:50%;top:0;z-index:1;display:block;
+  width:calc(100% * var(--overscan));height:auto;
+  /* the fallback already lands on the desk field, so the pre-script frame is framed
+     correctly rather than showing the atrium above it */
+  translate:-50% var(--vy,-43%);
+  filter:brightness(var(--plate-bright)) contrast(var(--plate-contrast)) saturate(var(--plate-sat));
+  backface-visibility:hidden}
+
+/* ---------- 02 the companies strip ---------- */
+.strip{position:relative;z-index:10;padding:clamp(34px,4.6vh,52px) 0;
+  border-block:1px solid var(--hair);background:rgba(255,255,255,.012);overflow:hidden}
+.striplbl{display:flex;justify-content:center;font-family:var(--mono);font-size:10px;
+  letter-spacing:.26em;color:var(--faint);margin-bottom:clamp(16px,2vh,24px)}
+.track{display:flex;gap:clamp(28px,4vw,64px);width:max-content;animation:marq 46s linear infinite}
+.strip:hover .track{animation-play-state:paused}
+@keyframes marq{to{translate:-50% 0}}
+.track .lg{width:clamp(108px,9.6vw,146px);height:clamp(32px,3.2vw,44px);flex-shrink:0;
+  opacity:.45;transition:opacity .3s var(--ease)}
+.track .lg:hover{opacity:1}
+.track image-slot{width:100%;height:100%}
+
+/* ---------- 03 the blueprint ---------- */
+.bprow{display:flex;flex-wrap:wrap;gap:clamp(8px,.9vw,12px)}
+.bpc{flex:1 1 calc((100% - 4 * 12px) / 5);min-width:168px;display:flex;flex-direction:column;gap:10px;
+  padding:20px 19px 22px;border-radius:10px;background:var(--panel);border:1px solid var(--hair)}
+.bpc b{font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.2em;
+  color:rgba(253,178,60,.8)}
+.bpc strong{font-size:clamp(14px,1.14vw,17.5px);font-weight:600;letter-spacing:-.022em;
+  line-height:1.16;color:var(--ink)}
+.bpc span{font-size:13px;line-height:1.46;color:var(--faint)}
+.bpc em{margin-top:auto;padding-top:12px;font-style:normal;font-family:var(--mono);font-size:9px;
+  letter-spacing:.16em;color:rgba(253,178,60,.85)}
+
+
+.card{border:1px solid var(--hair);border-radius:12px;background:var(--panel);
+  padding:clamp(18px,2vw,26px)}
+.log{display:flex;flex-direction:column}
+.log p{display:flex;align-items:center;gap:12px;padding:10px 0;margin:0;font-family:var(--mono);
+  font-size:11.5px;letter-spacing:.06em;color:var(--faint);border-top:1px solid var(--hair)}
+.log p:first-child{border-top:0}
+.log p b{font-weight:400;color:rgba(253,178,60,.7);flex-shrink:0;width:56px}
+.log p.key{color:var(--gold-ink)}.log p.key b{color:var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chip2{padding:7px 12px;border:1px solid var(--hair2);border-radius:100px;font-family:var(--mono);
+  font-size:9.5px;letter-spacing:.14em;color:var(--mute2);white-space:nowrap}
+.chip2.gold{border-color:rgba(253,178,60,.4);color:rgba(253,178,60,.9)}
+
+.claims{display:flex;flex-direction:column;gap:10px}
+.claim{display:flex;align-items:flex-start;gap:14px;width:100%;padding:20px;border-radius:10px;
+  background:var(--panel);border:1px solid var(--hair);text-align:left}
+.claim i{display:block;width:5px;height:5px;border-radius:50%;margin-top:8px;flex-shrink:0;
+  background:var(--dim)}
+.claim span{font-size:clamp(14px,1.1vw,16px);line-height:1.45;color:var(--mute2)}
+/* the paper: cream stock, navy ink, laid texture and a bound inner edge */
+.pack{position:relative;border-radius:4px 14px 14px 4px;overflow:hidden;
+  background:linear-gradient(200deg,var(--paper),#e8e2d2);
+  box-shadow:0 40px 80px rgba(0,0,0,.6),inset 22px 0 34px rgba(23,48,95,.1);
+  padding:clamp(22px,2.5vw,36px) clamp(20px,2.8vw,40px) clamp(20px,2.4vw,34px) clamp(26px,3vw,44px)}
+.pack::before{content:"";position:absolute;inset:0;opacity:.4;
+  background-image:repeating-linear-gradient(52deg,rgba(23,48,95,.09) 0 1px,transparent 1px 8px)}
+.pack::after{content:"";position:absolute;left:0;top:0;bottom:0;width:14px;
+  background:linear-gradient(90deg,rgba(23,48,95,.16),transparent)}
+.packin{position:relative;display:flex;flex-direction:column;gap:clamp(16px,1.8vw,24px)}
+.packh{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  border-bottom:1px solid rgba(23,48,95,.18);padding-bottom:16px}
+.packh span{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:rgba(23,48,95,.55)}
+.prow{display:flex;gap:clamp(14px,1.8vw,26px);align-items:flex-start}
+.prow>b{width:clamp(88px,8vw,108px);flex-shrink:0;font-family:var(--mono);font-size:10.5px;
+  font-weight:400;letter-spacing:.18em;color:rgba(23,48,95,.5);padding-top:4px}
+.prow>span{flex:1;font-size:clamp(14.5px,1.14vw,16.5px);line-height:1.5;color:var(--navy)}
+.packf{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:18px;
+  border-top:1px solid rgba(23,48,95,.18)}
+.file{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:6px;
+  border:1px solid rgba(23,48,95,.22);font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  color:rgba(23,48,95,.72)}
+/* the stamp, as struck on the passport pages */
+.stamp{margin-left:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;padding:7px 13px;border:1.5px solid rgba(23,48,95,.4);border-radius:3px;rotate:-6deg;
+  outline:1px solid rgba(23,48,95,.4);outline-offset:2px}
+.stamp b{font-family:var(--mono);font-size:8px;font-weight:400;letter-spacing:.22em;
+  color:rgba(23,48,95,.7)}
+.stamp span{font-size:12px;font-weight:600;letter-spacing:.1em;color:var(--navy)}
+.trust{display:flex;flex-direction:column;gap:3px;padding:20px 22px;border-radius:12px;
+  border:1px solid rgba(253,178,60,.3);background:rgba(253,178,60,.05);
+  margin-top:clamp(20px,2.8vh,32px);max-width:560px}
+.trust p{font-size:clamp(16px,1.3vw,21px);font-weight:600;letter-spacing:-.024em;line-height:1.28}
+.trust p+p{color:var(--gold)}
+
+/* ============================================================================
+   THE PROCESS, PINNED
+   One tall section holds all five steps. A sticky stage fills the viewport: the page's
+   own component for that step on the left, the argument on the right, a step rail on the
+   far edge. Scrolling advances the step — the stage never moves, only its contents change,
+   so five sections that used to read as a continuous roll now read as one surface with a
+   deliberate beat between each.
+   ============================================================================ */
+.proc{position:relative;z-index:10}
+.procpin{position:sticky;top:0;height:100svh;display:grid;
+  grid-template-columns:minmax(0,1.06fr) minmax(0,1fr);align-items:stretch;overflow:hidden;
+  border-block:1px solid var(--hairline);
+  /* the rail's own footprint. The copy pane reserves exactly this, so the headline can
+     never run under STEP 01-05 at any viewport width. */
+  --railw:106px}
+/* left: the component for this step, cross-fading in place */
+.procart{position:relative;overflow:hidden;background:var(--panel);
+  border-right:1px solid var(--hairline)}
+.pslide{position:absolute;inset:0;display:grid;align-content:center;gap:14px;
+  padding:clamp(20px,3vw,44px) clamp(20px,3vw,48px);overflow:hidden;
+  opacity:0;transition:opacity .55s var(--ease);will-change:opacity;pointer-events:none}
+.pslide.on{opacity:1;pointer-events:auto}
+/* inside the stage the components run a touch tighter, so each fits one viewport */
+.pslide .bprow{gap:8px}
+.pslide .bpc{flex:1 1 calc((100% - 16px) / 3);min-width:132px;padding:14px 14px 16px;gap:7px}
+.pslide .bpc strong{font-size:14.5px}
+.pslide .bpc span{font-size:11.5px;line-height:1.4}
+.pslide .bpc em{padding-top:8px}
+.pslide .card{padding:18px 18px 20px}
+.pslide .log p{padding:8px 0;font-size:11px}
+.pslide .pack{padding:22px 24px 20px 30px}
+.pslide .prow>span{font-size:14px;line-height:1.45}
+.pslide .prow>b{width:96px;font-size:10px}
+.pslide .packin{gap:14px}
+.pslide .claims{gap:8px}
+.pslide .claim{padding:14px 16px}
+/* ---- step 02: a vertical journey rail beside a product recording ----
+   The rail is a grid of five rows. The connecting line and the travelling dot are both
+   positioned from the SAME measurements the rows produce, so the dot is centred on the
+   line by construction rather than by a hand-tuned offset. */
+.vjr{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,26px);
+  align-items:stretch;min-height:0}
+.vrail{position:relative;display:grid;gap:clamp(10px,1.6vh,18px);
+  grid-auto-rows:1fr;padding-left:26px;min-width:clamp(126px,13vw,190px);
+  /* the spine's x position. The line, the row markers and the travelling dot are all
+     placed from this one value, so the dot is centred on the line by construction rather
+     than by a hand-tuned offset. */
+  --spine:5px}
+/* the spine: inset by half a row top and bottom so it starts and ends at the first and
+   last dot centres, never overshooting the ends */
+.vrail::before{content:"";position:absolute;left:var(--spine);top:calc(50% / 5);
+  bottom:calc(50% / 5);width:1px;
+  background:repeating-linear-gradient(180deg,var(--hairline) 0 3px,transparent 3px 7px)}
+.vrs{position:relative;display:flex;flex-direction:column;justify-content:center;gap:2px;
+  opacity:.42;transition:opacity .45s var(--ease)}
+.vrs.on{opacity:1}
+/* each row's own marker, dead centre on the spine */
+/* each row's marker, centred on the spine: the row is inset by its padding, so the marker
+   is placed back at the spine and then centred on it */
+.vrs::before{content:"";position:absolute;left:calc(var(--spine) - 26px + .5px);top:50%;
+  width:7px;height:7px;translate:-50% -50%;border-radius:50%;background:var(--hairline);
+  transition:background .4s var(--ease)}
+.vrs.done::before{background:rgba(253,178,60,.5)}
+.vrs b{font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.18em;
+  color:rgba(253,178,60,.75)}
+.vrs strong{font-size:clamp(12.5px,1.02vw,15px);font-weight:600;letter-spacing:-.02em;
+  line-height:1.16;color:var(--ink)}
+.vrs small{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--faint);
+  line-height:1.4}
+/* the travelling dot. Its Y is written from the active row's measured centre, so it lands
+   on the spine at any row height. */
+.vdot{position:absolute;left:calc(var(--spine) + .5px);top:0;width:11px;height:11px;
+  /* centred on the spine in both axes */
+  translate:-50% -50%;
+  border-radius:50%;background:var(--emerald);box-shadow:0 0 12px rgba(253,178,60,.85);
+  transition:top .55s var(--ease);z-index:3}
+.vdot::after{content:"";position:absolute;inset:-6px;border-radius:50%;
+  border:1px solid rgba(253,178,60,.35)}
+/* the recording sits beside the rail */
+.vrec{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--hairline);
+  background:var(--panel-raised);min-height:0}
+.vrec image-slot{position:absolute;inset:0}
+.vreclbl{position:absolute;left:12px;top:11px;z-index:3;display:flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.18em;color:var(--emerald);
+  pointer-events:none}
+.vreclbl i{width:4px;height:4px;border-radius:50%;background:var(--emerald);
+  box-shadow:0 0 6px rgba(253,178,60,.9)}
+
+/* right: the argument, cross-fading against one fixed baseline */
+.proccopy{position:relative;display:grid;align-items:center;
+  padding:clamp(26px,4vw,60px) calc(var(--railw) + clamp(16px,1.5vw,28px))
+          clamp(26px,4vw,60px) clamp(26px,3.4vw,56px)}
+.ptxt{grid-area:1/1;display:flex;flex-direction:column;gap:15px;opacity:0;translate:0 14px;
+  transition:opacity .5s var(--ease),translate .55s var(--ease);pointer-events:none}
+.ptxt.on{opacity:1;translate:0 0;pointer-events:auto}
+.pverb{align-self:flex-start;padding:8px 14px;border-radius:6px;background:var(--panel-raised);
+  border:1px solid var(--hairline);font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--emerald)}
+.ptxt h3{font-size:clamp(26px,3.2vw,46px);font-weight:600;letter-spacing:-.045em;line-height:1.03;
+  color:var(--ink)}
+.ptxt .sl{gap:9px}
+.ptxt .sl p{font-size:clamp(14px,1.08vw,16px);line-height:1.5}
+.ptxt .plain{gap:8px}
+.ptxt .plain li{font-size:clamp(14px,1.02vw,15.5px)}
+.ptxt .trust{margin-top:6px;padding:14px 16px}
+.ptxt .trust p{font-size:clamp(15px,1.16vw,18px)}
+/* the rail: a dotted spine carrying one live dot */
+.prail{position:absolute;right:clamp(14px,1.6vw,26px);top:50%;translate:0 -50%;z-index:8;
+  display:flex;flex-direction:column;gap:clamp(24px,5vh,54px);padding-right:22px;
+  pointer-events:none}
+.prail::after{content:"";position:absolute;right:6px;top:-5%;bottom:-5%;width:1px;
+  background:repeating-linear-gradient(180deg,var(--hairline) 0 3px,transparent 3px 8px)}
+.prail b{position:relative;font-family:var(--mono);font-size:10.5px;font-weight:400;
+  letter-spacing:.22em;color:var(--faint);opacity:.4;white-space:nowrap;
+  transition:opacity .4s var(--ease),color .4s var(--ease)}
+.prail b::after{content:"";position:absolute;right:-22px;top:50%;width:7px;height:7px;
+  translate:50% -50%;border-radius:50%;background:var(--faint);opacity:0;
+  transition:opacity .4s var(--ease),background .4s var(--ease)}
+.prail b.on{opacity:1;color:var(--emerald)}
+.prail b.on::after{opacity:1;background:var(--emerald);box-shadow:0 0 9px rgba(253,178,60,.8)}
+
+/* ============================================================================
+   04 · THE COMPARISON
+   Us against four things a company already does. Every cell states what that
+   category actually gives you, so the contrast names itself.
+   ============================================================================ */
+.cmp{position:relative;border:1px solid var(--hair);border-radius:14px;overflow:hidden;
+  background:var(--panel)}
+.cmpg{display:grid;grid-template-columns:minmax(190px,1.25fr) repeat(4,minmax(0,1fr));
+  min-width:0}
+/* the head row */
+.cmph{display:flex;flex-direction:column;gap:3px;padding:20px 18px 18px;
+  border-bottom:1px solid var(--hair2)}
+.cmph b{font-size:clamp(13px,1.1vw,16px);font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.cmph span{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:var(--dim)}
+/* our column is lifted by styling the cells themselves, so nothing occupies a grid slot
+   that a header or a value needs */
+.cmph.us,.cell.us{background:rgba(253,178,60,.05);
+  border-inline:1px solid rgba(253,178,60,.28)}
+.cmph.us{border-top:1px solid rgba(253,178,60,.28)}
+.cmpg>.cell.us:last-of-type{border-bottom:1px solid rgba(253,178,60,.28)}
+.cmph.us b{color:var(--gold-ink)}
+.cmph.us span{color:rgba(253,178,60,.75)}
+.cmpr{display:flex;flex-direction:column;gap:3px;padding:16px 18px;
+  border-bottom:1px solid var(--hair);border-right:1px solid var(--hair)}
+.cmpr>b{font-size:clamp(13px,1.05vw,15px);font-weight:600;letter-spacing:-.018em;color:var(--body)}
+.cmpr>span{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:var(--dim)}
+.cell{display:flex;align-items:flex-start;gap:9px;padding:16px 14px;
+  border-bottom:1px solid var(--hair);position:relative;z-index:2}
+.cell.q{background:transparent}
+.cell svg{width:13px;height:13px;flex-shrink:0;margin-top:2px;fill:none;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+.cell.yes svg{stroke:var(--gold)}
+.cell.no svg{stroke:var(--dim)}
+.cell p{font-size:11.5px;line-height:1.42;color:var(--faint)}
+.cell.yes p{color:var(--body)}
+.cmpg>.cell:last-child,.cmpg>.cmpr:last-of-type{border-bottom:0}
+/* the stacked reading of the same table */
+.cmpm{display:none;flex-direction:column;gap:10px}
+.cmpb{border:1px solid var(--hair);border-radius:11px;overflow:hidden;background:var(--panel)}
+.cmpb>b{display:block;padding:13px 15px 12px;font-size:14px;font-weight:600;letter-spacing:-.02em;
+  color:var(--ink);border-bottom:1px solid var(--hair)}
+.cmpb .mus{display:flex;align-items:flex-start;gap:9px;padding:12px 15px;
+  background:rgba(253,178,60,.06);border-bottom:1px solid var(--hair)}
+.cmpb .mus svg{width:13px;height:13px;flex-shrink:0;margin-top:2px;fill:none;stroke:var(--gold);
+  stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.cmpb .mus div{display:flex;flex-direction:column;gap:2px}
+.cmpb .mus em{font-style:normal;font-family:var(--mono);font-size:8px;letter-spacing:.16em;
+  color:rgba(253,178,60,.8)}
+.cmpb .mus p{font-size:12.5px;line-height:1.42;color:var(--body)}
+.cmpb .mo{display:flex;gap:10px;padding:9px 15px;border-top:1px solid rgba(255,255,255,.04)}
+.cmpb .mo em{flex:0 0 40%;font-style:normal;font-family:var(--mono);font-size:8px;
+  letter-spacing:.14em;color:var(--dim);padding-top:1px}
+.cmpb .mo p{flex:1;font-size:11.5px;line-height:1.4;color:var(--faint)}
+
+/* ---------- 07 testimonials as boarding passes ---------- */
+.passes{display:grid;grid-template-columns:repeat(auto-fit,minmax(336px,1fr));
+  gap:clamp(14px,1.6vw,22px)}
+.pass{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 148px;
+  border:1px solid var(--hair);border-radius:12px;overflow:hidden;background:var(--panel);
+  transition:border-color .3s var(--ease),translate .3s var(--ease)}
+.pass:hover{border-color:rgba(253,178,60,.4);translate:0 -3px}
+.pmain{display:flex;flex-direction:column;gap:15px;padding:22px 22px 24px}
+.phead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:13px;
+  border-bottom:1px solid var(--hair)}
+.phead span{font-family:var(--mono);font-size:8.5px;letter-spacing:.22em;color:var(--gold)}
+.phead em{font-style:normal;font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;
+  color:var(--dim)}
+.pquote{font-size:clamp(14.5px,1.1vw,16.5px);line-height:1.52;color:var(--body)}
+.pwho{display:flex;flex-direction:column;gap:2px;margin-top:auto}
+.pwho strong{font-size:13.5px;font-weight:600;letter-spacing:-.012em;color:var(--ink)}
+.pwho span{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--dim)}
+.pstub{position:relative;display:flex;flex-direction:column;gap:13px;padding:22px 18px;
+  background:rgba(253,178,60,.045);border-left:1px dashed rgba(253,178,60,.45)}
+.pstub::before,.pstub::after{content:"";position:absolute;left:-6px;width:11px;height:11px;
+  border-radius:50%;background:var(--void);border:1px solid var(--hair)}
+.pstub::before{top:-6px}.pstub::after{bottom:-6px}
+.pf{display:flex;flex-direction:column;gap:2px}
+.pf b{font-family:var(--mono);font-size:7.5px;font-weight:400;letter-spacing:.18em;color:var(--dim)}
+.pf span{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--gold)}
+.bars{margin-top:auto;display:flex;gap:1.5px;height:26px;align-items:flex-end}
+.bars i{width:1.5px;background:rgba(253,178,60,.5)}
+.bars i:nth-child(3n){width:3px}
+
+/* ---------- 08 closing ---------- */
+.close{position:relative;z-index:10;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);
+  gap:clamp(26px,4.4vw,72px);align-items:center;padding:var(--sec) var(--gut) 0;
+  scroll-margin-top:var(--hdr)}
+.ccopy{display:flex;flex-direction:column;gap:24px;max-width:640px}
+/* the current page's nav item */
+.nav a.here{color:var(--emerald)}
+/* the closing-act email capture */
+.wait{display:flex;align-items:center;gap:8px;width:min(100%,520px);height:64px;
+  padding:0 7px 0 22px;border-radius:100px;background:var(--panel-raised);
+  border:1px solid var(--hairline);transition:border-color .16s var(--ease)}
+.wait:focus-within{border-color:rgba(253,178,60,.4)}
+.wait input{flex:1;min-width:0;height:46px;border:0;background:transparent;font-size:16.5px;
+  color:var(--tx)}
+.wait input::placeholder{color:var(--faint)}
+.wait button{flex-shrink:0;height:50px;padding:0 24px;border:0;border-radius:100px;
+  background:var(--emerald);color:var(--emerald-deep);font-size:13.5px;font-weight:700;
+  letter-spacing:.09em;transition:background .16s var(--ease),color .16s var(--ease)}
+.wait button:hover{background:#ffc46a}
+.wait.done input{color:var(--emerald)}
+.wait.done button{background:var(--panel-raised);color:var(--emerald);
+  border:1px solid rgba(253,178,60,.35);pointer-events:none}
+/* the closing line */
+.brandline{font-weight:600;font-size:clamp(24px,3vw,44px);letter-spacing:-.04em;
+  line-height:1.1;color:var(--emerald)}
+.cart{position:relative;display:grid;place-items:center;min-height:min(64vh,500px)}
+.oring{position:absolute;width:min(38vw,390px);aspect-ratio:1;border-radius:50%;
+  border:1px solid rgba(253,178,60,.28);
+  background:radial-gradient(closest-side,rgba(253,178,60,.14),rgba(253,178,60,.04) 52%,transparent 74%);
+  box-shadow:0 0 100px rgba(253,178,60,.16),inset 0 0 80px rgba(253,178,60,.08)}
+.oring::after{content:"";position:absolute;inset:-13%;border-radius:50%;
+  border:1px dashed rgba(123,164,255,.16);animation:oturn 52s linear infinite}
+@keyframes oturn{to{rotate:360deg}}
+/* The figure from the homepage, standing in the ring with the passport in his open palm.
+   Same asset, same passport vocabulary: navy cover, gold crest ring, mono wordmark.
+   Everything is sized from --figH so the passport tracks the figure at any width. */
+.fig{position:relative;z-index:3;height:var(--figH);
+  aspect-ratio:517/1280;display:block;filter:drop-shadow(0 30px 50px rgba(0,0,0,.7))}
+/* --figH lives here, on the shared ancestor, so the figure AND the passport in its palm
+   both scale from one number */
+.figwrap{position:relative;z-index:3;--figH:min(52vh,420px);display:grid;place-items:end center;
+  animation:figfloat 9s ease-in-out infinite alternate}
+@keyframes figfloat{from{translate:0 4px}to{translate:0 -4px}}
+/* the palm sits at ~34% down and ~86% across the figure's own box */
+.palmbook{position:absolute;z-index:4;left:84.5%;top:31.5%;
+  width:calc(var(--figH) * .118);aspect-ratio:1/1.36;translate:-50% -50%;
+  border-radius:2px 6px 6px 2px;overflow:hidden;background:var(--cover);
+  border:1px solid rgba(253,178,60,.45);
+  box-shadow:0 8px 18px -4px rgba(0,0,0,.8),0 0 22px rgba(253,178,60,.3),
+    inset 0 1px 0 rgba(247,222,186,.1);
+  rotate:-8deg;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:9%;padding:9% 7%}
+.palmbook::before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;
+  background-image:repeating-linear-gradient(45deg,rgba(253,178,60,.08) 0 1px,transparent 1px 7px)}
+.palmbook::after{content:"";position:absolute;left:0;top:0;bottom:0;width:9%;pointer-events:none;
+  background:linear-gradient(90deg,rgba(0,0,0,.55),transparent)}
+.palmbook em{position:relative;font-family:var(--mono);font-style:normal;
+  font-size:calc(var(--figH) * .0125);letter-spacing:.2em;color:rgba(253,178,60,.85);
+  text-align:center;line-height:1}
+.palmbook i{position:relative;width:52%;aspect-ratio:1;border-radius:50%;
+  border:1.5px solid rgba(253,178,60,.8);display:grid;place-items:center}
+.palmbook i::before{content:"";position:absolute;inset:15%;border-radius:50%;
+  border:1px solid rgba(253,178,60,.45)}
+.palmbook i::after{content:"";width:34%;aspect-ratio:42/54;border-radius:2px 5px 5px 2px;
+  background:rgba(253,178,60,.9)}
+/* the light his palm throws back onto the cover */
+.palmglow{position:absolute;z-index:2;left:84.5%;top:31.5%;width:calc(var(--figH) * .34);
+  aspect-ratio:1;translate:-50% -50%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(253,178,60,.3),transparent 70%);
+  animation:palmpulse 4.5s ease-in-out infinite alternate}
+@keyframes palmpulse{from{opacity:.55}to{opacity:1}}
+
+/* ---------- footer ---------- */
+.ftr{position:relative;z-index:10;display:flex;flex-direction:column;gap:clamp(30px,5vh,54px);
+  margin-top:var(--sec);padding:28px var(--gut) 0;border-top:1px solid var(--hair);
+  background:var(--void);overflow:hidden}
+.ftop{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.fright{display:flex;flex-direction:column;align-items:flex-end;gap:14px}
+.fsoc{display:flex;align-items:center;gap:8px}
+.fsoc a{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--hair2);color:var(--faint);transition:.16s var(--ease)}
+.fsoc a:hover{color:var(--gold);border-color:rgba(253,178,60,.45);background:var(--panel2)}
+.fsoc svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+.fnav{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.fnav a{font-size:12.5px;color:var(--mute);text-decoration:none}.fnav a:hover{color:var(--gold)}
+.fmark{display:block;width:100%;height:auto}
+.fmark text{fill:url(#fmg);font-family:var(--sans)}
+.fcr{padding-bottom:22px;text-align:center;font-size:12.5px;color:var(--dim)}
+.ftr .brand span{font-family:var(--mono);font-size:13px;font-weight:400;letter-spacing:.16em;
+  color:var(--faint)}
+
+/* ---------- reveal ----------
+   Content is visible by default. The .rv-armed class is added by script only once the
+   observer is confirmed working, so a failed or absent observer, a print, or a static
+   capture all render the page fully rather than blank. */
+.rv{opacity:1;translate:none}
+.rv-armed .rv{opacity:0;translate:0 20px;transition:opacity .7s var(--ease),translate .8s var(--ease)}
+/* a group of siblings arrives in sequence rather than all at once: --i is its position */
+.rv[style*="--i"]{transition-delay:calc(var(--i) * .11s);translate:0 26px}
+.pass.rv{transition:opacity .75s var(--ease),translate .85s var(--ease),
+  border-color .3s var(--ease)}
+.rv-armed .rv.in{opacity:1;translate:0 0}
+@media print{.rv{opacity:1!important;translate:none!important}}
+
+/* ---------- responsive, per the artboards' own plan ----------
+   ≥1200 as drawn · 768–1199 two columns collapse, gutters 40, scale ≈.72
+   ≤767 as the mobile page, 20px gutters, ≥44px targets, scale ≈.54 */
+@media (max-width:1199px){
+  /* the artboard's own plan: two-column sections collapse, gutters 40, scale ~.72 */
+  :root{--gut:40px}
+  .hero{flex-direction:column;align-items:stretch;gap:clamp(26px,3.4vh,38px)}
+  .hcopy{width:100%;flex:0 0 auto}
+  .hart{flex:0 0 auto;min-width:0;width:100%;height:clamp(320px,44vh,440px)}
+  .split{flex-direction:column;gap:clamp(20px,2.6vh,30px)}
+  .split>.sh{width:100%}
+  .split>.sl{padding-top:0}
+  /* the comparison stops being a table and becomes one block per capability */
+  .cmp{display:none}
+  .cmpm{display:flex}
+  .bpc{flex:1 1 calc((100% - 12px) / 2)}
+  /* the pinned stage stacks: component over copy, and the rail becomes a row of markers
+     across the top of the copy pane so it reserves no horizontal room at all */
+  .procpin{grid-template-columns:1fr;grid-template-rows:minmax(0,1.08fr) minmax(0,.92fr);
+    --railw:0px}
+  .procart{border-right:0;border-bottom:1px solid var(--hairline)}
+  .pslide{padding:14px 16px;gap:8px}
+  /* the art pane is roughly half viewport height here, so every component tightens from
+     THIS breakpoint. Panes cannot scroll, so anything that does not fit is simply lost. */
+  .pslide .bprow{gap:8px}
+  .pslide .bpc{flex:1 1 calc((100% - 16px) / 3);min-width:0;padding:11px 12px 13px;gap:5px}
+  .pslide .bpc strong{font-size:12.5px}
+  .pslide .bpc span{display:none}
+  .pslide .bpc em{padding-top:6px;font-size:8px}
+  .pslide .card{padding:12px 13px 14px}
+  .pslide .log p{padding:4px 0;font-size:10.5px}
+  .pslide .ruled{margin-bottom:10px}
+  .pslide .chips{margin-top:8px;gap:5px}
+  .pslide .chip2{padding:5px 9px;font-size:8.5px}
+  .pslide .pack{padding:14px 16px 13px 19px}
+  .pslide .packin{gap:10px}
+  .pslide .prow{gap:10px}
+  .pslide .prow>b{width:82px;font-size:9px}
+  .pslide .prow>span{font-size:12.5px;line-height:1.38}
+  .pslide .claims{gap:6px}
+  .pslide .claim{padding:9px 11px}
+  .pslide .claim span{font-size:12.5px}
+  .pslide .packf{padding-top:11px;gap:8px}
+  .pslide .file{padding:4px 8px;font-size:9px}
+  /* the rail keeps its vertical spine; the recording sits beside it so it keeps real area.
+     Both tracks are bounded: an auto track would take the rail's full intrinsic height and
+     starve the recording to zero. */
+  .vjr{grid-template-columns:auto minmax(132px,1fr);grid-template-rows:minmax(0,1fr);gap:12px}
+  .vrail{grid-auto-rows:1fr;gap:6px;min-width:0;min-height:0;padding-left:22px}
+  .vrs::before{left:calc(var(--spine) - 22px + .5px)}
+  .vrs strong{font-size:11.5px}
+  .vrs small{display:none}
+  .vrec{min-height:96px}
+  .proccopy{padding:clamp(44px,6.6vh,60px) var(--gut) clamp(20px,3vh,28px);align-items:start}
+  .ptxt{gap:11px}
+  .ptxt h3{font-size:clamp(23px,5vw,32px);line-height:1.07}
+  .ptxt .sl p{font-size:13.5px;line-height:1.45}
+  .ptxt .plain li{font-size:13px}
+  .ptxt .trust{padding:11px 13px}
+  .ptxt .trust p{font-size:14.5px}
+  .pverb{padding:6px 11px;font-size:9.5px}
+  .prail{right:auto;left:var(--gut);top:clamp(14px,2.2vh,20px);translate:0 0;
+    flex-direction:row;align-items:center;gap:13px;padding-right:0}
+  .prail::after{right:auto;left:0;top:50%;bottom:auto;width:100%;height:1px;
+    background:repeating-linear-gradient(90deg,var(--hairline) 0 3px,transparent 3px 8px)}
+  .prail b{font-size:0;letter-spacing:0;width:24px;height:2px;border-radius:2px;
+    background:var(--hairline);opacity:1;transition:background .4s var(--ease)}
+  .prail b::after{display:none}
+  .prail b.on{background:var(--emerald);box-shadow:0 0 8px rgba(253,178,60,.6)}
+}
+@media (max-width:900px){
+  .nav{display:none}.burger{display:flex}
+  .hart{height:min(42vh,320px)}
+  .close{grid-template-columns:1fr;gap:28px;text-align:center}
+  .ccopy{align-items:center;margin-inline:auto}
+  .cart{order:-1;min-height:min(38vh,300px)}
+  .figwrap{--figH:min(34vh,260px)}
+  .oring{width:min(64vw,250px)}
+  .wait,.trust{margin-inline:auto}
+  .ctas{justify-content:center}
+  .plain.two{grid-template-columns:1fr}
+  .passes{grid-template-columns:1fr}
+  .ftop{flex-direction:column;align-items:center;text-align:center}
+  .fright,.fnav{align-items:center}
+}
+@media (max-width:767px){
+  /* phones tighten once more on top of the 1199px band */
+  .pslide{padding:12px 13px;gap:7px}
+  .pslide .bpc{padding:9px 10px 10px}
+  .pslide .bpc strong{font-size:11.5px}
+  .pslide .log p{padding:4px 0;font-size:9.5px}
+  .pslide .prow{flex-direction:column;gap:2px}
+  .pslide .prow>b{width:auto;font-size:8.5px}
+  .pslide .prow>span{font-size:11.5px;line-height:1.32}
+  .pslide .claim span{font-size:11.5px}
+  .pslide .chip2{display:none}
+  .pslide .chips .chip2:nth-child(-n+3){display:inline-block}
+  /* the rail stacks above the recording only when there is genuinely no width for both */
+  .vjr{grid-template-columns:1fr;grid-template-rows:minmax(0,auto) minmax(88px,1fr)}
+  .vrec{min-height:88px}
+  .bpc{flex:1 1 100%}
+  .cmpb .mo{flex-direction:column;gap:2px}
+  .cmpb .mo em{flex:none}
+  .pass{grid-template-columns:1fr}
+  .pstub{border-left:0;border-top:1px dashed rgba(253,178,60,.45);flex-direction:row;
+    flex-wrap:wrap;gap:16px;align-items:flex-end}
+  .pstub::after{left:auto;right:-6px;top:-6px;bottom:auto}
+  .bars{margin-top:0;margin-left:auto}
+  .prow{flex-direction:column;gap:3px}
+  .prow>b{width:auto;padding-top:0}
+  .wait{height:auto;flex-direction:column;gap:10px;padding:12px;border-radius:20px}
+  .wait input{width:100%;text-align:center;height:44px}
+  .wait button{width:100%;height:48px}
+  .stamp{margin-left:0}
+}
+/* narrower than this there is no room for three blueprint columns. This must sit AFTER
+   the 767px block: equal-specificity rules resolve by source order, so a 560px rule placed
+   before a 767px one would simply be overridden. */
+@media (max-width:560px){
+  .pslide .bpc{flex:1 1 calc((100% - 8px) / 2)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important}
+  .rv{opacity:1;translate:none}
+}
+</style>
+
+<div class="grid-bg" aria-hidden="true"></div>
+
+<div class="prog"></div>
+<header class="hdr">
+  <a class="brand" href="Homepage.html"><i></i><span>CAREERPASSPORT</span></a>
+  <nav class="nav">
+    <a href="Homepage.html">HOME</a>
+    <a class="here" href="For Companies.html">FOR COMPANIES</a>
+    <a href="For Recruitment Partners.html">FOR RECRUITMENT PARTNERS</a>
+  </nav>
+  <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
+</header>
+<nav class="mnav" id="mnav">
+  <a href="Homepage.html">HOME</a>
+  <a href="For Companies.html">FOR COMPANIES</a>
+  <a href="For Recruitment Partners.html">FOR RECRUITMENT PARTNERS</a>
+</nav>
+
+<!-- ============ 01 · HERO ============ -->
+<section class="hero" data-screen-label="01">
+  <div class="bloom" aria-hidden="true"></div>
+  <div class="hcopy">
+    <p class="eyebrow gold"><i></i>Tell us who you need.</p>
+    <h1>Meet the people <span class="serif">worth your time.</span></h1>
+    <p class="lede">CareerPassport turns a hiring manager's intent into a structured hiring journey — and helps run that journey until human judgment matters. <b>From role creation to candidate evidence, one connected process.</b></p>
+    <div class="ctas">
+      <a class="btn" href="#close">BOOK A DEMO &rarr;</a>
+      <a class="btn gh" href="#close">POST A ROLE</a>
+    </div>
+    <p class="pmono">IN AN OCEAN OF CLAIMS &middot; ONE RECORD YOU CAN INSPECT</p>
+  </div>
+  <div class="hart">
+    <video class="hplate" id="heroPlate" src="assets/hero-hall.mp4"
+      poster="assets/hero-hall-poster.jpg"
+      width="1248" height="1656" muted loop playsinline autoplay preload="auto"
+      aria-label="An open-plan office of identical occupied desks, with one empty chair lit by a single spotlight at the centre"></video>
+  </div>
+</section>
+
+<!-- ============ 02 · COMPANIES STRIP ============ -->
+<section class="strip" aria-label="Companies hiring with CareerPassport">
+  <p class="striplbl">HIRING WITH CAREERPASSPORT</p>
+  <div class="track" id="logoTrack"></div>
+</section>
+
+<!-- ============ 03 · CHAPTER OPENER ============ -->
+<section class="sec" style="padding-bottom:clamp(34px,4.8vh,58px)" data-screen-label="03">
+  <div class="inner">
+    <div class="split rv">
+      <div class="sh">
+        <p class="eyebrow gold"><i></i>How the system works</p>
+        <h2>Five moves from one sentence to <span class="serif">one good conversation.</span></h2>
+      </div>
+      <div class="sl">
+        <p>A role opens. Someone writes a description.</p>
+        <p>Everyone interviews for something slightly different.</p>
+        <div class="gap"></div>
+        <p class="q hi">CareerPassport gives the process a shape, then keeps it moving.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 · THE PROCESS, PINNED ============ -->
+<section class="proc" id="process" style="margin-block:clamp(8px,1.6vh,20px)" aria-label="How the system works, step by step">
+  <div class="procpin">
+    <div class="procart">
+
+      <!-- 01 · the blueprint, as built on this page -->
+      <div class="pslide on" data-i="0">
+        <span class="pmono gold">HIRING BLUEPRINT &middot; ASSEMBLED FROM ONE BRIEF</span>
+        <div class="bprow">
+          <div class="bpc"><b>01</b><strong>Role</strong><span>What the work actually is, in the words the hiring manager used.</span><em>DEFINED</em></div>
+          <div class="bpc"><b>02</b><strong>Competencies</strong><span>What has to be true of the person who does it well.</span><em>7 MAPPED</em></div>
+          <div class="bpc"><b>03</b><strong>Candidate Journey</strong><span>What a candidate is asked to show, and in what order.</span><em>5 STAGES</em></div>
+          <div class="bpc"><b>04</b><strong>Evaluation Matrix</strong><span>How evidence is weighed, consistently, across the pool.</span><em>WEIGHTED</em></div>
+          <div class="bpc"><b>05</b><strong>Communications</strong><span>What every candidate hears, and when they hear it.</span><em>SEQUENCED</em></div>
+        </div>
+      </div>
+
+      <!-- 02 · the candidate journey rail -->
+      <div class="pslide" data-i="1">
+        <span class="pmono gold">CANDIDATE JOURNEY &middot; SENIOR PRODUCT LEAD</span>
+        <div class="vjr">
+          <div class="vrail" id="vrail">
+            <div class="vrs on" data-s="0"><b>01</b><strong>Introduction</strong><small>MOTIVATION &amp; FIT</small></div>
+            <div class="vrs" data-s="1"><b>02</b><strong>Experience Evidence</strong><small>ENTERPRISE DEPTH</small></div>
+            <div class="vrs" data-s="2"><b>03</b><strong>Role Exercise</strong><small>JUDGMENT UNDER AMBIGUITY</small></div>
+            <div class="vrs" data-s="3"><b>04</b><strong>Assessment</strong><small>THIRD PARTY, INTEGRATED</small></div>
+            <div class="vrs" data-s="4"><b>05</b><strong>Review</strong><small>CROSS-FUNCTIONAL RANGE</small></div>
+            <span class="vdot" id="vdot"></span>
+          </div>
+          <div class="vrec">
+            <image-slot id="cmp-journey" shape="rect" placeholder="Drop the journey builder recording"></image-slot>
+            <span class="vreclbl"><i></i>PRODUCT &middot; JOURNEY BUILDER</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 · the agent activity log -->
+      <div class="pslide" data-i="2">
+        <div class="card">
+          <div class="ruled"><span class="pmono gold">AGENT ACTIVITY &middot; ONE LIVE ROLE</span><i></i></div>
+          <div class="log">
+            <p><b>09:42</b><span>Candidate approached</span></p>
+            <p><b>11:18</b><span>Response received</span></p>
+            <p><b>11:19</b><span>Candidate Journey shared</span></p>
+            <p><b>14:32</b><span>Follow-up scheduled</span></p>
+            <p class="key"><b>20:00</b><span>Journey completed, artifact reviewed</span></p>
+            <p class="key"><b>9 AM</b><span>Hiring manager approval requested</span></p>
+          </div>
+          <div class="chips">
+            <span class="chip2">GMAIL</span><span class="chip2">WHATSAPP</span>
+            <span class="chip2">LINKEDIN</span><span class="chip2">CALENDAR</span>
+            <span class="chip2 gold">RECRUITMENT PARTNERS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 04 · the claims, and the evidence pack underneath them -->
+      <div class="pslide" data-i="3">
+        <span class="pmono">WHAT THE R&Eacute;SUM&Eacute; SAYS</span>
+        <div class="claims">
+          <div class="claim"><i></i><span>Led the enterprise platform rebuild.</span></div>
+          <div class="claim"><i></i><span>Owned the product roadmap end to end.</span></div>
+        </div>
+        <div class="ruled" style="margin:2px 0 0"><span class="pmono gold">WHAT SITS UNDERNEATH IT</span><i></i></div>
+        <div class="pack">
+          <div class="packin">
+            <div class="packh">
+              <span>EVIDENCE PACK / CP-2291</span>
+              <span>14 AUG 2026</span>
+            </div>
+            <div class="prow"><b>WHY THIS ONE</b><span>Led two enterprise platform launches through unresolved requirements, working directly with engineering, sales and customers.</span></div>
+            <div class="prow"><b>COMPETENCIES</b><span>6 of 7 evidenced. Each one opens to the signal behind it.</span></div>
+            <div class="prow"><b>JOURNEY</b><span>5 of 5 stages completed, including the role exercise.</span></div>
+            <div class="packf">
+              <span class="file">roadmap-tradeoffs.pdf</span>
+              <span class="file">launch-retro.md</span>
+              <span class="stamp"><b>CAREERPASSPORT</b><span>VERIFIED</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 05 · the interview brief -->
+      <div class="pslide" data-i="4">
+        <div class="card">
+          <div class="ruled"><span class="pmono gold">INTERVIEW BRIEF</span><i></i></div>
+          <div class="log" style="gap:0">
+            <p style="align-items:flex-start"><b>01</b><span style="font-family:var(--sans);font-size:13.5px;line-height:1.45;color:var(--body);letter-spacing:0">Closest match on enterprise depth and cross-functional range; strongest role exercise in the pool.</span></p>
+            <p style="align-items:flex-start"><b>02</b><span style="font-family:var(--sans);font-size:13.5px;line-height:1.45;color:var(--body);letter-spacing:0">Platform launches under unresolved requirements. Pricing decisions made with sales. A retro written after a missed date.</span></p>
+            <p style="align-items:flex-start"><b>03</b><span style="font-family:var(--sans);font-size:13.5px;line-height:1.45;color:var(--body);letter-spacing:0">What to explore: the call they would take back, and what they would do first here.</span></p>
+            <p class="key" style="align-items:flex-start"><b>&rarr;</b><span style="font-family:var(--sans);font-size:13.5px;line-height:1.45;letter-spacing:0">Tuesday 14th, 45 minutes, brief attached.</span></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="proccopy">
+
+      <article class="ptxt on" data-i="0">
+        <span class="pverb">Define</span>
+        <h3>One intent becomes a <span class="serif">hiring blueprint.</span></h3>
+        <div class="sl">
+          <p>Describe the role in your own words.</p>
+          <p>CareerPassport assembles the structure the process needs.</p>
+          <div class="gap"></div>
+          <p class="q hi">One standard, applied to everyone who applies.</p>
+        </div>
+      </article>
+
+      <article class="ptxt" data-i="1">
+        <span class="pverb">Design</span>
+        <h3>Decide what you need to know <span class="serif">before you meet them.</span></h3>
+        <div class="sl">
+          <p>Candidates can be asked to demonstrate relevant experience, complete role-specific activities, provide evidence or undertake assessments before progressing.</p>
+          <div class="gap"></div>
+          <p class="q hi">Use CareerPassport-native journeys and integrate third-party assessments where required.</p>
+        </div>
+      </article>
+
+      <article class="ptxt" data-i="2">
+        <span class="pverb">Activate</span>
+        <h3>Once the role is live, <span class="serif">agents keep hiring moving.</span></h3>
+        <ul class="plain two">
+          <li>Engage candidates</li>
+          <li>Send follow-ups</li>
+          <li>Progress candidates</li>
+          <li>Coordinate assessments</li>
+          <li>Manage communication</li>
+          <li>Schedule next steps</li>
+        </ul>
+        <div class="sl"><p>Every candidate source runs through one process — your database, your internal recruiters, your recruitment partners and CareerPassport.</p></div>
+      </article>
+
+      <article class="ptxt" data-i="3">
+        <span class="pverb">Evidence</span>
+        <h3>See why someone is <span class="serif">worth meeting.</span></h3>
+        <div class="sl">
+          <p>A CV is one page of bullet points. A recruiter's note is one person's read.</p>
+          <div class="gap"></div>
+          <p class="q">There are projects behind those bullets.</p>
+          <p class="q hi">And evidence behind the decisions, if anyone asks for it.</p>
+        </div>
+        <div class="trust">
+          <p>CareerPassport assembles the evidence.</p>
+          <p>Hiring manager make the judgment.</p>
+        </div>
+      </article>
+
+      <article class="ptxt" data-i="4">
+        <span class="pverb">Decide</span>
+        <h3>Meet fewer candidates. <span class="serif">Know more about the ones you do.</span></h3>
+        <div class="sl">
+          <p>By the time the hiring manager steps in, the role is structured, the process has moved and the evidence is assembled.</p>
+        </div>
+        <ul class="plain">
+          <li>Less hiring administration</li>
+          <li>One consistent hiring standard</li>
+          <li>Better signal before the interview</li>
+          <li>Higher-value interview time</li>
+          <li>Better coordination across recruitment partners</li>
+        </ul>
+      </article>
+
+      <nav class="prail" aria-hidden="true">
+        <b class="on" data-i="0">STEP 01</b>
+        <b data-i="1">STEP 02</b>
+        <b data-i="2">STEP 03</b>
+        <b data-i="3">STEP 04</b>
+        <b data-i="4">STEP 05</b>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 · TESTIMONIALS AS BOARDING PASSES ============ -->
+<section class="sec" data-screen-label="05">
+  <div class="inner">
+    <div class="split rv" style="margin-bottom:clamp(26px,3.6vh,44px)">
+      <div class="sh">
+        <p class="eyebrow gold"><i></i>From the people hiring</p>
+        <h2>What changes when <span class="serif">evidence arrives first.</span></h2>
+      </div>
+    </div>
+    <div class="passes">
+      <article class="pass rv" style="--i:0">
+        <div class="pmain">
+          <div class="phead"><span>TESTIMONIAL</span><em>INTENT &rarr; HIRE</em></div>
+          <p class="pquote">[Placeholder] We stopped reading CVs to guess. The brief told us what to explore, so the interview started at the interesting part.</p>
+          <div class="pwho"><strong>[Name]</strong><span>HEAD OF TALENT &middot; SERIES B FINTECH</span></div>
+        </div>
+        <div class="pstub">
+          <div class="pf"><b>ROLE</b><span>SR PM</span></div>
+          <div class="pf"><b>TIME TO HIRE</b><span>19 DAYS</span></div>
+          <div class="bars" aria-hidden="true"><i style="height:100%"></i><i style="height:60%"></i><i style="height:90%"></i><i style="height:45%"></i><i style="height:100%"></i><i style="height:70%"></i><i style="height:85%"></i><i style="height:50%"></i><i style="height:95%"></i><i style="height:65%"></i><i style="height:80%"></i><i style="height:55%"></i></div>
+        </div>
+      </article>
+      <article class="pass rv" style="--i:1">
+        <div class="pmain">
+          <div class="phead"><span>TESTIMONIAL</span><em>INTENT &rarr; HIRE</em></div>
+          <p class="pquote">[Placeholder] One standard across three recruitment partners. For the first time everyone was evaluating the same things.</p>
+          <div class="pwho"><strong>[Name]</strong><span>TALENT DIRECTOR &middot; ENTERPRISE SAAS</span></div>
+        </div>
+        <div class="pstub">
+          <div class="pf"><b>ROLE</b><span>ENG LEAD</span></div>
+          <div class="pf"><b>PARTNERS</b><span>03</span></div>
+          <div class="bars" aria-hidden="true"><i style="height:80%"></i><i style="height:100%"></i><i style="height:55%"></i><i style="height:90%"></i><i style="height:65%"></i><i style="height:100%"></i><i style="height:48%"></i><i style="height:85%"></i><i style="height:70%"></i><i style="height:95%"></i><i style="height:60%"></i><i style="height:88%"></i></div>
+        </div>
+      </article>
+      <article class="pass rv" style="--i:2">
+        <div class="pmain">
+          <div class="phead"><span>TESTIMONIAL</span><em>INTENT &rarr; HIRE</em></div>
+          <p class="pquote">[Placeholder] The admin disappeared. My team spent their week on conversations instead of scheduling them.</p>
+          <div class="pwho"><strong>[Name]</strong><span>VP PEOPLE &middot; MARKETPLACE</span></div>
+        </div>
+        <div class="pstub">
+          <div class="pf"><b>ROLE</b><span>DESIGN</span></div>
+          <div class="pf"><b>INTERVIEWS</b><span>&minus;42%</span></div>
+          <div class="bars" aria-hidden="true"><i style="height:65%"></i><i style="height:95%"></i><i style="height:50%"></i><i style="height:100%"></i><i style="height:75%"></i><i style="height:60%"></i><i style="height:90%"></i><i style="height:55%"></i><i style="height:100%"></i><i style="height:70%"></i><i style="height:85%"></i><i style="height:48%"></i></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 · THE COMPARISON ============ -->
+<section class="sec" id="difference" data-screen-label="04">
+  <div class="inner">
+    <div class="split rv" style="margin-bottom:clamp(30px,4.4vh,52px)">
+      <div class="sh">
+        <p class="eyebrow gold"><i></i>The difference</p>
+        <h2>You already have tools. <span class="serif">None of them do this.</span></h2>
+      </div>
+      <div class="sl">
+        <p class="q hi">Every column is something you already pay for. The question is what each gives a hiring manager on the day.</p>
+      </div>
+    </div>
+
+    <!-- the table -->
+    <div class="cmp rv">
+      <div class="cmpg">
+        <div class="cmph"><b>Compare</b><span>WHAT YOU GET</span></div>
+        <div class="cmph us"><b>CareerPassport</b><span>A NEW STANDARD</span></div>
+        <div class="cmph"><b>Your ATS</b><span>SYSTEM OF RECORD</span></div>
+        <div class="cmph"><b>Job boards</b><span>REACH</span></div>
+        <div class="cmph"><b>CV screening</b><span>FILTERING</span></div>
+
+        <div class="cmpr"><b>Role definition</b><span>WHERE IT STARTS</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Built from your own words, competencies mapped</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A free-text job description field</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A template you fill in</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A keyword list</p></div>
+
+        <div class="cmpr"><b>Candidate journey</b><span>WHAT THEY ARE ASKED</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Evidence, activities and assessments, in sequence</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Pipeline statuses only</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>An application form</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>None</p></div>
+
+        <div class="cmpr"><b>Evidence of the work</b><span>WHAT YOU CAN INSPECT</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Artefacts, responses and the context behind each claim</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Whatever was attached</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A CV</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A ranked CV</p></div>
+
+        <div class="cmpr"><b>Running the process</b><span>WHO DOES THE WORK</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Agents handle outreach, coordination and scheduling</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Your team, manually</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Your team, manually</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Screening only</p></div>
+
+        <div class="cmpr"><b>One standard across sources</b><span>DATABASE, RECRUITERS, PARTNERS</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Every source evaluated the same way</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Each source arrives in its own format</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>One source only</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Applies to inbound CVs</p></div>
+
+        <div class="cmpr"><b>What the interviewer gets</b><span>ON THE DAY</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Why this person, what the evidence shows, what to explore</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A CV and a calendar invite</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A CV</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A score</p></div>
+      </div>
+    </div>
+
+    <!-- the same table, read one capability at a time -->
+    <div class="cmpm rv" id="cmpStack"></div>
+  </div>
+</section>
+
+<!-- ============ 07 · CLOSING ============ -->
+<section class="close" id="close" data-screen-label="07">
+  <div class="ccopy">
+    <p class="eyebrow gold rv"><i></i>The promise, resolved</p>
+    <h2 class="rv">Your next hire shouldn't require you to run the entire hiring process and yet get the evidence you want</h2>
+    <p class="lede rv">Tell CareerPassport who you need.</p>
+    <div class="wait rv" data-capture>
+      <input type="email" placeholder="you@company.com" aria-label="Your work email">
+      <button data-done="REQUEST SENT">REQUEST A DEMO</button>
+    </div>
+    <div class="ctas rv">
+      <a class="btn gh" href="#close">POST A ROLE</a>
+      <a class="btn gh" href="For Recruitment Partners.html">FOR RECRUITMENT PARTNERS</a>
+    </div>
+    <p class="brandline rv">Intent in. Evidence out.</p>
+  </div>
+  <div class="cart" aria-hidden="true">
+    <div class="oring"></div>
+    <div class="palmglow"></div>
+    <div class="figwrap">
+      <img class="fig" src="assets/hero-cp.png" alt="">
+      <span class="palmbook"><em>CAREER<br>PASSPORT</em><i></i></span>
+    </div>
+  </div>
+</section>
+
+<footer class="ftr">
+  <div class="ftop">
+    <a class="brand" href="Homepage.html"><i></i><span>careerpassport.ai</span></a>
+    <div class="fright">
+      <div class="fsoc">
+        <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9v9M6.5 5.6v.1M11 18v-5a3 3 0 0 1 6 0v5"/></svg></a>
+        <a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></a>
+        <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4 1.2-4-2.2-5.5-2.8M15 21v-3.2a2.9 2.9 0 0 0-.8-2.2c2.7-.3 4.5-1.4 4.5-5a4 4 0 0 0-1.1-2.7 3.7 3.7 0 0 0-.1-2.8s-1.2-.3-3.7 1.4a9.3 9.3 0 0 0-5 0C6.3 3.8 5.1 4.1 5.1 4.1a3.7 3.7 0 0 0-.1 2.8A4 4 0 0 0 3.9 9.6c0 3.6 1.8 4.7 4.5 5A2.9 2.9 0 0 0 7.6 17V21"/></svg></a>
+        <a href="#" aria-label="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17zM3.5 7l8.5 6 8.5-6"/></svg></a>
+      </div>
+      <nav class="fnav"><a href="Homepage.html">Home</a><a href="For Companies.html">For companies</a><a href="For Recruitment Partners.html">For recruitment partners</a></nav>
+    </div>
+  </div>
+  <svg class="fmark" viewBox="0 0 1000 96" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <defs><linearGradient id="fmg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="var(--ink)" stop-opacity=".14"/>
+      <stop offset=".62" stop-color="var(--ink)" stop-opacity=".03"/>
+      <stop offset="1" stop-color="var(--ink)" stop-opacity="0"/>
+    </linearGradient></defs>
+    <text x="500" y="104" text-anchor="middle" textLength="1000" lengthAdjust="spacingAndGlyphs"
+      font-size="130" font-weight="900" letter-spacing="-4">CAREERPASSPORT</text>
+  </svg>
+  <p class="fcr">&copy; 2026 CareerPassport Technologies Inc.</p>
+</footer>
+
+<script src="image-slot.js"></script>
+<script>
+/* ---- the scroll progress bar, driven as it is on Homepage ---- */
+(function(){
+  var bar=document.querySelector('.prog'); if(!bar) return;
+  var de=document.documentElement;
+  var tick=function(){
+    var span=de.scrollHeight - (de.clientHeight || innerHeight);
+    /* a frame sized to the whole document has nothing to scroll: keep the bar at zero
+       rather than dividing by it */
+    var p = span > 0 ? Math.min(1,Math.max(0,(scrollY||pageYOffset)/span)) : 0;
+    bar.style.setProperty('--pw',(p*100).toFixed(2)+'%');
+  };
+  tick();
+  addEventListener('scroll',tick,{passive:true});
+  addEventListener('resize',tick,{passive:true});
+})();
+
+/* ---- the hero plate's crop ----
+   Portrait footage fills the slot's width, so it is taller than the slot. --vy picks which
+   band is seen: FRAME_TOP lands on the occupied-desk field (the atrium occupies the top
+   third of the source) and LIFT_PX raises it further. The video plays on its own loop;
+   nothing here touches playback. */
+(function(){
+  var art=document.querySelector('.hart'), vid=document.getElementById('heroPlate');
+  if(!art||!vid) return;
+  var FRAME_TOP=0.45, LIFT_PX=50;
+  var place=function(){
+    var ar=art.getBoundingClientRect();
+    /* a box with no size cannot produce a crop: writing from it would cache a wrong value */
+    if(ar.width<1||ar.height<1) return;
+    var over=parseFloat(getComputedStyle(art).getPropertyValue('--overscan'))||1;
+    var excess=ar.width*over*(1656/1248)-ar.height;
+    if(excess<=0) return;
+    var y=-(FRAME_TOP*excess)-LIFT_PX;
+    vid.style.setProperty('--vy',Math.max(-excess,Math.min(0,y)).toFixed(1)+'px');
+  };
+  /* measure after layout, not during script execution, or the box is still zero */
+  requestAnimationFrame(place);
+  addEventListener('load',place);
+  addEventListener('resize',place,{passive:true});
+  if(window.ResizeObserver) new ResizeObserver(place).observe(art);
+  /* autoplay can be refused; a muted inline retry covers it and failure leaves the poster */
+  var play=function(){ var p=vid.play(); if(p&&p.catch) p.catch(function(){}) };
+  play(); vid.addEventListener('loadeddata',play);
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) play() });
+})();
+
+/* ---- the pinned process: scroll position drives which step is shown ----
+   The section is made tall enough for several viewports per step, then the sticky stage
+   reads its own progress. Height is set here rather than in CSS so the step count stays a
+   property of the markup: add a slide and the scroll length follows. */
+(function(){
+  var sec=document.getElementById('process'); if(!sec) return;
+  var pin=sec.querySelector('.procpin'); if(!pin) return;
+  var slides=[].slice.call(sec.querySelectorAll('.pslide'));
+  var texts=[].slice.call(sec.querySelectorAll('.ptxt'));
+  var marks=[].slice.call(sec.querySelectorAll('.prail b'));
+  var N=slides.length; if(!N) return;
+
+  /* SVH_PER_STEP sets how long a step holds the stage. One viewport per step reads too
+     fast to finish the copy, so each step gets roughly a viewport and a half of scroll on
+     top of the one the pin itself consumes. */
+  var SVH_PER_STEP=165;
+  var setH=function(){ sec.style.height=(N*SVH_PER_STEP)+'svh' };
+  setH(); addEventListener('resize',setH,{passive:true});
+
+  var cur=-1;
+  var apply=function(i){
+    if(i===cur) return; cur=i;
+    slides.forEach(function(el,k){ el.classList.toggle('on',k===i) });
+    texts.forEach(function(el,k){ el.classList.toggle('on',k===i) });
+    marks.forEach(function(el,k){ el.classList.toggle('on',k===i) });
+  };
+
+  /* Within step 02 the rail advances on its own sub-clock, so the five stages read as a
+     progression rather than arriving at once. The dot's Y comes from the active row's
+     MEASURED centre, which is what keeps it on the spine at any row height. */
+  var vrail=document.getElementById('vrail'), vdot=document.getElementById('vdot');
+  var vrows=vrail?[].slice.call(vrail.querySelectorAll('.vrs')):[];
+  var vcur=-1;
+  var vstage=function(sub){
+    if(!vrail||!vrows.length) return;
+    /* the five stages finish by 90% of the step, so the last one holds rather than
+       flashing at the very end; EPS absorbs the float error in sub itself */
+    var t=Math.min(1,sub/0.9), EPS=1e-6;
+    var i=Math.min(vrows.length-1,Math.max(0,Math.floor(t*vrows.length+EPS)));
+    if(i===vcur) return; vcur=i;
+    vrows.forEach(function(el,k){
+      el.classList.toggle('on',k===i);
+      el.classList.toggle('done',k<=i);
+    });
+    var rr=vrail.getBoundingClientRect(), tr=vrows[i].getBoundingClientRect();
+    if(rr.height>0&&vdot) vdot.style.top=((tr.top-rr.top)+tr.height/2).toFixed(1)+'px';
+  };
+
+  var frame=function(){
+    var r=sec.getBoundingClientRect();
+    /* the pin is exactly one viewport tall, so measuring IT is both self-consistent and
+       correct in hosts that size the frame to the whole document */
+    var vh=pin.getBoundingClientRect().height||document.documentElement.clientHeight||innerHeight;
+    var span=r.height-vh;
+    var p=span>0 ? Math.min(1,Math.max(0,-r.top/span)) : 0;
+    /* step k owns [k/N, (k+1)/N), and the clamp catches p === 1 */
+    var i=Math.min(N-1,Math.floor(p*N));
+    apply(i);
+    /* where we are WITHIN the current step, 0..1 */
+    if(i===1) vstage(Math.min(1,Math.max(0,p*N-1)));
+  };
+  frame();
+  addEventListener('scroll',frame,{passive:true});
+  addEventListener('resize',function(){ vcur=-1; frame() },{passive:true});
+  /* the first dot placement needs a laid-out rail, which it lacks during script run */
+  requestAnimationFrame(function(){ vcur=-1; vstage(0) });
+})();
+
+/* ---- the stacked reading of the comparison, generated FROM the table ----
+   One source of truth: edit a cell in the markup above and the stacked version follows,
+   so the two readings can never drift apart. */
+(function(){
+  var grid=document.querySelector('.cmpg'), out=document.getElementById('cmpStack');
+  if(!grid||!out) return;
+  var kids=[].slice.call(grid.children);
+  /* head: [Compare][liftcol][us][3 others] then repeating [rowlabel][4 cells] */
+  var heads=kids.filter(function(k){ return k.classList.contains('cmph') })
+                .map(function(k){ return k.querySelector('b').textContent });
+  var cols=heads.slice(1);                       /* CareerPassport + the three others */
+  var rows=[],cur=null;
+  kids.forEach(function(k){
+    if(k.classList.contains('cmpr')){
+      cur={label:k.querySelector('b').textContent,cells:[]};
+      rows.push(cur);
+    } else if(k.classList.contains('cell') && cur){
+      cur.cells.push(k.querySelector('p').textContent);
+    }
+  });
+  out.innerHTML=rows.map(function(r){
+    var others=r.cells.slice(1).map(function(c,i){
+      return '<div class="mo"><em>'+(cols[i+1]||'').toUpperCase()+'</em><p>'+c+'</p></div>';
+    }).join('');
+    return '<div class="cmpb"><b>'+r.label+'</b>'+
+      '<div class="mus"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'+
+      '<div><em>CAREERPASSPORT</em><p>'+r.cells[0]+'</p></div></div>'+others+'</div>';
+  }).join('');
+})();
+
+/* ---- the companies strip: user-filled slots, duplicated for a seamless loop ---- */
+(function(){
+  var track=document.getElementById('logoTrack'); if(!track) return;
+  var N=7, html='';
+  for(var pass=0;pass<2;pass++){
+    for(var i=1;i<=N;i++){
+      html+='<div class="lg"><image-slot id="cmp-logo-'+i+'" shape="rect" '+
+        (pass?'aria-hidden="true" ':'')+'placeholder="Logo '+i+'"></image-slot></div>';
+    }
+  }
+  track.innerHTML=html;
+})();
+
+/* ---- reveal on enter ----
+   The animation is an enhancement and is never allowed to hide content. Two guards:
+
+   1. It only arms when the document can actually scroll. In a full-page capture, a print,
+      or any host that sizes the frame to the whole document, clientHeight equals
+      scrollHeight — nothing ever "enters" the viewport, so an observer would never fire
+      and every section would paint blank. In that case the page simply stays visible.
+   2. Once armed, anything already within the first viewport is revealed immediately, and a
+      sweep runs on load, on scroll and on a timer, so no element can be stranded by a
+      callback that does not arrive. */
+(function(){
+  var els=[].slice.call(document.querySelectorAll('.rv'));
+  if(!els.length || !('IntersectionObserver' in window)) return;
+
+  var de=document.documentElement;
+  var vp=function(){ return de.clientHeight || innerHeight };
+  var scrollable=function(){ return de.scrollHeight > vp() + 80 };
+  if(!scrollable()) return;              /* fully-laid-out frame: leave everything visible */
+
+  de.classList.add('rv-armed');
+  var show=function(e){ e.classList.add('in') };
+  var sweep=function(){
+    var h=vp();
+    els.forEach(function(e){
+      if(e.classList.contains('in')) return;
+      var r=e.getBoundingClientRect();
+      if(r.top < h * 1.02 && r.bottom > -40) show(e);
+    });
+  };
+
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(en){ if(en.isIntersecting){ show(en.target); io.unobserve(en.target) } });
+  },{threshold:0,rootMargin:'0px 0px -6% 0px'});
+  els.forEach(function(e){ io.observe(e) });
+
+  requestAnimationFrame(function(){ requestAnimationFrame(sweep) });
+  addEventListener('load',sweep);
+  addEventListener('scroll',sweep,{passive:true});
+  addEventListener('resize',function(){ if(!scrollable()) els.forEach(show); sweep(); },{passive:true});
+  setTimeout(sweep,1000);
+})();
+
+/* ---- mobile nav ---- */
+(function(){
+  var b=document.getElementById('burger'), m=document.getElementById('mnav');
+  if(!b||!m) return;
+  b.addEventListener('click',function(){
+    var o=m.classList.toggle('open'); b.setAttribute('aria-expanded',o?'true':'false');
+  });
+  [].slice.call(m.querySelectorAll('a')).forEach(function(a){
+    a.addEventListener('click',function(){ m.classList.remove('open'); b.setAttribute('aria-expanded','false'); });
+  });
+})();
+
+/* ---- demo capture ---- */
+(function(){
+  [].slice.call(document.querySelectorAll('[data-capture]')).forEach(function(f){
+    var i=f.querySelector('input'), b=f.querySelector('button'); if(!i||!b) return;
+    var done=b.getAttribute('data-done')||'SENT';
+    b.addEventListener('click',function(){
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(i.value.trim())) return i.focus();
+      f.classList.add('done'); b.textContent=done; i.readOnly=true;
+    });
+    i.addEventListener('keydown',function(e){ if(e.key==='Enter') b.click(); });
+  });
+})();
+</script>

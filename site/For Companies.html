@@ -1,0 +1,2121 @@
+<title>CareerPassport — For Companies</title>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#0a0c0b"/><g fill="#2a3348"><rect x="24" y="70" width="52" height="26" rx="3"/><rect x="92" y="62" width="52" height="26" rx="3"/><rect x="300" y="70" width="52" height="26" rx="3"/><rect x="24" y="300" width="52" height="26" rx="3"/><rect x="300" y="300" width="52" height="26" rx="3"/></g><rect x="146" y="150" width="108" height="130" rx="6" fill="#12203f" stroke="var(--emerald)" stroke-width="2"/><circle cx="200" cy="200" r="22" fill="none" stroke="var(--emerald)" stroke-width="1.5"/><rect x="191" y="190" width="18" height="20" rx="2" fill="var(--emerald)"/><rect x="168" y="248" width="64" height="6" rx="3" fill="var(--emerald)" opacity=".7"/></svg></template>
+<link rel="stylesheet" href="_ds/careerpassport-design-system-a8d325d2-717b-4d0b-85f0-302544f1ad1d/styles.css">
+<style>
+/* ============================================================================
+   FOR COMPANIES
+   Structure comes from the project's own DC artboards (artboards/Main, Claims, ShowBetter,
+   Loop, Ready, Invitation). Palette and type come from the design system, matching
+   Homepage.html exactly: --font-sans headings, --font-mono eyebrows, the --void ground and
+   the amber --emerald accent. From the artboards: the
+   72px gutter with a 664px copy column, the split header (headline left, supporting
+   lines right against a gold rule), and the cream evidence pack on navy ink.
+
+   Structurally it follows the artboards too: the header is in normal flow and every
+   section is an ordinary block. Nothing is pinned to the viewport and no band heights
+   are computed, so a heading cannot slide under the header and no two sections can
+   disagree about how much room they have.
+   ============================================================================ */
+:root{
+  /* the artboard grid */
+  --gut:clamp(20px,5vw,72px);
+  --measure:1296px;   /* 1440 − 2×72 */
+  --copy:664px;       /* the hero copy column */
+  --copy2:640px;      /* the section headline column */
+  --sec:clamp(96px,13vh,152px);
+  --hdr:83px;
+  /* Colour resolves through the design system's own tokens. The only aliases kept name a
+     role the system has no token for; every duplicate is gone, so a change to --emerald or
+     --hairline now moves the whole page at once. */
+  --gold-ink:var(--mint);
+  --gold-lo:color-mix(in srgb,var(--emerald) 35%,transparent);
+  --paper:var(--emerald-tint); --navy:#10203f;
+  --cover:linear-gradient(155deg,#1b3564 0%,#0d1c3a 55%,#091530 100%);
+  /* Shape is bimodal by intent, per the system: functional chrome is square-ish, content
+     cards are soft, marketing CTAs are pills. --r-flap is the one documented exception —
+     a departures tile is a physical object, not chrome. */
+  --r-chrome:6px; --r-card:12px; --r-card-lg:16px; --r-pill:100px; --r-flap:3px;
+  /* Card interiors: the system's 24-32px applies to page-level cards. Cards nested inside
+     the pinned panel take one tighter step, so five of them still fit a viewport. */
+  --pad-card:24px; --pad-tight:14px;
+  /* Mono has exactly two jobs on this page: a section eyebrow and a spec-sheet label. */
+  --eyebrow-size:11px; --eyebrow-track:.26em;
+  --label-size:8.5px; --label-track:.14em;
+  /* Depth reads from the surface step and the hairline. Two levels, both restrained. */
+  --sh-whisper:0 1px 1px rgba(0,0,0,.5);
+  --sh-float:0 2px 2px rgba(0,0,0,.5),0 12px 28px -6px rgba(0,0,0,.55),
+    inset 0 0 0 1px rgba(255,255,255,.03);
+  --ease:cubic-bezier(.4,0,.2,1);
+  --sans:var(--font-sans); --serif:var(--font-sans); --mono:var(--font-mono);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hdr) + 20px)}
+body{margin:0;background:var(--void);color:var(--ink);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--text-link);text-decoration:none}a:hover{color:var(--text-link-press);text-decoration:none}
+a.brand,a.brand:hover,a.brand:focus{color:var(--ink);text-decoration:none}
+/* the system's focus treatment: a 2px emerald ring at 2px offset, on everything */
+:focus-visible{outline:2px solid var(--emerald);outline-offset:2px;
+  border-radius:var(--r-chrome,6px)}
+.btn:focus-visible,.wait button:focus-visible{border-radius:var(--r-pill,100px)}
+.wait input:focus-visible{outline:2px solid var(--emerald);outline-offset:2px}
+::selection{background:var(--emerald);color:var(--emerald-deep)}
+h1,h2,h3{margin:0;text-wrap:pretty}p{margin:0}
+i,em{font-style:normal}
+button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{outline:none}
+img{display:block;max-width:100%}
+
+/* ---------- the ground ----------
+   Three fixed layers, all behind the content and all in the emerald ramp:
+   an atmosphere that lifts the top of the page off pure black, the 120px rule grid, and
+   a pair of very slow radial drifts. Nothing here reads as an animation while you look at
+   it — the movement is slower than attention, which is the point. */
+.ground{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.ground::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,
+    color-mix(in srgb,var(--emerald-mid,#1b3564) 26%,transparent) 0%,
+    color-mix(in srgb,var(--emerald-mid,#1b3564) 8%,transparent) 24%,
+    transparent 58%)}
+.drift{position:absolute;width:62vw;aspect-ratio:1;border-radius:50%;filter:blur(90px);
+  will-change:transform}
+.drift.a{left:-8vw;top:-14vh;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--emerald) 9%,transparent),transparent 72%);
+  animation:driftA 64s var(--ease) infinite alternate}
+.drift.b{right:-14vw;top:26vh;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--emerald-mid,#1b3564) 40%,transparent),transparent 72%);
+  animation:driftB 82s var(--ease) infinite alternate}
+@keyframes driftA{from{transform:translate3d(0,0,0) scale(1)}
+  to{transform:translate3d(7vw,9vh,0) scale(1.14)}}
+@keyframes driftB{from{transform:translate3d(0,0,0) scale(1.08)}
+  to{transform:translate3d(-9vw,-7vh,0) scale(.94)}}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(color-mix(in srgb,#fff 4.5%,transparent) 1px,transparent 1px),
+    linear-gradient(90deg,color-mix(in srgb,#fff 4.5%,transparent) 1px,transparent 1px);
+  background-size:120px 120px;
+  /* the grid slides a little against the page as you scroll, so the ground has parallax */
+  background-position:0 var(--gridY,0px);
+  mask-image:radial-gradient(120% 80% at 50% 10%,#000 25%,transparent 78%);
+  -webkit-mask-image:radial-gradient(120% 80% at 50% 10%,#000 25%,transparent 78%)}
+/* The one mesh gradient the system allows per page. Three radial blooms on the emerald
+   ramp — deep, mid, mint — at ~40px blur, so it reads as a glow on black rather than a wash.
+   Every other decorative light on this page is deliberately quieter than this one. */
+.bloom{position:absolute;top:-34vh;left:50%;width:130%;height:900px;translate:-50% 0;
+  z-index:0;pointer-events:none;filter:blur(40px);
+  background:
+    radial-gradient(38% 42% at 32% 44%,color-mix(in srgb,var(--emerald-mid,#1b3564) 74%,transparent),transparent 72%),
+    radial-gradient(34% 38% at 62% 38%,color-mix(in srgb,var(--emerald) 26%,transparent),transparent 70%),
+    radial-gradient(26% 30% at 74% 62%,color-mix(in srgb,var(--mint,#e9d6aa) 14%,transparent),transparent 72%)}
+
+/* ---------- header: in flow, per the artboards ---------- */
+.hdr{position:fixed;inset:0 0 auto;z-index:80;display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:16px var(--gut);background:linear-gradient(180deg,rgba(10,12,11,.92),transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--hairline)}
+.brand{display:flex;align-items:center;gap:11px;color:var(--ink)}
+.brand i{width:20px;height:27px;border-radius:3px 6px 6px 3px;background:var(--gradient-transit);border:1px solid color-mix(in srgb,var(--emerald) 50%,transparent)}
+.brand span{font-size:clamp(13.5px,1.12vw,16px);font-weight:600;letter-spacing:.1em;white-space:nowrap}
+.nav{display:flex;align-items:center;gap:clamp(14px,1.6vw,26px);font-size:14px;font-weight:500;
+  letter-spacing:-.01em;white-space:nowrap}
+.nav a{color:var(--mute)}.nav a:hover{color:var(--ink)}
+.burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:0 9px;border:0;background:transparent}
+.burger i{height:1.5px;background:var(--ink)}
+.mnav{display:none;position:fixed;inset:58px 0 auto;z-index:79;flex-direction:column;padding:12px var(--gut) 20px;
+  background:rgba(10,12,11,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--hairline)}
+.mnav.open{display:flex}
+.mnav a{display:flex;align-items:center;min-height:52px;font-size:15.5px;font-weight:600;letter-spacing:.08em;color:var(--mute);border-bottom:1px solid var(--hairline)}
+.mnav a:last-child{border:0}
+.prog{position:fixed;left:0;top:0;height:2px;z-index:90;width:var(--pw,0%);
+  background:var(--gradient-growth);transition:width .1s linear}
+
+/* ---------- one section shell ---------- */
+.sec{position:relative;z-index:10;padding:var(--sec) var(--gut);scroll-margin-top:var(--hdr)}
+.sec.tight{padding-top:calc(var(--sec) * .58)}
+.inner{width:min(var(--measure),100%);margin-inline:auto}
+.eyebrow{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:var(--eyebrow-size);
+  letter-spacing:var(--eyebrow-track);text-transform:uppercase;color:var(--faint)}
+.eyebrow i{display:block;width:26px;height:1px;background:rgba(255,255,255,.22);flex-shrink:0}
+.eyebrow.gold{color:var(--emerald)}
+.eyebrow.gold i{background:color-mix(in srgb,var(--emerald) 60%,transparent)}
+h1{font-size:clamp(38px,5.1vw,74px);font-weight:600;letter-spacing:-.05em;line-height:.96}
+h2{font-size:clamp(30px,4.1vw,60px);font-weight:600;letter-spacing:-.045em;line-height:1.02}
+.serif{font-style:normal;font-weight:600;letter-spacing:-.03em;color:var(--ink)}
+.lede{font-size:clamp(16px,1.22vw,17.5px);line-height:1.62;color:var(--mute);max-width:590px}
+.lede b{font-weight:400;color:var(--body)}
+
+/* the artboards' split header: headline left, supporting lines right on a gold rule */
+.split{display:flex;gap:clamp(28px,3vw,40px);align-items:flex-start}
+.split>.sh{width:min(var(--copy2),100%);flex-shrink:0;display:flex;flex-direction:column;gap:26px}
+.split>.sl{flex:1;min-width:0;display:flex;flex-direction:column;gap:11px;padding-top:clamp(0px,3.4vw,58px)}
+.sl p{font-size:clamp(15px,1.25vw,18px);line-height:1.5;color:var(--mute)}
+.sl .gap{height:18px}
+.sl p.q{color:var(--body);padding-left:20px;border-left:1px solid var(--gold-lo)}
+.sl p.q.hi{color:var(--ink)}
+
+.ctas{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:4px}
+.btn{box-shadow:inset 0 1px 0 rgba(255,255,255,.34),inset 0 -1px 0 rgba(0,0,0,.16);
+  display:inline-flex;align-items:center;justify-content:center;height:50px;padding:0 26px;border:0;
+  border-radius:var(--r-pill);background:var(--emerald);color:var(--emerald-deep);font-family:var(--sans);
+  font-size:14.5px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;
+  transition:background .16s var(--ease)}
+.btn:hover{background:color-mix(in srgb,#fff 22%,var(--emerald));color:var(--emerald-deep)}
+.btn.gh{box-shadow:none;background:transparent;color:var(--mute);border:1px solid var(--hairline-soft)}
+.btn.gh:hover{background:var(--panel-raised);border-color:var(--gold-lo);color:var(--ink)}
+.plain{list-style:none;display:flex;flex-direction:column;gap:11px;margin:0;padding:0}
+.plain li{display:flex;gap:13px;align-items:baseline;font-size:clamp(15px,1.15vw,17px);
+  line-height:1.5;color:var(--body)}
+.plain li::before{content:"";width:12px;height:1px;background:var(--emerald);opacity:.75;
+  flex-shrink:0;translate:0 -5px}
+.plain.two{display:grid;grid-template-columns:1fr 1fr;gap:11px clamp(18px,2.4vw,34px)}
+.pmono{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;color:var(--faint)}
+.pmono.gold{color:color-mix(in srgb,var(--emerald) 85%,transparent)}
+.ruled{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.ruled i{display:block;flex:1;height:1px;background:color-mix(in srgb,var(--emerald) 20%,transparent)}
+
+/* ---------- 01 hero: the résumé ocean ---------- */
+.hero{position:relative;z-index:10;display:flex;align-items:center;gap:clamp(24px,3vw,40px);
+  padding:calc(var(--hdr) + clamp(30px,4vh,54px)) var(--gut) clamp(54px,7.4vh,86px)}
+/* the copy column may shrink: below ~1250px a fixed 664px starves the art column */
+.hcopy{width:min(var(--copy),100%);flex:0 1 var(--copy);min-width:0;
+  display:flex;flex-direction:column;gap:26px}
+/* the art needs a real floor, or the passport is clipped rather than scaled */
+.hart{position:relative;flex:1 1 460px;min-width:400px;height:clamp(340px,56vh,620px);
+  overflow:visible}
+/* The hall plate. Portrait footage in a landscape slot: height follows the aspect ratio,
+   so the frame is taller than the slot and --vy chooses which band of it is seen.
+
+   --overscan is why the width is not simply 100%: the source has a white feathered
+   vignette burnt into its own edges, which would halo against this near-black page. The
+   plate is drawn wider than the slot so that feather falls outside the frame.
+
+   The grade sits the footage on the page's ground; the source is a bright warm-white
+   render. Dial --plate-* to taste. */
+.hart{--overscan:1.34;--plate-bright:.78;--plate-contrast:1.14;--plate-sat:.86}
+/* the hero stands at the right, palm open; the player floats off that palm */
+.present{position:absolute;inset:0;z-index:2}
+/* the mobile UI stands in front of the desktop frame, overlapping its lower-right */
+.pphone{position:absolute;right:4%;bottom:2%;height:44.4%;aspect-ratio:9/16;z-index:4;
+  border-radius:var(--r-card-lg);overflow:hidden;background:var(--panel-raised);
+  border:1px solid color-mix(in srgb,var(--emerald) 26%,transparent);
+  box-shadow:var(--sh-float)}
+.pphone image-slot{position:absolute;inset:0;width:100%;height:100%}
+.pnotch{position:absolute;left:50%;top:8px;translate:-50% 0;z-index:2;width:34%;height:5px;
+  border-radius:3px;background:rgba(255,255,255,.14)}
+.pglow{position:absolute;left:50%;top:46%;width:88%;aspect-ratio:1;translate:-50% -50%;z-index:1;
+  opacity:.4;filter:blur(28px);
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--emerald) 24%,transparent),
+    color-mix(in srgb,var(--emerald) 7%,transparent) 44%,transparent 74%)}
+.pscreen{position:absolute;left:-16%;top:20%;width:104%;aspect-ratio:16/9;z-index:3;
+  border-radius:var(--r-card-lg);overflow:hidden;background:var(--panel);
+  border:1px solid color-mix(in srgb,var(--emerald) 22%,transparent);
+  box-shadow:var(--sh-float)}
+.pscreen image-slot{position:absolute;inset:0;width:100%;height:100%}
+.pchrome{position:absolute;left:11px;top:11px;z-index:2;display:flex;gap:5px}
+.pchrome i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.16)}
+.plbl{position:absolute;right:11px;bottom:9px;z-index:2;font-family:var(--mono);font-size:8px;
+  letter-spacing:.2em;color:var(--emerald);opacity:.75}
+@media (max-width:1199px){
+  .pphone{height:41%;right:1%}
+  .pscreen{top:16%;width:110%;left:-16%}
+}
+.hplate{position:absolute;left:50%;top:0;z-index:1;display:block;
+  width:calc(100% * var(--overscan));height:auto;
+  /* the fallback already lands on the desk field, so the pre-script frame is framed
+     correctly rather than showing the atrium above it */
+  translate:-50% var(--vy,-43%);
+  filter:brightness(var(--plate-bright)) contrast(var(--plate-contrast)) saturate(var(--plate-sat));
+  backface-visibility:hidden}
+
+/* ---------- 02 · from one sentence to a hiring blueprint (pinned) ---------- */
+.aidemo{position:relative;z-index:10}
+.aidemopin{position:sticky;top:0;height:100svh;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;border-block:1px solid var(--hairline);background:var(--void)}
+
+/* The departures board. The system bans textures and repeating patterns; this is the one
+   sanctioned exception, because it is a brand device rather than decoration — a physical
+   split-flap object, feathered away from the centre so it never competes with the copy. */
+.flapbg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;pointer-events:none;perspective:900px;
+  opacity:.34;transition:opacity .6s var(--ease);
+  -webkit-mask-image:radial-gradient(ellipse 58% 62% at 50% 50%,transparent 0%,transparent 34%,
+    rgba(0,0,0,.32) 62%,#000 90%);
+  mask-image:radial-gradient(ellipse 58% 62% at 50% 50%,transparent 0%,transparent 34%,
+    rgba(0,0,0,.32) 62%,#000 90%)}
+.flapglow{position:absolute;inset:-22%;pointer-events:none;filter:blur(64px);opacity:.2;
+  transition:translate 1s var(--ease),rotate 1.4s var(--ease),scale 1.2s var(--ease);
+  background:
+    radial-gradient(40% 36% at 14% 20%,color-mix(in srgb,var(--emerald) 20%,transparent),transparent 72%),
+    radial-gradient(44% 38% at 86% 78%,color-mix(in srgb,var(--emerald-mid,#1b3564) 62%,transparent),transparent 72%),
+    radial-gradient(30% 26% at 64% 10%,color-mix(in srgb,var(--mint,#e9d6aa) 11%,transparent),transparent 70%),
+    radial-gradient(52% 46% at 50% 50%,color-mix(in srgb,var(--emerald-deep) 46%,transparent),transparent 76%)}
+.flaprow{display:flex;align-items:center;justify-content:center;gap:3px;
+  transform-style:preserve-3d;transition:translate .9s var(--ease)}
+.flapgrp{display:flex;align-items:center;gap:3px}
+.flapgap{width:clamp(14px,1.9vw,26px)}
+.flapc{position:relative;width:clamp(24px,2.5vw,34px);height:clamp(32px,3.3vw,44px);
+  border-radius:var(--r-flap);
+  display:grid;place-items:center;font-family:var(--mono);font-size:clamp(15px,1.6vw,21px);
+  line-height:1;color:var(--body);text-transform:uppercase;
+  background:linear-gradient(180deg,var(--panel-raised) 0%,var(--panel-raised) 49%,
+    rgba(0,0,0,.55) 50%,var(--panel) 100%);
+  border:1px solid rgba(255,255,255,.05);backface-visibility:hidden;
+  /* a machined bevel: light catches the top edge, the bottom edge falls into shadow,
+     and each half of the flap picks up its own faint sheen */
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.11),
+    inset 0 -1px 0 rgba(0,0,0,.55),
+    inset 1px 0 0 rgba(255,255,255,.03),
+    inset -1px 0 0 rgba(0,0,0,.32)}
+.flapc::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,.015) 44%,
+    transparent 49%,rgba(255,255,255,.05) 51%,rgba(255,255,255,.008) 92%,transparent 100%)}
+.flapc.num{color:var(--emerald);opacity:.75}
+.flapc.st{color:var(--mint,#e9d6aa);opacity:.6;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--emerald) 9%,var(--panel-raised)) 0%,
+    color-mix(in srgb,var(--emerald) 9%,var(--panel-raised)) 49%,rgba(0,0,0,.55) 50%,
+    var(--panel) 100%)}
+.flapc.flip{animation:flapflip .3s var(--ease)}
+@keyframes flapflip{0%{transform:rotateX(0)}48%{transform:rotateX(-86deg)}
+  52%{transform:rotateX(86deg)}100%{transform:rotateX(0)}}
+
+.flapvig{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(76% 70% at 50% 50%,transparent 30%,rgba(0,0,0,.45) 76%,rgba(0,0,0,.74) 100%)}
+/* a soft plate directly behind the copy, so type always wins over the board */
+.aiwrap::before{content:"";position:absolute;inset:-8% -6%;pointer-events:none;z-index:-1;
+  background:radial-gradient(64% 58% at 50% 50%,var(--void) 0%,
+    color-mix(in srgb,var(--void) 88%,transparent) 46%,transparent 78%)}
+/* the act header: one chip, one rail, one title, all persistent across the five acts */
+.acthead{display:flex;align-items:center;gap:clamp(12px,2vw,26px)}
+.actchip{flex-shrink:0;height:28px;padding:0 13px;border-radius:7px;display:flex;align-items:center;
+  font-family:var(--mono);font-size:var(--eyebrow-size);letter-spacing:var(--eyebrow-track);
+  color:var(--emerald);
+  background:color-mix(in srgb,var(--emerald) 11%,transparent);
+  border:1px solid color-mix(in srgb,var(--emerald) 32%,transparent);
+  transition:color .4s var(--ease),background .4s var(--ease)}
+.acttitle{width:100%;font-size:clamp(24px,3vw,44px);font-weight:600;line-height:1.02;
+  letter-spacing:-.045em;color:var(--ink);text-wrap:pretty;
+  text-shadow:0 0 18px var(--void),0 0 34px var(--void);
+}
+.aiwrap{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:14px;
+  width:min(960px,94vw);padding:0 var(--gut)}
+
+.aistage{position:relative;width:100%}
+.aibox{position:relative;width:100%;min-height:156px;border-radius:var(--r-card-lg);
+  transition:min-height .6s var(--ease),border-radius .5s var(--ease),background .5s var(--ease),
+    border-color .5s var(--ease)}
+.aibox.big{min-height:clamp(416px,63vh,552px);border-radius:var(--r-card-lg);
+  /* the passport's own laid hatch, at stock strength — a surface, not a pattern */
+  background-image:repeating-linear-gradient(128deg,rgba(255,255,255,.014) 0 1px,transparent 1px 9px);
+  background-color:var(--panel);
+  border:1px solid var(--hairline);
+  box-shadow:var(--sh-float)}
+.aibox::before{content:"";position:absolute;left:14%;right:14%;top:-1px;height:1px;opacity:0;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--emerald) 70%,transparent),
+    transparent);transition:opacity .6s var(--ease)}
+.aibox.big::before{opacity:1}
+/* the prepare state runs a scan line across the panel */
+.aiprep::after{content:"";position:absolute;left:8%;right:8%;top:50%;height:1px;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--emerald) 55%,transparent),
+    transparent);opacity:0}
+.aiprep.on::after{animation:scanline 2.1s var(--ease) infinite}
+@keyframes scanline{0%{opacity:0;translate:0 -46px}18%{opacity:1}82%{opacity:1}
+  100%{opacity:0;translate:0 46px}}
+/* a sheen crosses the composer the moment it arms */
+.aichat::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.07) 50%,transparent 62%);
+  background-size:280% 100%}
+.aichat.searching::after{animation:sheen 1.5s var(--ease) 1 forwards}
+@keyframes sheen{0%{opacity:1;background-position:180% 0}100%{opacity:0;background-position:-90% 0}}
+
+.aichat{position:absolute;inset:0;display:flex;flex-direction:column;border-radius:var(--r-card-lg);
+  background:var(--panel-raised);border:1px solid var(--hairline);overflow:hidden;
+  box-shadow:var(--sh-whisper);
+  transition:opacity .4s var(--ease),translate .45s var(--ease),border-color .35s var(--ease),
+    box-shadow .35s var(--ease)}
+.aichat.searching{border-color:color-mix(in srgb,var(--emerald) 45%,transparent);
+  box-shadow:var(--sh-whisper)}
+.aichat.off{opacity:0;translate:0 -10px;pointer-events:none}
+.aifield{flex:1;display:flex;align-items:flex-start;padding:20px 22px 14px;min-height:0}
+.aitext{font-size:clamp(15px,1.25vw,18px);line-height:1.5;color:var(--ink);
+  letter-spacing:-.02em;text-wrap:pretty}
+.aitext span{opacity:.3;transition:opacity .3s var(--ease),color .3s var(--ease)}
+.aitext span.hot{opacity:1}
+.aitext span.lead{color:var(--mint)}
+.aicaret{display:inline-block;width:1.5px;height:.95em;margin:0 0 -.14em 2px;
+  vertical-align:baseline;background:var(--emerald);opacity:0;
+  animation:aiblink 1.05s steps(1,end) infinite}
+.aicaret.on{opacity:1}
+@keyframes aiblink{0%,49%{opacity:1}50%,100%{opacity:0}}
+.aibar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 10px 10px 16px;border-top:1px solid var(--hairline-soft,var(--hairline))}
+.aitools{display:flex;align-items:center;gap:8px}
+.aitool{width:30px;height:30px;border-radius:var(--r-chrome);display:grid;place-items:center;
+  background:rgba(255,255,255,.035);color:var(--faint)}
+.aipill{display:flex;align-items:center;gap:7px;height:30px;padding:0 12px;border-radius:100px;
+  font-size:12.5px;font-weight:500;letter-spacing:-.018em;
+  border:1px solid color-mix(in srgb,var(--emerald) 30%,transparent);
+  background:color-mix(in srgb,var(--emerald) 10%,transparent);
+  color:var(--emerald);transition:all .3s var(--ease)}
+.aipill.hot{border-color:color-mix(in srgb,var(--emerald) 60%,transparent);
+  background:color-mix(in srgb,var(--emerald) 18%,transparent)}
+.aipill svg{transition:rotate .5s var(--ease)}
+.aipill.hot svg{rotate:180deg}
+/* the Companion mark, sized for the pill and inheriting its gold */
+/* the Companion mark, sized for the pill and inheriting its gold. Scoped to .aipill so it
+   outranks the later .exbot base rules rather than losing to them on source order. */
+.aipill .pillbot{width:15px;height:13px;margin-top:2px;border-radius:4px 4px 5px 5px;
+  border-color:currentColor}
+.aipill .pillbot::before{background:currentColor;height:2.5px;top:-3.5px}
+.aipill .pillbot::after{width:3px;height:3px;top:-5.5px;background:currentColor}
+.aipill .pillbot i{width:2.6px;height:2.6px;background:currentColor}
+.aibar svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+.aisearch{position:relative;flex-shrink:0;width:34px;height:34px;border-radius:var(--r-chrome);border:0;
+  background:rgba(255,255,255,.045);color:var(--faint);display:grid;place-items:center;
+  transition:scale .26s cubic-bezier(.34,1.7,.5,1),background .3s var(--ease),color .3s var(--ease)}
+.aisearch.armed{background:var(--emerald);color:var(--emerald-deep);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -1px 0 rgba(0,0,0,.18)}
+.aisearch.pressed{scale:.82}
+.aisearch svg{transition:translate .3s cubic-bezier(.34,1.6,.5,1)}
+.aisearch.pressed svg{translate:2px -2px}
+.ring{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+  border:1.5px solid var(--emerald)}
+.pressed .ring{animation:ringpop .55s var(--ease) forwards}
+@keyframes ringpop{0%{opacity:.85;scale:1}100%{opacity:0;scale:1.85}}
+.ring2{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.55),transparent 62%)}
+.pressed .ring2{animation:ripple .42s var(--ease) forwards}
+@keyframes ripple{0%{opacity:.55;scale:.25}100%{opacity:0;scale:1.5}}
+.shimmer{background:linear-gradient(90deg,var(--mute) 0%,var(--ink) 48%,var(--mute) 100%);
+  background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:aishim 2.4s linear infinite}
+@keyframes aishim{0%{background-position:200% center}100%{background-position:-200% center}}
+
+.aiprep{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:clamp(24px,3vw,40px);opacity:0;translate:0 10px;pointer-events:none;
+  transition:opacity .4s var(--ease),translate .5s var(--ease)}
+.aiprep.on{opacity:1;translate:0 0}
+.aidots{display:flex;gap:5px}
+.aidots i{width:6px;height:6px;border-radius:50%;background:var(--emerald);
+  animation:aidot 1.1s ease-in-out infinite}
+.aidots i:nth-child(2){animation-delay:.15s}.aidots i:nth-child(3){animation-delay:.3s}
+@keyframes aidot{0%,80%,100%{opacity:.25;translate:0 0}40%{opacity:1;translate:0 -3px}}
+.aiprep p{font-family:var(--mono);font-size:var(--eyebrow-size);
+  letter-spacing:var(--eyebrow-track);text-transform:uppercase}
+
+/* the blueprint, as a collage rather than a row of equal boxes */
+.aibp{position:absolute;inset:0;display:flex;flex-direction:column;
+  padding:clamp(18px,2.4vw,28px);opacity:0;translate:0 14px;pointer-events:none;
+  transition:opacity .45s var(--ease),translate .5s var(--ease),filter .6s var(--ease)}
+.aibp.on{opacity:1;translate:0 0}
+.aibp.done{filter:blur(7px);opacity:.28}
+.bpgrid{flex:1;display:grid;gap:10px;min-height:0;
+  grid-template-columns:1.22fr 1fr 1fr;grid-template-rows:1fr 1fr}
+.bpk{position:relative;display:flex;flex-direction:column;gap:5px;min-height:0;
+  padding:var(--pad-tight);border-radius:var(--r-card);background:var(--panel-raised);
+  border:1px solid var(--hairline);opacity:.4;translate:0 8px;
+  transition:opacity .5s var(--ease),translate .5s var(--ease),border-color .4s var(--ease),
+    background .4s var(--ease),box-shadow .4s var(--ease)}
+.bpk:nth-child(1){grid-row:span 2}
+.bpk.on{opacity:1;translate:0 0}
+.bpk:nth-child(1){transition-delay:0s}
+.bpk:nth-child(2){transition-delay:.06s}
+.bpk:nth-child(3){transition-delay:.12s}
+.bpk:nth-child(4){transition-delay:.18s}
+.bpk:nth-child(5){transition-delay:.24s}
+.bpk.hov::before{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--emerald) 14%,transparent),transparent 55%)}
+.bpk b.bpi{width:26px;height:26px;border-radius:var(--r-chrome);display:grid;place-items:center;
+  background:rgba(255,255,255,.045);border:1px solid var(--hairline);color:var(--faint);
+  transition:color .4s var(--ease),background .4s var(--ease),border-color .4s var(--ease)}
+.bpk b.bpi svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+.bpk.filled b.bpi{background:color-mix(in srgb,var(--emerald) 13%,transparent);
+  border-color:color-mix(in srgb,var(--emerald) 34%,transparent)}
+.bpk strong{font-size:clamp(13px,1.05vw,15px);font-weight:600;letter-spacing:-.018em;color:var(--ink)}
+.bpk .bptxt{font-size:11.5px;line-height:1.42;color:var(--body);opacity:0;translate:0 5px;
+  transition:opacity .5s var(--ease),translate .5s var(--ease)}
+.bpk.filled .bptxt{opacity:1;translate:0 0}
+.bpk.filled{border-color:color-mix(in srgb,var(--emerald) 30%,transparent);
+  background:color-mix(in srgb,var(--emerald) 5%,transparent)}
+.bpk.filled b.bpi{color:var(--emerald)}
+.bpk.hov{border-color:color-mix(in srgb,var(--emerald) 62%,transparent)}
+.bpload{flex-shrink:0;display:flex;flex-direction:column;gap:6px;opacity:0;height:0;
+  overflow:hidden;transition:opacity .3s var(--ease)}
+/* collapsed it must leave the flow entirely, or it eats a second gap between title and body */
+.bpload:not(.on){display:none}
+/* and the body text must leave the flow while loading, or it squeezes the bars to nothing */
+.bpk:not(.filled) .bptxt{display:none}
+.bpload.on{opacity:1;height:auto}
+.bpload i{flex-shrink:0;display:block;height:6px;border-radius:3px;
+  background:linear-gradient(90deg,rgba(255,255,255,.05) 0%,
+    color-mix(in srgb,var(--emerald) 26%,transparent) 48%,rgba(255,255,255,.05) 100%);
+  background-size:200% 100%;animation:aishim 1.5s linear infinite}
+.bpload i:nth-child(2){width:88%;animation-delay:.12s}
+.bpload i:nth-child(3){width:64%;animation-delay:.24s}
+.bpedit{position:absolute;top:9px;right:9px;display:flex;align-items:center;gap:5px;
+  height:22px;padding:0 8px;border-radius:var(--r-chrome);font-family:var(--mono);font-size:9px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--emerald);
+  background:color-mix(in srgb,var(--emerald) 14%,transparent);
+  border:1px solid color-mix(in srgb,var(--emerald) 38%,transparent);
+  opacity:0;scale:.9;transform-origin:top right;
+  transition:opacity .25s var(--ease),scale .25s var(--ease)}
+.bpk.hov .bpedit{opacity:1;scale:1}
+.bpedit svg{width:9px;height:9px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.bpfoot{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding-top:12px}
+.bpnote{font-family:var(--mono);font-size:var(--label-size);letter-spacing:var(--label-track);text-transform:uppercase;
+  color:var(--faint)}
+.bpsub{height:34px;padding:0 18px;border-radius:var(--r-chrome);border:1px solid var(--hairline);
+  background:rgba(255,255,255,.04);color:var(--mute);font-size:12.5px;font-weight:500;
+  letter-spacing:-.018em;opacity:0;translate:0 6px;
+  transition:opacity .4s var(--ease),translate .4s var(--ease),background .3s var(--ease),
+    color .3s var(--ease),scale .2s var(--ease)}
+.bpsub.on{opacity:1;translate:0 0}
+.bpsub{position:relative;overflow:visible}
+.bpsub.armed{background:var(--emerald);color:var(--emerald-deep);border-color:var(--emerald);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -1px 0 rgba(0,0,0,.18)}
+.bpsub.pressed{scale:.93;transition:scale .26s cubic-bezier(.34,1.7,.5,1)}
+
+/* ---- acts 3, 4, 5: the same panel, three more states ---- */
+.aiex,.aiev,.aidc{position:absolute;inset:0;display:flex;flex-direction:column;
+  padding:clamp(18px,2.4vw,30px);opacity:0;translate:0 14px;pointer-events:none;
+  transition:opacity .45s var(--ease),translate .5s var(--ease)}
+.aiex.on,.aiev.on,.aidc.on{opacity:1;translate:0 0}
+.exhead{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.exlbl{font-family:var(--mono);font-size:var(--label-size);letter-spacing:var(--label-track);color:var(--emerald)}
+.exagent{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:var(--label-size);
+  letter-spacing:var(--label-track);text-transform:uppercase;color:var(--mute)}
+.exagent i{width:6px;height:6px;border-radius:50%;background:var(--emerald);
+  animation:aidot 1.4s ease-in-out infinite}
+.exagent.ev i{background:var(--mint,#e9d6aa)}
+
+/* act 3 — one role, many sources, many channels, drawn rather than listed */
+.exmap{position:relative;flex:1;min-height:0;margin:6px 0}
+.exwires{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.exwires .wire{fill:none;stroke:var(--hairline);stroke-width:1.1;vector-effect:non-scaling-stroke;
+  stroke-dasharray:1;stroke-dashoffset:1;pathLength:1;
+  transition:stroke-dashoffset .9s var(--ease),stroke .6s var(--ease)}
+.exwires .wire.lit{stroke-dashoffset:0;stroke:color-mix(in srgb,var(--emerald) 82%,transparent);
+  filter:drop-shadow(0 0 3px color-mix(in srgb,var(--emerald) 34%,transparent))}
+.exnode{position:absolute;translate:-50% -50%;display:flex;flex-direction:column;
+  align-items:center;gap:2px;padding:7px 11px;border-radius:var(--r-chrome);white-space:nowrap;
+  font-size:clamp(12px,1vw,14px);font-weight:500;letter-spacing:-.018em;color:var(--mute);
+  background:var(--panel-raised);border:1px solid var(--hairline);
+  opacity:0;scale:.9;transition:opacity .5s var(--ease),scale .5s var(--ease),
+    color .4s var(--ease),border-color .4s var(--ease),background .4s var(--ease)}
+.exnode b{font-family:var(--mono);font-size:12px;color:var(--emerald)}
+.exnode.on{opacity:1;scale:1}
+.exnode.chn.on{color:var(--emerald);
+  border-color:color-mix(in srgb,var(--emerald) 40%,transparent);
+  background:color-mix(in srgb,var(--emerald) 9%,transparent)}
+.exhub{position:absolute;left:50%;top:50%;translate:-50% -50%;display:flex;align-items:center;
+  gap:9px;padding:9px 17px;border-radius:100px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.22em;color:var(--emerald-deep);background:var(--emerald);
+  /* foil, not glow: a specular edge that is brightest at the top-left, like the passport's
+     stamped board. No outer bleed — the hairline and the surface step carry the depth. */
+  box-shadow:var(--sh-whisper),
+    inset 0 1px 0 rgba(255,255,255,.45),
+    inset 1px 0 0 rgba(255,255,255,.22),
+    inset 0 -1px 0 rgba(0,0,0,.22);
+  opacity:0;scale:.85;transition:opacity .5s var(--ease),scale .5s var(--ease)}
+.exhub.on{opacity:1;scale:1}
+/* the Companion mark, as drawn on the homepage: a rounded head, an antenna, two eyes */
+.exbot{position:relative;width:17px;height:15px;flex-shrink:0;border-radius:5px 5px 6px 6px;
+  border:1.2px solid color-mix(in srgb,var(--emerald-deep) 62%,transparent);
+  display:flex;align-items:center;justify-content:center;gap:3px}
+.exbot::before{content:"";position:absolute;top:-4px;left:50%;translate:-50% 0;width:1.2px;height:3px;
+  background:color-mix(in srgb,var(--emerald-deep) 62%,transparent)}
+.exbot::after{content:"";position:absolute;top:-6.5px;left:50%;translate:-50% 0;width:3.4px;
+  height:3.4px;border-radius:50%;background:var(--emerald-deep)}
+.exbot i{width:3px;height:3px;border-radius:50%;background:var(--emerald-deep);
+  animation:exblink 3.4s var(--ease) infinite}
+.exbot i:last-child{animation-delay:.12s}
+@keyframes exblink{0%,92%,100%{opacity:1}95%{opacity:.15}}
+/* the conversations each channel opens, running off the edge of the panel */
+.exwires .wire.reach{stroke-width:.7;stroke-dasharray:1;stroke-dashoffset:1;
+  transition:stroke-dashoffset 1.1s var(--ease),stroke .6s var(--ease)}
+.exwires .wire.reach.lit{stroke-dashoffset:0;
+  stroke:color-mix(in srgb,var(--emerald) 52%,transparent);filter:none}
+.exticker{flex-shrink:0;display:flex;gap:10px;padding-top:11px;border-top:1px solid var(--hairline);
+  font-family:var(--mono);font-size:var(--label-size);letter-spacing:var(--label-track);color:var(--mute)}
+.exticker b{color:var(--emerald)}
+.dclogs p b,.exlogs p b{color:var(--emerald)}
+.exticker span{transition:opacity .3s var(--ease)}
+.exticker.turn span{opacity:0}
+
+/* act 4 — the pool narrows, then one record steps forward */
+.evbody{flex:1;display:grid;grid-template-columns:1fr .92fr;gap:clamp(16px,2.4vw,30px);
+  min-height:0;padding:14px 0}
+.evfun{display:flex;flex-direction:column;justify-content:center;gap:11px;min-height:0}
+.evf{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 10px;
+  opacity:0;translate:-8px 0;transition:opacity .5s var(--ease),translate .5s var(--ease)}
+.evf.on{opacity:1;translate:0 0}
+.evf i{grid-column:1/-1;order:2;height:4px;border-radius:2px;width:0;
+  background:linear-gradient(90deg,var(--emerald),color-mix(in srgb,var(--emerald) 28%,transparent));
+  transition:width .9s var(--ease)}
+.evf.on i{width:var(--w)}
+.evf b{order:1;font-family:var(--mono);font-size:clamp(13px,1.05vw,15px);color:var(--emerald)}
+.evf span{order:1;justify-self:end;font-family:var(--mono);font-size:var(--label-size);
+  letter-spacing:var(--label-track);
+  text-transform:uppercase;color:var(--faint)}
+.evstack{position:relative;min-height:0}
+/* the real cover: navy board, gold foil, the holder's name where the URL sits */
+.evpass{position:absolute;left:50%;top:50%;height:94%;aspect-ratio:.715;
+  display:flex;flex-direction:column;align-items:center;border-radius:3px 11px 11px 3px;
+  padding:7% 8% 6%;overflow:hidden;opacity:0;
+  background:
+    repeating-linear-gradient(128deg,rgba(255,255,255,.028) 0 1px,transparent 1px 8px),
+    linear-gradient(205deg,#22407a 0%,var(--emerald-mid,#1b3564) 34%,var(--emerald-deep,#10203f) 100%);
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:var(--sh-float),inset 1px 0 0 rgba(255,255,255,.1);
+  transform:translate(calc(-50% + var(--i) * 11px), calc(-50% + var(--i) * 22px));
+  transition:opacity .5s var(--ease),transform .8s cubic-bezier(.22,1.02,.36,1),
+    box-shadow .5s var(--ease);
+  transition-delay:calc(var(--i) * .05s)}
+/* the spine */
+.evpass::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5%;
+  background:linear-gradient(90deg,rgba(0,0,0,.45),transparent)}
+.evstack.on .evpass{opacity:1;
+  transform:translate(calc(-50% + var(--i) * 11px), calc(-50% + var(--i) * 7px))
+    rotate(calc(var(--i) * 1.6deg))}
+.evstack.spread .evpass{
+  transform:translate(calc(-50% + (var(--i) - 1.5) * 44px), -50%)
+    rotate(calc((var(--i) - 1.5) * 4.6deg))}
+.evstack.spread .evpass[data-p="0"]{box-shadow:var(--sh-float)}
+.pcvwm{font-family:var(--mono);font-size:5.4px;letter-spacing:.34em;color:var(--emerald);
+  opacity:.9}
+.pcvseal{position:relative;width:31%;aspect-ratio:1;margin:auto 0 0;border-radius:50%;
+  display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--emerald) 62%,transparent)}
+.pcvseal::before{content:"";position:absolute;inset:11%;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--emerald) 34%,transparent)}
+.pcvseal i{width:34%;height:44%;border-radius:2px 2px 5px 5px;background:var(--emerald)}
+.pcvtitle{margin-top:auto;font-size:13px;font-weight:700;letter-spacing:.26em;
+  color:var(--emerald-tint,#fdfaf1)}
+.pcvname{margin-top:5px;font-size:9px;font-weight:600;letter-spacing:-.018em;
+  color:var(--emerald-tint,#fdfaf1);text-align:center}
+.pcvurl{margin-top:2px;font-family:var(--mono);font-size:5px;letter-spacing:.08em;
+  color:color-mix(in srgb,var(--emerald) 62%,transparent)}
+.pcvchip{margin:auto 0 0;width:22%;aspect-ratio:1.4;border-radius:2px;display:grid;
+  place-items:center;border:1px solid color-mix(in srgb,var(--emerald) 55%,transparent)}
+.pcvchip i{width:34%;aspect-ratio:1;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--emerald) 55%,transparent)}
+.evstamp{position:absolute;top:6px;right:6px;font-family:var(--mono);font-size:5.4px;
+  letter-spacing:.18em;padding:3px 5px;border-radius:3px;color:var(--emerald);
+  background:color-mix(in srgb,var(--emerald-deep) 72%,transparent);
+  border:1px solid color-mix(in srgb,var(--emerald) 46%,transparent)}
+
+/* act 5 — three conversations on one line */
+.dcline{position:relative;flex:1;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;min-height:0;padding:0 4px}
+.dcrail{position:absolute;left:6%;right:6%;top:50%;height:1px;background:var(--hairline)}
+.dcslot{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:12px var(--pad-tight);border-radius:var(--r-card);background:var(--panel-raised);
+  border:1px solid var(--hairline);opacity:0;translate:0 10px;
+  transition:opacity .5s var(--ease),translate .5s var(--ease),border-color .35s var(--ease),
+    background .35s var(--ease),scale .2s cubic-bezier(.34,1.7,.5,1)}
+.dcslot.on{opacity:1;translate:0 0}
+.dcslot i{width:9px;height:9px;border-radius:50%;background:var(--hairline);
+  box-shadow:0 0 0 4px var(--panel);transition:background .35s var(--ease)}
+.dcslot b{font-size:clamp(13px,1.05vw,15px);font-weight:600;letter-spacing:-.018em;color:var(--ink)}
+.dcslot span{font-family:var(--mono);font-size:var(--label-size);
+  letter-spacing:var(--label-track);color:color-mix(in srgb,var(--emerald) 72%,transparent)}
+.dcslot.picked{border-color:color-mix(in srgb,var(--emerald) 52%,transparent);
+  background:color-mix(in srgb,var(--emerald) 8%,transparent)}
+.dcslot.picked i{background:var(--emerald)}
+.dcslot.picked span{color:var(--emerald)}
+.dcslot.pressed{scale:.95}
+.dcslot:hover{border-color:color-mix(in srgb,var(--emerald) 52%,transparent)}
+/* what the manager can do with each conversation */
+.dcmenu{position:absolute;left:50%;top:calc(100% + 8px);translate:-50% 0;z-index:5;
+  display:flex;flex-direction:column;min-width:168px;padding:5px;border-radius:var(--r-card);
+  background:var(--panel-raised);border:1px solid var(--hairline);
+  box-shadow:var(--sh-float);
+  opacity:0;translate:-50% -6px;pointer-events:none;
+  transition:opacity .25s var(--ease),translate .28s var(--ease)}
+.dcslot:hover .dcmenu,.dcslot.hov .dcmenu{opacity:1;translate:-50% 0}
+.dcline>.dcslot:first-of-type .dcmenu{left:0;translate:0 -6px}
+.dcline>.dcslot:first-of-type:hover .dcmenu,
+.dcline>.dcslot:first-of-type.hov .dcmenu{translate:0 0}
+.dcline>.dcslot:last-of-type .dcmenu{left:auto;right:0;translate:0 -6px}
+.dcline>.dcslot:last-of-type:hover .dcmenu,
+.dcline>.dcslot:last-of-type.hov .dcmenu{translate:0 0}
+.dcmenu span{padding:6px 9px;border-radius:var(--r-chrome);text-align:left;font-size:11.5px;font-weight:500;
+  letter-spacing:-.018em;color:var(--body);white-space:nowrap;
+  transition:background .18s var(--ease),color .18s var(--ease)}
+.dcmenu span:hover{background:rgba(255,255,255,.05);color:var(--ink)}
+.dcmenu span.no{color:var(--mute);border-top:1px solid var(--hairline);border-radius:0 0 6px 6px;
+  margin-top:3px;padding-top:8px}
+.dcmenu span.no:hover{color:var(--error,#f2544a)}
+.dcend{flex-shrink:0;margin-top:10px;font-size:clamp(15px,1.25vw,18px);line-height:1.5;
+  color:var(--ink);letter-spacing:-.02em;opacity:0;translate:0 8px;
+  transition:opacity .5s var(--ease),translate .5s var(--ease)}
+.dcend.on{opacity:1;translate:0 0}
+
+/* the five acts, as five quiet dots */
+.actdots{position:absolute;z-index:8;right:clamp(20px,3.4vw,48px);bottom:clamp(20px,3.4vh,44px);
+  display:flex;align-items:center;gap:7px}
+.actdots i{width:6px;height:6px;border-radius:3px;background:var(--hairline);
+  transition:width .45s var(--ease),background .45s var(--ease)}
+.actdots i.done{background:color-mix(in srgb,var(--emerald) 42%,transparent)}
+.actdots i.on{width:20px;background:var(--emerald)}
+
+@media(max-width:820px){
+  .evbody{grid-template-columns:1fr}
+  .evfun{display:none}
+  .dcline{flex-direction:column;justify-content:center;gap:8px}
+  .dcrail{display:none}
+  .exnode.src{display:none}
+}
+
+/* the closing state, once the hiring manager submits */
+.aifin{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:12px;pointer-events:none}
+.aifin p{display:flex;align-items:center;gap:9px;font-family:var(--mono);
+  font-size:var(--eyebrow-size);letter-spacing:var(--eyebrow-track);text-transform:uppercase;opacity:0;translate:0 8px;
+  transition:opacity .5s var(--ease),translate .5s var(--ease)}
+.aifin p.on{opacity:1;translate:0 0}
+.aifin::before{content:"";position:absolute;width:min(320px,62%);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,color-mix(in srgb,var(--emerald) 16%,transparent),transparent 66%);
+  opacity:0;scale:.7;transition:opacity .7s var(--ease),scale .9s var(--ease)}
+.aifin:has(p.on)::before{opacity:1;scale:1}
+.aifin .f1{color:var(--emerald)}
+.aifin .f2{color:var(--ink)}
+
+/* the hiring manager's cursor, in the collaborative-canvas idiom */
+.hmcur{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;opacity:0;z-index:6;
+  transform-origin:2px 2px;
+  will-change:transform;
+  transition:opacity .55s var(--ease),scale .18s var(--ease)}
+.hmcur.on{opacity:1}
+.hmcur.away{opacity:0}
+.hmcur{opacity:0}
+
+.hmcur svg{position:absolute;left:-4px;top:-2px;width:19px;height:19px;
+  transform-origin:4px 2px;transition:scale .18s var(--ease);
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
+.hmcur.click svg{scale:.82}
+.hmlbl{position:absolute;left:11px;top:12px;height:22px;padding:0 9px;border-radius:5px;
+  display:flex;align-items:center;font-size:11.5px;font-weight:500;letter-spacing:-.1px;
+  white-space:nowrap;background:var(--emerald);color:var(--emerald-deep);
+  box-shadow:0 2px 8px rgba(0,0,0,.45)}
+.hmlbl{transition:left .3s var(--ease),right .3s var(--ease),top .3s var(--ease),
+  bottom .3s var(--ease),translate .34s var(--ease),opacity .3s var(--ease)}
+.hmcur.left .hmlbl{left:auto;right:6px}
+
+.hmlbl{top:15px}
+
+.airdy{position:relative;display:flex;align-items:center;gap:12px;height:13px;
+  font-family:var(--mono);font-size:var(--eyebrow-size);text-shadow:0 0 18px var(--void),0 0 34px var(--void);
+  letter-spacing:.26em;text-transform:uppercase;color:var(--emerald);opacity:0;translate:0 8px;
+  transition:opacity .5s var(--ease),translate .5s var(--ease)}
+.airdy svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:24;stroke-dashoffset:24;
+  transition:stroke-dashoffset .6s var(--ease) .15s}
+.airdy.on{opacity:1;translate:0 0}
+.airdy.on svg{stroke-dashoffset:0}
+
+@media(max-width:820px){
+  .bpgrid{grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr)}
+  .bpk:nth-child(1){grid-row:span 1;grid-column:span 2}
+  .flapbg{opacity:.3}
+}
+
+/* ---------- 02b the companies strip ---------- */
+.strip{position:relative;z-index:10;padding:clamp(34px,4.6vh,52px) 0;overflow:hidden}
+.striplbl{display:flex;justify-content:center;font-family:var(--mono);font-size:10px;
+  letter-spacing:.26em;color:var(--faint);margin-bottom:clamp(16px,2vh,24px)}
+.track{display:flex;gap:clamp(28px,4vw,64px);width:max-content;animation:marq 46s linear infinite}
+.strip:hover .track{animation-play-state:paused}
+@keyframes marq{to{translate:-50% 0}}
+.track .lg{width:clamp(108px,9.6vw,146px);height:clamp(32px,3.2vw,44px);flex-shrink:0;
+  opacity:.45;transition:opacity .3s var(--ease)}
+.track .lg:hover{opacity:1}
+.track image-slot{width:100%;height:100%}
+
+/* ---------- 03 the blueprint ---------- */
+.bprow{display:flex;flex-wrap:wrap;gap:clamp(8px,.9vw,12px)}
+.bpc{flex:1 1 calc((100% - 4 * 12px) / 5);min-width:168px;display:flex;flex-direction:column;gap:10px;
+  padding:20px 19px 22px;border-radius:10px;background:var(--panel);border:1px solid var(--hairline)}
+.bpc b{font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.2em;
+  color:color-mix(in srgb,var(--emerald) 80%,transparent)}
+.bpc strong{font-size:clamp(14px,1.14vw,17.5px);font-weight:600;letter-spacing:-.022em;
+  line-height:1.16;color:var(--ink)}
+.bpc span{font-size:13px;line-height:1.46;color:var(--faint)}
+.bpc em{margin-top:auto;padding-top:12px;font-style:normal;font-family:var(--mono);font-size:9px;
+  letter-spacing:.16em;color:color-mix(in srgb,var(--emerald) 85%,transparent)}
+
+
+.card{border:1px solid var(--hairline);border-radius:12px;background:var(--panel);
+  padding:clamp(18px,2vw,26px)}
+.log{display:flex;flex-direction:column}
+.log p{display:flex;align-items:center;gap:12px;padding:10px 0;margin:0;font-family:var(--mono);
+  font-size:11.5px;letter-spacing:.06em;color:var(--faint);border-top:1px solid var(--hairline)}
+.log p:first-child{border-top:0}
+.log p b{font-weight:400;color:color-mix(in srgb,var(--emerald) 70%,transparent);flex-shrink:0;width:56px}
+.log p.key{color:var(--gold-ink)}.log p.key b{color:var(--emerald)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chip2{padding:7px 12px;border:1px solid var(--hairline-soft);border-radius:100px;font-family:var(--mono);
+  font-size:9.5px;letter-spacing:.14em;color:var(--mute);white-space:nowrap}
+.chip2.gold{border-color:color-mix(in srgb,var(--emerald) 40%,transparent);color:color-mix(in srgb,var(--emerald) 90%,transparent)}
+
+.claims{display:flex;flex-direction:column;gap:10px}
+.claim{display:flex;align-items:flex-start;gap:14px;width:100%;padding:20px;border-radius:10px;
+  background:var(--panel);border:1px solid var(--hairline);text-align:left}
+.claim i{display:block;width:5px;height:5px;border-radius:50%;margin-top:8px;flex-shrink:0;
+  background:var(--faint)}
+.claim span{font-size:clamp(14px,1.1vw,16px);line-height:1.45;color:var(--mute)}
+/* the paper: cream stock, navy ink, laid texture and a bound inner edge */
+.pack{position:relative;border-radius:4px 14px 14px 4px;overflow:hidden;
+  background:linear-gradient(200deg,var(--paper),#e8e2d2);
+  box-shadow:0 40px 80px rgba(0,0,0,.6),inset 22px 0 34px rgba(23,48,95,.1);
+  padding:clamp(22px,2.5vw,36px) clamp(20px,2.8vw,40px) clamp(20px,2.4vw,34px) clamp(26px,3vw,44px)}
+.pack::before{content:"";position:absolute;inset:0;opacity:.4;
+  background-image:repeating-linear-gradient(52deg,rgba(23,48,95,.09) 0 1px,transparent 1px 8px)}
+.pack::after{content:"";position:absolute;left:0;top:0;bottom:0;width:14px;
+  background:linear-gradient(90deg,rgba(23,48,95,.16),transparent)}
+.packin{position:relative;display:flex;flex-direction:column;gap:clamp(16px,1.8vw,24px)}
+.packh{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  border-bottom:1px solid rgba(23,48,95,.18);padding-bottom:16px}
+.packh span{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:rgba(23,48,95,.55)}
+.prow{display:flex;gap:clamp(14px,1.8vw,26px);align-items:flex-start}
+.prow>b{width:clamp(88px,8vw,108px);flex-shrink:0;font-family:var(--mono);font-size:10.5px;
+  font-weight:400;letter-spacing:.18em;color:rgba(23,48,95,.5);padding-top:4px}
+.prow>span{flex:1;font-size:clamp(14.5px,1.14vw,16.5px);line-height:1.5;color:var(--navy)}
+.packf{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:18px;
+  border-top:1px solid rgba(23,48,95,.18)}
+.file{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:6px;
+  border:1px solid rgba(23,48,95,.22);font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  color:rgba(23,48,95,.72)}
+/* the stamp, as struck on the passport pages */
+.stamp{margin-left:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;padding:7px 13px;border:1.5px solid rgba(23,48,95,.4);border-radius:3px;rotate:-6deg;
+  outline:1px solid rgba(23,48,95,.4);outline-offset:2px}
+.stamp b{font-family:var(--mono);font-size:8px;font-weight:400;letter-spacing:.22em;
+  color:rgba(23,48,95,.7)}
+.stamp span{font-size:12px;font-weight:600;letter-spacing:.1em;color:var(--navy)}
+.trust{display:flex;flex-direction:column;gap:3px;padding:20px 22px;border-radius:12px;
+  border:1px solid color-mix(in srgb,var(--emerald) 30%,transparent);background:color-mix(in srgb,var(--emerald) 5%,transparent);
+  margin-top:clamp(20px,2.8vh,32px);max-width:560px}
+.trust p{font-size:clamp(16px,1.3vw,21px);font-weight:600;letter-spacing:-.024em;line-height:1.28}
+.trust p+p{color:var(--emerald)}
+
+/* ============================================================================
+   04 · THE COMPARISON
+   Us against four things a company already does. Every cell states what that
+   category actually gives you, so the contrast names itself.
+   ============================================================================ */
+.cmp{position:relative;border:1px solid var(--hairline);border-radius:var(--r-card-lg);overflow:hidden;
+  background:var(--panel)}
+.cmpg{display:grid;grid-template-columns:minmax(190px,1.25fr) repeat(4,minmax(0,1fr));
+  min-width:0}
+/* the head row */
+.cmph{display:flex;flex-direction:column;gap:3px;padding:var(--pad-card) 18px 18px;
+  border-bottom:1px solid var(--hairline-soft)}
+.cmph b{font-size:clamp(13px,1.1vw,16px);font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.cmph span{font-family:var(--mono);font-size:var(--label-size);letter-spacing:var(--label-track);color:var(--faint)}
+/* our column is lifted by styling the cells themselves, so nothing occupies a grid slot
+   that a header or a value needs */
+.cmph.us,.cell.us{background:color-mix(in srgb,var(--emerald) 5%,transparent);
+  border-inline:1px solid color-mix(in srgb,var(--emerald) 28%,transparent)}
+.cmph.us{border-top:1px solid color-mix(in srgb,var(--emerald) 28%,transparent)}
+.cmpg>.cell.us:last-of-type{border-bottom:1px solid color-mix(in srgb,var(--emerald) 28%,transparent)}
+.cmph.us b{color:var(--gold-ink)}
+.cmph.us span{color:color-mix(in srgb,var(--emerald) 75%,transparent)}
+.cmpr{display:flex;flex-direction:column;gap:3px;padding:18px;
+  border-bottom:1px solid var(--hairline);border-right:1px solid var(--hairline)}
+.cmpr>b{font-size:clamp(13px,1.05vw,15px);font-weight:600;letter-spacing:-.018em;color:var(--body)}
+.cmpr>span{font-family:var(--mono);font-size:var(--label-size);letter-spacing:var(--label-track);color:var(--faint)}
+.cell{display:flex;align-items:flex-start;gap:9px;padding:16px 14px;
+  border-bottom:1px solid var(--hairline);position:relative;z-index:2}
+.cell.q{background:transparent}
+.cell svg{width:13px;height:13px;flex-shrink:0;margin-top:2px;fill:none;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+.cell.yes svg{stroke:var(--emerald)}
+.cell.no svg{stroke:var(--faint)}
+.cell p{font-size:11.5px;line-height:1.42;color:var(--faint)}
+.cell.yes p{color:var(--body)}
+.cmpg>.cell:last-child,.cmpg>.cmpr:last-of-type{border-bottom:0}
+/* the stacked reading of the same table */
+.cmpm{display:none;flex-direction:column;gap:10px}
+.cmpb{border:1px solid var(--hairline);border-radius:11px;overflow:hidden;background:var(--panel)}
+.cmpb>b{display:block;padding:13px 15px 12px;font-size:14px;font-weight:600;letter-spacing:-.02em;
+  color:var(--ink);border-bottom:1px solid var(--hairline)}
+.cmpb .mus{display:flex;align-items:flex-start;gap:9px;padding:12px 15px;
+  background:color-mix(in srgb,var(--emerald) 6%,transparent);border-bottom:1px solid var(--hairline)}
+.cmpb .mus svg{width:13px;height:13px;flex-shrink:0;margin-top:2px;fill:none;stroke:var(--emerald);
+  stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.cmpb .mus div{display:flex;flex-direction:column;gap:2px}
+.cmpb .mus em{font-style:normal;font-family:var(--mono);font-size:8px;letter-spacing:.16em;
+  color:color-mix(in srgb,var(--emerald) 80%,transparent)}
+.cmpb .mus p{font-size:12.5px;line-height:1.42;color:var(--body)}
+.cmpb .mo{display:flex;gap:10px;padding:9px 15px;border-top:1px solid rgba(255,255,255,.04)}
+.cmpb .mo em{flex:0 0 40%;font-style:normal;font-family:var(--mono);font-size:8px;
+  letter-spacing:.14em;color:var(--faint);padding-top:1px}
+.cmpb .mo p{flex:1;font-size:11.5px;line-height:1.4;color:var(--faint)}
+
+/* ---------- 07 testimonials as boarding passes ---------- */
+.passes{display:grid;grid-template-columns:repeat(auto-fit,minmax(336px,1fr));
+  gap:clamp(14px,1.6vw,22px)}
+.pass{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 148px;
+  border:1px solid var(--hairline);border-radius:12px;overflow:hidden;background:var(--panel);
+  transition:border-color .3s var(--ease),translate .3s var(--ease)}
+.pass:hover{border-color:color-mix(in srgb,var(--emerald) 40%,transparent);translate:0 -3px}
+.pmain{display:flex;flex-direction:column;gap:15px;padding:22px 22px 24px}
+.phead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:13px;
+  border-bottom:1px solid var(--hairline)}
+.phead span{font-family:var(--mono);font-size:8.5px;letter-spacing:.22em;color:var(--emerald)}
+.phead em{font-style:normal;font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;
+  color:var(--faint)}
+.pquote{font-size:clamp(14.5px,1.1vw,16.5px);line-height:1.52;color:var(--body)}
+.pwho{display:flex;flex-direction:column;gap:2px;margin-top:auto}
+.pwho strong{font-size:13.5px;font-weight:600;letter-spacing:-.012em;color:var(--ink)}
+.pwho span{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--faint)}
+.pstub{position:relative;display:flex;flex-direction:column;gap:13px;padding:22px 18px;
+  background:color-mix(in srgb,var(--emerald) 5%,transparent);border-left:1px dashed color-mix(in srgb,var(--emerald) 45%,transparent)}
+.pstub::before,.pstub::after{content:"";position:absolute;left:-6px;width:11px;height:11px;
+  border-radius:50%;background:var(--void);border:1px solid var(--hairline)}
+.pstub::before{top:-6px}.pstub::after{bottom:-6px}
+.pf{display:flex;flex-direction:column;gap:2px}
+.pf b{font-family:var(--mono);font-size:7.5px;font-weight:400;letter-spacing:.18em;color:var(--faint)}
+.pf span{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--emerald)}
+.bars{margin-top:auto;display:flex;gap:1.5px;height:26px;align-items:flex-end}
+.bars i{width:1.5px;background:color-mix(in srgb,var(--emerald) 50%,transparent)}
+.bars i:nth-child(3n){width:3px}
+
+/* ---------- 08 closing ---------- */
+.close{position:relative;z-index:10;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);
+  gap:clamp(26px,4.4vw,72px);align-items:center;padding:var(--sec) var(--gut) 0;
+  scroll-margin-top:var(--hdr)}
+.ccopy{display:flex;flex-direction:column;gap:24px;max-width:640px}
+/* the current page's nav item */
+.nav a.here{color:var(--emerald)}
+/* the closing-act email capture */
+.wait{display:flex;align-items:center;gap:8px;width:min(100%,520px);height:64px;
+  padding:0 7px 0 22px;border-radius:100px;background:var(--panel-raised);
+  border:1px solid var(--hairline);transition:border-color .16s var(--ease)}
+.wait:focus-within{border-color:color-mix(in srgb,var(--emerald) 40%,transparent)}
+.wait input{flex:1;min-width:0;height:46px;border:0;background:transparent;font-size:16.5px;
+  color:var(--ink)}
+.wait input::placeholder{color:var(--faint)}
+.wait button{flex-shrink:0;height:50px;padding:0 24px;border:0;border-radius:100px;
+  background:var(--emerald);color:var(--emerald-deep);font-size:13.5px;font-weight:700;
+  letter-spacing:.09em;transition:background .16s var(--ease),color .16s var(--ease)}
+.wait button:hover{background:color-mix(in srgb,#fff 22%,var(--emerald))}
+.wait.done input{color:var(--emerald)}
+.wait.done button{background:var(--panel-raised);color:var(--emerald);
+  border:1px solid color-mix(in srgb,var(--emerald) 35%,transparent);pointer-events:none}
+/* the closing line */
+.brandline{font-weight:600;font-size:clamp(24px,3vw,44px);letter-spacing:-.04em;
+  line-height:1.1;color:var(--emerald)}
+.cart{position:relative;display:grid;place-items:center;min-height:min(64vh,500px)}
+/* the closing art: the same presented pair as the hero, the passport standing in front */
+.cpres{position:relative;width:min(100%,470px);aspect-ratio:4/3;inset:auto}
+.cpres .pscreen{left:50%;top:20%;width:96%;translate:-50% 0}
+.cpassport{container-type:inline-size;height:71%;display:flex;flex-direction:column;
+  align-items:center;aspect-ratio:.715;padding:7% 8% 6%;
+  background:
+    repeating-linear-gradient(128deg,rgba(255,255,255,.028) 0 1px,transparent 1px 8px),
+    linear-gradient(205deg,#22407a 0%,var(--emerald-mid,#1b3564) 34%,var(--emerald-deep,#10203f) 100%);
+  border-radius:var(--r-flap) var(--r-card-lg) var(--r-card-lg) var(--r-flap)}
+.cpassport::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5%;z-index:2;
+  background:linear-gradient(90deg,rgba(0,0,0,.45),transparent)}
+.cpassport .pcvwm{font-size:3.6cqw;letter-spacing:.34em}
+.cpassport .pcvseal{width:33%}
+.cpassport .pcvtitle{font-size:9.6cqw;letter-spacing:.26em}
+.cpassport .pcvurl{margin-top:4%;font-size:3.4cqw;letter-spacing:.06em}
+.cpassport .pcvchip{width:23%}
+.oring{position:absolute;width:min(38vw,390px);aspect-ratio:1;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--emerald) 28%,transparent);
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--emerald) 14%,transparent),color-mix(in srgb,var(--emerald) 4%,transparent) 52%,transparent 74%);
+  box-shadow:inset 0 0 80px color-mix(in srgb,var(--emerald) 6%,transparent)}
+.oring::after{content:"";position:absolute;inset:-13%;border-radius:50%;
+  border:1px dashed rgba(123,164,255,.16);animation:oturn 52s linear infinite}
+@keyframes oturn{to{rotate:360deg}}
+/* The figure from the homepage, standing in the ring with the passport in his open palm.
+   Same asset, same passport vocabulary: navy cover, gold crest ring, mono wordmark.
+   Everything is sized from --figH so the passport tracks the figure at any width. */
+.fig{position:relative;z-index:3;height:var(--figH);
+  aspect-ratio:517/1280;display:block;filter:drop-shadow(0 30px 50px rgba(0,0,0,.7))}
+/* --figH lives here, on the shared ancestor, so the figure AND the passport in its palm
+   both scale from one number */
+.figwrap{position:relative;z-index:3;--figH:min(52vh,420px);display:grid;place-items:end center;
+  animation:figfloat 9s ease-in-out infinite alternate}
+@keyframes figfloat{from{translate:0 4px}to{translate:0 -4px}}
+/* the palm sits at ~34% down and ~86% across the figure's own box */
+.palmbook{position:absolute;z-index:4;left:84.5%;top:31.5%;
+  width:calc(var(--figH) * .118);aspect-ratio:1/1.36;translate:-50% -50%;
+  border-radius:2px 6px 6px 2px;overflow:hidden;background:var(--cover);
+  border:1px solid color-mix(in srgb,var(--emerald) 45%,transparent);
+  box-shadow:0 8px 18px -4px rgba(0,0,0,.8),0 0 22px color-mix(in srgb,var(--emerald) 30%,transparent),
+    inset 0 1px 0 rgba(247,222,186,.1);
+  rotate:-8deg;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:9%;padding:9% 7%}
+.palmbook::before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;
+  background-image:repeating-linear-gradient(45deg,color-mix(in srgb,var(--emerald) 8%,transparent) 0 1px,transparent 1px 7px)}
+.palmbook::after{content:"";position:absolute;left:0;top:0;bottom:0;width:9%;pointer-events:none;
+  background:linear-gradient(90deg,rgba(0,0,0,.55),transparent)}
+.palmbook em{position:relative;font-family:var(--mono);font-style:normal;
+  font-size:calc(var(--figH) * .0125);letter-spacing:.2em;color:color-mix(in srgb,var(--emerald) 85%,transparent);
+  text-align:center;line-height:1}
+.palmbook i{position:relative;width:52%;aspect-ratio:1;border-radius:50%;
+  border:1.5px solid color-mix(in srgb,var(--emerald) 80%,transparent);display:grid;place-items:center}
+.palmbook i::before{content:"";position:absolute;inset:15%;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--emerald) 45%,transparent)}
+.palmbook i::after{content:"";width:34%;aspect-ratio:42/54;border-radius:2px 5px 5px 2px;
+  background:color-mix(in srgb,var(--emerald) 90%,transparent)}
+/* the light his palm throws back onto the cover */
+.palmglow{position:absolute;z-index:2;left:84.5%;top:31.5%;width:calc(var(--figH) * .34);
+  aspect-ratio:1;translate:-50% -50%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--emerald) 30%,transparent),transparent 70%);
+  animation:palmpulse 4.5s ease-in-out infinite alternate}
+@keyframes palmpulse{from{opacity:.55}to{opacity:1}}
+
+/* ---------- footer ---------- */
+.ftr{position:relative;z-index:10;display:flex;flex-direction:column;gap:clamp(30px,5vh,54px);
+  margin-top:var(--sec);padding:28px var(--gut) 0;border-top:1px solid var(--hairline);
+  background:var(--void);overflow:hidden}
+.ftop{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.fright{display:flex;flex-direction:column;align-items:flex-end;gap:14px}
+.fsoc{display:flex;align-items:center;gap:8px}
+.fsoc a{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--hairline-soft);color:var(--faint);transition:.16s var(--ease)}
+.fsoc a:hover{color:var(--emerald);border-color:color-mix(in srgb,var(--emerald) 45%,transparent);background:var(--panel-raised)}
+.fsoc svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+.fnav{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.fnav a{font-size:12.5px;color:var(--mute);text-decoration:none}.fnav a:hover{color:var(--emerald)}
+.fmark{display:block;width:100%;height:auto}
+.fmark text{fill:url(#fmg);font-family:var(--sans)}
+.fcr{padding-bottom:22px;text-align:center;font-size:12.5px;color:var(--faint)}
+.ftr .brand span{font-family:var(--mono);font-size:13px;font-weight:400;letter-spacing:.16em;
+  color:var(--faint)}
+
+/* ---------- reveal ----------
+   Content is visible by default. The .rv-armed class is added by script only once the
+   observer is confirmed working, so a failed or absent observer, a print, or a static
+   capture all render the page fully rather than blank. */
+.rv{opacity:1;translate:none}
+.rv-armed .rv{opacity:0;translate:0 20px;transition:opacity .7s var(--ease),translate .8s var(--ease)}
+/* a group of siblings arrives in sequence rather than all at once: --i is its position */
+.rv[style*="--i"]{transition-delay:calc(var(--i) * .11s);translate:0 26px}
+.pass.rv{transition:opacity .75s var(--ease),translate .85s var(--ease),
+  border-color .3s var(--ease)}
+.rv-armed .rv.in{opacity:1;translate:0 0}
+
+/* the boarding passes are issued, not faded in: each one rises with a slight lift, its
+   perforated stub arrives a beat behind the quote, and the stamp lands last. */
+.rv-armed .passes .pass.rv[style*="--i"]{opacity:0;translate:0 34px;scale:.985;
+  transition:opacity .7s var(--ease),translate .85s var(--ease),scale .85s var(--ease),
+    border-color .3s var(--ease);
+  transition-delay:calc(var(--i) * .13s)}
+.rv-armed .passes .pass.rv[style*="--i"].in{opacity:1;translate:0 0;scale:1}
+.rv-armed .pass.rv .pstub{opacity:0;translate:14px 0;
+  transition:opacity .55s var(--ease),translate .6s var(--ease);
+  transition-delay:calc(var(--i) * .13s + .3s)}
+.rv-armed .pass.rv.in .pstub{opacity:1;translate:0 0}
+.rv-armed .pass.rv .pstub::before,.rv-armed .pass.rv .pstub::after{opacity:0;
+  transition:opacity .4s var(--ease);transition-delay:calc(var(--i) * .13s + .52s)}
+.rv-armed .pass.rv.in .pstub::before,.rv-armed .pass.rv.in .pstub::after{opacity:1}
+
+/* the comparison reads row by row, and our column's tick draws itself as its row lands */
+.rv-armed .cmpg .rv{translate:0 16px;
+  transition:opacity .55s var(--ease),translate .6s var(--ease);
+  transition-delay:calc(var(--i) * .075s)}
+.rv-armed .cmpg .rv.in{translate:0 0}
+.rv-armed .cell.yes svg polyline{stroke-dasharray:26;stroke-dashoffset:26;
+  transition:stroke-dashoffset .5s var(--ease);
+  transition-delay:calc(var(--i) * .075s + .22s)}
+.rv-armed .cell.yes.in svg polyline{stroke-dashoffset:0}
+@media (prefers-reduced-motion:reduce){
+  .rv-armed .pass.rv .pstub,.rv-armed .pass.rv .pstub::before,
+  .rv-armed .pass.rv .pstub::after{opacity:1;translate:none}
+  .rv-armed .cell.yes svg polyline{stroke-dashoffset:0}
+}
+@media print{.rv{opacity:1!important;translate:none!important}}
+
+/* ---------- responsive, per the artboards' own plan ----------
+   ≥1200 as drawn · 768–1199 two columns collapse, gutters 40, scale ≈.72
+   ≤767 as the mobile page, 20px gutters, ≥44px targets, scale ≈.54 */
+@media (max-width:1199px){
+  /* the artboard's own plan: two-column sections collapse, gutters 40, scale ~.72 */
+  :root{--gut:40px}
+  .hero{flex-direction:column;align-items:stretch;gap:clamp(26px,3.4vh,38px)}
+  .hcopy{width:100%;flex:0 0 auto}
+  .hart{flex:0 0 auto;min-width:0;width:100%;height:clamp(320px,44vh,440px)}
+  .split{flex-direction:column;gap:clamp(20px,2.6vh,30px)}
+  .split>.sh{width:100%}
+  .split>.sl{padding-top:0}
+  /* the comparison stops being a table and becomes one block per capability */
+  .cmp{display:none}
+  .cmpm{display:flex}
+  .bpc{flex:1 1 calc((100% - 12px) / 2)}
+  /* the pinned stage stacks: component over copy, and the rail becomes a row of markers
+     across the top of the copy pane so it reserves no horizontal room at all */
+  /* the art pane is roughly half viewport height here, so every component tightens from
+     THIS breakpoint. Panes cannot scroll, so anything that does not fit is simply lost. */
+  .pslide .bprow{gap:8px}
+  .pslide .bpc{flex:1 1 calc((100% - 16px) / 3);min-width:0;padding:11px 12px 13px;gap:5px}
+  .pslide .bpc strong{font-size:12.5px}
+  .pslide .bpc span{display:none}
+  .pslide .bpc em{padding-top:6px;font-size:8px}
+  .pslide .card{padding:12px 13px 14px}
+  .pslide .log p{padding:4px 0;font-size:10.5px}
+  .pslide .ruled{margin-bottom:10px}
+  .pslide .chips{margin-top:8px;gap:5px}
+  .pslide .chip2{padding:5px 9px;font-size:8.5px}
+  .pslide .pack{padding:14px 16px 13px 19px}
+  .pslide .packin{gap:10px}
+  .pslide .prow{gap:10px}
+  .pslide .prow>b{width:82px;font-size:9px}
+  .pslide .prow>span{font-size:12.5px;line-height:1.38}
+  .pslide .claims{gap:6px}
+  .pslide .claim{padding:9px 11px}
+  .pslide .claim span{font-size:12.5px}
+  .pslide .packf{padding-top:11px;gap:8px}
+  .pslide .file{padding:4px 8px;font-size:9px}
+  /* the rail keeps its vertical spine; the recording sits beside it so it keeps real area.
+     Both tracks are bounded: an auto track would take the rail's full intrinsic height and
+     starve the recording to zero. */
+  .vjr{grid-template-columns:auto minmax(132px,1fr);grid-template-rows:minmax(0,1fr);gap:12px}
+  .vrail{grid-auto-rows:1fr;gap:6px;min-width:0;min-height:0;padding-left:22px}
+  .vrs::before{left:calc(var(--spine) - 22px + .5px)}
+  .vrs strong{font-size:11.5px}
+  .vrs small{display:none}
+  .vrec{min-height:96px}
+  .proccopy{padding:clamp(44px,6.6vh,60px) var(--gut) clamp(20px,3vh,28px);align-items:start}
+  .ptxt{gap:11px}
+  .ptxt .trust{padding:11px 13px}
+  .ptxt .trust p{font-size:14.5px}
+  .pverb{padding:6px 11px;font-size:9.5px}
+  .prail{right:auto;left:var(--gut);top:clamp(14px,2.2vh,20px);translate:0 0;
+    flex-direction:row;align-items:center;gap:13px;padding-right:0}
+  .prail::after{right:auto;left:0;top:50%;bottom:auto;width:100%;height:1px;
+    background:repeating-linear-gradient(90deg,var(--hairline) 0 3px,transparent 3px 8px)}
+  .prail b{font-size:0;letter-spacing:0;width:24px;height:2px;border-radius:2px;
+    background:var(--hairline);opacity:1;transition:background .4s var(--ease)}
+  .prail b::after{display:none}
+  .prail b.on{background:var(--emerald);box-shadow:0 0 8px color-mix(in srgb,var(--emerald) 60%,transparent)}
+}
+@media (max-width:900px){
+  .nav{display:none}.burger{display:flex}
+  .hart{height:min(42vh,320px)}
+  .close{grid-template-columns:1fr;gap:28px;text-align:center}
+  .ccopy{align-items:center;margin-inline:auto}
+  .cart{order:-1;min-height:min(38vh,300px)}
+  .figwrap{--figH:min(34vh,260px)}
+  .oring{width:min(64vw,250px)}
+  .ctas{justify-content:center}
+  .plain.two{grid-template-columns:1fr}
+  .passes{grid-template-columns:1fr}
+  .ftop{flex-direction:column;align-items:center;text-align:center}
+  .fright,.fnav{align-items:center}
+}
+@media (max-width:767px){
+  /* phones tighten once more on top of the 1199px band */
+  .pslide{padding:12px 13px;gap:7px}
+  .pslide .bpc{padding:9px 10px 10px}
+  .pslide .bpc strong{font-size:11.5px}
+  .pslide .log p{padding:4px 0;font-size:9.5px}
+  .pslide .prow{flex-direction:column;gap:2px}
+  .pslide .prow>b{width:auto;font-size:8.5px}
+  .pslide .prow>span{font-size:11.5px;line-height:1.32}
+  .pslide .claim span{font-size:11.5px}
+  .pslide .chip2{display:none}
+  .pslide .chips .chip2:nth-child(-n+3){display:inline-block}
+  /* the rail stacks above the recording only when there is genuinely no width for both */
+  .vjr{grid-template-columns:1fr;grid-template-rows:minmax(0,auto) minmax(88px,1fr)}
+  .vrec{min-height:88px}
+  .cmpb .mo{flex-direction:column;gap:2px}
+  .cmpb .mo em{flex:none}
+  .pass{grid-template-columns:1fr}
+  .pstub{border-left:0;border-top:1px dashed color-mix(in srgb,var(--emerald) 45%,transparent);flex-direction:row;
+    flex-wrap:wrap;gap:16px;align-items:flex-end}
+  .pstub::after{left:auto;right:-6px;top:-6px;bottom:auto}
+  .bars{margin-top:0;margin-left:auto}
+  .prow{flex-direction:column;gap:3px}
+  .prow>b{width:auto;padding-top:0}
+  .wait{height:auto;flex-direction:column;gap:10px;padding:12px;border-radius:20px}
+  .wait input{width:100%;text-align:center;height:44px}
+  .wait button{width:100%;height:48px}
+}
+/* narrower than this there is no room for three blueprint columns. This must sit AFTER
+   the 767px block: equal-specificity rules resolve by source order, so a 560px rule placed
+   before a 767px one would simply be overridden. */
+@media (max-width:560px){
+  .bpgrid{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important}
+  .rv{opacity:1;translate:none}
+}
+</style>
+
+<div class="ground" aria-hidden="true">
+  <span class="drift a"></span>
+  <span class="drift b"></span>
+</div>
+<div class="grid-bg" aria-hidden="true"></div>
+
+<div class="prog"></div>
+<header class="hdr">
+  <a class="brand" href="Homepage.html"><i></i><span>CAREERPASSPORT</span></a>
+  <nav class="nav">
+    <a href="Homepage.html">For individuals</a>
+    <a class="here" href="For Companies.html">For companies</a>
+    <a href="For Recruitment Partners.html">For recruitment partners</a>
+  </nav>
+  <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
+</header>
+<nav class="mnav" id="mnav">
+  <a href="Homepage.html">For individuals</a>
+  <a href="For Companies.html">For companies</a>
+  <a href="For Recruitment Partners.html">For recruitment partners</a>
+</nav>
+
+<!-- ============ 01 · HERO ============ -->
+<section class="hero" data-screen-label="01">
+  <div class="bloom" aria-hidden="true"></div>
+  <div class="hcopy">
+    <p class="eyebrow gold"><i></i>Tell us who you need.</p>
+    <h1 style="color:#fff">Meet the people <span class="serif" style="color:#fff">worth your time.</span></h1>
+    <p class="lede">CareerPassport builds the hiring journey, runs it, and brings you the evidence. <b>You step in when there is a decision worth making.</b></p>
+    <div class="ctas">
+      <a class="btn" href="#close">Book a demo</a>
+      <a class="btn gh" href="#close">Post a role</a>
+    </div>
+    <p class="pmono">IN AN OCEAN OF CLAIMS &middot; ONE RECORD YOU CAN INSPECT</p>
+  </div>
+  <div class="hart">
+    <div class="present">
+      <span class="pglow" aria-hidden="true"></span>
+      <div class="pscreen">
+        <image-slot id="cmp-hero-product" shape="rect" radius="14"
+          placeholder="Drop a product screen grab (16:9)"></image-slot>
+        <span class="pchrome" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="plbl">PRODUCT &middot; LIVE ROLE</span>
+      </div>
+      <div class="pphone">
+        <image-slot id="cmp-hero-mobile" shape="rect" radius="18"
+          placeholder="Drop the mobile UI (9:16)"></image-slot>
+        <span class="pnotch" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 · COMPANIES STRIP ============ -->
+<section class="strip" aria-label="Companies hiring with CareerPassport">
+  <p class="striplbl">HIRING WITH CAREERPASSPORT</p>
+  <div class="track" id="logoTrack"></div>
+</section>
+
+<!-- ============ 03 · FROM ONE SENTENCE TO A HIRING BLUEPRINT ============ -->
+<section class="aidemo" id="aidemo" data-screen-label="02" aria-label="From one sentence to a hiring blueprint">
+  <div class="aidemopin">
+    <div class="flapglow" aria-hidden="true"></div>
+    <div class="flapbg" id="flapBg" aria-hidden="true"></div>
+    <div class="flapvig" aria-hidden="true"></div>
+    <div class="actdots" id="actDots" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div class="aiwrap">
+      <div class="acthead">
+        <span class="actchip" id="actChip">DEFINE</span>
+      </div>
+      <h3 class="acttitle" id="actTitle">One intent becomes a hiring blueprint.</h3>
+      <div class="aistage" id="aiStage">
+        <div class="aibox" id="aiBox">
+          <div class="aichat" id="aiChat">
+            <div class="aifield">
+              <p class="aitext" id="aiText"></p>
+            </div>
+            <div class="aibar">
+              <div class="aitools">
+                <span class="aitool" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M21.4 11.05 12.25 20.2a5.5 5.5 0 0 1-7.78-7.78l9.2-9.19a3.67 3.67 0 0 1 5.18 5.18l-9.2 9.2a1.83 1.83 0 0 1-2.6-2.6l8.5-8.48"></path></svg>
+                </span>
+                <span class="aipill" id="aiPill">
+                  <span class="exbot pillbot" aria-hidden="true"><i></i><i></i></span>
+                  Companion
+                </span>
+              </div>
+              <button class="aisearch" id="aiSearchBtn" aria-hidden="true" tabindex="-1">
+                <svg viewBox="0 0 24 24"><path d="M21 3 10.5 13.5M21 3l-6.8 18-3.7-7.5L3 9.8Z"></path></svg>
+                <span class="ring2" aria-hidden="true"></span>
+                <span class="ring" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="aiprep" id="aiPrep">
+            <span class="aidots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <p class="shimmer">Hiring blueprint is being prepared</p>
+          </div>
+
+          <div class="aibp" id="aiBp">
+            <div class="bpgrid">
+            <div class="bpk" data-bp="0">
+              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
+              <b class="bpi"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M4 20a8 8 0 0 1 16 0"></path></svg></b>
+              <strong>Role</strong>
+              <div class="bpload"><i></i><i></i><i></i></div>
+              <p class="bptxt">Senior Product Lead, enterprise platforms. Owns a surface used by paying customers, reporting to the VP Product. The remit is ambiguity: the space is defined, the roadmap is not.</p>
+            </div>
+            <div class="bpk" data-bp="1">
+              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
+              <b class="bpi"><svg viewBox="0 0 24 24"><path d="m9 12 2 2 4-4"></path><path d="M12 3 4 6v6c0 5 3.4 8.2 8 9 4.6-.8 8-4 8-9V6Z"></path></svg></b>
+              <strong>Competencies</strong>
+              <div class="bpload"><i></i><i></i><i></i></div>
+              <p class="bptxt">Enterprise depth. Judgment without complete information. Range across engineering, sales and customers.</p>
+            </div>
+            <div class="bpk" data-bp="2">
+              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
+              <b class="bpi"><svg viewBox="0 0 24 24"><circle cx="6" cy="19" r="2.5"></circle><circle cx="18" cy="5" r="2.5"></circle><path d="M8.5 19h6a4 4 0 0 0 0-8h-5a4 4 0 0 1 0-8H15"></path></svg></b>
+              <strong>Candidate Journey</strong>
+              <div class="bpload"><i></i><i></i><i></i></div>
+              <p class="bptxt">Five stages, evidence-led. Experience, a role exercise on an ambiguous brief, then cross-functional review.</p>
+            </div>
+            <div class="bpk" data-bp="3">
+              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
+              <b class="bpi"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"></path><path d="M8 3v18"></path></svg></b>
+              <strong>Evaluation Matrix</strong>
+              <div class="bpload"><i></i><i></i><i></i></div>
+              <p class="bptxt">Weighted for ambiguity and stakeholder range. Scored on shipped outcomes, not tenure.</p>
+            </div>
+            <div class="bpk" data-bp="4">
+              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
+              <b class="bpi"><svg viewBox="0 0 24 24"><path d="M21 4H3v13h5v4l5-4h8Z"></path></svg></b>
+              <strong>Communications</strong>
+              <div class="bpload"><i></i><i></i><i></i></div>
+              <p class="bptxt">Framed around scope and the teams involved. Same message, same clock, every candidate.</p>
+            </div>
+            </div>
+            <div class="bpfoot">
+              <span class="bpnote">DRAFTED FROM ONE BRIEF &middot; 5 SECTIONS</span>
+              <button class="bpsub" id="aiSubmit" aria-hidden="true" tabindex="-1">Approve blueprint<span class="ring2" aria-hidden="true"></span><span class="ring" aria-hidden="true"></span></button>
+            </div>
+          </div>
+
+          <div class="aifin" id="aiFin" aria-hidden="true">
+            <p class="f1" id="aiFin1">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12.5 5 5L20 6.5"></path></svg>
+              Trip finalised
+            </p>
+            <p class="f2" id="aiFin2">Hiring journey launched</p>
+          </div>
+
+          <!-- act 3 · the agent operates the role -->
+          <div class="aiex" id="aiEx">
+            <div class="exhead">
+              <span class="exlbl">LIVE ROLE &middot; SENIOR PRODUCT LEAD</span>
+              <span class="exagent"><i></i>Agent operating</span>
+            </div>
+            <div class="exmap" id="exMap">
+              <svg class="exwires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <path class="wire" d="M16 24 C34 24 34 50 48 50"></path>
+                <path class="wire" d="M16 50 H48"></path>
+                <path class="wire" d="M16 76 C34 76 34 50 48 50"></path>
+                <path class="wire out" d="M52 50 C68 50 68 16 84 16"></path>
+                <path class="wire out" d="M52 50 C68 50 68 38 84 38"></path>
+                <path class="wire out" d="M52 50 C68 50 68 62 84 62"></path>
+                <path class="wire out" d="M52 50 C68 50 68 84 84 84"></path>
+                <path class="wire reach" data-r="0" d="M88 16 C94 16 94 7 101 7"></path>
+                <path class="wire reach" data-r="0" d="M88 16 H101"></path>
+                <path class="wire reach" data-r="0" d="M88 16 C94 16 94 25 101 25"></path>
+                <path class="wire reach" data-r="1" d="M88 38 C94 38 94 29 101 29"></path>
+                <path class="wire reach" data-r="1" d="M88 38 H101"></path>
+                <path class="wire reach" data-r="1" d="M88 38 C94 38 94 47 101 47"></path>
+                <path class="wire reach" data-r="2" d="M88 62 C94 62 94 53 101 53"></path>
+                <path class="wire reach" data-r="2" d="M88 62 H101"></path>
+                <path class="wire reach" data-r="2" d="M88 62 C94 62 94 71 101 71"></path>
+                <path class="wire reach" data-r="3" d="M88 84 C94 84 94 75 101 75"></path>
+                <path class="wire reach" data-r="3" d="M88 84 H101"></path>
+                <path class="wire reach" data-r="3" d="M88 84 C94 84 94 93 101 93"></path>
+              </svg>
+              <span class="exnode src" data-n="0" style="left:16%;top:24%"><b>128</b>Company database</span>
+              <span class="exnode src" data-n="1" style="left:16%;top:50%"><b>64</b>Recruitment partners</span>
+              <span class="exnode src" data-n="2" style="left:16%;top:76%"><b>312</b>CareerPassport</span>
+              <span class="exhub" id="exHub"><span class="exbot" aria-hidden="true"><i></i><i></i></span>COMPANION</span>
+              <span class="exnode chn" data-c="0" style="left:84%;top:16%">Gmail</span>
+              <span class="exnode chn" data-c="1" style="left:84%;top:38%">WhatsApp</span>
+              <span class="exnode chn" data-c="2" style="left:84%;top:62%">LinkedIn</span>
+              <span class="exnode chn" data-c="3" style="left:84%;top:84%">Calendar</span>
+            </div>
+            <p class="exticker" id="exTicker"><b>09:42</b><span>Approached via email</span></p>
+          </div>
+
+          <!-- act 4 · the evidence comes back -->
+          <div class="aiev" id="aiEv">
+            <div class="exhead">
+              <span class="exlbl">EVIDENCE &middot; ASSEMBLED WHILE YOU WERE ELSEWHERE</span>
+              <span class="exagent ev"><i></i>Approval requested</span>
+            </div>
+            <div class="evbody">
+              <div class="evfun" id="evFun">
+                <div class="evf" data-f="0"><i style="--w:100%"></i><b>504</b><span>Approached</span></div>
+                <div class="evf" data-f="1"><i style="--w:62%"></i><b>312</b><span>Replied</span></div>
+                <div class="evf" data-f="2"><i style="--w:26%"></i><b>131</b><span>Journey completed</span></div>
+                <div class="evf" data-f="3"><i style="--w:8%"></i><b>4</b><span>Worth meeting</span></div>
+              </div>
+              <div class="evstack" id="evStack">
+                <div class="evpass" data-p="0" style="--i:0;z-index:10">
+                  <span class="pcvwm">CAREERPASSPORT</span>
+                  <span class="pcvseal" aria-hidden="true"><i></i></span>
+                  <span class="pcvtitle">PASSPORT</span>
+                  <span class="pcvname">Ravi Kumar</span>
+                  <span class="pcvurl">careerpassport.ai/ravi-kumar</span>
+                  <span class="pcvchip" aria-hidden="true"><i></i></span>
+                  <span class="evstamp">VERIFIED</span>
+                </div>
+                <div class="evpass" data-p="1" style="--i:1;z-index:9">
+                  <span class="pcvwm">CAREERPASSPORT</span>
+                  <span class="pcvseal" aria-hidden="true"><i></i></span>
+                  <span class="pcvtitle">PASSPORT</span>
+                  <span class="pcvname">Ashraf Ali</span>
+                  <span class="pcvurl">careerpassport.ai/ashraf-ali</span>
+                  <span class="pcvchip" aria-hidden="true"><i></i></span>
+                  <span class="evstamp">VERIFIED</span>
+                </div>
+                <div class="evpass" data-p="2" style="--i:2;z-index:8">
+                  <span class="pcvwm">CAREERPASSPORT</span>
+                  <span class="pcvseal" aria-hidden="true"><i></i></span>
+                  <span class="pcvtitle">PASSPORT</span>
+                  <span class="pcvname">Meera Joshua</span>
+                  <span class="pcvurl">careerpassport.ai/meera-joshua</span>
+                  <span class="pcvchip" aria-hidden="true"><i></i></span>
+                  <span class="evstamp">VERIFIED</span>
+                </div>
+                <div class="evpass" data-p="3" style="--i:3;z-index:7">
+                  <span class="pcvwm">CAREERPASSPORT</span>
+                  <span class="pcvseal" aria-hidden="true"><i></i></span>
+                  <span class="pcvtitle">PASSPORT</span>
+                  <span class="pcvname">Sana Qureshi</span>
+                  <span class="pcvurl">careerpassport.ai/sana-qureshi</span>
+                  <span class="pcvchip" aria-hidden="true"><i></i></span>
+                  <span class="evstamp">VERIFIED</span>
+                </div>
+              </div>
+            </div>
+            <div class="bpfoot">
+              <span class="bpnote">EVERY CLAIM CONFIRMED BY THE ORGANISATION NAMED ON IT</span>
+              <button class="bpsub" id="evBtn" aria-hidden="true" tabindex="-1">Open passports<span class="ring2" aria-hidden="true"></span><span class="ring" aria-hidden="true"></span></button>
+            </div>
+          </div>
+
+          <!-- act 5 · the manager decides -->
+          <div class="aidc" id="aiDc">
+            <div class="exhead">
+              <span class="exlbl">CONVERSATIONS &middot; SCHEDULED AND RECORDED</span>
+              <span class="exagent"><i></i>Hiring manager in control</span>
+            </div>
+            <div class="dcline" id="dcLine">
+              <span class="dcrail"></span>
+              <div class="dcslot" id="dcSlot0"><i></i><b>Ravi Kumar</b><span>TUE 10:00</span><span class="dcmenu" aria-hidden="true"><span>View interview summary</span><span>Schedule another call</span><span>Share offer</span><span class="no">Reject profile</span></span></div>
+              <div class="dcslot" id="dcSlot1"><i></i><b>Ashraf Ali</b><span>TUE 14:30</span><span class="dcmenu" aria-hidden="true"><span>View interview summary</span><span>Schedule another call</span><span>Share offer</span><span class="no">Reject profile</span></span></div>
+              <div class="dcslot" id="dcSlot2"><i></i><b>Meera Joshua</b><span>WED 09:00</span><span class="dcmenu" aria-hidden="true"><span>View interview summary</span><span>Schedule another call</span><span>Share offer</span><span class="no">Reject profile</span></span></div>
+            </div>
+            <p class="exticker" id="dcTicker"><b>16 SEP</b><span>Conversation held, notes recorded</span></p>
+            <p class="dcend" id="dcEnd">By the time you step in, the role is structured, the process has moved and the evidence is assembled.</p>
+          </div>
+        </div>
+
+        <div class="hmcur" id="hmCur" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M5 2.5 19.5 11l-6.6 1.7L9.6 19Z" fill="var(--emerald)" stroke="var(--emerald-deep)" stroke-width="1.2" stroke-linejoin="round"></path></svg>
+          <span class="hmlbl">Hiring manager</span>
+        </div>
+      </div>
+      <p class="airdy" id="aiReady">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12.5 5 5L20 6.5"></path></svg>
+        Hiring blueprint is ready
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 · TESTIMONIALS AS BOARDING PASSES ============ -->
+<section class="sec" data-screen-label="05">
+  <div class="inner">
+    <div class="split rv" style="margin-bottom:clamp(26px,3.6vh,44px)">
+      <div class="sh">
+        <p class="eyebrow gold"><i></i>From the people hiring</p>
+        <h2>What changes when <span class="serif">evidence arrives first.</span></h2>
+      </div>
+    </div>
+    <div class="passes">
+      <article class="pass rv" style="--i:0">
+        <div class="pmain">
+          <div class="phead"><span>TESTIMONIAL</span><em>INTENT &rarr; HIRE</em></div>
+          <p class="pquote">[Placeholder] We stopped reading CVs to guess. The brief told us what to explore, so the interview started at the interesting part.</p>
+          <div class="pwho"><strong>[Name]</strong><span>HEAD OF TALENT &middot; SERIES B FINTECH</span></div>
+        </div>
+        <div class="pstub">
+          <div class="pf"><b>ROLE</b><span>SR PM</span></div>
+          <div class="pf"><b>TIME TO HIRE</b><span>19 DAYS</span></div>
+          <div class="bars" aria-hidden="true"><i style="height:100%"></i><i style="height:60%"></i><i style="height:90%"></i><i style="height:45%"></i><i style="height:100%"></i><i style="height:70%"></i><i style="height:85%"></i><i style="height:50%"></i><i style="height:95%"></i><i style="height:65%"></i><i style="height:80%"></i><i style="height:55%"></i></div>
+        </div>
+      </article>
+      <article class="pass rv" style="--i:1">
+        <div class="pmain">
+          <div class="phead"><span>TESTIMONIAL</span><em>INTENT &rarr; HIRE</em></div>
+          <p class="pquote">[Placeholder] One standard across three recruitment partners. For the first time everyone was evaluating the same things.</p>
+          <div class="pwho"><strong>[Name]</strong><span>TALENT DIRECTOR &middot; ENTERPRISE SAAS</span></div>
+        </div>
+        <div class="pstub">
+          <div class="pf"><b>ROLE</b><span>ENG LEAD</span></div>
+          <div class="pf"><b>PARTNERS</b><span>03</span></div>
+          <div class="bars" aria-hidden="true"><i style="height:80%"></i><i style="height:100%"></i><i style="height:55%"></i><i style="height:90%"></i><i style="height:65%"></i><i style="height:100%"></i><i style="height:48%"></i><i style="height:85%"></i><i style="height:70%"></i><i style="height:95%"></i><i style="height:60%"></i><i style="height:88%"></i></div>
+        </div>
+      </article>
+      <article class="pass rv" style="--i:2">
+        <div class="pmain">
+          <div class="phead"><span>TESTIMONIAL</span><em>INTENT &rarr; HIRE</em></div>
+          <p class="pquote">[Placeholder] The admin disappeared. My team spent their week on conversations instead of scheduling them.</p>
+          <div class="pwho"><strong>[Name]</strong><span>VP PEOPLE &middot; MARKETPLACE</span></div>
+        </div>
+        <div class="pstub">
+          <div class="pf"><b>ROLE</b><span>DESIGN</span></div>
+          <div class="pf"><b>INTERVIEWS</b><span>&minus;42%</span></div>
+          <div class="bars" aria-hidden="true"><i style="height:65%"></i><i style="height:95%"></i><i style="height:50%"></i><i style="height:100%"></i><i style="height:75%"></i><i style="height:60%"></i><i style="height:90%"></i><i style="height:55%"></i><i style="height:100%"></i><i style="height:70%"></i><i style="height:85%"></i><i style="height:48%"></i></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 · THE COMPARISON ============ -->
+<section class="sec" id="difference" data-screen-label="04">
+  <div class="inner">
+    <div class="split rv" style="margin-bottom:clamp(30px,4.4vh,52px)">
+      <div class="sh">
+        <p class="eyebrow gold"><i></i>The difference</p>
+        <h2>You already have tools. <span class="serif">None of them do this.</span></h2>
+      </div>
+      <div class="sl">
+      </div>
+    </div>
+
+    <!-- the table -->
+    <div class="cmp rv">
+      <div class="cmpg">
+        <div class="cmph"><b>Compare</b><span>WHAT YOU GET</span></div>
+        <div class="cmph us"><b>CareerPassport</b><span>A NEW STANDARD</span></div>
+        <div class="cmph"><b>Your ATS</b><span>SYSTEM OF RECORD</span></div>
+        <div class="cmph"><b>Job boards</b><span>REACH</span></div>
+        <div class="cmph"><b>CV screening</b><span>FILTERING</span></div>
+
+        <div class="cmpr"><b>Role definition</b><span>WHERE IT STARTS</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Built from your own words, competencies mapped</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A free-text job description field</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A template you fill in</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A keyword list</p></div>
+
+        <div class="cmpr"><b>Candidate journey</b><span>WHAT THEY ARE ASKED</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Evidence, activities and assessments, in sequence</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Pipeline statuses only</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>An application form</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>None</p></div>
+
+        <div class="cmpr"><b>Evidence of the work</b><span>WHAT YOU CAN INSPECT</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Artefacts, responses and the context behind each claim</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Whatever was attached</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A CV</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A ranked CV</p></div>
+
+        <div class="cmpr"><b>Running the process</b><span>WHO DOES THE WORK</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Agents handle outreach, coordination and scheduling</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Your team, manually</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Your team, manually</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Screening only</p></div>
+
+        <div class="cmpr"><b>One standard across sources</b><span>DATABASE, RECRUITERS, PARTNERS</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Every source evaluated the same way</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Each source arrives in its own format</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>One source only</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Applies to inbound CVs</p></div>
+
+        <div class="cmpr"><b>What the interviewer gets</b><span>ON THE DAY</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Why this person, what the evidence shows, what to explore</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A CV and a calendar invite</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A CV</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A score</p></div>
+      </div>
+    </div>
+
+    <!-- the same table, read one capability at a time -->
+    <div class="cmpm rv" id="cmpStack"></div>
+  </div>
+</section>
+
+<!-- ============ 06 · CLOSING ============ -->
+<section class="close" id="close" data-screen-label="07">
+  <div class="ccopy">
+    <p class="eyebrow gold rv"><i></i>The promise, resolved</p>
+    <h2 class="rv">Your next hire shouldn't require you to run the entire hiring process and yet get the evidence you want</h2>
+    <p class="lede rv">Tell CareerPassport who you need.</p>
+    <div class="wait rv" data-capture>
+      <input type="email" placeholder="you@company.com" aria-label="Your work email">
+      <button data-done="Request sent">Request a demo</button>
+    </div>
+    <p class="brandline rv">Intent in. Evidence out.</p>
+  </div>
+  <div class="cart" aria-hidden="true">
+    <div class="oring"></div>
+    <div class="palmglow"></div>
+    <div class="present cpres">
+      <div class="pscreen">
+        <image-slot id="cmp-close-product" shape="rect" radius="14"
+          placeholder="Drop a product screen grab (16:9)"></image-slot>
+        <span class="pchrome" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="plbl">PRODUCT &middot; LIVE ROLE</span>
+      </div>
+      <div class="pphone cpassport">
+        <span class="pcvwm">CAREERPASSPORT</span>
+        <span class="pcvseal" aria-hidden="true"><i></i></span>
+        <span class="pcvtitle">PASSPORT</span>
+        <span class="pcvurl">careerpassport.ai/yourname</span>
+        <span class="pcvchip" aria-hidden="true"><i></i></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="ftr">
+  <div class="ftop">
+    <a class="brand" href="Homepage.html"><i></i><span>careerpassport.ai</span></a>
+    <div class="fright">
+      <div class="fsoc">
+        <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9v9M6.5 5.6v.1M11 18v-5a3 3 0 0 1 6 0v5"/></svg></a>
+        <a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></a>
+        <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4 1.2-4-2.2-5.5-2.8M15 21v-3.2a2.9 2.9 0 0 0-.8-2.2c2.7-.3 4.5-1.4 4.5-5a4 4 0 0 0-1.1-2.7 3.7 3.7 0 0 0-.1-2.8s-1.2-.3-3.7 1.4a9.3 9.3 0 0 0-5 0C6.3 3.8 5.1 4.1 5.1 4.1a3.7 3.7 0 0 0-.1 2.8A4 4 0 0 0 3.9 9.6c0 3.6 1.8 4.7 4.5 5A2.9 2.9 0 0 0 7.6 17V21"/></svg></a>
+        <a href="#" aria-label="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17zM3.5 7l8.5 6 8.5-6"/></svg></a>
+      </div>
+      <nav class="fnav"><a href="Homepage.html">For individuals</a><a href="For Companies.html">For companies</a><a href="For Recruitment Partners.html">For recruitment partners</a></nav>
+    </div>
+  </div>
+  <svg class="fmark" viewBox="0 0 1000 96" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <defs><linearGradient id="fmg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="var(--ink)" stop-opacity=".14"/>
+      <stop offset=".62" stop-color="var(--ink)" stop-opacity=".03"/>
+      <stop offset="1" stop-color="var(--ink)" stop-opacity="0"/>
+    </linearGradient></defs>
+    <text x="500" y="104" text-anchor="middle" textLength="1000" lengthAdjust="spacingAndGlyphs"
+      font-size="130" font-weight="900" letter-spacing="-4">CAREERPASSPORT</text>
+  </svg>
+  <p class="fcr">&copy; 2026 CareerPassport Technologies Inc.</p>
+</footer>
+
+<script src="image-slot.js"></script>
+<script>
+/* ---- the scroll progress bar, driven as it is on Homepage ---- */
+(function(){
+  var bar=document.querySelector('.prog'); if(!bar) return;
+  var de=document.documentElement;
+  var tick=function(){
+    var span=de.scrollHeight - (de.clientHeight || innerHeight);
+    /* a frame sized to the whole document has nothing to scroll: keep the bar at zero
+       rather than dividing by it */
+    var p = span > 0 ? Math.min(1,Math.max(0,(scrollY||pageYOffset)/span)) : 0;
+    bar.style.setProperty('--pw',(p*100).toFixed(2)+'%');
+  };
+  tick();
+  addEventListener('scroll',tick,{passive:true});
+  addEventListener('resize',tick,{passive:true});
+})();
+
+/* ---- the hero plate's crop ----
+   Portrait footage fills the slot's width, so it is taller than the slot. --vy picks which
+   band is seen: FRAME_TOP lands on the occupied-desk field (the atrium occupies the top
+   third of the source) and LIFT_PX raises it further. The video plays on its own loop;
+   nothing here touches playback. */
+
+/* ---- the comparison arrives row by row ----
+   The grid is flat markup (one label cell + four value cells per row), so the rows are
+   recovered by counting columns. Each row's five elements share one --i, which makes them
+   land together while the rows themselves cascade. */
+(function(){
+  var grid=document.querySelector('.cmpg'); if(!grid) return;
+  var kids=[].slice.call(grid.children), COLS=5;
+  kids.forEach(function(el,n){
+    el.classList.add('rv');
+    el.style.setProperty('--i', Math.floor(n / COLS));
+  });
+})();
+
+/* ---- the ground's parallax: the rule grid drifts at a fraction of the page's speed ---- */
+(function(){
+  var grid=document.querySelector('.grid-bg'); if(!grid) return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var queued=false;
+  var write=function(){
+    queued=false;
+    grid.style.setProperty('--gridY',(-(scrollY*0.06)%120).toFixed(1)+'px');
+  };
+  addEventListener('scroll',function(){
+    if(queued) return; queued=true; requestAnimationFrame(write);
+  },{passive:true});
+  write();
+})();
+
+/* ---- fold 02: one sentence becomes a hiring blueprint, scroll-driven ---- */
+(function(){
+  var sec=document.getElementById('aidemo'); if(!sec) return;
+  var pin=sec.querySelector('.aidemopin');
+  var eyebrow=document.getElementById('aiEyebrow');
+  var stage=document.getElementById('aiStage');
+  var chat=document.getElementById('aiChat');
+  var textEl=document.getElementById('aiText');
+  var searchBtn=document.getElementById('aiSearchBtn');
+  var submitBtn=document.getElementById('aiSubmit');
+  var box=document.getElementById('aiBox');
+  var prep=document.getElementById('aiPrep');
+  var bp=document.getElementById('aiBp');
+  var ready=document.getElementById('aiReady');
+  var pill=document.getElementById('aiPill');
+  var cur=document.getElementById('hmCur');
+  var fin1=document.getElementById('aiFin1');
+  var fin2=document.getElementById('aiFin2');
+  var cards=[].slice.call(bp.querySelectorAll('.bpk'));
+  var chip=document.getElementById('actChip');
+  var title=document.getElementById('actTitle');
+  var dots=[].slice.call(document.querySelectorAll('#actDots i'));
+  var ex=document.getElementById('aiEx'), ev=document.getElementById('aiEv'), dc=document.getElementById('aiDc');
+  var wires=[].slice.call(ex.querySelectorAll('.wire:not(.reach)'));
+  var reach=[].slice.call(ex.querySelectorAll('.wire.reach'));
+  var srcs=[].slice.call(ex.querySelectorAll('.exnode.src'));
+  var chans=[].slice.call(ex.querySelectorAll('.exnode.chn'));
+  var hub=document.getElementById('exHub');
+  var exTicker=document.getElementById('exTicker');
+  var funs=[].slice.call(ev.querySelectorAll('.evf'));
+  var evStack=document.getElementById('evStack');
+  var evBtn=document.getElementById('evBtn');
+  var dcTicker=document.getElementById('dcTicker');
+  var dcEnd=document.getElementById('dcEnd');
+  var slots=[document.getElementById('dcSlot0'),document.getElementById('dcSlot1'),document.getElementById('dcSlot2')];
+
+  var EXLOG=[['09:42','Approached via email'],['11:18','Response received'],
+    ['11:19','Candidate Journey shared'],['14:32','Assessment coordinated'],
+    ['16:07','Interview slot proposed']];
+  var DCLOG=[['16 SEP','Conversation held, notes recorded'],
+    ['16 SEP','Evidence attached to the record'],
+    ['17 SEP','Every candidate told where they stand']];
+  /* one line at a time, swapped in place — a ticker reads calmer than a stacked log */
+  function tick(el,list,i){
+    if(el._i===i||!list[i]) return;
+    el._i=i; el.classList.add('turn');
+    setTimeout(function(){
+      el.querySelector('b').textContent=list[i][0];
+      el.querySelector('span').textContent=list[i][1];
+      el.classList.remove('turn');
+    },220);
+  }
+
+  var ACTS=[
+    ['DEFINE','One intent becomes a hiring blueprint.'],
+    ['DESIGN','Decide what you need to know before you meet them.'],
+    ['EXECUTE','Once the role is live, our agents move the process without you operating it.'],
+    ['EVIDENCE','See why someone is worth meeting.'],
+    ['DECIDE','Meet fewer candidates.<br>Know more about the ones you do.']
+  ];
+  var actNow=-1;
+  function setAct(i){
+    if(i===actNow) return;
+    actNow=i;
+    chip.textContent=ACTS[i][0];
+    title.innerHTML=ACTS[i][1];
+    dots.forEach(function(s,k){
+      s.classList.toggle('on',k===i); s.classList.toggle('done',k<i);
+    });
+  }
+  var loaders=[].slice.call(bp.querySelectorAll('.bpload'));
+
+  var QUERY="I need a senior product leader who has built enterprise products, worked through ambiguity and can operate across engineering, sales and customers.";
+  textEl.innerHTML=QUERY.split(' ').map(function(w){ return '<span>'+w+'</span>' }).join(' ');
+  var wordEls=[].slice.call(textEl.querySelectorAll('span'));
+  var caret=document.createElement('span');
+  caret.className='aicaret'; caret.setAttribute('aria-hidden','true');
+  textEl.insertBefore(caret,textEl.firstChild);
+
+  /* ---- the departures board behind everything ---- */
+  var board=document.getElementById('flapBg');
+  var glow=sec.querySelector('.flapglow');
+  var ROLES=['SENIOR PRODUCT LEAD','STAFF ENGINEER','HEAD OF DESIGN','DATA PLATFORM LEAD',
+    'ENTERPRISE AE','SOLUTIONS ARCHITECT','GROUP PRODUCT MGR','SECURITY ENGINEER',
+    'FINANCE BUSINESS PTR','CUSTOMER SUCCESS LEAD','PLATFORM SRE','RESEARCH LEAD',
+    'BACKEND ENGINEER','REVENUE OPERATIONS','PRINCIPAL DESIGNER','ANALYTICS MANAGER'];
+  var CH='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -';
+  var STATUS=['BOARDING','VERIFIED','ON TIME','CLAIMED','MATCHED','OPEN'];
+  var TITLE_LEN=15, ID_LEN=5, ST_LEN=8, rows=[];
+  var cellW=Math.max(24,Math.min(34,innerWidth*0.025));
+  var cellH=Math.max(32,Math.min(44,innerWidth*0.033));
+  var gapW=Math.max(14,Math.min(26,innerWidth*0.019));
+  var grpW=(TITLE_LEN+ID_LEN+ST_LEN)*(cellW+3)+gapW*2+6;
+  var ROWS=Math.ceil(innerHeight/(cellH+3))+1;
+  var GROUPS=Math.max(1,Math.ceil(innerWidth/grpW)+1);
+
+  function makeCell(cls){
+    var c=document.createElement('span'); c.className='flapc'+(cls?' '+cls:''); return c;
+  }
+  function newId(){
+    var s='CP'; for(var i=0;i<3;i++) s+=Math.floor(Math.random()*10); return s;
+  }
+  for(var r=0;r<ROWS;r++){
+    var row=document.createElement('div'); row.className='flaprow';
+    var groups=[];
+    for(var gI=0;gI<GROUPS;gI++){
+      var grp=document.createElement('div'); grp.className='flapgrp';
+      var tc=[],ic=[],i;
+      for(i=0;i<TITLE_LEN;i++){ var c=makeCell(); grp.appendChild(c); tc.push(c) }
+      var gap=document.createElement('span'); gap.className='flapgap'; grp.appendChild(gap);
+      for(i=0;i<ID_LEN;i++){ var c2=makeCell('num'); grp.appendChild(c2); ic.push(c2) }
+      var gap2=document.createElement('span'); gap2.className='flapgap'; grp.appendChild(gap2);
+      var sc=[];
+      for(i=0;i<ST_LEN;i++){ var c3=makeCell('st'); grp.appendChild(c3); sc.push(c3) }
+      row.appendChild(grp);
+      groups.push({title:tc,id:ic,st:sc});
+    }
+    board.appendChild(row);
+    rows.push({el:row,groups:groups});
+  }
+  function paintGroup(grp,title,id,animate){
+    var t=(title+'                 ').slice(0,TITLE_LEN);
+    var d=(id+'     ').slice(0,ID_LEN);
+    var s=(STATUS[Math.floor(Math.random()*STATUS.length)]+'        ').slice(0,ST_LEN);
+    grp.title.forEach(function(cell,i){ set(cell,t[i],i) });
+    grp.id.forEach(function(cell,i){ set(cell,d[i],i+TITLE_LEN) });
+    grp.st.forEach(function(cell,i){ set(cell,s[i],i+TITLE_LEN+ID_LEN) });
+    function set(cell,ch,idx){
+      if(!animate){ cell.textContent=ch===' '?'':ch; return }
+      setTimeout(function(){
+        cell.classList.remove('flip'); void cell.offsetWidth; cell.classList.add('flip');
+        setTimeout(function(){ cell.textContent=ch===' '?'':ch },140);
+      }, idx*10);
+    }
+  }
+  var pick=function(){ return ROLES[Math.floor(Math.random()*ROLES.length)] };
+  rows.forEach(function(row){
+    row.groups.forEach(function(g){ paintGroup(g,pick(),newId(),false) });
+  });
+
+  var nextRow=0, lastShuffle=0, lastDrift=null;
+  function shuffle(){
+    var row=rows[nextRow%ROWS]; nextRow++;
+    row.groups.forEach(function(g,i){
+      setTimeout(function(){ paintGroup(g,pick(),newId(),true) }, i*90);
+    });
+  }
+
+  var SVH_TOTAL=2200;
+  var A2=0.43; /* acts 1 and 2 occupy the first 43% */
+  var setH=function(){ sec.style.height=SVH_TOTAL+'svh' };
+  setH(); addEventListener('resize',setH,{passive:true});
+
+  var clamp=function(v,a,b){ return Math.min(b,Math.max(a,v)) };
+  var seg=function(v,a,b){ return clamp((v-a)/(b-a),0,1) };
+
+  /* ---- the hiring manager's cursor parks on whatever element it is given ---- */
+  /* the cursor chases a target with critically-damped easing, so direction changes never snap */
+  /* a pointer moved by a person: it accelerates, overshoots a little, settles, and never
+     travels in a perfectly straight line. Entry and exit are journeys from off-stage right. */
+  var tx=0, ty=0, cx=0, cy=0, vx=0, vy=0, seeded=false, tilt=0, tclock=0, wasOn=false;
+  function offstage(){ return {x:stage.offsetWidth+150, y:stage.offsetHeight*0.42} }
+  function park(el,ox,oy){
+    if(!el) return;
+    var s=stage.getBoundingClientRect(), r=el.getBoundingClientRect();
+    tx=r.left-s.left+r.width*0.5+(ox||0);
+    ty=r.top-s.top+r.height*0.5+(oy||0);
+    if(!seeded){ var o=offstage(); cx=o.x; cy=o.y; seeded=true }
+    cur.classList.toggle('left',tx>stage.offsetWidth*0.55);
+  }
+  function setVisible(on){
+    if(on===wasOn) return;
+    if(on){ var o=offstage(); cx=o.x; cy=o.y; vx=0; vy=0 }
+    wasOn=on;
+  }
+  function glide(){
+    /* plain easing toward the target — no arc, no tremor, no overshoot */
+    cx+=(tx-cx)*0.09;
+    cy+=(ty-cy)*0.09;
+    cur.style.transform='translate3d('+cx.toFixed(2)+'px,'+cy.toFixed(2)+'px,0)';
+    requestAnimationFrame(glide);
+  }
+  requestAnimationFrame(glide);
+
+  var frame=function(){
+    var r=sec.getBoundingClientRect();
+    var vh=pin.getBoundingClientRect().height||document.documentElement.clientHeight||innerHeight;
+    var span=r.height-vh;
+    var g=span>0 ? clamp(-r.top/span,0,1) : 0;
+
+    /* the board drifts and reshuffles as the fold is scrolled. Its per-row transforms are
+       the most expensive work in this function, so they are written only when the drift has
+       actually changed enough to see — the rest of the fold stays responsive at speed. */
+    if(lastDrift===null||Math.abs(g-lastDrift)>0.004){
+      lastDrift=g;
+      var dr=(g-0.5)*52;
+      rows.forEach(function(row,i){
+        var d=(i-(ROWS-1)/2)/((ROWS-1)/2);
+        var away=Math.abs(d);
+        row.el.style.translate='0 '+(dr*(1+away*0.55)).toFixed(1)+'px';
+        if(!row.set){
+          row.set=true;
+          row.el.style.transform='perspective(760px) rotateX('+(-d*7).toFixed(2)+'deg) scale('+
+            (1-away*0.05).toFixed(3)+')';
+          row.el.style.opacity=(0.5+0.5*away).toFixed(2);
+          row.el.style.filter=away>0.55?'none':'blur('+((0.55-away)*2.1).toFixed(2)+'px)';
+        }
+      });
+      board.style.opacity=(0.46-0.15*Math.abs(g-0.5)*2).toFixed(3);
+      glow.style.translate=(-14+g*28).toFixed(1)+'% '+(10-g*20).toFixed(1)+'%';
+      glow.style.rotate=(-8+g*16).toFixed(1)+'deg';
+      glow.style.scale=(1+Math.sin(g*Math.PI)*0.14).toFixed(3);
+    }
+    if(Math.abs(g-lastShuffle)>0.012){ lastShuffle=g; shuffle() }
+
+    /* acts 1 and 2 keep their own 0..1 clock inside the first 43% of the fold */
+    var p=clamp(g/A2,0,1);
+    setAct(g<0.2055?0:g<0.452?1:g<0.652?2:g<0.852?3:4);
+
+    /* act 1 — the brief fills in, word by word */
+    var wp=seg(p,.05,.36);
+    var n=Math.round(wp*wordEls.length);
+    wordEls.forEach(function(w,i){
+      w.classList.toggle('hot',i<n);
+      w.classList.toggle('lead',i===n-1&&n<wordEls.length);
+    });
+    /* the caret sits immediately after the word that just filled */
+    if(caret._n!==n){
+      caret._n=n;
+      if(n<=0) textEl.insertBefore(caret,textEl.firstChild);
+      else wordEls[Math.min(n,wordEls.length)-1].after(caret);
+    }
+    caret.classList.toggle('on',p>.03&&p<.44);
+
+    var done=n>=wordEls.length;
+    searchBtn.classList.toggle('armed',done);
+    pill.classList.toggle('hot',done);
+    chat.classList.toggle('searching',p>=.36);
+
+    /* the presses hold long enough to register even at speed */
+    var sendPress=p>=.415&&p<.475&&g<A2, subPress=p>=.895&&p<.945&&g<A2;
+    searchBtn.classList.toggle('pressed',sendPress);
+    submitBtn.classList.toggle('pressed',subPress);
+
+    /* act 2 — the box grows, prepares, then draws the blueprint */
+    chat.classList.toggle('off',p>=.478);
+    box.classList.toggle('big',p>=.478);
+    prep.classList.toggle('on',p>=.478&&p<.625);
+    bp.classList.toggle('on',p>=.605&&g<.452);
+
+    /* every card loads at once, then every card fills at once */
+    var loading = p>=.62 && p<.70;
+    var filled = p>=.70;
+    cards.forEach(function(el){
+      el.classList.toggle('on',p>=.61);
+      el.classList.toggle('filled',filled);
+    });
+    loaders.forEach(function(el){ el.classList.toggle('on',loading) });
+    ready.classList.toggle('on',p>=.71&&p<.86);
+
+    /* the hiring manager reviews each card, then submits */
+    var hover=-1;
+    if(p>=.72&&p<.865) hover=Math.min(4,Math.floor(seg(p,.72,.865)*5));
+    cards.forEach(function(el,i){ el.classList.toggle('hov',i===hover) });
+    submitBtn.classList.toggle('on',p>=.865);
+    submitBtn.classList.toggle('armed',p>=.885);
+
+    /* the handover — the blueprint recedes, two lines land, the agent takes the role */
+    bp.classList.toggle('done',p>=.95&&g<.452);
+    fin1.classList.toggle('on',p>=.955&&g<.452);
+    fin2.classList.toggle('on',p>=.978&&g<.452);
+
+    /* ---------- act 3 · one role, wired to every source and channel ---------- */
+    ex.classList.toggle('on',g>=.452&&g<.655);
+    hub.classList.toggle('on',g>=.462);
+    srcs.forEach(function(el,i){ el.classList.toggle('on',g>=.474+i*0.014) });
+    chans.forEach(function(el,i){ el.classList.toggle('on',g>=.545+i*0.016) });
+    wires.forEach(function(w,i){
+      w.classList.toggle('lit', i<3 ? g>=.482+i*0.014 : g>=.552+(i-3)*0.016);
+    });
+    reach.forEach(function(w){
+      var c=+w.getAttribute('data-r');
+      w.classList.toggle('lit',g>=.566+c*0.016);
+    });
+    tick(exTicker,EXLOG,Math.min(EXLOG.length-1,Math.floor(seg(g,.50,.648)*EXLOG.length)));
+
+    /* ---------- act 4 · the pool narrows to one record worth reading ---------- */
+    ev.classList.toggle('on',g>=.652&&g<.855);
+    funs.forEach(function(el,i){ el.classList.toggle('on',g>=.668+i*0.022) });
+    evStack.classList.toggle('on',g>=.748);
+    var evPress=g>=.806&&g<.842;
+    evBtn.classList.toggle('on',g>=.778);
+    evBtn.classList.toggle('armed',g>=.796);
+    evBtn.classList.toggle('pressed',evPress);
+    /* the press opens the deck */
+    evStack.classList.toggle('spread',g>=.834);
+
+    /* ---------- act 5 · three conversations, and a record of each ---------- */
+    dc.classList.toggle('on',g>=.852);
+    slots.forEach(function(el,i){ if(el) el.classList.toggle('on',g>=.866+i*0.014) });
+    var pick=-1;
+    if(g>=.892) pick=Math.min(2,Math.floor(seg(g,.892,.952)*3));
+    var dcPress=(g>=.906&&g<.920)||(g>=.926&&g<.940)||(g>=.946&&g<.960);
+    slots.forEach(function(el,i){
+      if(!el) return;
+      /* once a conversation is booked it stays booked — the closing frame shows all three */
+      el.classList.toggle('picked',g>=.906+i*0.02);
+      el.classList.toggle('pressed',dcPress&&i===pick);
+      /* the actions open on whichever conversation the manager is on */
+      el.classList.toggle('hov',i===pick&&g<.962);
+    });
+    tick(dcTicker,DCLOG,Math.min(DCLOG.length-1,Math.floor(seg(g,.905,.985)*DCLOG.length)));
+    dcEnd.classList.toggle('on',g>=.966);
+
+    /* ---------- who is on stage, and where their hand is ---------- */
+    var curOn2 = (p>=.35&&p<.485&&g<A2) || (p>=.685&&p<.955&&g<A2) ||
+                 (g>=.762&&g<.852) || (g>=.876&&g<.968);
+    cur.classList.toggle('on',curOn2);
+    cur.classList.toggle('away',!curOn2);
+    setVisible(curOn2);
+    cur.classList.toggle('click',sendPress||subPress||evPress||dcPress);
+
+    if(g<A2){
+      if(p<.72) park(searchBtn,2,2);
+      else if(hover>=0) park(cards[hover],0,6);
+      else park(submitBtn,2,2);
+    }else if(g<.86){
+      if(g<.786) park(evStack.querySelector('.evpass'),0,10);
+      else park(evBtn,2,2);
+    }else{
+      park(slots[Math.max(0,pick)],2,2);
+    }
+  };
+  frame();
+  var queued=false;
+  var onScroll=function(){
+    if(queued) return;
+    queued=true;
+    requestAnimationFrame(function(){ queued=false; frame() });
+  };
+  addEventListener('scroll',onScroll,{passive:true});
+  addEventListener('resize',function(){ lastDrift=null; frame() },{passive:true});
+})();
+
+
+/* ---- the stacked reading of the comparison, generated FROM the table ----
+   One source of truth: edit a cell in the markup above and the stacked version follows,
+   so the two readings can never drift apart. */
+(function(){
+  var grid=document.querySelector('.cmpg'), out=document.getElementById('cmpStack');
+  if(!grid||!out) return;
+  var kids=[].slice.call(grid.children);
+  /* head: [Compare][liftcol][us][3 others] then repeating [rowlabel][4 cells] */
+  var heads=kids.filter(function(k){ return k.classList.contains('cmph') })
+                .map(function(k){ return k.querySelector('b').textContent });
+  var cols=heads.slice(1);                       /* CareerPassport + the three others */
+  var rows=[],cur=null;
+  kids.forEach(function(k){
+    if(k.classList.contains('cmpr')){
+      cur={label:k.querySelector('b').textContent,cells:[]};
+      rows.push(cur);
+    } else if(k.classList.contains('cell') && cur){
+      cur.cells.push(k.querySelector('p').textContent);
+    }
+  });
+  out.innerHTML=rows.map(function(r){
+    var others=r.cells.slice(1).map(function(c,i){
+      return '<div class="mo"><em>'+(cols[i+1]||'').toUpperCase()+'</em><p>'+c+'</p></div>';
+    }).join('');
+    return '<div class="cmpb"><b>'+r.label+'</b>'+
+      '<div class="mus"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'+
+      '<div><em>CAREERPASSPORT</em><p>'+r.cells[0]+'</p></div></div>'+others+'</div>';
+  }).join('');
+})();
+
+/* ---- the companies strip: user-filled slots, duplicated for a seamless loop ---- */
+(function(){
+  var track=document.getElementById('logoTrack'); if(!track) return;
+  var N=7, html='';
+  for(var pass=0;pass<2;pass++){
+    for(var i=1;i<=N;i++){
+      html+='<div class="lg"><image-slot id="cmp-logo-'+i+'" shape="rect" '+
+        (pass?'aria-hidden="true" ':'')+'placeholder="Logo '+i+'"></image-slot></div>';
+    }
+  }
+  track.innerHTML=html;
+})();
+
+/* ---- reveal on enter ----
+   The animation is an enhancement and is never allowed to hide content, but it also must
+   not switch itself off just because the host frame is tall. The earlier version bailed
+   whenever scrollHeight was not greater than clientHeight, which is true of any preview
+   pane or capture that sizes the frame to the whole document — so on those hosts nothing
+   ever animated. Now it always arms, and three separate safety nets guarantee content:
+
+   1. anything already inside the first viewport is shown on the next frame;
+   2. an observer plus a scroll/resize sweep reveals the rest as it arrives;
+   3. a hard backstop reveals everything after 2.5s, so a frame where nothing can ever
+      "enter" (no scrolling, full-height host) still ends up fully painted. */
+(function(){
+  var els=[].slice.call(document.querySelectorAll('.rv'));
+  if(!els.length || !('IntersectionObserver' in window)) return;
+
+  var de=document.documentElement;
+  /* The visual viewport is window.innerHeight, NOT documentElement.clientHeight. Preview
+     panes and capture hosts size the frame to the whole document, which makes clientHeight
+     equal scrollHeight — reading the viewport from it made every element on the page test
+     as "already in view", so all 48 revealed at load and nothing could animate. */
+  var vp=function(){ return innerHeight || de.clientHeight };
+  var scrollable=function(){ return de.scrollHeight > vp() + 80 };
+
+  de.classList.add('rv-armed');
+  var show=function(e){ e.classList.add('in') };
+  var sweep=function(){
+    var h=vp();
+    els.forEach(function(e){
+      if(e.classList.contains('in')) return;
+      var r=e.getBoundingClientRect();
+      /* revealed once it has genuinely crossed into the viewport, not before */
+      if(r.top < h * 0.94 && r.bottom > -40) show(e);
+    });
+  };
+
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(en){ if(en.isIntersecting){ show(en.target); io.unobserve(en.target) } });
+  },{threshold:0,rootMargin:'0px 0px -6% 0px'});
+  els.forEach(function(e){ io.observe(e) });
+
+  requestAnimationFrame(function(){ requestAnimationFrame(sweep) });
+  addEventListener('load',sweep);
+  addEventListener('scroll',sweep,{passive:true});
+  addEventListener('resize',sweep,{passive:true});
+  setTimeout(sweep,1000);
+  /* The backstop only applies where scrolling can never happen. Firing it unconditionally
+     would reveal the whole page a few seconds after load, which defeats the reveal for
+     everything below the fold. */
+  setTimeout(function(){ if(!scrollable()) els.forEach(show) },2500);
+})();
+
+/* ---- mobile nav ---- */
+(function(){
+  var b=document.getElementById('burger'), m=document.getElementById('mnav');
+  if(!b||!m) return;
+  b.addEventListener('click',function(){
+    var o=m.classList.toggle('open'); b.setAttribute('aria-expanded',o?'true':'false');
+  });
+  [].slice.call(m.querySelectorAll('a')).forEach(function(a){
+    a.addEventListener('click',function(){ m.classList.remove('open'); b.setAttribute('aria-expanded','false'); });
+  });
+})();
+
+/* ---- demo capture ---- */
+(function(){
+  [].slice.call(document.querySelectorAll('[data-capture]')).forEach(function(f){
+    var i=f.querySelector('input'), b=f.querySelector('button'); if(!i||!b) return;
+    var done=b.getAttribute('data-done')||'SENT';
+    b.addEventListener('click',function(){
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(i.value.trim())) return i.focus();
+      f.classList.add('done'); b.textContent=done; i.readOnly=true;
+    });
+    i.addEventListener('keydown',function(e){ if(e.key==='Enter') b.click(); });
+  });
+})();
+</script>

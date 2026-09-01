@@ -1,0 +1,128 @@
+<title>Claim Field — alternate fold 2</title>
+<link rel="stylesheet" href="_ds/careerpassport-design-system-a8d325d2-717b-4d0b-85f0-302544f1ad1d/styles.css">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--bg:var(--void);--tx:var(--ink);--muted:var(--mute);--meta:var(--faint);--line:var(--hairline);
+  --gut:clamp(20px,4.4vw,72px);--ease:cubic-bezier(.4,0,.2,1);
+  --cover:linear-gradient(155deg,#1b3564 0%,#0d1c3a 55%,#091530 100%)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--text-link);text-decoration:none}a:hover{color:var(--text-link-press)}
+
+.wrap{position:relative;min-height:100svh;display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1fr);
+  align-items:center;gap:clamp(24px,4vw,72px);padding:clamp(60px,9vh,110px) var(--gut)}
+.copy{display:flex;flex-direction:column;gap:20px;max-width:560px}
+.eyebrow{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--meta);margin:0}
+.eyebrow i{width:16px;height:1px;background:var(--emerald)}
+h1{margin:0;font-size:clamp(28px,3.3vw,50px);font-weight:600;letter-spacing:-.048em;line-height:1.03}
+.lede{margin:0;font-size:clamp(14px,1.02vw,16.5px);line-height:1.55;color:var(--muted);text-wrap:pretty}
+.probs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.probs li{display:flex;gap:12px;font-size:clamp(14px,1.02vw,16.5px);line-height:1.5;color:var(--muted)}
+.probs li b{flex-shrink:0;font-family:var(--mono);font-size:11px;font-weight:400;letter-spacing:.14em;
+  color:var(--emerald);padding-top:3px}
+
+/* the field: near-identical claims, evenly lit, depth by scale and softness alone */
+.stage{position:relative;height:min(78svh,660px);overflow:hidden;border-radius:14px;
+  background:radial-gradient(120% 90% at 50% 30%,rgba(27,53,100,.24),transparent 68%),var(--panel);
+  border:1px solid var(--hairline-soft)}
+.field{position:absolute;inset:0}
+.clm{position:absolute;translate:-50% -50%;width:clamp(118px,13vw,178px);padding:11px 12px 12px;
+  display:flex;flex-direction:column;gap:7px;border-radius:9px;
+  background:rgba(30,36,44,calc(.92 - var(--d) * .34));
+  border:1px solid rgba(150,168,190,calc(.2 - var(--d) * .09));
+  box-shadow:0 1px 1px rgba(0,0,0,.35);
+  scale:calc(1 - var(--d) * .22);
+  filter:blur(calc(var(--d) * 1.4px));
+  opacity:calc(1 - var(--d) * .42);
+  animation:drift 13s ease-in-out infinite alternate;
+  animation-delay:calc(var(--ph) * -1s)}
+@keyframes drift{from{translate:-50% calc(-50% - 5px)}to{translate:-50% calc(-50% + 5px)}}
+.clm .ca{width:22px;height:22px;border-radius:50%;background:rgba(150,168,190,.16)}
+.clm .cn{width:64%;height:5px;border-radius:3px;background:rgba(150,168,190,.22)}
+.clm b{font-size:11.5px;font-weight:500;line-height:1.3;letter-spacing:-.008em;color:rgba(226,234,242,.8)}
+.clm small{font-family:var(--mono);font-size:8px;letter-spacing:.1em;color:rgba(150,168,190,.5)}
+
+/* the one card that carries evidence */
+.clm.proof{background:var(--panel-raised);border-color:rgba(253,178,60,.5);opacity:1;filter:none;
+  box-shadow:0 2px 2px rgba(0,0,0,.5),0 18px 40px -12px rgba(0,0,0,.75),0 0 40px rgba(253,178,60,.14);
+  z-index:5;animation:none;translate:-50% -50%}
+.clm.proof .ca{background:var(--gradient-transit);border:1px solid rgba(253,178,60,.5)}
+.clm.proof .cn{width:58%;background:rgba(253,178,60,.34)}
+.clm.proof b{color:var(--ink)}
+.clm.proof small{color:var(--emerald);letter-spacing:.12em}
+.pmark{display:flex;align-items:center;gap:5px;margin-top:1px;font-family:var(--mono);font-size:8px;
+  letter-spacing:.14em;color:var(--emerald)}
+.pmark i{width:6px;height:6px;border-radius:50%;background:var(--emerald);
+  box-shadow:0 0 0 3px rgba(253,178,60,.16)}
+.vig{position:absolute;inset:0;pointer-events:none;border-radius:14px;
+  background:radial-gradient(closest-side at 50% 50%,transparent 62%,rgba(10,12,11,.3) 100%)}
+
+@media (max-width:1024px){
+  .wrap{grid-template-columns:1fr;gap:28px;text-align:center}
+  .copy{align-items:center;margin-inline:auto}
+  .eyebrow{justify-content:center}
+  .probs li{text-align:left}
+  .stage{height:min(56svh,420px);order:-1}
+  .clm{width:clamp(104px,26vw,140px);padding:9px 10px 10px;gap:5px}
+  .clm b{font-size:10px}
+  .clm small{font-size:7px}
+}
+</style>
+
+<div class="wrap">
+  <div class="copy">
+    <p class="eyebrow"><i></i>The problem</p>
+    <h1>When anyone can claim anything, proof is what sets you apart.</h1>
+    <ul class="probs">
+      <li><b>01</b>A polished profile takes minutes to write, and reads the same as a decade of real work.</li>
+      <li><b>02</b>Everyone sounds exceptional, so nothing anyone says carries weight.</li>
+      <li><b>03</b>The people with genuine depth are the ones who lose the most.</li>
+    </ul>
+  </div>
+  <div class="stage">
+    <div class="field" id="field"></div>
+    <div class="vig"></div>
+  </div>
+</div>
+
+<script>
+/* Twenty-four near-identical claims across three depth ranks. The field argues the
+   point by repetition: every card is equally impressive, so none of them mean anything.
+   One card carries evidence, and it is the only one that reads as real. */
+var CLAIMS=[
+ ['Results-driven professional','12 yrs'],['Proven track record','9 yrs'],
+ ['Strategic thinker and doer','11 yrs'],['Passionate about impact','7 yrs'],
+ ['Data-driven decision maker','10 yrs'],['Built and scaled teams','13 yrs'],
+ ['Delivered 10x growth','8 yrs'],['Trusted cross-functional lead','14 yrs'],
+ ['Outcome-obsessed operator','6 yrs'],['Award-winning innovator','12 yrs'],
+ ['End-to-end ownership','9 yrs'],['Exceptional communicator','15 yrs'],
+ ['Recognised industry expert','11 yrs'],['Highly adaptable self-starter','8 yrs'],
+ ['Consistently exceeds targets','10 yrs'],['Visionary product mind','7 yrs'],
+ ['Deep technical expertise','13 yrs'],['Relentless problem solver','9 yrs'],
+ ['Transformational leader','16 yrs'],['Customer-obsessed builder','6 yrs'],
+ ['Scaled from zero to one','11 yrs'],['Trusted senior advisor','14 yrs'],
+ ['Top-decile performer','10 yrs'],['Cross-industry generalist','12 yrs']];
+
+(function(){
+  var s=1103, rnd=function(){s=(s*1664525+1013904223)%4294967296;return s/4294967296};
+  var COLS=6, PROOF=14, html='';
+  for(var i=0;i<CLAIMS.length;i++){
+    var col=i%COLS, row=(i/COLS)|0, d=row/3;
+    var x=(col+0.5)/COLS*100+(rnd()-0.5)*4;
+    var y=12+row*23+(rnd()-0.5)*3;
+    if(i===PROOF){
+      html+='<article class="clm proof" style="left:'+x.toFixed(2)+'%;top:'+y.toFixed(2)+'%;--d:0">'+
+        '<span class="ca"></span><span class="cn"></span>'+
+        '<b>Led the migration to microservices</b><small>34 artifacts</small>'+
+        '<span class="pmark"><i></i>EVIDENCE ATTACHED</span></article>';
+      continue;
+    }
+    html+='<article class="clm" style="left:'+x.toFixed(2)+'%;top:'+y.toFixed(2)+'%;'+
+      '--d:'+d.toFixed(3)+';--ph:'+(rnd()*6.28).toFixed(2)+'">'+
+      '<span class="ca"></span><span class="cn"></span>'+
+      '<b>'+CLAIMS[i][0]+'</b><small>'+CLAIMS[i][1]+' experience</small></article>';
+  }
+  document.getElementById('field').innerHTML=html;
+})();
+</script>

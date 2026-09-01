@@ -1,0 +1,22 @@
+:root{
+--weight-regular:400;--weight-medium:500;--weight-semibold:600;
+/* display-xl — hero headline */
+--display-xl-size:48px;--display-xl-line:48px;--display-xl-track:-2.4px;--display-xl-weight:600;
+/* heading-lg — major section heading */
+--heading-lg-size:32px;--heading-lg-line:40px;--heading-lg-track:-1.28px;--heading-lg-weight:600;
+/* heading-md — sub-section / card heading */
+--heading-md-size:20px;--heading-md-line:28px;--heading-md-track:-0.4px;--heading-md-weight:600;
+/* label-sm — strong label, nav emphasis */
+--label-sm-size:14px;--label-sm-line:20px;--label-sm-track:-0.28px;--label-sm-weight:500;
+/* mono-eyebrow — uppercase section eyebrow */
+--mono-eyebrow-size:12px;--mono-eyebrow-line:16px;--mono-eyebrow-track:0px;--mono-eyebrow-weight:500;
+/* body */
+--body-lg-size:16px;--body-lg-line:24px;
+--body-md-size:14px;--body-md-line:20px;
+--body-sm-size:12px;--body-sm-line:16px;
+/* buttons */
+--button-lg-size:16px;--button-lg-line:20px;--button-lg-weight:500;
+--button-md-size:14px;--button-md-line:20px;--button-md-weight:500;
+/* code */
+--code-size:14px;--code-line:20px
+}

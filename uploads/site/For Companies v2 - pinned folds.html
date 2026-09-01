@@ -1,0 +1,529 @@
+<title>CareerPassport — For Companies</title>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#0a0c0b"/><g fill="#3a4048"><rect x="24" y="60" width="52" height="26" rx="3"/><rect x="92" y="52" width="52" height="26" rx="3"/><rect x="230" y="52" width="52" height="26" rx="3"/><rect x="300" y="60" width="52" height="26" rx="3"/><rect x="24" y="160" width="52" height="26" rx="3"/><rect x="300" y="160" width="52" height="26" rx="3"/><rect x="24" y="300" width="52" height="26" rx="3"/><rect x="92" y="312" width="52" height="26" rx="3"/><rect x="230" y="312" width="52" height="26" rx="3"/><rect x="300" y="300" width="52" height="26" rx="3"/></g><rect x="146" y="150" width="108" height="130" rx="8" fill="#12203f" stroke="#fdb23c" stroke-width="2"/><circle cx="200" cy="205" r="20" fill="none" stroke="#fdb23c" stroke-width="1.5"/><rect x="192" y="197" width="16" height="16" rx="2" fill="#fdb23c"/><rect x="168" y="248" width="64" height="6" rx="3" fill="#fdb23c" opacity=".7"/></svg></template>
+<link rel="stylesheet" href="_ds/careerpassport-design-system-a8d325d2-717b-4d0b-85f0-302544f1ad1d/styles.css">
+<link rel="stylesheet" href="cp-shared.css">
+<style>
+/* ============================================================
+   FOLD 1 — the résumé ocean
+   A dense field of near-identical claim cards, one passport among them. The fold's own
+   progress (--p, published by the engine) pushes the field back and lifts the passport
+   forward: the argument is made by contrast, not by copy.
+   ============================================================ */
+.ocean{position:absolute;inset:0;z-index:0;overflow:hidden;perspective:900px;pointer-events:none;
+  /* the reveal completes in the first 60% of the fold, then holds — a transition spread
+     over the full 200vh reads as drift, not as a reveal */
+  --pr:clamp(0,calc(var(--p,0) / .6),1)}
+.field{position:absolute;inset:-6% -4%;transform-style:preserve-3d;
+  /* pushed back and dimmed as the fold advances */
+  scale:calc(1 - var(--pr,0) * .12)}
+/* only the claim cards recede — the passport lives in the same rows, so the treatment is
+   applied to the cards rather than to the whole field */
+.field .cl{filter:blur(calc(var(--pr,0) * 2.4px)) saturate(calc(1 - var(--pr,0) * .5))}
+/* a card is a flex item of its row: absolute positioning here collapses the whole row
+   into one stack at the row's origin */
+.cl{position:relative;flex-shrink:0;width:clamp(104px,8.4vw,158px);padding:9px 10px 10px;border-radius:5px;
+  background:var(--panel-raised);border:1px solid var(--hairline);
+  display:flex;flex-direction:column;gap:5px;
+  /* the deeper the card, the smaller and fainter — one variable does both */
+  scale:calc(1 - var(--d) * .26);
+  opacity:calc((.42 + (1 - var(--d)) * .5) * (1 - var(--pr,0) * .62));
+  animation:cdrift 14s ease-in-out infinite alternate;animation-delay:calc(var(--ph) * -1s)}
+@keyframes cdrift{from{translate:0 -5px}to{translate:0 5px}}
+.cl i{width:15px;height:15px;border-radius:50%;background:rgba(150,168,190,.15);flex-shrink:0}
+.cl u{height:4px;border-radius:2px;background:rgba(150,168,190,.26);text-decoration:none;width:66%}
+.cl b{font-size:9.5px;font-weight:500;line-height:1.3;color:rgba(233,214,170,.62);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cl s{font-family:var(--mono);font-size:7px;letter-spacing:.14em;color:rgba(122,132,128,.7);text-decoration:none}
+.crow{position:absolute;left:0;right:0;display:flex;align-items:center;justify-content:center;
+  gap:clamp(12px,1.5vw,26px);will-change:transform}
+/* the one passport in the field: lifts forward and warms as the fold advances */
+/* the passport is a member of the crowd, not a layer over it: it is inserted into the
+   middle row as a flex item, so its slot IS the gap in the field */
+.pp{position:relative;z-index:5;flex-shrink:0;width:clamp(150px,15.5vw,252px);aspect-ratio:1/1.34;
+  border-radius:5px 9px 9px 5px;background:var(--cover);
+  border:1px solid rgba(253,178,60,.45);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:9px;padding:14px 10px;
+  scale:calc(.9 + var(--pr,0) * .26);
+  box-shadow:0 22px 54px -12px rgba(0,0,0,.85),
+    0 0 calc(22px + var(--pr,0) * 46px) rgba(253,178,60,calc(.1 + var(--pr,0) * .3)),
+    inset 0 1px 0 rgba(247,222,186,.06)}
+.pp em{font-family:var(--mono);font-size:clamp(7px,.62vw,8.5px);font-style:normal;letter-spacing:.24em;color:rgba(253,178,60,.7)}
+.pp .ring{position:relative;width:38%;aspect-ratio:1;border-radius:50%;border:1px solid rgba(253,178,60,.5);
+  display:grid;place-items:center}
+.pp .ring::after{content:"";width:42%;aspect-ratio:1/1.2;border-radius:2px;background:var(--emerald)}
+.pp strong{font-size:clamp(12px,1.15vw,16px);font-weight:600;letter-spacing:.18em;color:var(--mint)}
+.pp small{font-family:var(--mono);font-size:clamp(7px,.6vw,8.5px);letter-spacing:.12em;color:rgba(253,178,60,.6)}
+/* the proof line only resolves once the passport is forward */
+.pp .pv{display:flex;align-items:center;gap:5px;padding:3px 7px;border-radius:100px;
+  border:1px solid rgba(253,178,60,.4);background:rgba(253,178,60,.1);
+  font-family:var(--mono);font-size:clamp(6.5px,.58vw,8px);letter-spacing:.14em;color:var(--emerald);
+  opacity:calc(max(0, var(--pr,0) - .42) * 2.6)}
+.pp .pv i{width:3px;height:3px;border-radius:50%;background:var(--emerald);box-shadow:0 0 5px rgba(253,178,60,.9)}
+/* a scrim so the copy always sits on a readable ground */
+.oscrim{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(96deg,rgba(10,12,11,.95) 0%,rgba(10,12,11,.8) 26%,rgba(10,12,11,.28) 48%,transparent 62%),
+    radial-gradient(120% 90% at 50% 50%,transparent 52%,rgba(10,12,11,.72) 100%)}
+
+/* ============================================================
+   FOLD 2 — the hiring blueprint, built across the full width
+   ============================================================ */
+.wide{position:relative;z-index:2;width:min(1240px,calc(100vw - var(--gut) * 2));margin-inline:auto;
+  display:flex;flex-direction:column;gap:clamp(20px,3vh,34px)}
+.whead{display:flex;flex-direction:column;gap:12px;max-width:760px}
+.whead h2{font-size:clamp(27px,3vw,44px);font-weight:600;letter-spacing:-.045em;line-height:1.04}
+.bprow{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(8px,1vw,14px)}
+.bpc{position:relative;display:flex;flex-direction:column;gap:8px;padding:15px 15px 17px;border-radius:10px;
+  border:1px solid var(--hairline);background:var(--panel-raised);
+  opacity:.26;transition:opacity .5s var(--ease),border-color .5s var(--ease),translate .5s var(--ease)}
+.bpc.on{opacity:1;border-color:rgba(253,178,60,.34);translate:0 -4px}
+.bpc b{font-family:var(--mono);font-size:9.5px;font-weight:400;letter-spacing:.18em;color:rgba(253,178,60,.65)}
+.bpc strong{font-size:clamp(14px,1.14vw,17.5px);font-weight:600;letter-spacing:-.02em;line-height:1.16;color:var(--ink)}
+.bpc span{font-size:12.5px;line-height:1.42;color:var(--muted)}
+.bpc em{margin-top:auto;font-style:normal;font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:var(--meta)}
+.bpc.on em{color:var(--emerald)}
+.bpc .pbar{margin-top:9px}
+/* the recording plate: full-bleed, no chrome — drop a real capture straight in */
+.rec{position:relative;width:100%;aspect-ratio:21/8;border-radius:12px;overflow:hidden;
+  border:1px solid var(--hairline);background:var(--panel)}
+.rec image-slot{position:absolute;inset:0}
+.reclbl{position:absolute;left:14px;top:13px;z-index:3;display:flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--emerald);pointer-events:none}
+.reclbl i{width:5px;height:5px;border-radius:50%;background:var(--emerald);box-shadow:0 0 7px rgba(253,178,60,.9)}
+
+/* ============================================================
+   FOLD 3 — the candidate journey as a horizontal rail
+   ============================================================ */
+.rail2{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(6px,.9vw,12px);
+  padding-top:34px}
+.rail2::before{content:"";position:absolute;left:8%;right:8%;top:12px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(253,178,60,.3) 8%,rgba(253,178,60,.3) 92%,transparent)}
+.rst{position:relative;display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;
+  opacity:.24;transition:opacity .5s var(--ease)}
+.rst.on{opacity:1}
+.rst::before{content:"";position:absolute;top:-28px;left:50%;translate:-50% 0;width:9px;height:9px;
+  border-radius:50%;background:var(--void);border:1px solid rgba(253,178,60,.5);transition:.5s var(--ease)}
+.rst.on::before{background:var(--emerald);box-shadow:0 0 12px rgba(253,178,60,.8)}
+.rst b{font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.18em;color:rgba(253,178,60,.65)}
+.rst strong{font-size:clamp(13.5px,1.1vw,17px);font-weight:600;letter-spacing:-.02em;line-height:1.18;color:var(--ink)}
+.rst small{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:var(--meta);line-height:1.5}
+.rst .art{display:flex;flex-direction:column;gap:4px;width:100%;margin-top:3px}
+.rst .art u{height:4px;border-radius:2px;background:rgba(253,178,60,.18);text-decoration:none;
+  transform-origin:left;scale:0 1;transition:scale .6s var(--ease)}
+.rst.on .art u{scale:1 1}
+.rst.on .art u:nth-child(2){transition-delay:.08s}
+.rst.on .art u:nth-child(3){transition-delay:.16s}
+
+/* ============================================================
+   FOLD 5 — the diptych: what arrives today, what arrives here
+   ============================================================ */
+.dip{position:relative;z-index:2;display:grid;grid-template-columns:.74fr 1.26fr;gap:clamp(16px,2.4vw,40px);
+  align-items:start;width:min(1180px,calc(100vw - var(--gut) * 2));margin-inline:auto}
+.sheet{position:relative;display:flex;flex-direction:column;gap:11px;padding:clamp(16px,1.8vw,26px);
+  border-radius:11px}
+.sheet.old{border:1px solid var(--hairline);background:var(--panel);opacity:.5}
+.sheet.new{border:1px solid rgba(253,178,60,.34);background:var(--panel-raised);
+  box-shadow:0 0 44px rgba(253,178,60,.1)}
+.shl{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--meta)}
+.tagd{margin-left:auto;font-style:normal;padding:3px 8px;border-radius:100px;
+  border:1px solid var(--hairline);font-size:8px;letter-spacing:.14em;color:var(--faint)}
+.sheet.new .shl .tagd{border-color:rgba(253,178,60,.34);color:var(--emerald)}
+.sheet.new .shl{color:var(--emerald)}
+.sheet.old .lines{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+.sheet.old .lines u{height:5px;border-radius:3px;background:rgba(150,168,190,.16);text-decoration:none}
+.sheet.old .lines u:nth-child(2){width:88%}.sheet.old .lines u:nth-child(3){width:72%}
+.sheet.old .lines u:nth-child(5){width:64%}.sheet.old .lines u:nth-child(6){width:80%}
+.sheet.old p{font-size:13px;line-height:1.5;color:var(--muted);padding-top:4px}
+.erow{display:flex;flex-direction:column;gap:3px;padding:11px 0;border-top:1px solid var(--hairline);
+  opacity:.24;transition:opacity .5s var(--ease)}
+.erow:first-of-type{border-top:0}
+.erow.on{opacity:1}
+.erow b{font-family:var(--mono);font-size:8.5px;font-weight:400;letter-spacing:.18em;color:rgba(253,178,60,.8)}
+.erow span{font-size:clamp(13px,1.04vw,16px);line-height:1.42;color:var(--ink)}
+.erow small{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--muted)}
+
+/* ---------- shared panel primitives used by folds 4 and 6 ---------- */
+.brf{display:flex;flex-direction:column;gap:7px;flex:1;min-height:0}
+.brfr{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-left:1px solid rgba(253,178,60,.4);
+  background:var(--panel-raised);border-radius:0 8px 8px 0}
+.brfr b{font-family:var(--mono);font-size:8.5px;font-weight:400;letter-spacing:.18em;color:rgba(253,178,60,.8)}
+.brfr p{font-size:12px;line-height:1.42;color:var(--ink)}
+.cal{display:flex;align-items:center;gap:11px;padding:12px 13px;border-radius:9px;
+  border:1px solid rgba(253,178,60,.34);background:rgba(253,178,60,.06)}
+.cal i{display:grid;place-items:center;width:36px;height:36px;border-radius:8px;flex-shrink:0;
+  border:1px solid rgba(253,178,60,.5);font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--emerald);
+  flex-direction:column;line-height:1.1;text-align:center}
+.cal div{display:flex;flex-direction:column;gap:2px}
+.cal strong{font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+.appr{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:8px;
+  border:1px dashed rgba(253,178,60,.5);background:rgba(253,178,60,.05)}
+.appr b{font-family:var(--mono);font-size:9.5px;font-weight:400;letter-spacing:.16em;color:var(--emerald)}
+.appr em{margin-left:auto;font-style:normal;font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--meta)}
+.srcs{display:flex;gap:7px;flex-wrap:wrap}
+.trace{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:clamp(9px,.78vw,11px);letter-spacing:.2em;color:var(--faint)}
+.trace em{font-style:normal;color:rgba(253,178,60,.5)}
+.trace b{font-weight:400;color:var(--muted)}
+
+/* the hero copy keeps to the left half on desktop so the passport has room; the stacked
+   layout owns its own band, so the width is scoped to the wide breakpoint only */
+@media (min-width:1025px){ .hero-col{width:min(41%,600px)} }
+/* the full-bleed folds host their own art, so the copy column is not pinned to the left */
+.fold.bleed .pin{align-items:center}
+.fold.bleed .col{width:auto;margin:0;max-width:none}
+
+@media (max-width:1024px){
+  .ocean{perspective:600px}
+  .cl{width:clamp(72px,20vw,104px);padding:6px 7px 7px;gap:4px}
+  .cl b{font-size:8px}.cl s{font-size:6px}.cl i{width:11px;height:11px}
+  .pp{width:clamp(88px,26vw,116px);top:44%}
+  .pp strong{font-size:9px}.pp em,.pp small{font-size:5.5px}
+  .oscrim{background:linear-gradient(180deg,rgba(10,12,11,.4) 0%,rgba(10,12,11,.72) 46%,rgba(10,12,11,.97) 74%)}
+  .wide,.dip{width:auto;margin:0 var(--gut)}
+  /* the full-bleed folds must fit the band the stacked layout gives them, and every one
+     of them must land on the SAME measure — a flex item at width:auto shrink-wraps to its
+     own contents, which is what made each fold a different width */
+  .wide{width:100%;flex:1 1 auto;align-self:stretch;
+    gap:9px;max-height:calc(100svh - 68px);overflow:hidden;justify-content:center}
+  .whead p.fine{display:none}
+  #f1 .col .fine{display:none}
+  .fold.bleed .pin{align-items:center}
+  .whead{max-width:none;gap:6px}
+  .bprow{display:flex;flex-wrap:wrap;gap:6px}
+  .bpc{flex:0 0 calc((100% - 12px) / 3)}
+  .bpc{padding:6px 8px 7px;gap:3px;border-radius:7px}
+  .bpc strong{font-size:11px;line-height:1.12}
+  .bpc b{font-size:7.5px}
+  .bpc em{font-size:7px}
+  .bpc .pbar{margin-top:5px}
+  .bpc span{display:none}
+  .rec{aspect-ratio:34/7;border-radius:9px;flex-shrink:0}
+  .reclbl{font-size:7.5px;left:10px;top:9px}
+  .rail2{display:flex;flex-wrap:wrap;gap:14px 6px;padding-top:0}
+  .rst{flex:0 0 calc((100% - 12px) / 3)}
+  /* the rail decoration cannot survive a wrap without putting stages 04-05 outside the
+     sequence, so at this breakpoint the numbers carry the order and the rail is dropped —
+     all five stages are then presented identically */
+  .rail2::before{display:none}
+  .rst::before{display:none}
+  .rail2::before{top:9px}
+  .rst::before{top:-22px;width:7px;height:7px}
+  .rst{gap:5px}
+  .rst strong{font-size:11px;line-height:1.14}
+  .rst b{font-size:7.5px}.rst small{display:none}
+  .dip{grid-template-columns:1fr;gap:8px}
+  .sheet{min-height:0;padding:9px 11px;gap:5px;border-radius:9px}
+  /* the contrast IS the module: the CV survives as a three-line stub rather than vanishing */
+  .sheet.old{display:flex;padding:8px 11px 9px;gap:5px;opacity:.62}
+  .sheet.old .lines{gap:4px;margin-top:0}
+  .sheet.old .lines u:nth-child(n+4){display:none}
+  .sheet.old p{display:none}
+  .shl{font-size:7px;letter-spacing:.12em}
+  .tagd{font-size:6.5px;padding:2px 6px}
+  .erow{padding:4px 0;gap:1px}
+  .erow b{font-size:7.5px}
+  .erow span{font-size:10.5px;line-height:1.26}
+  .erow small{display:none}
+  .trust{display:none}
+  #f4 .col .plain li{font-size:12.5px;line-height:1.3}
+  #f4 .col .rail{display:none}
+  .brf{gap:5px}.brfr{padding:7px 9px}.brfr p{font-size:10px}.brfr b{font-size:7.5px}
+  .cal{padding:9px 10px}.cal i{width:28px;height:28px;font-size:8px}.cal strong{font-size:11px}
+  .appr b{font-size:8.5px}.appr em{font-size:7.5px}
+}
+</style>
+
+<div class="paper" aria-hidden="true"></div>
+<div class="rose" aria-hidden="true"></div>
+<div class="prog"></div>
+<header class="hdr">
+  <a class="brand" href="Homepage.html"><i></i><span>CAREERPASSPORT</span></a>
+  <nav class="nav">
+    <a href="Homepage.html">HOME</a>
+    <a class="here" href="For Companies.html">FOR COMPANIES</a>
+    <a href="For Recruitment Partners.html">FOR RECRUITMENT PARTNERS</a>
+  </nav>
+  <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
+</header>
+<nav class="mnav" id="mnav">
+  <a href="Homepage.html">HOME</a>
+  <a href="For Companies.html">FOR COMPANIES</a>
+  <a href="For Recruitment Partners.html">FOR RECRUITMENT PARTNERS</a>
+</nav>
+
+<!-- the shared surface: only folds 4 and 6 use it now -->
+<div class="stage" id="stage" aria-hidden="true">
+  <div class="zone">
+    <div class="dev">
+      <div class="devglow"></div>
+      <div class="devbar" id="devbar"><i></i><b>LIVE ROLE</b><small>AGENTS ACTIVE</small></div>
+      <div class="scenes">
+
+        <div class="scene" data-fold="f4">
+          <span class="ph">AGENT ACTIVITY &middot; ONE LIVE ROLE</span>
+          <div class="scroller"><div class="slist">
+            <p><b>09:42</b><span>Candidate approached</span></p>
+            <p><b>11:18</b><span>Response received</span></p>
+            <p><b>11:19</b><span>Candidate Journey shared</span></p>
+            <p><b>14:32</b><span>Follow-up scheduled</span></p>
+            <p class="key"><b>20:00</b><span>Journey completed, artifact reviewed</span></p>
+            <p class="key"><b>9 AM</b><span>Hiring manager approval requested</span></p>
+          </div></div>
+          <span class="ph">CANDIDATE SOURCES &middot; ONE PROCESS</span>
+          <div class="srcs">
+            <span class="pchip stp on" data-step="0.02">COMPANY DATABASE</span>
+            <span class="pchip stp" data-step="0.2">INTERNAL RECRUITER</span>
+            <span class="pchip gold stp" data-step="0.38">RECRUITMENT PARTNERS</span>
+            <span class="pchip gold stp" data-step="0.5">CAREERPASSPORT</span>
+          </div>
+          <div class="pchips" data-mob="off">
+            <span class="pchip">GMAIL</span><span class="pchip">WHATSAPP</span><span class="pchip">LINKEDIN</span><span class="pchip">CALENDAR</span>
+          </div>
+          <div class="appr stp" data-step="0.7" style="margin-top:auto"><b>HIRING MANAGER APPROVAL REQUESTED</b><em>AWAITING</em></div>
+        </div>
+
+        <div class="scene" data-fold="f6">
+          <span class="ph">INTERVIEW BRIEF</span>
+          <div class="brf">
+            <div class="brfr stp on" data-step="0.02"><b>WHY THIS PERSON IS HERE</b>
+              <p>Closest match on enterprise depth and cross-functional range; strongest role exercise in the pool.</p></div>
+            <div class="brfr stp" data-step="0.2"><b>WHAT THE EVIDENCE ALREADY SHOWS</b>
+              <p>Platform launches under unresolved requirements. Pricing decisions made with sales. Retro written after a missed date.</p></div>
+            <div class="brfr stp" data-step="0.4"><b>WHAT TO EXPLORE NEXT</b>
+              <p>The call they would take back. How they held the roadmap when the market moved. What they would do first here.</p></div>
+          </div>
+          <div class="cal stp" data-step="0.62" style="margin-top:auto"><i>TUE<br>14</i>
+            <div><strong>Conversation scheduled</strong><span class="pmono gold">45 MIN &middot; HIRING MANAGER &middot; BRIEF ATTACHED</span></div></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+<!-- ============ 01 · THE RÉSUMÉ OCEAN ============ -->
+<section class="fold" id="f1" style="--h:185" data-screen-label="01">
+  <div class="pin">
+    <div class="ocean" aria-hidden="true">
+      <div class="field" id="oceanField"></div>
+      <div class="pp" id="heroPassport" hidden>
+        <em>CAREERPASSPORT</em>
+        <span class="ring"></span>
+        <strong>PASSPORT</strong>
+        <small>06 STAMPS &middot; 34 ARTIFACTS</small>
+        <span class="pv"><i></i>EVIDENCE ATTACHED</span>
+      </div>
+    </div>
+    <div class="oscrim" aria-hidden="true"></div>
+    <div class="col hero-col">
+      <p class="eyebrow gold"><i></i>Hiring intent &rarr; Hiring design</p>
+      <h1>Tell us who you need. <em class="serif">Meet the people worth your time.</em></h1>
+      <p class="lede">CareerPassport turns a hiring manager's intent into a structured hiring journey — and helps run that journey until human judgment matters.</p>
+      <p class="fine">From role creation to candidate evidence. One connected process.</p>
+      <div class="ctas">
+        <a class="btn" href="#outro">Book a demo</a>
+        <a class="btn sec" href="#outro">Post a role</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 · THE HIRING BLUEPRINT, BUILT WIDE ============ -->
+<section class="fold bleed" id="f2" style="--h:260" data-screen-label="02">
+  <div class="pin"><div class="wide">
+    <div class="whead">
+      <p class="eyebrow gold"><i></i>Hiring design</p>
+      <h2>One intent becomes a hiring blueprint.</h2>
+      <p class="fine">Describe the role in your own words. CareerPassport assembles the structure the process needs.</p>
+    </div>
+    <div class="bprow">
+      <div class="bpc stp on" data-step="0.02"><b>01</b><strong>Role</strong><span>What the work actually is, in the words the hiring manager used.</span><em>DEFINED</em><i class="pbar"><i></i></i></div>
+      <div class="bpc stp" data-step="0.14"><b>02</b><strong>Competencies</strong><span>What has to be true of the person who does it well.</span><em>7 MAPPED</em><i class="pbar"><i></i></i></div>
+      <div class="bpc stp" data-step="0.28"><b>03</b><strong>Candidate Journey</strong><span>What a candidate is asked to show, and in what order.</span><em>5 STAGES</em><i class="pbar"><i></i></i></div>
+      <div class="bpc stp" data-step="0.42"><b>04</b><strong>Evaluation Matrix</strong><span>How evidence is weighed, consistently, across the pool.</span><em>WEIGHTED</em><i class="pbar"><i></i></i></div>
+      <div class="bpc stp" data-step="0.56"><b>05</b><strong>Communications</strong><span>What every candidate hears, and when they hear it.</span><em>SEQUENCED</em><i class="pbar"><i></i></i></div>
+    </div>
+    <div class="rec">
+      <span class="reclbl"><i></i>PRODUCT &middot; BLUEPRINT BUILD</span>
+      <image-slot id="cmp-blueprint" shape="rect" placeholder="Drop the blueprint build recording"></image-slot>
+    </div>
+  </div></div>
+</section>
+
+<!-- ============ 03 · THE CANDIDATE JOURNEY, AS A RAIL ============ -->
+<section class="fold bleed" id="f3" style="--h:250" data-screen-label="03">
+  <div class="pin"><div class="wide">
+    <div class="whead">
+      <p class="eyebrow"><i></i>Hiring design</p>
+      <h2>Decide what you need to know before you meet them.</h2>
+      <p class="fine">Candidates can be asked to demonstrate relevant experience, complete role-specific activities, provide evidence or undertake assessments before progressing. Use CareerPassport-native journeys and integrate third-party assessments where required.</p>
+    </div>
+    <div class="rail2">
+      <div class="rst stp on" data-step="0.04"><b>01</b><strong>Introduction</strong><small>MOTIVATION &amp; FIT</small><span class="art"><u></u><u></u></span></div>
+      <div class="rst stp" data-step="0.18"><b>02</b><strong>Experience Evidence</strong><small>ENTERPRISE DEPTH</small><span class="art"><u></u><u></u><u></u></span></div>
+      <div class="rst stp" data-step="0.34"><b>03</b><strong>Role Exercise</strong><small>JUDGMENT UNDER AMBIGUITY</small><span class="art"><u></u><u></u><u></u></span></div>
+      <div class="rst stp" data-step="0.5"><b>04</b><strong>Assessment</strong><small>THIRD PARTY, INTEGRATED</small><span class="art"><u></u><u></u></span></div>
+      <div class="rst stp" data-step="0.64"><b>05</b><strong>Review</strong><small>CROSS-FUNCTIONAL RANGE</small><span class="art"><u></u><u></u><u></u></span></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ============ 04 · AGENTS RUN THE PROCESS ============ -->
+<section class="fold" id="f4" style="--h:250" data-bar="LIVE ROLE" data-meta="AGENTS ACTIVE" data-screen-label="04">
+  <div class="pin"><div class="mesh" aria-hidden="true"></div><div class="col">
+    <p class="eyebrow"><i></i>Agentic execution &rarr; Source-agnostic orchestration</p>
+    <h2>Once the role is live, CareerPassport agents can help manage the repetitive work required to keep hiring moving.</h2>
+    <ul class="plain row2">
+      <li>Engage candidates</li>
+      <li>Send follow-ups</li>
+      <li>Progress candidates</li>
+      <li>Coordinate assessments</li>
+      <li>Manage communication</li>
+      <li>Schedule next steps</li>
+    </ul>
+    <div class="rail" data-mob="off"><span class="pmono">CONNECTED ACROSS</span><b>Gmail</b><em>&middot;</em><b>WhatsApp</b><em>&middot;</em><b>LinkedIn</b><em>&middot;</em><b>Calendar</b></div>
+  </div></div>
+</section>
+
+<!-- ============ 05 · THE DIPTYCH ============ -->
+<section class="fold bleed" id="f5" style="--h:270" data-screen-label="05">
+  <div class="pin"><div class="wide">
+    <div class="whead">
+      <p class="eyebrow gold"><i></i>Evidence</p>
+      <h2>See why someone is worth meeting.</h2>
+      <p class="fine">Don't stop at CVs and recruiter comments. CareerPassport brings together the evidence, context and signals behind a candidate's experience.</p>
+    </div>
+    <div class="dip">
+      <div class="sheet old">
+        <span class="shl">WHAT ARRIVES TODAY<em class="tagd">CLAIMS ONLY</em></span>
+        <div class="lines"><u></u><u></u><u></u><u></u><u></u><u></u><u></u><u></u><u></u><u></u><u></u><u></u></div>
+        <p>A CV, and a recruiter's note saying they were strong. Nothing you can inspect.</p>
+      </div>
+      <div class="sheet new">
+        <span class="shl">CANDIDATE EVIDENCE VIEW<em class="tagd">EVIDENCE ATTACHED</em></span>
+        <div class="erow stp on" data-step="0.06"><b>WHY THIS CANDIDATE</b><span>Led two enterprise platform launches through unresolved requirements, working directly with engineering, sales and customers.</span></div>
+        <div class="erow stp" data-step="0.2"><b>COMPETENCY FIT</b><span>6 of 7 competencies evidenced.</span><small>OPEN TO INSPECT SIGNALS</small></div>
+        <div class="erow stp" data-step="0.32"><b>CANDIDATE JOURNEY</b><span>5 of 5 stages completed, including the role exercise.</span><small>RESPONSES ATTACHED</small></div>
+        <div class="erow stp" data-step="0.44"><b>EVIDENCE SUBMITTED</b><span>Roadmap trade-off memo, launch retro, pricing model.</span><small>3 ARTEFACTS</small></div>
+        <div class="erow stp" data-step="0.56"><b>EXPERIENCE CONTEXT</b><span>Team of 24, two markets, ambiguity at every stage.</span><small>VERIFICATION SIGNALS WHERE AVAILABLE</small></div>
+      </div>
+    </div>
+    <div class="trust reveal" style="max-width:560px">
+      <p>CareerPassport assembles the evidence.</p>
+      <p>Hiring manager make the judgment.</p>
+    </div>
+  </div></div>
+</section>
+
+<!-- ============ 06 · HUMAN JUDGMENT ============ -->
+<section class="fold" id="f6" style="--h:230" data-bar="INTERVIEW BRIEF" data-meta="READY" data-screen-label="06">
+  <div class="pin"><div class="col tight">
+    <p class="eyebrow"><i></i>Human judgment</p>
+    <h2>Meet fewer candidates. <em class="serif">Know more about the ones you do.</em></h2>
+    <p class="lede">By the time the hiring manager steps in, the role is structured, the process has moved and the evidence is assembled.</p>
+    <p class="fine">The conversation can start where human judgment actually matters.</p>
+    <ul class="plain">
+      <li>Less hiring administration</li>
+      <li>One consistent hiring standard</li>
+      <li>Better signal before the interview</li>
+      <li>Higher-value interview time</li>
+      <li>Better coordination across recruitment partners</li>
+    </ul>
+  </div></div>
+</section>
+
+</main>
+
+<section class="outro" id="outro">
+  <div class="ocopy">
+    <p class="eyebrow gold reveal"><i></i>The promise, resolved</p>
+    <h2 class="reveal">Your next hire shouldn't require you to run the entire hiring process and yet get the evidence you want</h2>
+    <p class="lede reveal">Tell CareerPassport who you need.</p>
+    <div class="ctas reveal">
+      <a class="btn" href="#outro">Book a demo</a>
+      <a class="btn sec" href="#outro">Post a role</a>
+    </div>
+    <div class="wait reveal" data-capture>
+      <input type="email" placeholder="you@company.com" aria-label="Your work email">
+      <button data-done="REQUEST SENT">REQUEST A DEMO</button>
+    </div>
+    <p class="brandline reveal">Intent in. Evidence out.</p>
+  </div>
+  <div class="oart" aria-hidden="true">
+    <div class="oring"></div>
+    <div class="trace" style="position:relative;z-index:2;max-width:340px">
+      <b>Intent</b><em>&rarr;</em><b>Journey</b><em>&rarr;</em><b>Execution</b><em>&rarr;</em><b>Evidence</b><em>&rarr;</em><b>Interview</b>
+    </div>
+  </div>
+</section>
+
+<footer class="ftr">
+  <div class="ftop">
+    <a class="brand" href="Homepage.html"><i></i><span>careerpassport.ai</span></a>
+    <div class="fright">
+      <div class="fsoc">
+        <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9v9M6.5 5.6v.1M11 18v-5a3 3 0 0 1 6 0v5"/></svg></a>
+        <a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></a>
+        <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4 1.2-4-2.2-5.5-2.8M15 21v-3.2a2.9 2.9 0 0 0-.8-2.2c2.7-.3 4.5-1.4 4.5-5a4 4 0 0 0-1.1-2.7 3.7 3.7 0 0 0-.1-2.8s-1.2-.3-3.7 1.4a9.3 9.3 0 0 0-5 0C6.3 3.8 5.1 4.1 5.1 4.1a3.7 3.7 0 0 0-.1 2.8A4 4 0 0 0 3.9 9.6c0 3.6 1.8 4.7 4.5 5A2.9 2.9 0 0 0 7.6 17V21"/></svg></a>
+        <a href="#" aria-label="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17zM3.5 7l8.5 6 8.5-6"/></svg></a>
+      </div>
+      <nav class="fnav"><a href="Homepage.html">Home</a><a href="For Companies.html">For companies</a><a href="For Recruitment Partners.html">For recruitment partners</a></nav>
+    </div>
+  </div>
+  <svg class="fmark" viewBox="0 0 1000 96" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <defs><linearGradient id="fmg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4f7f5" stop-opacity=".14"/>
+      <stop offset=".62" stop-color="#f4f7f5" stop-opacity=".03"/>
+      <stop offset="1" stop-color="#f4f7f5" stop-opacity="0"/>
+    </linearGradient></defs>
+    <text x="500" y="104" text-anchor="middle" textLength="1000" lengthAdjust="spacingAndGlyphs"
+      font-size="130" font-weight="800" letter-spacing="-4">CAREERPASSPORT</text>
+  </svg>
+  <p class="fcr">&copy; 2026 CareerPassport Technologies Inc.</p>
+</footer>
+
+<script src="image-slot.js"></script>
+<script src="cp-page.js"></script>
+<script>
+/* The field: rows of near-identical claim cards, receding. Deterministic seed, so the
+   composition is the same every load and can be judged as a design rather than a lottery.
+   The centre of the middle row is left empty — the passport stands there. */
+(function(){
+  var host=document.getElementById('oceanField'); if(!host) return;
+  var CLAIMS=[
+    ['Led the platform rebuild','8 yrs'],['Owned the enterprise roadmap','6 yrs'],
+    ['Scaled the team from 4 to 30','9 yrs'],['Drove go-to-market strategy','7 yrs'],
+    ['Delivered the migration','5 yrs'],['Ran pricing and packaging','8 yrs'],
+    ['Built the design system','6 yrs'],['Turned around retention','7 yrs'],
+    ['Shipped the mobile launch','5 yrs'],['Managed key accounts','10 yrs'],
+    ['Rebuilt the data pipeline','6 yrs'],['Led the replatforming','8 yrs']
+  ];
+  var seed=7;
+  function rnd(){ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff }
+  /* n scales with the viewport so the field fills wide screens instead of leaving a hole */
+  var wide=Math.max(2,Math.round(innerWidth/340));
+  var ROWS=[{y:4,n:wide+3,d:.9},{y:23,n:wide+2,d:.62},{y:44,n:wide+2,d:.28},
+            {y:65,n:wide+2,d:.62},{y:85,n:wide+3,d:.9}];
+  var html='',k=0;
+  /* which slot of the middle row belongs to the passport: right of centre, opposite the copy */
+  var PSLOT=Math.round((ROWS[2].n-1)*0.66);
+  ROWS.forEach(function(r,ri){
+    html+='<div class="crow" style="top:'+r.y+'%">';
+    for(var i=0;i<r.n;i++){
+      /* the middle slot of the middle row belongs to the passport */
+      /* the passport's own slot in the middle row, marked for the insert below */
+      if(ri===2 && i===PSLOT){ html+='<span data-pp-slot></span>'; continue; }
+      var c=CLAIMS[k++%CLAIMS.length];
+      html+='<article class="cl" style="--d:'+(r.d+(rnd()-0.5)*0.12).toFixed(3)+';--ph:'+(rnd()*9).toFixed(2)+'">'+
+        '<span style="display:flex;align-items:center;gap:6px"><i></i><u></u></span>'+
+        '<b>'+c[0]+'</b><s>'+c[1]+' EXPERIENCE</s></article>';
+    }
+    html+='</div>';
+  });
+  host.innerHTML=html;
+  /* the passport takes its slot, so the gap in the field and the passport are one thing */
+  var slot=host.querySelector('[data-pp-slot]'), pp=document.getElementById('heroPassport');
+  if(slot&&pp){ pp.hidden=false; slot.parentNode.replaceChild(pp,slot); }
+})();
+</script>
