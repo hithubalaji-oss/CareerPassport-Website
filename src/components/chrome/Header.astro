@@ -1,0 +1,54 @@
+---
+/**
+ * Sticky header — brand lockup, the three nav links, and a burger below 900px.
+ *
+ * `--hdr` feeds the hero's top padding, section scroll-margin and the document's
+ * scroll-padding-top. The stylesheet authors it as a constant (83px) and the header
+ * actually measures ~60px at the design width, so the authored value is deliberate
+ * spacing, not a stale guess - and it is safe in the direction that matters.
+ *
+ * The failure the handoff documents is the OTHER direction: an earlier build hard-coded
+ * 71px against a real 83px, and headings slid under the header on anchor jumps. So the
+ * observer below only ever RAISES `--hdr`, never lowers it. That keeps the authored
+ * spacing pixel-accurate while still guaranteeing the clearance can never be too small
+ * when the header wraps, the font falls back, or a longer wordmark is dropped in.
+ *
+ * No logo file has ever been supplied. The mark is a 20x27 passport chip in
+ * `--gradient-transit` plus the wordmark set in type. Supply an SVG and it replaces the
+ * chip here, in the footer, and in the bundler thumbnail.
+ */
+import { NAV_LINKS, isCurrent } from './nav-links';
+
+const pathname = Astro.url.pathname;
+---
+
+<header class="hdr">
+  <a class="brand" href="/"><i></i><span>CAREERPASSPORT</span></a>
+  <nav class="nav">
+    {NAV_LINKS.map(({ href, label }) => (
+      <a class={isCurrent(href, pathname) ? 'here' : undefined} href={href}>{label}</a>
+    ))}
+  </nav>
+  <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
+</header>
+
+<nav class="mnav" id="mnav">
+  {NAV_LINKS.map(({ href, label }) => <a href={href}>{label}</a>)}
+</nav>
+
+<script>
+  /* Guarantee `--hdr` is never smaller than the header actually is, without shrinking the
+     spacing the stylesheet authored. The baseline is read once, before anything is written
+     to the inline style, so it reflects the stylesheet's own value. */
+  const hdr = document.querySelector<HTMLElement>('.hdr');
+  if (hdr) {
+    const root = document.documentElement;
+    const authored = parseFloat(getComputedStyle(root).getPropertyValue('--hdr')) || 0;
+    const publish = () => {
+      const measured = Math.ceil(hdr.getBoundingClientRect().height);
+      root.style.setProperty('--hdr', `${Math.max(authored, measured)}px`);
+    };
+    publish();
+    new ResizeObserver(publish).observe(hdr);
+  }
+</script>

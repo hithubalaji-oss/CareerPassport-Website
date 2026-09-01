@@ -16,6 +16,118 @@ three run on the bound **CareerPassport Design System** (navy & gold foil on nea
 
 ---
 
+## The implementation
+
+The design references below have been implemented as a **static Astro site**. `npm install`
+then:
+
+```bash
+npm run dev       # dev server
+npm run build     # static output to dist/
+npm run preview   # serve the build
+```
+
+### What was implemented
+
+The two files selected for this pass:
+
+| Route | Source artboard | Component |
+|---|---|---|
+| `/` | `Homepage.dc.html` -> `site/Homepage.html` | `src/pages/index.astro` |
+| `/for-companies` | `site/For Companies.html` | `src/pages/for-companies.astro` |
+
+`/for-recruitment-partners` is **not built**. It was outside this selection, so the nav
+links to it resolve to a route that does not exist yet. It is the next page to do, and the
+handoff recommends rebuilding it on the Companies page's flow grid rather than porting the
+old pinned-fold model (see *Known gaps*, item 5).
+
+### How it is put together
+
+```
+src/
+  layouts/Base.astro          document shell; loads the bound design system
+  pages/                      one file per route
+  components/
+    chrome/                   header, footer, the shared nav list
+    homepage/                 ground, the passport, the five folds, the outro
+    companies/                ground, hero, strip, process, testimonials, comparison, close
+  styles/
+    ds/                       the bound design system, copied verbatim
+    homepage.css              each page's own stylesheet, carried over verbatim
+    companies.css
+  scripts/
+    homepage.js               each page's driver, carried over verbatim
+    companies.js
+public/                       hero-lift.mp4, the crowd plate, image-slot.js
+```
+
+**Markup was componentised; CSS and the scroll drivers were not rewritten.** The handoff
+asks for two things to be carried over near-verbatim because they encode measurements that
+took real iteration to settle - the scroll-progress maths and the `:root` token override
+layer - and both live in files that are byte-for-byte the prototype's. The markup around
+them is split into components; the class names they select on are unchanged. This is also
+why there is no framework runtime between the drivers and the DOM: the loops read
+`getBoundingClientRect` every frame and write CSS custom properties, which is exactly what
+they did before.
+
+Nothing was regex-swept out of the stylesheets. The handoff records two occasions where
+that silently removed live rules, and both audits it recommends still return clean.
+
+### Deliberate differences from the prototypes
+
+1. **Routes replace filenames.** `Homepage.html` -> `/`, `For Companies.html` ->
+   `/for-companies`. The three nav links are declared once in
+   `src/components/chrome/nav-links.ts`, so the header, mobile drawer and footer cannot
+   drift apart, and the current page is marked from the URL rather than a hand-set class.
+2. **`--hdr` is now floored, not fixed.** The stylesheet authors it as `83px` while the
+   header actually measures ~60px at the design width, so the authored value is deliberate
+   spacing rather than a stale guess - and it errs in the safe direction. A `ResizeObserver`
+   now only ever *raises* it, which keeps the authored spacing pixel-accurate while making
+   the documented failure (a hard-coded value smaller than the real header, sliding headings
+   underneath it) impossible.
+3. **Asset paths are root-absolute.** The homepage's crowd plate and hero video are served
+   from `public/` at `/uploads/` and `/assets/`, so they resolve identically from any route.
+   The `window.__resources` indirection was an authoring-environment hook and is gone.
+   Both stay same-origin, which the hero needs: it is chroma-keyed on a canvas, and a
+   cross-origin source would taint it and make `getImageData` throw.
+4. **Only referenced assets ship.** The current pages use `hero-lift.mp4` and
+   `Crowd-6ce23065.png`; the superseded plates listed under *Assets* stay in `site/` and are
+   not served.
+5. **An empty `.image-slots.state.json` is served.** `image-slot.js` fetches its sidecar on
+   load; without the file every page load logged a 404. The prototypes 404 here too.
+
+### Verification
+
+Both pages were driven in Chromium against the prototypes served over HTTP, and compared:
+
+- **Document height matches exactly** - Homepage 11145px, For Companies 23567px, both equal.
+- **Box geometry matches exactly** at rest and at a fixed scroll offset: header, ground,
+  grid, hero, strip, the pinned section and its sticky pin, the comparison, closing and
+  footer all agree to the pixel.
+- **Responsive behaviour matches at 1440 / 1199 / 900 / 767 / 560 / 390** - burger swap,
+  the comparison collapsing to six generated blocks, and 7 logo slots duplicated to 14.
+- **Behaviour matches** - email capture (rejects invalid, swaps to its `data-done` label,
+  input goes read-only), the homepage handle field and waitlist, and the mobile drawer.
+- **Screenshot diff**: the residual difference between the build and the prototype is
+  *smaller than the prototype's difference from itself across two loads* (4.6% vs 5.9%).
+  The page has genuinely non-deterministic motion - the departures board flips on a random
+  clock, the crowd's claim cards run on their own five-second timer - so a nonzero diff is
+  expected, and this is the control that says it is not a porting regression.
+
+**Not verified here:** the homepage's chroma-keyed hero figure. The container's headless
+Chromium cannot decode the H.264 source, so the video never reaches `readyState > 0` and
+the code drops the hero layer - which is the clean failure it is designed to have. The
+prototype behaves identically under the same browser, so there is no difference between
+them to detect, but neither was seen rendering. Check it in a browser that can decode the
+file, and see *Known gaps* item 7: production should ship a pre-keyed video with alpha
+rather than keying every frame on a canvas.
+
+The **Known gaps** at the end of this document are unchanged and still apply - the
+testimonials are still `[Placeholder]`, the seven logo slots and the product slots are
+still empty, there is still no logo file and no backend behind the email capture.
+
+---
+
 ## About the design files
 
 **The files in this bundle are design references created in HTML.** They are working prototypes

@@ -1,0 +1,41 @@
+---
+/**
+ * Homepage - candidate-facing, and the most motion-heavy page in the set.
+ *
+ * Five tall folds plus a closing act, with one passport object persisting across all of
+ * them. All motion runs from a single requestAnimationFrame loop in homepage.js: one
+ * `frame()` that reads every fold's getBoundingClientRect in a batch at the top and THEN
+ * writes. That split is load-bearing - interleaving reads and writes causes layout thrash
+ * on every frame.
+ */
+import Base from '../layouts/Base.astro';
+import Header from '../components/chrome/Header.astro';
+import Footer from '../components/chrome/Footer.astro';
+import Ground from '../components/homepage/Ground.astro';
+import Passport from '../components/homepage/Passport.astro';
+import Folds from '../components/homepage/Folds.astro';
+import Outro from '../components/homepage/Outro.astro';
+
+import '../styles/homepage.css';
+---
+
+<Base
+  title="CareerPassport — The professional identity for ambitious people"
+  description="Your work, your projects, your skills — turned into a record employers can actually trust. One that keeps growing with you."
+>
+  <Fragment slot="head">
+    {/* The hero plate and the crowd are injected by script, so the browser cannot see
+        them in the markup. Preloading gets the fetches started during parse. */}
+    <link rel="preload" as="image" href="/uploads/Crowd-6ce23065.png" />
+    <link rel="preload" as="video" href="/assets/hero-lift.mp4" type="video/mp4" />
+  </Fragment>
+
+  <Ground />
+  <Header />
+  <Passport />
+  <Folds />
+  <Outro />
+  <Footer />
+
+  <script src="../scripts/homepage.js"></script>
+</Base>

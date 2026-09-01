@@ -1,0 +1,18 @@
+---
+/**
+ * The three fixed layers behind the content: an atmosphere that lifts the top of the page
+ * off pure black, the 120px rule grid, and a pair of very slow radial drifts. Nothing here
+ * reads as an animation while you look at it - the movement is slower than attention.
+ *
+ * `.prog` is the scroll-progress bar; `.grid-bg` reads `--gridY`, which the page script
+ * writes so the grid drifts at a fraction of the page's own speed.
+ */
+---
+
+<div class="ground" aria-hidden="true">
+  <span class="drift a"></span>
+  <span class="drift b"></span>
+</div>
+<div class="grid-bg" aria-hidden="true"></div>
+
+<div class="prog"></div>

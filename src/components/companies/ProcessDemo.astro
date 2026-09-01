@@ -1,0 +1,236 @@
+---
+/**
+ * 03 - The process, pinned. The one viewport-pinned section on the page; everything else
+ * is an ordinary block in the document flow.
+ *
+ * A sticky stage holds five acts - DEFINE, DESIGN, EXECUTE, EVIDENCE, DECIDE - and scroll
+ * advances the act. The stage never moves, only its contents change. The step maths lives
+ * in `src/scripts/companies.js` and is carried over verbatim; see the notes there on
+ * measuring the pin rather than the window, and on the 1e-6 epsilon.
+ *
+ * Panes in the pinned stage cannot scroll: anything that does not fit is lost, which is
+ * why every in-stage component has explicit tightening at 1199px and 767px.
+ */
+---
+
+<section class="aidemo" id="aidemo" data-screen-label="02" aria-label="From one sentence to a hiring blueprint">
+  <div class="aidemopin">
+    <div class="flapglow" aria-hidden="true"></div>
+    <div class="flapbg" id="flapBg" aria-hidden="true"></div>
+    <div class="flapvig" aria-hidden="true"></div>
+    <div class="actdots" id="actDots" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div class="aiwrap">
+      <div class="acthead">
+        <span class="actchip" id="actChip">DEFINE</span>
+      </div>
+      <h3 class="acttitle" id="actTitle">One intent becomes a hiring blueprint.</h3>
+      <div class="aistage" id="aiStage">
+        <div class="aibox" id="aiBox">
+          <div class="aichat" id="aiChat">
+            <div class="aifield">
+              <p class="aitext" id="aiText"></p>
+            </div>
+            <div class="aibar">
+              <div class="aitools">
+                <span class="aitool" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M21.4 11.05 12.25 20.2a5.5 5.5 0 0 1-7.78-7.78l9.2-9.19a3.67 3.67 0 0 1 5.18 5.18l-9.2 9.2a1.83 1.83 0 0 1-2.6-2.6l8.5-8.48"></path></svg>
+                </span>
+                <span class="aipill" id="aiPill">
+                  <span class="exbot pillbot" aria-hidden="true"><i></i><i></i></span>
+                  Companion
+                </span>
+              </div>
+              <button class="aisearch" id="aiSearchBtn" aria-hidden="true" tabindex="-1">
+                <svg viewBox="0 0 24 24"><path d="M21 3 10.5 13.5M21 3l-6.8 18-3.7-7.5L3 9.8Z"></path></svg>
+                <span class="ring2" aria-hidden="true"></span>
+                <span class="ring" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="aiprep" id="aiPrep">
+            <span class="aidots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <p class="shimmer">Hiring blueprint is being prepared</p>
+          </div>
+
+          <div class="aibp" id="aiBp">
+            <div class="bpgrid">
+            <div class="bpk" data-bp="0">
+              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
+              <b class="bpi"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M4 20a8 8 0 0 1 16 0"></path></svg></b>
+              <strong>Role</strong>
+              <div class="bpload"><i></i><i></i><i></i></div>
+              <p class="bptxt">Senior Product Lead, enterprise platforms. Owns a surface used by paying customers, reporting to the VP Product. The remit is ambiguity: the space is defined, the roadmap is not.</p>
+            </div>
+            <div class="bpk" data-bp="1">
+              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
+              <b class="bpi"><svg viewBox="0 0 24 24"><path d="m9 12 2 2 4-4"></path><path d="M12 3 4 6v6c0 5 3.4 8.2 8 9 4.6-.8 8-4 8-9V6Z"></path></svg></b>
+              <strong>Competencies</strong>
+              <div class="bpload"><i></i><i></i><i></i></div>
+              <p class="bptxt">Enterprise depth. Judgment without complete information. Range across engineering, sales and customers.</p>
+            </div>
+            <div class="bpk" data-bp="2">
+              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
+              <b class="bpi"><svg viewBox="0 0 24 24"><circle cx="6" cy="19" r="2.5"></circle><circle cx="18" cy="5" r="2.5"></circle><path d="M8.5 19h6a4 4 0 0 0 0-8h-5a4 4 0 0 1 0-8H15"></path></svg></b>
+              <strong>Candidate Journey</strong>
+              <div class="bpload"><i></i><i></i><i></i></div>
+              <p class="bptxt">Five stages, evidence-led. Experience, a role exercise on an ambiguous brief, then cross-functional review.</p>
+            </div>
+            <div class="bpk" data-bp="3">
+              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
+              <b class="bpi"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"></path><path d="M8 3v18"></path></svg></b>
+              <strong>Evaluation Matrix</strong>
+              <div class="bpload"><i></i><i></i><i></i></div>
+              <p class="bptxt">Weighted for ambiguity and stakeholder range. Scored on shipped outcomes, not tenure.</p>
+            </div>
+            <div class="bpk" data-bp="4">
+              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
+              <b class="bpi"><svg viewBox="0 0 24 24"><path d="M21 4H3v13h5v4l5-4h8Z"></path></svg></b>
+              <strong>Communications</strong>
+              <div class="bpload"><i></i><i></i><i></i></div>
+              <p class="bptxt">Framed around scope and the teams involved. Same message, same clock, every candidate.</p>
+            </div>
+            </div>
+            <div class="bpfoot">
+              <span class="bpnote">DRAFTED FROM ONE BRIEF &middot; 5 SECTIONS</span>
+              <button class="bpsub" id="aiSubmit" aria-hidden="true" tabindex="-1">Approve blueprint<span class="ring2" aria-hidden="true"></span><span class="ring" aria-hidden="true"></span></button>
+            </div>
+          </div>
+
+          <div class="aifin" id="aiFin" aria-hidden="true">
+            <p class="f1" id="aiFin1">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12.5 5 5L20 6.5"></path></svg>
+              Trip finalised
+            </p>
+            <p class="f2" id="aiFin2">Hiring journey launched</p>
+          </div>
+
+          <!-- act 3 · the agent operates the role -->
+          <div class="aiex" id="aiEx">
+            <div class="exhead">
+              <span class="exlbl">LIVE ROLE &middot; SENIOR PRODUCT LEAD</span>
+              <span class="exagent"><i></i>Agent operating</span>
+            </div>
+            <div class="exmap" id="exMap">
+              <svg class="exwires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <path class="wire" d="M16 24 C34 24 34 50 48 50"></path>
+                <path class="wire" d="M16 50 H48"></path>
+                <path class="wire" d="M16 76 C34 76 34 50 48 50"></path>
+                <path class="wire out" d="M52 50 C68 50 68 16 84 16"></path>
+                <path class="wire out" d="M52 50 C68 50 68 38 84 38"></path>
+                <path class="wire out" d="M52 50 C68 50 68 62 84 62"></path>
+                <path class="wire out" d="M52 50 C68 50 68 84 84 84"></path>
+                <path class="wire reach" data-r="0" d="M88 16 C94 16 94 7 101 7"></path>
+                <path class="wire reach" data-r="0" d="M88 16 H101"></path>
+                <path class="wire reach" data-r="0" d="M88 16 C94 16 94 25 101 25"></path>
+                <path class="wire reach" data-r="1" d="M88 38 C94 38 94 29 101 29"></path>
+                <path class="wire reach" data-r="1" d="M88 38 H101"></path>
+                <path class="wire reach" data-r="1" d="M88 38 C94 38 94 47 101 47"></path>
+                <path class="wire reach" data-r="2" d="M88 62 C94 62 94 53 101 53"></path>
+                <path class="wire reach" data-r="2" d="M88 62 H101"></path>
+                <path class="wire reach" data-r="2" d="M88 62 C94 62 94 71 101 71"></path>
+                <path class="wire reach" data-r="3" d="M88 84 C94 84 94 75 101 75"></path>
+                <path class="wire reach" data-r="3" d="M88 84 H101"></path>
+                <path class="wire reach" data-r="3" d="M88 84 C94 84 94 93 101 93"></path>
+              </svg>
+              <span class="exnode src" data-n="0" style="left:16%;top:24%"><b>128</b>Company database</span>
+              <span class="exnode src" data-n="1" style="left:16%;top:50%"><b>64</b>Recruitment partners</span>
+              <span class="exnode src" data-n="2" style="left:16%;top:76%"><b>312</b>CareerPassport</span>
+              <span class="exhub" id="exHub"><span class="exbot" aria-hidden="true"><i></i><i></i></span>COMPANION</span>
+              <span class="exnode chn" data-c="0" style="left:84%;top:16%">Gmail</span>
+              <span class="exnode chn" data-c="1" style="left:84%;top:38%">WhatsApp</span>
+              <span class="exnode chn" data-c="2" style="left:84%;top:62%">LinkedIn</span>
+              <span class="exnode chn" data-c="3" style="left:84%;top:84%">Calendar</span>
+            </div>
+            <p class="exticker" id="exTicker"><b>09:42</b><span>Approached via email</span></p>
+          </div>
+
+          <!-- act 4 · the evidence comes back -->
+          <div class="aiev" id="aiEv">
+            <div class="exhead">
+              <span class="exlbl">EVIDENCE &middot; ASSEMBLED WHILE YOU WERE ELSEWHERE</span>
+              <span class="exagent ev"><i></i>Approval requested</span>
+            </div>
+            <div class="evbody">
+              <div class="evfun" id="evFun">
+                <div class="evf" data-f="0"><i style="--w:100%"></i><b>504</b><span>Approached</span></div>
+                <div class="evf" data-f="1"><i style="--w:62%"></i><b>312</b><span>Replied</span></div>
+                <div class="evf" data-f="2"><i style="--w:26%"></i><b>131</b><span>Journey completed</span></div>
+                <div class="evf" data-f="3"><i style="--w:8%"></i><b>4</b><span>Worth meeting</span></div>
+              </div>
+              <div class="evstack" id="evStack">
+                <div class="evpass" data-p="0" style="--i:0;z-index:10">
+                  <span class="pcvwm">CAREERPASSPORT</span>
+                  <span class="pcvseal" aria-hidden="true"><i></i></span>
+                  <span class="pcvtitle">PASSPORT</span>
+                  <span class="pcvname">Ravi Kumar</span>
+                  <span class="pcvurl">careerpassport.ai/ravi-kumar</span>
+                  <span class="pcvchip" aria-hidden="true"><i></i></span>
+                  <span class="evstamp">VERIFIED</span>
+                </div>
+                <div class="evpass" data-p="1" style="--i:1;z-index:9">
+                  <span class="pcvwm">CAREERPASSPORT</span>
+                  <span class="pcvseal" aria-hidden="true"><i></i></span>
+                  <span class="pcvtitle">PASSPORT</span>
+                  <span class="pcvname">Ashraf Ali</span>
+                  <span class="pcvurl">careerpassport.ai/ashraf-ali</span>
+                  <span class="pcvchip" aria-hidden="true"><i></i></span>
+                  <span class="evstamp">VERIFIED</span>
+                </div>
+                <div class="evpass" data-p="2" style="--i:2;z-index:8">
+                  <span class="pcvwm">CAREERPASSPORT</span>
+                  <span class="pcvseal" aria-hidden="true"><i></i></span>
+                  <span class="pcvtitle">PASSPORT</span>
+                  <span class="pcvname">Meera Joshua</span>
+                  <span class="pcvurl">careerpassport.ai/meera-joshua</span>
+                  <span class="pcvchip" aria-hidden="true"><i></i></span>
+                  <span class="evstamp">VERIFIED</span>
+                </div>
+                <div class="evpass" data-p="3" style="--i:3;z-index:7">
+                  <span class="pcvwm">CAREERPASSPORT</span>
+                  <span class="pcvseal" aria-hidden="true"><i></i></span>
+                  <span class="pcvtitle">PASSPORT</span>
+                  <span class="pcvname">Sana Qureshi</span>
+                  <span class="pcvurl">careerpassport.ai/sana-qureshi</span>
+                  <span class="pcvchip" aria-hidden="true"><i></i></span>
+                  <span class="evstamp">VERIFIED</span>
+                </div>
+              </div>
+            </div>
+            <div class="bpfoot">
+              <span class="bpnote">EVERY CLAIM CONFIRMED BY THE ORGANISATION NAMED ON IT</span>
+              <button class="bpsub" id="evBtn" aria-hidden="true" tabindex="-1">Open passports<span class="ring2" aria-hidden="true"></span><span class="ring" aria-hidden="true"></span></button>
+            </div>
+          </div>
+
+          <!-- act 5 · the manager decides -->
+          <div class="aidc" id="aiDc">
+            <div class="exhead">
+              <span class="exlbl">CONVERSATIONS &middot; SCHEDULED AND RECORDED</span>
+              <span class="exagent"><i></i>Hiring manager in control</span>
+            </div>
+            <div class="dcline" id="dcLine">
+              <span class="dcrail"></span>
+              <div class="dcslot" id="dcSlot0"><i></i><b>Ravi Kumar</b><span>TUE 10:00</span><span class="dcmenu" aria-hidden="true"><span>View interview summary</span><span>Schedule another call</span><span>Share offer</span><span class="no">Reject profile</span></span></div>
+              <div class="dcslot" id="dcSlot1"><i></i><b>Ashraf Ali</b><span>TUE 14:30</span><span class="dcmenu" aria-hidden="true"><span>View interview summary</span><span>Schedule another call</span><span>Share offer</span><span class="no">Reject profile</span></span></div>
+              <div class="dcslot" id="dcSlot2"><i></i><b>Meera Joshua</b><span>WED 09:00</span><span class="dcmenu" aria-hidden="true"><span>View interview summary</span><span>Schedule another call</span><span>Share offer</span><span class="no">Reject profile</span></span></div>
+            </div>
+            <p class="exticker" id="dcTicker"><b>16 SEP</b><span>Conversation held, notes recorded</span></p>
+            <p class="dcend" id="dcEnd">By the time you step in, the role is structured, the process has moved and the evidence is assembled.</p>
+          </div>
+        </div>
+
+        <div class="hmcur" id="hmCur" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M5 2.5 19.5 11l-6.6 1.7L9.6 19Z" fill="var(--emerald)" stroke="var(--emerald-deep)" stroke-width="1.2" stroke-linejoin="round"></path></svg>
+          <span class="hmlbl">Hiring manager</span>
+        </div>
+      </div>
+      <p class="airdy" id="aiReady">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12.5 5 5L20 6.5"></path></svg>
+        Hiring blueprint is ready
+      </p>
+    </div>
+  </div>
+</section>

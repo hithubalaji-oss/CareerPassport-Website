@@ -1,0 +1,84 @@
+---
+/**
+ * THE ONE PASSPORT - the central device of the page.
+ *
+ * This is not six sections that each happen to show a passport. It is ONE object, in one
+ * continuous scroll, moving through six states: it docks into the hero figure's hand,
+ * opens to reveal an Experience Visa and collected stamps, flows through the verification
+ * chart, and finally flies into the glowing ring of the closing frame. The visual
+ * argument is empty identity -> lived experience -> evidence -> accumulated identity.
+ *
+ * The stage is fixed and every leaf is positioned from the global scroll progress `g`
+ * computed in homepage.js. Nothing in here runs on its own timer.
+ *
+ * `#crowd` (fold 2) and `#orbSrc` (fold 4) are filled by script - the crowd plate is
+ * referenced from a script string rather than an <img> tag, which is why it is easy to
+ * miss when moving files.
+ */
+---
+
+<div class="stage" id="stage">
+  <div class="zone">
+
+    <!-- fold 2: a crowd of claims, one figure with proof -->
+    <div class="crowd" id="crowd" aria-hidden="true"></div>
+    <!-- fold 4: existing sources flowing in -->
+    <div class="orb" id="orbSrc" aria-hidden="true"></div>
+
+    <div class="bookwrap" id="bookwrap">
+      <div class="book" id="book">
+
+        <div class="pg verso" id="verso"></div>
+        <div class="spine" id="spine"></div>
+        <div class="pg recto base"></div>
+
+        <div class="leaf" id="leaf5" style="z-index:10"><div class="lf"><span class="pglbl">PAGE 10 / WHAT YOU ALREADY HAVE</span>
+<div class="chips" style="gap:8px"><span class="chip">CV.pdf</span><span class="chip">LinkedIn</span><span class="chip">GitHub</span><span class="chip">Writing</span><span class="chip">Projects</span><span class="chip">Documents</span><span class="chip">Demos</span></div>
+<p class="pgh" style="margin-top:26px">It listens. It remembers. It asks. It nudges.</p><div class="pgid"><span class="hnd">/yourname</span><i></i><span>CP · 4417</span></div></div></div>
+        <div class="leaf" id="leaf4" style="z-index:20"><div class="lf"><span class="pglbl">PAGE 08 / A STAMP IS EARNED</span>
+<p class="pgh" style="margin:auto 0;text-align:center">Evidence that demonstrates real depth<br>earns a signal that carries forward.</p><div class="pgid"><span class="hnd">/yourname</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 09 / THE RECORD SO FAR</span>
+<p class="pgh" style="margin-top:6px">Every entry stays where you put it. Nothing here can be edited by anyone else.</p><div class="pgid"><span class="hnd">/yourname</span><i></i><span>CP · 4417</span></div></div></div>
+        <div class="leaf" id="leaf3" style="z-index:30"><div class="lf"><span class="pglbl">PAGE 06 / A CURATED JOURNEY</span>
+<div style="display:flex;flex-direction:column;gap:10px"><div class="jrow"><b>1</b><span>Revisit the failure timeline you kept at the time.</span></div><div class="jrow"><b>2</b><span>Explain the call you made under load.</span></div><div class="jrow"><b>3</b><span>Show the fix, and how you proved it held.</span></div></div>
+<p style="margin-top:14px;font-size:14px;color:var(--mute)">Small. Curated. Built around what you already lived.</p><div class="pgid"><span class="hnd">/yourname</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 07 / EVIDENCE CREATED</span>
+<div class="chips"><span class="chip">failure-timeline.md</span><span class="chip">decision-note.pdf</span><span class="chip">idempotency-patch.diff</span><span class="chip">load-test.csv</span></div>
+<p class="pgh" style="margin-top:16px">An artifact of what you can actually do — not a claim that you can.</p><div class="pgid"><span class="hnd">/yourname</span><i></i><span>CP · 4417</span></div></div></div>
+        <div class="leaf" id="leaf2" style="z-index:40"><div class="lf"><span class="pglbl">PAGE 04 / COLLECTED STAMPS</span>
+<div class="stampWrap"><div class="stampGrid" id="stampGrid"></div>
+<div class="verifying" id="verifying"><i></i><span>Verifying your claims</span></div></div>
+<div class="pgft">05 EARNED · 34 ARTIFACTS · SPACE FOR 24 MORE</div><div class="pgid"><span class="hnd">/yourname</span><i></i><span>CP · 4417</span></div>
+</div><div class="lb"><span class="pglbl">PAGE 05 / YOUR COMPANION</span>
+<div class="talk"><div class="bub them">You mentioned the ingest pipeline failed twice before it held. What changed the second time?</div><div class="bub you">We stopped trusting the retry queue and made the writes idempotent.</div><div class="bub them">That's worth showing. Want to walk through how you found it?</div></div><div class="pgid"><span class="hnd">/yourname</span><i></i><span>CP · 4417</span></div></div></div>
+        <div class="leaf" id="leaf1" style="z-index:50"><div class="lf"><span class="pglbl">PAGE 02 / EXPERIENCE VISA</span>
+<div class="visaWrap"><div class="visa"><div class="vhead"><b>EXPERIENCE VISA</b><span>CLASS E-1</span></div>
+<div class="vbody"><div class="vorg"><i class="vlogo"></i><b>XYZ COMPANY</b><em>&mdash; Sr. Developer</em></div>
+<p class="vsub">Platform engineering &amp; distributed systems.</p>
+<div class="vdate">MAR 2023 &mdash; MAR 2025 &middot; 2 YRS</div>
+<div class="vtags"><span class="vt">SKILLS</span><span class="vt">PROJECTS</span><span class="vt on">ENDORSEMENTS</span><span class="vt">IMPACT</span></div></div>
+<div class="vseal"><i></i><span>VERIFIED</span></div></div></div><div class="pgid"><span class="hnd">/yourname</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 03 / THE CLAIM</span>
+<div class="flat"><i></i><span>Designed the systems behind the platform.</span></div>
+<div class="flat" style="margin-top:9px"><i></i><span>Made the architecture calls under real pressure.</span></div>
+<div class="flat" style="margin-top:9px"><i></i><span>Built AI agents into the product.</span></div>
+<div class="flat" style="margin-top:9px"><i></i><span>Ran incident response when things broke.</span></div>
+<div class="flat" style="margin-top:9px"><i></i><span>Wrote the docs the team still works from.</span></div><div class="pgid"><span class="hnd">/yourname</span><i></i><span>CP · 4417</span></div></div></div>
+        <div class="leaf" id="cover" style="z-index:60">
+          <div class="cface">
+            <div class="cspine"></div><div class="foil" id="foil"></div>
+            <div class="clbl">CAREERPASSPORT</div>
+            <div class="crest"><i><b></b></i></div>
+            <div class="cword">PASSPORT</div>
+            <div class="chnd" id="chnd">careerpassport.ai/yourname</div>
+            <div class="ctally">05 STAMPS · 34 ARTIFACTS</div>
+            <div class="cchip"><i></i></div>
+          </div>
+          <div class="cback"><span class="pglbl">PAGE 01 / IDENTITY</span>
+<div style="display:flex;gap:18px"><div style="width:96px;height:122px;flex-shrink:0;border:1px solid var(--hairline);border-radius:6px;position:relative;overflow:hidden;background:rgba(23,48,95,.05)"><svg viewBox="0 0 96 122" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><circle cx="48" cy="46" r="20" fill="none" stroke="var(--hairline)" stroke-width="2"/><path d="M14 118c2-24 20-38 34-38s32 14 34 38" fill="none" stroke="var(--hairline)" stroke-width="2"/></svg><span style="position:absolute;left:0;right:0;bottom:6px;text-align:center;font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--mute)">[PHOTO]</span></div>
+<div class="kv"><div><b>HANDLE</b><span id="pgHandle" style="font-weight:700">/yourname</span></div><div><b>ISSUED</b><span style="font-family:var(--mono);font-size:13.5px">[DATE]</span></div><div><b>ARTIFACTS</b><span style="font-family:var(--mono);font-size:13.5px">34 STORED</span></div></div></div>
+<div style="margin-top:22.5px;padding-top:14px;border-top:1px solid var(--hairline);display:flex;flex-direction:column;gap:8px"><b style="font-family:var(--mono);font-size:10.5px;font-weight:400;letter-spacing:.16em;color:var(--mute)">RECENT ENTRIES</b><span style="font-size:14.5px;color:var(--body)">Migration runbook, annotated</span><span style="font-size:14.5px;color:var(--body)">Recorded rollback drill</span><span style="font-size:14.5px;color:var(--body)">Trade-off memo for Q3 roadmap</span><span style="font-size:14.5px;color:var(--body)">Upstream patch, merged</span></div><div class="pgid"><span class="hnd">/yourname</span><i></i><span>CP · 4417</span></div></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+

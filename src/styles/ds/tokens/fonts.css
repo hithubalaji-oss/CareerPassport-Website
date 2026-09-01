@@ -1,0 +1,4 @@
+/* Geist Sans + Geist Mono, served from Google Fonts.
+   No local binaries were provided; see readme.md "Font substitution". */
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap");
+:root{--font-sans:"Geist","Geist Sans",Arial,Helvetica,sans-serif;--font-mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace}

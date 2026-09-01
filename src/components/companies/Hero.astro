@@ -1,0 +1,39 @@
+---
+/**
+ * 01 - Hero. Eyebrow, headline, lede, two CTAs and the mono strapline in the copy column
+ * (`--copy`, 664px), with the product presentation beside it.
+ *
+ * Both product surfaces are empty `<image-slot>`s: no product screen grab or mobile UI has
+ * been supplied. In production these become ordinary `<img>` tags with real files.
+ */
+---
+
+<section class="hero" data-screen-label="01">
+  <div class="bloom" aria-hidden="true"></div>
+  <div class="hcopy">
+    <p class="eyebrow gold"><i></i>Tell us who you need.</p>
+    <h1 style="color:#fff">Meet the people <span class="serif" style="color:#fff">worth your time.</span></h1>
+    <p class="lede">CareerPassport builds the hiring journey, runs it, and brings you the evidence. <b>You step in when there is a decision worth making.</b></p>
+    <div class="ctas">
+      <a class="btn" href="#close">Book a demo</a>
+      <a class="btn gh" href="#close">Post a role</a>
+    </div>
+    <p class="pmono">IN AN OCEAN OF CLAIMS &middot; ONE RECORD YOU CAN INSPECT</p>
+  </div>
+  <div class="hart">
+    <div class="present">
+      <span class="pglow" aria-hidden="true"></span>
+      <div class="pscreen">
+        <image-slot id="cmp-hero-product" shape="rect" radius="14"
+          placeholder="Drop a product screen grab (16:9)"></image-slot>
+        <span class="pchrome" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="plbl">PRODUCT &middot; LIVE ROLE</span>
+      </div>
+      <div class="pphone">
+        <image-slot id="cmp-hero-mobile" shape="rect" radius="18"
+          placeholder="Drop the mobile UI (9:16)"></image-slot>
+        <span class="pnotch" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+</section>

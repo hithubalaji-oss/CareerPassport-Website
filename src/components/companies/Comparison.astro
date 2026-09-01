@@ -1,0 +1,73 @@
+---
+/**
+ * 05 - The difference. Six capabilities across four categories, our column lifted in gold.
+ *
+ * The grid is flat markup - one label cell plus four value cells per row - and the page
+ * script recovers the rows by counting columns to assign the reveal stagger. Below 1199px
+ * a second script generates a stacked block-per-capability reading FROM this table, so the
+ * two presentations cannot drift apart.
+ */
+---
+
+<section class="sec" id="difference" data-screen-label="04">
+  <div class="inner">
+    <div class="split rv" style="margin-bottom:clamp(30px,4.4vh,52px)">
+      <div class="sh">
+        <p class="eyebrow gold"><i></i>The difference</p>
+        <h2>You already have tools. <span class="serif">None of them do this.</span></h2>
+      </div>
+      <div class="sl">
+      </div>
+    </div>
+
+    <!-- the table -->
+    <div class="cmp rv">
+      <div class="cmpg">
+        <div class="cmph"><b>Compare</b><span>WHAT YOU GET</span></div>
+        <div class="cmph us"><b>CareerPassport</b><span>A NEW STANDARD</span></div>
+        <div class="cmph"><b>Your ATS</b><span>SYSTEM OF RECORD</span></div>
+        <div class="cmph"><b>Job boards</b><span>REACH</span></div>
+        <div class="cmph"><b>CV screening</b><span>FILTERING</span></div>
+
+        <div class="cmpr"><b>Role definition</b><span>WHERE IT STARTS</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Built from your own words, competencies mapped</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A free-text job description field</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A template you fill in</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A keyword list</p></div>
+
+        <div class="cmpr"><b>Candidate journey</b><span>WHAT THEY ARE ASKED</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Evidence, activities and assessments, in sequence</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Pipeline statuses only</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>An application form</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>None</p></div>
+
+        <div class="cmpr"><b>Evidence of the work</b><span>WHAT YOU CAN INSPECT</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Artefacts, responses and the context behind each claim</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Whatever was attached</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A CV</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A ranked CV</p></div>
+
+        <div class="cmpr"><b>Running the process</b><span>WHO DOES THE WORK</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Agents handle outreach, coordination and scheduling</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Your team, manually</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Your team, manually</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Screening only</p></div>
+
+        <div class="cmpr"><b>One standard across sources</b><span>DATABASE, RECRUITERS, PARTNERS</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Every source evaluated the same way</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Each source arrives in its own format</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>One source only</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>Applies to inbound CVs</p></div>
+
+        <div class="cmpr"><b>What the interviewer gets</b><span>ON THE DAY</span></div>
+        <div class="cell yes us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Why this person, what the evidence shows, what to explore</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A CV and a calendar invite</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A CV</p></div>
+        <div class="cell no"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><p>A score</p></div>
+      </div>
+    </div>
+
+    <!-- the same table, read one capability at a time -->
+    <div class="cmpm rv" id="cmpStack"></div>
+  </div>
+</section>

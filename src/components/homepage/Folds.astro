@@ -1,0 +1,79 @@
+---
+/**
+ * The five folds. Heights are set in vh through a `--h` custom property, and each fold's
+ * own pin progress feeds the global `g`:
+ *
+ *   p_i = clamp(-rect.top / (rect.height - vh), 0, 1)
+ *   g   = sum of p_i          // 0 -> 5
+ *
+ * Folds above the viewport contribute exactly 1, so the sum IS fold index plus progress
+ * within that fold. Every animated value on the page is a pure function of `g`.
+ *
+ * f5's three lines are drawn as SVG stroke-then-wipe; the clipPath ids wp0/wp1/wp2 are
+ * referenced from the page script, so they are fixed, not generated.
+ */
+---
+
+<main>
+<section class="fold" id="f1" style="--h:130">
+  <div class="pin"><div class="mesh" aria-hidden="true"></div><div class="col">
+    <p class="eyebrow gold"><i></i>Built on real experiences</p>
+    <h1>The professional identity for <em class="serif">ambitious</em> people</h1>
+    <p class="lede">Your work, your projects, your skills — turned into a record employers can actually trust. <span style="color:var(--ink)">One that keeps growing with you.</span></p>
+    <div class="field" id="field">
+      <span class="fsheen" aria-hidden="true"></span>
+      <div class="fbox" id="fbox"><span class="pre" id="fpre">careerpassport.ai/</span>
+        <input id="handle" type="text" placeholder="yourname" aria-label="Choose your handle" maxlength="22" autocomplete="off"></div>
+      <button id="reserve" disabled>RESERVE →</button>
+    </div>
+    <div class="metarow">
+      <span class="avail" id="avail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>AVAILABLE</span>
+      <span>[COUNT] HANDLES ISSUED</span>
+    </div>
+    <a class="ghost" href="#"><i><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 21 12 6 21"/></svg></i>See how it works</a>
+  </div></div>
+</section>
+
+<section class="fold" id="f2" style="--h:250">
+  <div class="pin"><div class="col tight">
+    <p class="eyebrow"><i></i>The problem</p>
+    <h2>Standing out isn't about saying more; it's about <em class="serif">showing better.</em></h2>
+    <ol class="fine probs"><li>AI writes a flawless profile in seconds.</li><li>Every résumé now reads as exceptional.</li><li>Real experience gets lost in the noise.</li></ol>
+  </div></div>
+</section>
+
+<section class="fold" id="f3" style="--h:320">
+  <div class="pin"><div class="col">
+    <p class="eyebrow"><i></i>The shift</p>
+    <h2>When anyone can claim anything, <span style="color:var(--ink)">proof is what sets you apart.</span></h2>
+    <div class="step">
+      <p>A résumé shows your titles.</p>
+      <p>It doesn't show the work.</p>
+    </div>
+    <ol class="probs">
+      <li>The projects you shipped.</li>
+      <li>The calls you made under pressure.</li>
+      <li>The problems only you had to solve.</li>
+    </ol>
+  </div></div>
+</section>
+
+<section class="fold" id="f4" style="--h:260">
+  <div class="pin"><div class="col">
+    <p class="eyebrow"><i></i>How it works</p>
+    <h2>Your lived experience, turned into <em class="serif">evidence packs</em></h2>
+    <div class="beats" id="beatList"></div>
+  </div></div>
+</section>
+
+<section class="fold" id="f5" style="--h:150">
+  <div class="pin"><div class="col wide draws"><div class="dring" aria-hidden="true"></div>
+    <p class="eyebrow gold reveal" style="justify-content:center;position:relative;z-index:2"><i style="display:none"></i>What this changes for you</p>
+    <div class="drawline" data-i="0"><svg preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><clipPath id="wp0" clipPathUnits="userSpaceOnUse"><rect data-wipe="" x="0" y="0" width="0" height="0"></rect></clipPath></defs><text data-stroke="" x="0" y="0" fill="none">Better opportunities.</text><text data-fill="" x="0" y="0" clip-path="url(#wp0)">Better opportunities.</text></svg><span class="sr">Better opportunities.</span></div>
+    <div class="drawline" data-i="1"><svg preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><clipPath id="wp1" clipPathUnits="userSpaceOnUse"><rect data-wipe="" x="0" y="0" width="0" height="0"></rect></clipPath></defs><text data-stroke="" x="0" y="0" fill="none">Better conversations.</text><text data-fill="" x="0" y="0" clip-path="url(#wp1)">Better conversations.</text></svg><span class="sr">Better conversations.</span></div>
+    <div class="drawline gold" data-i="2"><svg preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><clipPath id="wp2" clipPathUnits="userSpaceOnUse"><rect data-wipe="" x="0" y="0" width="0" height="0"></rect></clipPath></defs><text data-stroke="" x="0" y="0" fill="none">Better reasons to be discovered.</text><text data-fill="" x="0" y="0" clip-path="url(#wp2)">Better reasons to be discovered.</text></svg><span class="sr">Better reasons to be discovered.</span></div>
+  </div></div>
+</section>
+
+
+</main>
