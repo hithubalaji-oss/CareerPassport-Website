@@ -9,6 +9,7 @@
   --cover:linear-gradient(155deg,#1b3564 0%,#0d1c3a 55%,#091530 100%);
   --pnavy:#10203f; --pgold:#fdb23c; --pblue:#4d86ff;
   --gut:clamp(20px,4.4vw,72px);
+  --sec:clamp(96px,13vh,152px);
   --ease:cubic-bezier(.4,0,.2,1);
   --sans:var(--font-sans); --serif:var(--font-sans); --mono:var(--font-mono);
 }
@@ -141,23 +142,44 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 .oring::after{content:"";position:absolute;inset:-13%;border-radius:50%;border:1px dashed rgba(123,164,255,.16);animation:oturn 52s linear infinite}
 @keyframes oturn{to{rotate:360deg}}
 .brandline{font-weight:600;font-size:clamp(26px,3.2vw,46px);letter-spacing:-.04em;line-height:1.1;color:var(--emerald)}
-.ftr{position:relative;z-index:6;display:flex;flex-direction:column;gap:clamp(30px,5vh,54px);
-  margin-top:clamp(60px,8vh,100px);padding:28px var(--gut) 0;border-top:1px solid var(--line);
-  background:var(--bg);overflow:hidden}
-.ftop{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
-.fright{display:flex;flex-direction:column;align-items:flex-end;gap:14px}
+/* ---------- footer: one compact row, so the closing fold and the footer land in the
+   same viewport. The three pages sit side by side, hairline-separated. ---------- */
+.ftr{position:relative;z-index:10;display:flex;flex-direction:column;gap:14px;
+  margin-top:clamp(40px,6vh,64px);padding:20px var(--gut) 0;
+  border-top:1px solid color-mix(in srgb,var(--hairline) 50%,transparent);
+  background:transparent;overflow:hidden}
+.ftop{display:flex;align-items:center;justify-content:space-between;gap:clamp(16px,2.4vw,34px);
+  flex-wrap:wrap}
+.fright{display:flex;flex-direction:row;align-items:center;gap:14px}
 .fsoc{display:flex;align-items:center;gap:8px}
-.fnav{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-.fnav a{font-size:12.5px;color:var(--mute);text-decoration:none}
+.fsoc a{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;
+  border:1px solid var(--hairline);color:var(--faint);transition:.16s var(--ease)}
+.fsoc a:hover{color:var(--emerald);border-color:color-mix(in srgb,var(--emerald) 45%,transparent);background:var(--card)}
+.fsoc svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+/* the three pages in a row, divided by a hairline rather than stacked */
+.fnav{display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:0}
+.fnav a{padding:0 clamp(10px,1.4vw,18px);font-size:12.5px;color:var(--mute);text-decoration:none;
+  white-space:nowrap;transition:color .16s var(--ease)}
+.fnav a+a{border-left:1px solid var(--hairline)}
 .fnav a:hover{color:var(--emerald)}
-.fsoc a{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;
-  border:1px solid var(--hairline);color:var(--meta);
-  transition:color .16s var(--ease),border-color .16s var(--ease),background .16s var(--ease)}
-.fsoc a:hover{color:var(--emerald);border-color:rgba(253,178,60,.4);background:var(--panel)}
-.fsoc svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.fmark{display:block;width:100%;height:auto}
-.fmark text{fill:url(#fmg);font-family:var(--sans)}
-.fcr{padding-bottom:22px;text-align:center;font-size:12.5px;color:var(--faint)}
+/* The wordmark seats into the page by its own vertical fade — no horizontal mask, which
+   is what was removing the C and the T. */
+.fmark{display:block;width:100%;height:auto;margin-bottom:-2px;overflow:visible;
+  -webkit-mask-image:linear-gradient(180deg,#000 30%,rgba(0,0,0,.7) 74%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 30%,rgba(0,0,0,.7) 74%,transparent 100%)}
+.fmark text{font-family:var(--sans)}
+.fmfill{fill:url(#fmg)}
+/* the lit pass is the edge only, so the glow reads as light catching the letterforms */
+.fmlit{fill:none;stroke:url(#fmedge);stroke-width:1.6;
+  filter:drop-shadow(0 0 6px color-mix(in srgb,var(--emerald) 8%,transparent))}
+@media (prefers-reduced-motion:reduce){.fmlit{display:none}}
+.fcr{padding:12px 0 18px;text-align:center;font-size:12px;color:var(--faint)}
+@media (max-width:900px){
+  .ftop{flex-direction:column;align-items:center;text-align:center}
+  .fright,.fnav{align-items:center;justify-content:center}
+  .fnav a{padding:0 10px}
+}
 .ftr .brand span{font-family:var(--mono);font-size:13px;font-weight:400;letter-spacing:.16em;color:var(--meta)}
 .reveal{opacity:0;translate:0 22px;transition:opacity .8s var(--ease),translate .9s var(--ease)}
 .reveal.in{opacity:1;translate:0 0}
@@ -300,11 +322,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   .ctas{justify-content:center;gap:9px}
   .btn{height:44px;padding:0 18px;font-size:12px}
   .brandline{font-size:clamp(20px,5.4vw,26px)}
-  .ftr{text-align:center;gap:24px;padding:22px var(--gut) 0}
-  .ftop{justify-content:center;gap:18px;flex-direction:column;align-items:center}
-  .fright{align-items:center;gap:12px}
-  .fnav{align-items:center;gap:5px}
-  .fcr{font-size:11.5px;padding-bottom:18px}
+  .fcr{font-size:11.5px}
   @media (max-height:700px){
     .bt p,.psub{display:none}
     .col h2,.col.tight h2{font-size:clamp(19px,5vw,23px)}

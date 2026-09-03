@@ -1,0 +1,33 @@
+/* ---------- footer: one compact row, so the closing fold and the footer land in the
+   same viewport. The three pages sit side by side, hairline-separated. ---------- */
+.ftr{position:relative;z-index:10;display:flex;flex-direction:column;gap:14px;
+  margin-top:clamp(40px,6vh,64px);padding:20px var(--gut) 0;
+  border-top:1px solid color-mix(in srgb,var(--hairline) 50%,transparent);
+  background:transparent;overflow:hidden}
+.ftop{display:flex;align-items:center;justify-content:space-between;gap:clamp(16px,2.4vw,34px);
+  flex-wrap:wrap}
+.fright{display:flex;flex-direction:row;align-items:center;gap:14px}
+.fsoc{display:flex;align-items:center;gap:8px}
+.fsoc a{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;
+  border:1px solid var(--hairline-soft);color:var(--faint);transition:.16s var(--ease)}
+.fsoc a:hover{color:var(--emerald);border-color:color-mix(in srgb,var(--emerald) 45%,transparent);background:var(--panel-raised)}
+.fsoc svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+/* the three pages in a row, divided by a hairline rather than stacked */
+.fnav{display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:0}
+.fnav a{padding:0 clamp(10px,1.4vw,18px);font-size:12.5px;color:var(--mute);text-decoration:none;
+  white-space:nowrap;transition:color .16s var(--ease)}
+.fnav a+a{border-left:1px solid var(--hairline)}
+.fnav a:hover{color:var(--emerald)}
+/* The wordmark seats into the page by its own vertical fade — no horizontal mask, which
+   is what was removing the C and the T. */
+.fmark{display:block;width:100%;height:auto;margin-bottom:-2px;overflow:visible;
+  -webkit-mask-image:linear-gradient(180deg,#000 30%,rgba(0,0,0,.7) 74%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 30%,rgba(0,0,0,.7) 74%,transparent 100%)}
+.fmark text{font-family:var(--sans)}
+.fmfill{fill:url(#fmg)}
+/* the lit pass is the edge only, so the glow reads as light catching the letterforms */
+.fmlit{fill:none;stroke:url(#fmedge);stroke-width:1.6;
+  filter:drop-shadow(0 0 6px color-mix(in srgb,var(--emerald) 8%,transparent))}
+@media (prefers-reduced-motion:reduce){.fmlit{display:none}}
+.fcr{padding:12px 0 18px;text-align:center;font-size:12px;color:var(--faint)}

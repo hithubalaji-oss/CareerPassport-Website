@@ -40,17 +40,45 @@ function frame(){
   try{ tickFrame(); }catch(e){ if(!frame._e){frame._e=1;console.error('cp-page frame error:',e);} }
   requestAnimationFrame(frame);
 }
+/* rAF is throttled to nothing while the document is hidden (backgrounded tab, offscreen
+   preview, pre-paint capture), which would leave every fold stuck at its rest state. Scroll
+   and resize therefore tick the same body directly, coalesced so a burst costs one pass. */
+var pending=false;
+function nudge(){
+  if(pending) return;
+  pending=true;
+  var run=function(){ pending=false; try{ tickFrame(); }catch(e){} };
+  if(document.hidden) run(); else requestAnimationFrame(run);
+}
+addEventListener('scroll',nudge,{passive:true});
+addEventListener('resize',nudge,{passive:true});
+addEventListener('load',nudge);
+document.addEventListener('visibilitychange',nudge);
 function tickFrame(){
+  /* read the viewport here, not once at parse time: in a hidden or pre-layout document
+     innerHeight is 0 and no resize ever fires, which would leave the divisor at 1 and every
+     fold's progress wrong for the whole session */
+  vh=innerHeight||document.documentElement.clientHeight||1;
   var y=scrollY||pageYOffset;
   var doc=document.documentElement.scrollHeight-vh;
-  if(prog)prog.style.setProperty('--pw',(doc>0?(y/doc*100):0).toFixed(2)+'%');
+  if(prog){
+    var pw=(doc>0?(y/doc*100):0).toFixed(2)+'%';
+    if(prog._pw!==pw){prog._pw=pw;prog.style.setProperty('--pw',pw);}
+  }
 
   var active=null,ap=0,best=-1,panelOcc=0;
   folds.forEach(function(f){
     var r=f.getBoundingClientRect();
+    /* no layout yet (first tick of a hidden document): every branch below would compute a
+       plausible-but-wrong value and the cache would keep it, since rAF is throttled */
+    if(r.height===0) return;
     var span=r.height-vh;
     /* fold progress: 0 as the pin engages, 1 as it releases */
-    var p=span>0?clamp(-r.top/span,0,1):clamp((vh*.5-r.top)/vh,0,1);
+    /* on the very first tick of a hidden or pre-layout document both innerHeight and the
+       fold's own height are 0, so the else branch would evaluate 0/0 and poison the cache
+       with NaN — which @property then rejects, leaving the fold dead until a real scroll */
+    var p=span>0?clamp(-r.top/span,0,1):clamp((vh*.5-r.top)/Math.max(vh,1),0,1);
+    if(!isFinite(p))p=0;
     /* how centred this fold is in the viewport right now */
     var occ=win((vh*.5-r.top)/Math.max(r.height,1),0,1,.06);
     var sc=scenes[f.id];
@@ -60,8 +88,11 @@ function tickFrame(){
     if(sceneFolds[f.id]&&occ>panelOcc)panelOcc=occ;
     /* every fold publishes its own progress, so a fold can drive bespoke art from CSS
        alone without another scroll listener */
-    f.style.setProperty('--p',p.toFixed(4));
-    f.style.setProperty('--occ',occ.toFixed(4));
+    /* --p and --occ are unregistered-ish custom properties feeding a lot of rules, so a
+       write invalidates everything that substitutes them. Only write on real change. */
+    var ps=p.toFixed(3), os=occ.toFixed(3);
+    if(f._p!==ps){f._p=ps;f.style.setProperty('--p',ps);}
+    if(f._o!==os){f._o=os;f.style.setProperty('--occ',os);}
     /* stacked layout: the copy rows are taken out of flow, so they hand over
        sideways on the same clock the panel uses */
     var col=f.querySelector('.col');
@@ -100,6 +131,7 @@ function tickFrame(){
   }
 }
 requestAnimationFrame(frame);
+nudge();
 
 /* ---- rolling logs inside the panel ---- */
 $$('.slist').forEach(function(list){
