@@ -29,17 +29,18 @@ npm run preview   # serve the build
 
 ### What was implemented
 
-The two files selected for this pass:
+All three pages, so navigation between them works as designed:
 
-| Route | Source artboard | Component |
+| Route | Source | Component |
 |---|---|---|
-| `/` | `Homepage.dc.html` -> `site/Homepage.html` | `src/pages/index.astro` |
+| `/` | `site/Homepage.html` | `src/pages/index.astro` |
 | `/for-companies` | `site/For Companies.html` | `src/pages/for-companies.astro` |
+| `/for-recruitment-partners` | `site/For Recruitment Partners.html` | `src/pages/for-recruitment-partners.astro` |
 
-`/for-recruitment-partners` is **not built**. It was outside this selection, so the nav
-links to it resolve to a route that does not exist yet. It is the next page to do, and the
-handoff recommends rebuilding it on the Companies page's flow grid rather than porting the
-old pinned-fold model (see *Known gaps*, item 5).
+The Partners page still runs the older pinned-fold system (`cp-shared.css` + `cp-page.js`),
+which is the site's remaining architectural inconsistency - the handoff recommends
+rebuilding it on the Companies grid, which would retire both files (*Known gaps*, item 5).
+It is ported faithfully here; restructuring is a separate decision.
 
 ### How it is put together
 
@@ -52,6 +53,7 @@ src/
     homepage/                 ground, the passport, the five folds, the outro
     companies/                ground, hero (the logo strip lives inside it), process,
                               comparison, close
+    partners/                 ground, the persistent network stage, hero, folds, outro
   styles/
     ds/                       the bound design system, copied verbatim
     homepage.css              each page's own stylesheet, carried over verbatim
@@ -59,6 +61,7 @@ src/
   scripts/
     homepage.js               each page's driver, carried over verbatim
     companies.js
+    cp-page.js                the shared fold engine the Partners page runs on
 public/                       hero-lift.mp4, the crowd plate, image-slot.js
 ```
 

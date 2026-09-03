@@ -38,15 +38,28 @@ const pathname = Astro.url.pathname;
 
 <script>
   /* Guarantee `--hdr` is never smaller than the header actually is, without shrinking the
-     spacing the stylesheet authored. The baseline is read once, before anything is written
-     to the inline style, so it reflects the stylesheet's own value. */
+     spacing the stylesheets authored.
+
+     The two pages state the baseline differently: For Companies declares `--hdr:83px` on
+     :root, while For Recruitment Partners never declares it and instead reads it per use
+     as `var(--hdr, 83px)`. A fallback inside a var() call is invisible to
+     getComputedStyle, so an undeclared value must NOT be read as zero — doing that made
+     this script write the measured 60px, defeat the 83px fallback, and shorten the
+     Partners hero by 23px.
+
+     Hence: fall back to the same 83px the stylesheets use, and only ever WRITE when the
+     measurement would raise the value. Staying silent otherwise leaves each page's own
+     declaration or fallback to apply exactly as designed. */
+  const AUTHORED_FALLBACK = 83;
   const hdr = document.querySelector<HTMLElement>('.hdr');
   if (hdr) {
     const root = document.documentElement;
-    const authored = parseFloat(getComputedStyle(root).getPropertyValue('--hdr')) || 0;
+    const declared = parseFloat(getComputedStyle(root).getPropertyValue('--hdr'));
+    const baseline = Number.isFinite(declared) ? declared : AUTHORED_FALLBACK;
     const publish = () => {
       const measured = Math.ceil(hdr.getBoundingClientRect().height);
-      root.style.setProperty('--hdr', `${Math.max(authored, measured)}px`);
+      if (measured > baseline) root.style.setProperty('--hdr', `${measured}px`);
+      else root.style.removeProperty('--hdr');
     };
     publish();
     new ResizeObserver(publish).observe(hdr);

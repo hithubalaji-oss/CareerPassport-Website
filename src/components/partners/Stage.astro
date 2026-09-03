@@ -1,0 +1,166 @@
+---
+/**
+ * The private talent network - the device that persists across all six folds.
+ *
+ * A constellation of candidate nodes inside a dashed PRIVATE TALENT NETWORK boundary, with
+ * client squares and an "outside" region beyond it. It evolves fold by fold: conversational
+ * search lighting matching nodes, an ATS board collapsing into a list of actions, an agent
+ * log pausing for recruiter approval, then the private/CareerPassport boundary with its
+ * three entry points, a collaboration agreement, and the Submitted -> Interviewing -> Joined
+ * -> Invoice -> Payout pipeline.
+ *
+ * The persistent panel cross-fades its contents as `cp-page.js` reads each fold's `data-bar`
+ * and `data-meta`; elements declare `data-step` (and optionally `data-off`) as fold-progress
+ * thresholds for staged reveals.
+ */
+---
+
+<div class="stage" id="stage" aria-hidden="true">
+  <div class="zone">
+    <div class="dev">
+      <div class="devglow"></div>
+      <div class="devbar" id="devbar"><i></i><b>PRIVATE TALENT NETWORK</b><small>ABC SEARCH</small></div>
+      <div class="scenes">
+
+        <!-- 02 ask your own database -->
+        <div class="scene" data-fold="f2">
+          <div class="search stp on" data-step="0.02"><i></i><span>&ldquo;Who have we spoken to who has built enterprise sales teams?&rdquo;</span></div>
+          <div class="stack">
+            <div class="lay swap on" data-step="0" data-off="0.44">
+              <span class="ph">ASKING YOUR NETWORK</span>
+              <div class="net stp" data-step="0.06">
+            <svg viewBox="0 0 420 220" preserveAspectRatio="xMidYMid meet">
+              <rect class="nbound" x="14" y="14" width="392" height="192" rx="16"/>
+              <g class="nlink hot"><path d="M86 68L164 44M164 44L248 76M86 68L112 138M112 138L206 168M248 76L206 168M206 168L306 132M164 44L332 70"/></g>
+              <circle class="nnode hot" cx="86" cy="68" r="7"/><circle class="nnode" cx="164" cy="44" r="4.5"/>
+              <circle class="nnode hot" cx="248" cy="76" r="6"/><circle class="nnode" cx="112" cy="138" r="4.5"/>
+              <circle class="nnode hot" cx="206" cy="168" r="7.5"/><circle class="nnode" cx="306" cy="132" r="4.5"/>
+              <circle class="nnode" cx="332" cy="70" r="4"/><circle class="nnode" cx="60" cy="164" r="3.5"/>
+              <circle class="nnode" cx="368" cy="170" r="3.5"/><circle class="nnode" cx="270" cy="36" r="3"/>
+            </svg>
+            </div>
+            </div>
+            <div class="lay swap" data-step="0.44">
+              <span class="ph">SELECTED CANDIDATE &middot; CONTEXT</span>
+              <div class="ctx">
+                <div class="ctxr stp" data-step="0.48"><b>SPOKE WITH</b><span>8 months ago</span></div>
+                <div class="ctxr stp" data-step="0.6"><b>RELEVANT EXP</b><span>B2B SaaS</span></div>
+                <div class="ctxr stp" data-step="0.72"><b>WORK CONTEXT</b><span>Built 0&rarr;1 sales team</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03 record -> action -->
+        <div class="scene" data-fold="f3">
+          <span class="ph" data-mob="off">SYSTEM OF RECORD &rarr; SYSTEM OF ACTION</span>
+          <div class="stack">
+            <div class="lay swap on" data-step="0" data-off="0.42">
+              <span class="ph">TRADITIONAL ATS &middot; STATUSES</span>
+              <div class="board">
+                <div class="bcol"><b>SOURCED</b><i></i><i></i><i></i><i></i><i></i></div>
+                <div class="bcol"><b>CONTACTED</b><i></i><i></i><i></i><i></i></div>
+                <div class="bcol"><b>SCREENING</b><i></i><i></i><i></i></div>
+                <div class="bcol"><b>SUBMITTED</b><i></i><i></i></div>
+                <div class="bcol"><b>INTERVIEW</b><i></i></div>
+              </div>
+            </div>
+            <div class="lay swap" data-step="0.42">
+              <span class="ph">CAREERPASSPORT &middot; ACTIONS</span>
+              <div class="acts">
+                <div class="act stp" data-step="0.44"><b>01</b><span>Role created</span><em>DONE</em></div>
+                <div class="act stp" data-step="0.52"><b>02</b><span>Candidates identified</span><em>17</em></div>
+                <div class="act stp" data-step="0.6"><b>03</b><span>Outreach initiated</span><em>RUNNING</em></div>
+                <div class="act stp" data-step="0.68"><b>04</b><span>Journey completed</span><em>6 OF 8</em></div>
+                <div class="act stp" data-step="0.76"><b>05</b><span>Evidence reviewed</span><em>READY</em></div>
+                <div class="act stp" data-step="0.84"><b>06</b><span>Interview ready</span><em>3</em></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 04 agentic workforce -->
+        <div class="scene" data-fold="f4">
+          <span class="ph">AGENT ACTIVITY &middot; ONE MANDATE</span>
+          <div class="scroller"><div class="slist">
+            <p><b>08:10</b><span>17 candidates identified</span></p>
+            <p><b>09:24</b><span>8 personalised messages sent</span></p>
+            <p><b>12:02</b><span>WhatsApp follow-up completed</span></p>
+            <p><b>15:41</b><span>3 candidate conversations summarised</span></p>
+            <p class="key"><b>17:15</b><span>2 candidates ready for review</span></p>
+            <p class="key"><b>17:16</b><span>Recruiter approval required</span></p>
+          </div></div>
+          <div class="pchips" data-mob="off">
+            <span class="pchip">DISCOVERY</span><span class="pchip">OUTREACH</span><span class="pchip">EMAIL</span>
+            <span class="pchip">WHATSAPP</span><span class="pchip">CALLS</span><span class="pchip">FOLLOW-UPS</span>
+            <span class="pchip">EVALUATION</span><span class="pchip">SCHEDULING</span>
+          </div>
+          <div class="pause stp" data-step="0.5" style="margin-top:auto"><b>RECRUITER APPROVAL REQUIRED</b><em>Approve</em></div>
+          <span class="ph stp" data-step="0.76" data-mob="off">APPROVED &middot; PROCESS CONTINUES</span>
+        </div>
+
+        <!-- 05 collaborate without losing control -->
+        <div class="scene" data-fold="f5">
+          <div class="stack">
+            <div class="lay swap on" data-step="0" data-off="0.5">
+              <span class="ph">FULFILMENT BOUNDARY</span>
+              <div class="split">
+                <div class="zoneb priv"><b>PRIVATE NETWORK</b>
+                  <div class="dots"><i class="hot"></i><i class="hot"></i><i></i><i></i><i class="hot"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                  <span class="pmono" style="margin-top:auto">NEVER PUBLIC</span>
+                </div>
+                <div class="zoneb pub"><b>CAREERPASSPORT NETWORK</b>
+                  <div class="ent">
+                    <span class="stp on" data-step="0.04">MY CLIENT ROLE</span>
+                    <span class="stp" data-step="0.16">COMPANY ROLE</span>
+                    <span class="stp" data-step="0.28">PARTNER ROLE</span>
+                  </div>
+                  <span class="pmono" style="margin-top:auto">NOTHING CROSSES AUTOMATICALLY</span>
+                </div>
+              </div>
+            </div>
+            <div class="lay swap" data-step="0.5">
+              <span class="ph">COLLABORATION AGREEMENT</span>
+              <div class="agree">
+                <div><b>ROLE OWNER</b><span>ABC Search</span></div>
+                <div><b>CANDIDATE OWNER</b><span>XYZ Partners</span></div>
+                <div><b>FEE</b><span>Agreed</span></div>
+                <div><b>SPLIT</b><span>60 / 40</span></div>
+                <div><b>REPLACEMENT TERMS</b><span>90 days</span></div>
+                <div><b>COMMISSION</b><span>On invoice</span></div>
+              </div>
+              <div class="pipe" style="margin-top:auto">
+                <b class="stp on" data-step="0.56">Submitted</b><em>&rarr;</em>
+                <b class="stp" data-step="0.64">Interviewing</b><em>&rarr;</em>
+                <b class="stp" data-step="0.72">Joined</b><em>&rarr;</em>
+                <b class="stp" data-step="0.8">Invoice</b><em>&rarr;</em>
+                <b class="stp" data-step="0.88">Payout</b>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 06 what the client sees -->
+        <div class="scene" data-fold="f6">
+          <span class="ph">WHAT THE CLIENT RECEIVES</span>
+          <div class="vs">
+            <div class="old"><b>candidate_final_v4.pdf</b><p>Recruiter note.</p>
+              <span class="pmono" style="margin-top:auto">BEFORE</span></div>
+            <div class="new"><b>CAREERPASSPORT CANDIDATE VIEW</b>
+              <div class="nr stp on" data-step="0.04"><b>WHY THIS PERSON</b><span>Built the enterprise motion this role needs.</span></div>
+              <div class="nr stp" data-step="0.18"><b>RELEVANT EXPERIENCE</b><span>Two B2B SaaS teams, 0&rarr;1 and scale.</span></div>
+              <div class="nr stp" data-step="0.32"><b>EVIDENCE</b><span>Work samples, pipeline model, references.</span></div>
+              <div class="nr stp" data-step="0.46"><b>CANDIDATE JOURNEY</b><span>Completed, 4 of 4 stages.</span></div>
+              <div class="nr stp" data-step="0.6"><b>EVALUATION</b><span>Structured against the client's criteria.</span></div>
+            </div>
+          </div>
+          <div class="pipe stp" data-step="0.74" style="justify-content:center">
+            <b class="on">Candidate</b><em>&rarr;</em><b class="on">Recruitment Partner</b><em>&rarr;</em><b class="on">Client</b>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+

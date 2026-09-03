@@ -1,0 +1,105 @@
+---
+/**
+ * Folds f2-f6, on the older pinned-fold model this page still runs: each `.fold` holds a
+ * sticky pin and declares the panel's title bar through `data-bar` / `data-meta`.
+ *
+ * This is the site's one remaining architectural inconsistency. For Companies was rebuilt
+ * onto flow layout precisely because pinning caused header-overlap and band-disagreement
+ * problems, and the handoff recommends rebuilding this page on that grid - at which point
+ * `cp-shared.css` and `cp-page.js` become dead files. Left as-is here: porting it faithfully
+ * first, restructuring is a separate decision.
+ */
+---
+
+<main>
+
+<section class="fold" id="f2" style="--h:250" data-bar="TALENT INTELLIGENCE" data-meta="NATURAL LANGUAGE" data-screen-label="02">
+  <div class="pin"><div class="col tight dense">
+    <p class="eyebrow"><i></i>Your private talent intelligence</p>
+    <h2>The best candidate for your next role may already be someone you know.</h2>
+    <p class="fine">Years of conversations, relationships and candidate data shouldn't sit waiting inside an ATS.</p>
+    <p class="lede">CareerPassport turns your private database into talent intelligence you can actually ask questions of.</p>
+    <div class="quotes">
+      <p>&ldquo;Who have we spoken to who has built enterprise sales teams?&rdquo;</p>
+      <p data-mob="off">&ldquo;Find product leaders with payments experience.&rdquo;</p>
+      <p data-mob="off">&ldquo;Who in our network could fit this role now?&rdquo;</p>
+    </div>
+    <div class="step">
+      <p>Your database stops being an archive.</p>
+      <p class="hi">It becomes an active business asset.</p>
+    </div>
+    <div class="note" data-mob="off"><b>PRIVATE BY DEFAULT</b><span>Your uploaded candidate database is never visible to other partners or companies.</span></div>
+  </div></div>
+</section>
+
+<section class="fold" id="f3" style="--h:260" data-bar="APPLICANT PROCESSING" data-meta="SYSTEM OF ACTION" data-screen-label="03">
+  <div class="pin"><div class="col dense">
+    <p class="eyebrow gold"><i></i>From system of record to system of action</p>
+    <h2>Applicant processing, not applicant tracking.</h2>
+    <p class="fine">Traditional ATS products tell you where a candidate is. CareerPassport helps move the hiring process forward.</p>
+    <p class="lede">Tell us what the client needs. CareerPassport can help structure the role, define evaluation, create the candidate journey, activate outreach, coordinate the process and bring the right people forward.</p>
+    <div class="rail"><b>Requirement</b><em>&rarr;</em><b>Role</b><em>&rarr;</em><b>Search</b><em>&rarr;</em><b>Outreach</b><em>&rarr;</em><b>Evaluation</b><em>&rarr;</em><b>Interview</b></div>
+    <p class="kicker">Your recruiting system should participate in the work — not just record it.</p>
+    <p class="fine" data-mob="off">A sleek, AI-native Applicant Processing System built for modern recruitment businesses.</p>
+  </div></div>
+</section>
+
+<section class="fold" id="f4" style="--h:250" data-bar="AGENTIC WORKFORCE" data-meta="CONFIGURABLE AUTONOMY" data-screen-label="04">
+  <div class="pin"><div class="col tight">
+    <p class="eyebrow"><i></i>Your agentic recruiting workforce</p>
+    <h2>Recruiting that keeps moving without you touching every step.</h2>
+    <div class="tags" data-mob="off">
+      <span class="tag">Discovery</span><span class="tag">Outreach</span><span class="tag">Email</span>
+      <span class="tag">WhatsApp</span><span class="tag">Calls</span><span class="tag">Follow-ups</span>
+      <span class="tag">Candidate conversations</span><span class="tag">Evaluation</span>
+      <span class="tag">Scheduling</span><span class="tag">Coordination</span>
+    </div>
+    <p class="lede">CareerPassport agents can take on the repetitive operating work around recruitment while your recruiters stay focused on what humans do best.</p>
+    <p class="kicker">Judgement. Relationships. Persuasion. Closing.</p>
+    <p class="fine">You decide where agents can act — and where human approval is required.</p>
+    <div class="step">
+      <p>More capacity.</p>
+      <p class="hi">Without making recruitment less human.</p>
+    </div>
+  </div></div>
+</section>
+
+<section class="fold" id="f5" style="--h:300" data-bar="COLLABORATION" data-meta="COMMERCIAL TRUTH" data-screen-label="05">
+  <div class="pin"><div class="col tight dense">
+    <p class="eyebrow"><i></i>Collaborate without losing control</p>
+    <h2>Your database is private. <em class="serif">Your opportunities don't have to be limited by it.</em></h2>
+    <p class="fine">CareerPassport gives recruitment partners three ways to work.</p>
+    <div class="ways">
+      <div class="way"><b>Your client. Your role.</b><p>Run your own mandate and invite another partner when additional reach can accelerate fulfilment.</p></div>
+      <div class="way"><b>Company opportunity.</b><p>Work on roles opened directly by companies on CareerPassport.</p></div>
+      <div class="way"><b>Partner opportunity.</b><p>Bring relevant talent to a mandate opened by another recruitment partner.</p></div>
+    </div>
+    <div class="note" data-mob="off"><b>YOUR CALL</b><span>Your private candidates never become a public database. You decide what you submit and where you participate.</span></div>
+    <p class="kicker">Collaboration with the commercial truth built in.</p>
+    <div class="rail" data-mob="off"><b>Candidate ownership</b><em>&middot;</em><b>Role ownership</b><em>&middot;</em><b>Fee</b><em>&middot;</em><b>Commission split</b><em>&middot;</em><b>Replacement terms</b></div>
+    <p class="fine" data-mob="off">Everyone knows who owns what, who earns what and where the process stands.</p>
+  </div></div>
+</section>
+
+<section class="fold" id="f6" style="--h:260" data-bar="CLIENT VIEW" data-meta="CANDIDATE + CONTEXT + EVIDENCE" data-screen-label="06">
+  <div class="pin"><div class="col tight dense">
+    <p class="eyebrow"><i></i>Your client sees a better recruitment partner</p>
+    <h2>Give your clients more than CVs.</h2>
+    <p class="fine">A CareerPassport-powered recruitment process can bring together the requirement, evaluation, candidate coordination and richer professional evidence in one place.</p>
+    <div class="step">
+      <p>Instead of: CV + recruiter comment</p>
+      <p class="hi">Give the client: Candidate + Context + Evidence</p>
+    </div>
+    <ul class="plain row2" data-mob="off">
+      <li>Relevant experience</li>
+      <li>Work samples</li>
+      <li>Candidate journeys</li>
+      <li>Structured evaluation</li>
+      <li>The context behind your recommendation</li>
+    </ul>
+    <p class="kicker" data-mob="off">Look like a better recruitment partner because you are running a better process.</p>
+    <div class="rail" data-mob="off"><b>More organised</b><em>&middot;</em><b>More responsive</b><em>&middot;</em><b>More credible</b></div>
+  </div></div>
+</section>
+
+</main>

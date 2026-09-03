@@ -1,0 +1,44 @@
+---
+/**
+ * For Recruitment Partners - agencies and headhunters.
+ *
+ * This page still runs the older pinned-fold system: it loads `cp-shared.css` and
+ * `cp-page.js`, and six `.fold` sections each hold a sticky pin while one persistent panel
+ * cross-fades its contents fold by fold.
+ *
+ * That makes it the site's remaining architectural inconsistency - For Companies was moved
+ * off this model precisely because pinning caused header-overlap and band-disagreement
+ * problems. Ported faithfully here; restructuring it onto the Companies grid is a separate
+ * decision, and would retire `cp-shared.css` and `cp-page.js` with it.
+ */
+import Base from '../layouts/Base.astro';
+import Header from '../components/chrome/Header.astro';
+import Footer from '../components/chrome/Footer.astro';
+import Ground from '../components/partners/Ground.astro';
+import Stage from '../components/partners/Stage.astro';
+import Hero from '../components/partners/Hero.astro';
+import Folds from '../components/partners/Folds.astro';
+import Outro from '../components/partners/Outro.astro';
+
+// cp-shared.css first, then the page's own sheet, matching the prototype's link order.
+import '../styles/cp-shared.css';
+import '../styles/partners.css';
+---
+
+<Base
+  title="CareerPassport — For Recruitment Partners"
+  description="More leverage from the network you already own. Build your recruitment business in the AI era — your candidates, your relationships, your business."
+>
+  <Ground />
+  <Header />
+
+  <Stage />
+  <Hero />
+  <Folds />
+  <Outro />
+
+  <Footer />
+
+  <script src="/image-slot.js" is:inline></script>
+  <script src="../scripts/cp-page.js"></script>
+</Base>
