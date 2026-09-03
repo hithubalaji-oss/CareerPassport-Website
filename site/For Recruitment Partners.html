@@ -4,6 +4,15 @@
 <link rel="stylesheet" href="cp-shared.css">
 <style>
 /* page-specific: the private network, the board collapse, the collaboration boundary */
+@property --p{syntax:"<number>";inherits:true;initial-value:0}
+@property --occ{syntax:"<number>";inherits:true;initial-value:0}
+/* inherits:true so ::after can read it — a registered non-inheriting property resolves to
+   its initial value inside a pseudo-element, which silenced the foil rule */
+@property --r{syntax:"<number>";inherits:true;initial-value:0}
+
+
+}
+
 .net{position:relative;flex:1;min-height:0}
 .net svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .nbound{fill:rgba(253,178,60,.03);stroke:rgba(253,178,60,.4);stroke-width:1;stroke-dasharray:6 5;vector-effect:non-scaling-stroke}
@@ -153,25 +162,101 @@
 .mnav a:last-child{border:0}
 @media (max-width:900px){ .nav{display:none} .burger{display:flex} }
 
-/* ---------- shared footer, matched to For Companies.html ---------- */
-.ftr{position:relative;z-index:10;display:flex;flex-direction:column;gap:clamp(30px,5vh,54px);
-  margin-top:var(--sec);padding:28px var(--gut) 0;border-top:1px solid var(--hairline);
-  background:var(--void);overflow:hidden}
-.ftop{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
-.fright{display:flex;flex-direction:column;align-items:flex-end;gap:14px}
+/* ---------- footer: one compact row, so the closing fold and the footer land in the
+   same viewport. The three pages sit side by side, hairline-separated. ---------- */
+.ftr{position:relative;z-index:10;display:flex;flex-direction:column;gap:14px;
+  margin-top:clamp(40px,6vh,64px);padding:20px var(--gut) 0;
+  border-top:1px solid color-mix(in srgb,var(--hairline) 50%,transparent);
+  background:transparent;overflow:hidden}
+.ftop{display:flex;align-items:center;justify-content:space-between;gap:clamp(16px,2.4vw,34px);
+  flex-wrap:wrap}
+.fright{display:flex;flex-direction:row;align-items:center;gap:14px}
 .fsoc{display:flex;align-items:center;gap:8px}
-.fsoc a{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;
+.fsoc a{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;
   border:1px solid var(--hairline-soft);color:var(--faint);transition:.16s var(--ease)}
 .fsoc a:hover{color:var(--emerald);border-color:color-mix(in srgb,var(--emerald) 45%,transparent);background:var(--panel-raised)}
 .fsoc svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;
   stroke-linecap:round;stroke-linejoin:round}
-.fnav{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-.fnav a{font-size:12.5px;color:var(--mute);text-decoration:none}.fnav a:hover{color:var(--emerald)}
-.fmark{display:block;width:100%;height:auto}
-.fmark text{fill:url(#fmg);font-family:var(--sans)}
-.fcr{padding-bottom:22px;text-align:center;font-size:12.5px;color:var(--faint)}
+/* the three pages in a row, divided by a hairline rather than stacked */
+.fnav{display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:0}
+.fnav a{padding:0 clamp(10px,1.4vw,18px);font-size:12.5px;color:var(--mute);text-decoration:none;
+  white-space:nowrap;transition:color .16s var(--ease)}
+.fnav a+a{border-left:1px solid var(--hairline)}
+.fnav a:hover{color:var(--emerald)}
+/* The wordmark seats into the page by its own vertical fade — no horizontal mask, which
+   is what was removing the C and the T. */
+.fmark{display:block;width:100%;height:auto;margin-bottom:-2px;overflow:visible;
+  -webkit-mask-image:linear-gradient(180deg,#000 30%,rgba(0,0,0,.7) 74%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 30%,rgba(0,0,0,.7) 74%,transparent 100%)}
+.fmark text{font-family:var(--sans)}
+.fmfill{fill:url(#fmg)}
+/* the lit pass is the edge only, so the glow reads as light catching the letterforms */
+.fmlit{fill:none;stroke:url(#fmedge);stroke-width:1.6;
+  filter:drop-shadow(0 0 6px color-mix(in srgb,var(--emerald) 8%,transparent))}
+@media (prefers-reduced-motion:reduce){.fmlit{display:none}}
+.fcr{padding:12px 0 18px;text-align:center;font-size:12px;color:var(--faint)}
+@media (max-width:900px){
+  .ftop{flex-direction:column;align-items:center;text-align:center}
+  .fright,.fnav{align-items:center;justify-content:center}
+  .fnav a{padding:0 10px}
+}
 .ftr .brand span{font-family:var(--mono);font-size:13px;font-weight:400;letter-spacing:.16em;
   color:var(--faint)}
+/* ---------- 01 hero: ported from the For Companies page, on this page's own gold.
+   One presented pair — a 16:9 product frame with the mobile UI standing in front of
+   its lower-right — sized as ONE group, so the arrangement never changes with the
+   viewport, only its scale. ---------- */
+.hero{position:relative;z-index:10;display:flex;align-items:center;gap:clamp(24px,3vw,40px);
+  padding:calc(var(--hdr,83px) + clamp(30px,4vh,54px)) var(--gut) clamp(54px,7.4vh,86px)}
+.bloom{position:absolute;top:-34vh;left:50%;width:130%;height:900px;translate:-50% 0;
+  z-index:0;pointer-events:none;filter:blur(40px);
+  background:
+    radial-gradient(38% 42% at 32% 44%,color-mix(in srgb,var(--emerald-mid,#1b3564) 74%,transparent),transparent 72%),
+    radial-gradient(34% 38% at 62% 38%,color-mix(in srgb,var(--emerald) 26%,transparent),transparent 70%),
+    radial-gradient(26% 30% at 74% 62%,color-mix(in srgb,var(--mint,#e9d6aa) 14%,transparent),transparent 72%)}
+.hero .hcopy{position:relative;z-index:1;width:min(664px,100%);flex:0 1 664px;min-width:0;
+  display:flex;flex-direction:column;gap:26px}
+.hero h1{font-size:clamp(38px,5.1vw,74px);font-weight:600;letter-spacing:-.05em;line-height:.96}
+.hero .lede b{font-weight:600;color:var(--ink)}
+.pmono{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;color:var(--meta)}
+.hart{position:relative;z-index:1;flex:1 1 460px;min-width:400px;
+  height:clamp(340px,56vh,620px);overflow:visible;container-type:size}
+.present{position:absolute;inset:0;z-index:2}
+.pgroup{position:absolute;left:50cqw;top:50cqh;translate:-50% -50%;
+  width:min(39vw,62vh);aspect-ratio:16/9;z-index:2}
+.pscreen{position:absolute;inset:0;z-index:3;border-radius:16px;overflow:hidden;
+  background:var(--panel);border:1px solid color-mix(in srgb,var(--emerald) 22%,transparent);
+  box-shadow:0 2px 2px rgba(0,0,0,.5),0 12px 28px -6px rgba(0,0,0,.55),
+    0 40px 80px -30px rgba(0,0,0,.75)}
+.pscreen image-slot{position:absolute;inset:0;width:100%;height:100%}
+.pchrome{position:absolute;left:11px;top:11px;z-index:2;display:flex;gap:5px}
+.pchrome i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.16)}
+.plbl{position:absolute;left:11px;bottom:9px;z-index:2;font-family:var(--mono);font-size:8px;
+  letter-spacing:.2em;color:var(--emerald);opacity:.75}
+.pphone{position:absolute;right:-6%;bottom:-7%;height:72%;aspect-ratio:9/16;z-index:4;
+  border-radius:16px;overflow:hidden;background:var(--panel-raised);
+  border:1px solid color-mix(in srgb,var(--emerald) 26%,transparent);
+  box-shadow:0 2px 2px rgba(0,0,0,.5),0 12px 28px -6px rgba(0,0,0,.55),
+    0 40px 80px -30px rgba(0,0,0,.75)}
+.pphone image-slot{position:absolute;inset:0;width:100%;height:100%}
+.pnotch{position:absolute;left:50%;top:8px;translate:-50% 0;z-index:2;width:34%;height:5px;
+  border-radius:3px;background:rgba(255,255,255,.14)}
+.pglow{position:absolute;left:50cqw;top:50cqh;width:min(88cqw,150cqh);aspect-ratio:1;
+  translate:-50% -50%;z-index:1;opacity:.4;filter:blur(28px);
+  background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--emerald) 20%,transparent),transparent 68%)}
+@media (max-width:1199px){
+  .pphone{height:66%;right:-4%;bottom:-6%}
+  .hero{flex-direction:column;align-items:stretch;gap:clamp(26px,3.4vh,38px)}
+  .hero .hcopy{width:100%;flex:0 0 auto}
+  .hart{flex:0 0 auto;min-width:0;width:100%}
+  /* cp-shared centres .eyebrow and .ctas from 1024 down for the stacked .col folds.
+     The hero is flush left at every width, like its source, so it opts out across the
+     whole stacked range rather than the shared rule being changed. */
+  .hero .eyebrow,.hero .ctas{justify-content:flex-start}
+}
+@media (max-width:900px){
+  .hart{height:min(42vh,320px)}
+}
 </style>
 
 <div class="paper" aria-hidden="true"></div>
@@ -200,37 +285,6 @@
       <div class="devbar" id="devbar"><i></i><b>PRIVATE TALENT NETWORK</b><small>ABC SEARCH</small></div>
       <div class="scenes">
 
-        <!-- 01 the private network -->
-        <div class="scene" data-fold="f1">
-          <span class="ph">ABC SEARCH &middot; PRIVATE TALENT NETWORK</span>
-          <div class="net stp on" data-step="0">
-            <svg viewBox="0 0 420 300" preserveAspectRatio="xMidYMid meet">
-              <rect class="nbound" x="14" y="26" width="286" height="252" rx="16"/>
-              <text class="nlbl" x="24" y="20">PRIVATE TALENT NETWORK</text>
-              <g class="nlink hot" stroke="rgba(253,178,60,.16)">
-                <path d="M70 92L138 62M138 62L216 96M70 92L96 168M96 168L182 208M216 96L182 208M182 208L262 170M138 62L262 96M96 168L46 226M262 170L262 96"/>
-              </g>
-              <circle class="nnode hot" cx="70" cy="92" r="6"/><circle class="nnode" cx="138" cy="62" r="4.5"/>
-              <circle class="nnode hot" cx="216" cy="96" r="5.5"/><circle class="nnode" cx="96" cy="168" r="4.5"/>
-              <circle class="nnode hot" cx="182" cy="208" r="6.5"/><circle class="nnode" cx="262" cy="170" r="4.5"/>
-              <circle class="nnode" cx="262" cy="96" r="4"/><circle class="nnode" cx="46" cy="226" r="4"/>
-              <circle class="nnode" cx="150" cy="128" r="3.5"/><circle class="nnode" cx="228" cy="240" r="3.5"/>
-              <circle class="nnode" cx="60" cy="140" r="3"/><circle class="nnode" cx="200" cy="152" r="3"/>
-              <circle class="nrole hot" cx="118" cy="252" r="9"/><text class="nlbl mute" x="132" y="256">ROLE · DORMANT</text>
-              <rect class="nclient" x="244" y="222" width="16" height="16" rx="3"/><text class="nlbl blue" x="266" y="234">CLIENT</text>
-              <rect class="nclient" x="36" y="44" width="16" height="16" rx="3"/><text class="nlbl blue" x="58" y="56">CLIENT</text>
-              <text class="nlbl mute" x="326" y="150">OUTSIDE</text>
-              <path class="nlink" d="M310 100v104" stroke-dasharray="4 5"/>
-            </svg>
-          </div>
-          <div class="pchips">
-            <span class="pchip gold stp on" data-step="0.02">PRIVATE TALENT INTELLIGENCE</span>
-            <span class="pchip stp" data-step="0.32">APPLICANT PROCESSING</span>
-            <span class="pchip stp" data-step="0.5">AGENTIC WORKFLOWS</span>
-            <span class="pchip stp" data-step="0.66">TRUSTED COLLABORATION</span>
-          </div>
-        </div>
-
         <!-- 02 ask your own database -->
         <div class="scene" data-fold="f2">
           <div class="search stp on" data-step="0.02"><i></i><span>&ldquo;Who have we spoken to who has built enterprise sales teams?&rdquo;</span></div>
@@ -247,7 +301,7 @@
               <circle class="nnode" cx="332" cy="70" r="4"/><circle class="nnode" cx="60" cy="164" r="3.5"/>
               <circle class="nnode" cx="368" cy="170" r="3.5"/><circle class="nnode" cx="270" cy="36" r="3"/>
             </svg>
-          </div>
+            </div>
             </div>
             <div class="lay swap" data-step="0.44">
               <span class="ph">SELECTED CANDIDATE &middot; CONTEXT</span>
@@ -373,27 +427,41 @@
   </div>
 </div>
 
-<!-- ============ FOLDS ============ -->
-<main>
-
-<section class="fold" id="f1" style="--h:220" data-bar="PRIVATE TALENT NETWORK" data-meta="ABC SEARCH" data-screen-label="01">
-  <div class="pin"><div class="mesh" aria-hidden="true"></div><div class="col dense">
-    <p class="eyebrow gold"><i></i>CareerPassport for recruitment partners</p>
-    <h1>Build your recruitment business in the <em class="serif">AI era.</em></h1>
-    <p class="lede">Turn the candidates, relationships and expertise you already own into a more intelligent way to recruit.</p>
-    <div class="step">
-      <p class="hi">Private talent intelligence.</p>
-      <p class="hi">Applicant processing.</p>
-      <p class="hi">Agentic workflows.</p>
-      <p class="hi">Trusted collaboration.</p>
-    </div>
+<!-- ============ 01 · HERO ============ -->
+<section class="hero" data-screen-label="01">
+  <div class="bloom" aria-hidden="true"></div>
+  <div class="hcopy">
+    <p class="eyebrow gold"><i></i>For recruitment partners</p>
+    <h1>Build your recruitment business in the <span class="serif">AI era.</span></h1>
+    <p class="lede">Your candidates, your relationships, your expertise. <b>Made searchable, active and worth more.</b></p>
     <div class="ctas">
-      <a class="btn" href="#outro">Book a Partner Demo</a>
+      <a class="btn" href="#outro">Book a partner demo</a>
       <a class="btn sec" href="#outro">Join CareerPassport</a>
     </div>
-    <p class="fine">Your candidates stay private. You decide when to collaborate.</p>
-  </div></div>
+    <p class="pmono">YOUR CANDIDATES STAY PRIVATE &middot; YOU DECIDE WHEN TO COLLABORATE</p>
+  </div>
+  <div class="hart">
+    <div class="present">
+      <span class="pglow" aria-hidden="true"></span>
+      <div class="pgroup">
+      <div class="pscreen">
+        <image-slot id="rp-hero-product" shape="rect" radius="14"
+          placeholder="Drop a product screen grab (16:9)"></image-slot>
+        <span class="pchrome" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="plbl">PRODUCT &middot; LIVE MANDATE</span>
+      </div>
+      <div class="pphone">
+        <image-slot id="rp-hero-mobile" shape="rect" radius="18"
+          placeholder="Drop the mobile UI (9:16)"></image-slot>
+        <span class="pnotch" aria-hidden="true"></span>
+      </div>
+      </div>
+    </div>
+  </div>
 </section>
+
+<!-- ============ FOLDS ============ -->
+<main>
 
 <section class="fold" id="f2" style="--h:250" data-bar="TALENT INTELLIGENCE" data-meta="NATURAL LANGUAGE" data-screen-label="02">
   <div class="pin"><div class="col tight dense">
@@ -513,6 +581,7 @@
 <footer class="ftr">
   <div class="ftop">
     <a class="brand" href="Homepage.html"><i></i><span>careerpassport.ai</span></a>
+    <nav class="fnav"><a href="Homepage.html">For individuals</a><a href="For Companies.html">For companies</a><a href="For Recruitment Partners.html">For recruitment partners</a></nav>
     <div class="fright">
       <div class="fsoc">
         <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9v9M6.5 5.6v.1M11 18v-5a3 3 0 0 1 6 0v5"/></svg></a>
@@ -520,19 +589,34 @@
         <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4 1.2-4-2.2-5.5-2.8M15 21v-3.2a2.9 2.9 0 0 0-.8-2.2c2.7-.3 4.5-1.4 4.5-5a4 4 0 0 0-1.1-2.7 3.7 3.7 0 0 0-.1-2.8s-1.2-.3-3.7 1.4a9.3 9.3 0 0 0-5 0C6.3 3.8 5.1 4.1 5.1 4.1a3.7 3.7 0 0 0-.1 2.8A4 4 0 0 0 3.9 9.6c0 3.6 1.8 4.7 4.5 5A2.9 2.9 0 0 0 7.6 17V21"/></svg></a>
         <a href="#" aria-label="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17zM3.5 7l8.5 6 8.5-6"/></svg></a>
       </div>
-      <nav class="fnav"><a href="Homepage.html">For individuals</a><a href="For Companies.html">For companies</a><a href="For Recruitment Partners.html">For recruitment partners</a></nav>
     </div>
   </div>
-  <svg class="fmark" viewBox="0 0 1000 96" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-    <defs><linearGradient id="fmg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="var(--ink)" stop-opacity=".14"/>
-      <stop offset=".62" stop-color="var(--ink)" stop-opacity=".03"/>
-      <stop offset="1" stop-color="var(--ink)" stop-opacity="0"/>
-    </linearGradient></defs>
-    <text x="500" y="104" text-anchor="middle" textLength="1000" lengthAdjust="spacingAndGlyphs"
-      font-size="130" font-weight="900" letter-spacing="-4">CAREERPASSPORT</text>
+  <svg class="fmark" viewBox="0 0 1000 112" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <defs>
+      <linearGradient id="fmg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="var(--ink)" stop-opacity=".14"/>
+        <stop offset=".55" stop-color="var(--ink)" stop-opacity=".053"/>
+        <stop offset="1" stop-color="var(--ink)" stop-opacity=".014"/>
+      </linearGradient>
+      <!-- the light that walks the letterforms: the gradient's own window slides across,
+           so the edge lights up a few letters at a time rather than all at once -->
+      <linearGradient id="fmedge" gradientUnits="objectBoundingBox" x1="-.3" y1="0" x2="0" y2="0">
+        <stop offset="0" stop-color="var(--emerald)" stop-opacity="0"/>
+        <stop offset=".5" stop-color="var(--mint,#e9d6aa)" stop-opacity=".135"/>
+        <stop offset="1" stop-color="var(--emerald)" stop-opacity="0"/>
+        <animate attributeName="x1" values="-.3;1" dur="11s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="0;1.3" dur="11s" repeatCount="indefinite"/>
+      </linearGradient>
+    </defs>
+    <text class="fmfill" x="500" y="104" text-anchor="middle" textLength="994"
+      lengthAdjust="spacingAndGlyphs" font-size="130" font-weight="900"
+      letter-spacing="-4">CAREERPASSPORT</text>
+    <text class="fmlit" x="500" y="104" text-anchor="middle" textLength="994"
+      lengthAdjust="spacingAndGlyphs" font-size="130" font-weight="900"
+      letter-spacing="-4">CAREERPASSPORT</text>
   </svg>
   <p class="fcr">&copy; 2026 CareerPassport Technologies Inc.</p>
 </footer>
 
+<script src="image-slot.js"></script>
 <script src="cp-page.js"></script>

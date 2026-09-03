@@ -16,6 +16,7 @@
   --cover:linear-gradient(155deg,#1b3564 0%,#0d1c3a 55%,#091530 100%);
   --pnavy:#10203f; --pgold:#fdb23c; --pblue:#4d86ff;
   --gut:clamp(20px,4.4vw,72px);
+  --sec:clamp(96px,13vh,152px);
   --ease:cubic-bezier(.4,0,.2,1);
   --sans:var(--font-sans); --serif:var(--font-sans); --mono:var(--font-mono);
 }
@@ -625,8 +626,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 .wait.done button{background:var(--panel-raised);color:var(--emerald);border:1px solid rgba(253,178,60,.35);pointer-events:none}
 .brandline{font-weight:600;font-size:clamp(27px,3.58vw,49.5px);letter-spacing:-.04em;line-height:1.1;color:var(--emerald)}
 .ftr{position:relative;z-index:6;display:flex;flex-direction:column;gap:clamp(30px,5vh,54px);
-  margin-top:clamp(60px,8vh,100px);padding:28px var(--gut) 0;border-top:1px solid var(--line);
-  background:var(--bg);overflow:hidden}
+  margin-top:clamp(60px,8vh,100px);padding:28px var(--gut) 0;overflow:hidden}
 .ftop{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
 .fright{display:flex;flex-direction:column;align-items:flex-end;gap:14px}
 .fsoc{display:flex;align-items:center;gap:8px}
@@ -736,14 +736,9 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   .nav{display:none}.burger{display:flex}
   .obook{width:min(58vw,210px);height:auto;aspect-ratio:460/640}
   .cinner{transform:scale(.5) rotateY(-10deg) rotateX(3deg)}
-  .ftr{text-align:center;gap:24px;padding:22px var(--gut) 0}
-  .ftop{justify-content:center;gap:18px;flex-direction:column;align-items:center}
-  .fright{align-items:center;gap:12px}
-  .fnav{align-items:center;gap:5px}
   .fnav a{font-size:12px}
   .ftr .brand span{font-size:11px}
-  .fsoc a{width:38px;height:38px}
-  .fcr{font-size:11.5px;padding-bottom:18px}
+  .fcr{font-size:11.5px}
   /* the mesh glow is sized off viewport height on desktop; cap it so it cannot
      push the document wider than the phone frame */
   .dring{width:min(100vw,460px);filter:blur(52px)}
@@ -847,23 +842,44 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 .mnav a:last-child{border:0}
 @media (max-width:900px){ .nav{display:none} .burger{display:flex} }
 
-/* ---------- shared footer, matched to For Companies.html ---------- */
-.ftr{position:relative;z-index:10;display:flex;flex-direction:column;gap:clamp(30px,5vh,54px);
-  margin-top:var(--sec);padding:28px var(--gut) 0;border-top:1px solid var(--hairline);
-  background:var(--void);overflow:hidden}
-.ftop{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
-.fright{display:flex;flex-direction:column;align-items:flex-end;gap:14px}
+/* ---------- footer: one compact row, so the closing fold and the footer land in the
+   same viewport. The three pages sit side by side, hairline-separated. ---------- */
+.ftr{position:relative;z-index:10;display:flex;flex-direction:column;gap:14px;
+  margin-top:clamp(40px,6vh,64px);padding:20px var(--gut) 0;
+  border-top:1px solid color-mix(in srgb,var(--hairline) 50%,transparent);
+  background:transparent;overflow:hidden}
+.ftop{display:flex;align-items:center;justify-content:space-between;gap:clamp(16px,2.4vw,34px);
+  flex-wrap:wrap}
+.fright{display:flex;flex-direction:row;align-items:center;gap:14px}
 .fsoc{display:flex;align-items:center;gap:8px}
-.fsoc a{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;
+.fsoc a{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;
   border:1px solid var(--hairline-soft);color:var(--faint);transition:.16s var(--ease)}
 .fsoc a:hover{color:var(--emerald);border-color:color-mix(in srgb,var(--emerald) 45%,transparent);background:var(--panel-raised)}
 .fsoc svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;
   stroke-linecap:round;stroke-linejoin:round}
-.fnav{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-.fnav a{font-size:12.5px;color:var(--mute);text-decoration:none}.fnav a:hover{color:var(--emerald)}
-.fmark{display:block;width:100%;height:auto}
-.fmark text{fill:url(#fmg);font-family:var(--sans)}
-.fcr{padding-bottom:22px;text-align:center;font-size:12.5px;color:var(--faint)}
+/* the three pages in a row, divided by a hairline rather than stacked */
+.fnav{display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:0}
+.fnav a{padding:0 clamp(10px,1.4vw,18px);font-size:12.5px;color:var(--mute);text-decoration:none;
+  white-space:nowrap;transition:color .16s var(--ease)}
+.fnav a+a{border-left:1px solid var(--hairline)}
+.fnav a:hover{color:var(--emerald)}
+/* The wordmark seats into the page by its own vertical fade — no horizontal mask, which
+   is what was removing the C and the T. */
+.fmark{display:block;width:100%;height:auto;margin-bottom:-2px;overflow:visible;
+  -webkit-mask-image:linear-gradient(180deg,#000 30%,rgba(0,0,0,.7) 74%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 30%,rgba(0,0,0,.7) 74%,transparent 100%)}
+.fmark text{font-family:var(--sans)}
+.fmfill{fill:url(#fmg)}
+/* the lit pass is the edge only, so the glow reads as light catching the letterforms */
+.fmlit{fill:none;stroke:url(#fmedge);stroke-width:1.6;
+  filter:drop-shadow(0 0 6px color-mix(in srgb,var(--emerald) 8%,transparent))}
+@media (prefers-reduced-motion:reduce){.fmlit{display:none}}
+.fcr{padding:12px 0 18px;text-align:center;font-size:12px;color:var(--faint)}
+@media (max-width:900px){
+  .ftop{flex-direction:column;align-items:center;text-align:center}
+  .fright,.fnav{align-items:center;justify-content:center}
+  .fnav a{padding:0 10px}
+}
 .ftr .brand span{font-family:var(--mono);font-size:13px;font-weight:400;letter-spacing:.16em;
   color:var(--faint)}
 </style>
@@ -1028,7 +1044,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   <div class="ocopy">
     <p class="eyebrow gold reveal"><i></i>Your passport, issued</p>
     <h2 class="reveal">Let the experiences you've lived showcase <em class="serif">who you really are.</em></h2>
-    <p class="lede reveal">CareerPassport gives those experiences somewhere to grow into something more — evidence of what you can do, a clearer understanding of who you're becoming, and a professional identity ready for wherever you choose to go next.</p>
+    <p class="lede reveal">Evidence of what you can do. A clearer picture of who you're becoming. A professional identity ready for wherever you go next.</p>
     <div class="wait reveal" id="wait">
       <input id="waitEmail" type="email" placeholder="you@work.com" aria-label="Your email">
       <button id="waitBtn">JOIN THE WAITLIST</button>
@@ -1041,6 +1057,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 <footer class="ftr">
   <div class="ftop">
     <a class="brand" href="Homepage.html"><i></i><span>careerpassport.ai</span></a>
+    <nav class="fnav"><a href="Homepage.html">For individuals</a><a href="For Companies.html">For companies</a><a href="For Recruitment Partners.html">For recruitment partners</a></nav>
     <div class="fright">
       <div class="fsoc">
         <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9v9M6.5 5.6v.1M11 18v-5a3 3 0 0 1 6 0v5"/></svg></a>
@@ -1048,17 +1065,31 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
         <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4 1.2-4-2.2-5.5-2.8M15 21v-3.2a2.9 2.9 0 0 0-.8-2.2c2.7-.3 4.5-1.4 4.5-5a4 4 0 0 0-1.1-2.7 3.7 3.7 0 0 0-.1-2.8s-1.2-.3-3.7 1.4a9.3 9.3 0 0 0-5 0C6.3 3.8 5.1 4.1 5.1 4.1a3.7 3.7 0 0 0-.1 2.8A4 4 0 0 0 3.9 9.6c0 3.6 1.8 4.7 4.5 5A2.9 2.9 0 0 0 7.6 17V21"/></svg></a>
         <a href="#" aria-label="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17zM3.5 7l8.5 6 8.5-6"/></svg></a>
       </div>
-      <nav class="fnav"><a href="Homepage.html">For individuals</a><a href="For Companies.html">For companies</a><a href="For Recruitment Partners.html">For recruitment partners</a></nav>
     </div>
   </div>
-  <svg class="fmark" viewBox="0 0 1000 96" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-    <defs><linearGradient id="fmg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="var(--ink)" stop-opacity=".14"/>
-      <stop offset=".62" stop-color="var(--ink)" stop-opacity=".03"/>
-      <stop offset="1" stop-color="var(--ink)" stop-opacity="0"/>
-    </linearGradient></defs>
-    <text x="500" y="104" text-anchor="middle" textLength="1000" lengthAdjust="spacingAndGlyphs"
-      font-size="130" font-weight="900" letter-spacing="-4">CAREERPASSPORT</text>
+  <svg class="fmark" viewBox="0 0 1000 112" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <defs>
+      <linearGradient id="fmg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="var(--ink)" stop-opacity=".14"/>
+        <stop offset=".55" stop-color="var(--ink)" stop-opacity=".053"/>
+        <stop offset="1" stop-color="var(--ink)" stop-opacity=".014"/>
+      </linearGradient>
+      <!-- the light that walks the letterforms: the gradient's own window slides across,
+           so the edge lights up a few letters at a time rather than all at once -->
+      <linearGradient id="fmedge" gradientUnits="objectBoundingBox" x1="-.3" y1="0" x2="0" y2="0">
+        <stop offset="0" stop-color="var(--emerald)" stop-opacity="0"/>
+        <stop offset=".5" stop-color="var(--mint,#e9d6aa)" stop-opacity=".135"/>
+        <stop offset="1" stop-color="var(--emerald)" stop-opacity="0"/>
+        <animate attributeName="x1" values="-.3;1" dur="11s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="0;1.3" dur="11s" repeatCount="indefinite"/>
+      </linearGradient>
+    </defs>
+    <text class="fmfill" x="500" y="104" text-anchor="middle" textLength="994"
+      lengthAdjust="spacingAndGlyphs" font-size="130" font-weight="900"
+      letter-spacing="-4">CAREERPASSPORT</text>
+    <text class="fmlit" x="500" y="104" text-anchor="middle" textLength="994"
+      lengthAdjust="spacingAndGlyphs" font-size="130" font-weight="900"
+      letter-spacing="-4">CAREERPASSPORT</text>
   </svg>
   <p class="fcr">&copy; 2026 CareerPassport Technologies Inc.</p>
 </footer>
