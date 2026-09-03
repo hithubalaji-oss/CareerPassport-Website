@@ -1,14 +1,16 @@
 ---
 /**
- * The three fixed layers behind the content: an atmosphere that lifts the top of the page
- * off pure black, the 120px rule grid, and a pair of very slow radial drifts. Nothing here
- * reads as an animation while you look at it - the movement is slower than attention.
+ * The fixed layers behind the content, plus the scroll-progress bar.
  *
- * `.prog` is the scroll-progress bar; `.grid-bg` reads `--gridY`, which the page script
- * writes so the grid drifts at a fraction of the page's own speed.
+ * `.paper` and `.rose` are new in this revision - the page now carries the Homepage's
+ * warm paper wash and rose bloom, so the two pages share one atmosphere. Below them sit
+ * the emerald-ramp ground, its two very slow radial drifts, and the 120px rule grid,
+ * which reads `--gridY` from the page script so it drifts at a fraction of the page speed.
  */
 ---
 
+<div class="paper" aria-hidden="true"></div>
+<div class="rose" aria-hidden="true"></div>
 <div class="ground" aria-hidden="true">
   <span class="drift a"></span>
   <span class="drift b"></span>

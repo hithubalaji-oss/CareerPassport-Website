@@ -50,7 +50,8 @@ src/
   components/
     chrome/                   header, footer, the shared nav list
     homepage/                 ground, the passport, the five folds, the outro
-    companies/                ground, hero, strip, process, testimonials, comparison, close
+    companies/                ground, hero (the logo strip lives inside it), process,
+                              comparison, close
   styles/
     ds/                       the bound design system, copied verbatim
     homepage.css              each page's own stylesheet, carried over verbatim
@@ -100,19 +101,26 @@ that silently removed live rules, and both audits it recommends still return cle
 
 Both pages were driven in Chromium against the prototypes served over HTTP, and compared:
 
-- **Document height matches exactly** - Homepage 11145px, For Companies 23567px, both equal.
-- **Box geometry matches exactly** at rest and at a fixed scroll offset: header, ground,
-  grid, hero, strip, the pinned section and its sticky pin, the comparison, closing and
-  footer all agree to the pixel.
+- **Document height matches exactly** - Homepage 11066px, For Companies 21335px, both equal.
+- **Box geometry matches exactly**: the fixed atmosphere layers, header, the pinned hero
+  and its sticky pin, the Companion composer, the logo track, the process section and its
+  pin, the comparison, closing, footer and the wordmark all agree to the pixel.
 - **Responsive behaviour matches at 1440 / 1199 / 900 / 767 / 560 / 390** - burger swap,
-  the comparison collapsing to six generated blocks, and 7 logo slots duplicated to 14.
-- **Behaviour matches** - email capture (rejects invalid, swaps to its `data-done` label,
-  input goes read-only), the homepage handle field and waitlist, and the mobile drawer.
-- **Screenshot diff**: the residual difference between the build and the prototype is
-  *smaller than the prototype's difference from itself across two loads* (4.6% vs 5.9%).
-  The page has genuinely non-deterministic motion - the departures board flips on a random
-  clock, the crowd's claim cards run on their own five-second timer - so a nonzero diff is
-  expected, and this is the control that says it is not a porting regression.
+  the comparison collapsing to six generated blocks, 7 logo slots duplicated to 14, the
+  footer nav staying a row, and document height at every width.
+- **Behaviour matches** - email capture, the homepage handle field and waitlist, and the
+  mobile drawer.
+- **Screenshot diff**: the Homepage is **pixel-identical** (0.000%). For Companies differs
+  by 2.28% against a control of 2.31% - the prototype's difference from *itself* across two
+  loads - because the departures board behind the process stage flips on a random clock.
+  Measuring that control is what distinguishes non-determinism from a porting regression.
+
+**One real bug found in the prototypes.** Neither `site/Homepage.html` nor
+`site/For Companies.html` declares `<meta charset>`. Served without a charset header they
+render `resume` as mojibake and mangle the middle dot in "05 STAMPS - 34 ARTIFACTS". The
+Astro build declares UTF-8, so it renders correctly; the first screenshot comparison
+flagged the difference and it turned out to be the prototype at fault, not the build. Worth
+adding the meta tag to the design files so they are correct when opened directly.
 
 **Not verified here:** the homepage's chroma-keyed hero figure. The container's headless
 Chromium cannot decode the H.264 source, so the video never reaches `readyState > 0` and
@@ -439,6 +447,12 @@ ones up; the newest is never cropped; the topmost fades at the upper edge.
 ---
 
 ## Page 2 — For Companies
+
+> **Note:** the section below describes the *previous* revision of this page. The design has
+> since been reworked: the hero is now pinned and carries a Companion composer plus the
+> partner-logo strip, the blueprint is a tabbed panel rather than five cards, the DECIDE act
+> opens the passport book, and the boarding-pass testimonials are gone. The implemented
+> page follows the current `site/For Companies.html`, not the description here.
 
 `site/For Companies.html` · hiring managers · **the most recently reworked page**
 

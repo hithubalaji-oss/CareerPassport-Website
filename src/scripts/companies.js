@@ -48,27 +48,138 @@
   write();
 })();
 
-/* ---- fold 02: one sentence becomes a hiring blueprint, scroll-driven ---- */
+/* ---- fold 01: the brief is written and sent, scroll-driven ----
+   Act 1 lives here. The sentence starts at a tenth of its opacity and fills word by word
+   as the fold is scrolled; when it is complete the send button arms, the hiring manager's
+   cursor enters from off-stage, presses it, and leaves. Only then does the pin release
+   into fold 02, which opens on the blueprint being prepared. */
+(function(){
+  var sec=document.getElementById('herofold'); if(!sec) return;
+  var pin=sec.querySelector('.heropin');
+  var comp=document.getElementById('hComp');
+  var textEl=document.getElementById('hCompText');
+  var sendBtn=document.getElementById('hCompSend');
+  var pill=document.getElementById('hCompPill');
+  var cur=document.getElementById('heroCur');
+  if(!pin||!textEl||!sendBtn||!cur) return;
+
+  var clamp=function(v,a,b){ return Math.min(b,Math.max(a,v)) };
+  var seg=function(v,a,b){ return clamp((v-a)/(b-a),0,1) };
+
+  var SVH=420;
+  var setH=function(){ sec.style.height=SVH+'svh' };
+  setH(); addEventListener('resize',setH,{passive:true});
+
+  var QUERY="I need a senior product leader who has built enterprise products, worked through ambiguity and can operate across engineering, sales and customers.";
+  textEl.innerHTML=QUERY.split(' ').map(function(w){ return '<span>'+w+'</span>' }).join(' ');
+  var wordEls=[].slice.call(textEl.querySelectorAll('span'));
+  var caret=document.createElement('span');
+  caret.className='aicaret'; caret.setAttribute('aria-hidden','true');
+  textEl.insertBefore(caret,textEl.firstChild);
+
+  /* the cursor parks on whatever element it is given, in the pin's own coordinates */
+  var tx=0,ty=0,cx=0,cy=0,seeded=false,wasOn=false;
+  function offstage(){ return {x:pin.offsetWidth+150, y:pin.offsetHeight*0.62} }
+  function park(el,ox,oy){
+    if(!el) return;
+    var s=pin.getBoundingClientRect(), r=el.getBoundingClientRect();
+    tx=r.left-s.left+r.width*0.5+(ox||0);
+    ty=r.top-s.top+r.height*0.5+(oy||0);
+    if(!seeded){ var o=offstage(); cx=o.x; cy=o.y; seeded=true }
+    cur.classList.toggle('left',tx>pin.offsetWidth*0.55);
+  }
+  function setVisible(on){
+    if(on===wasOn) return;
+    if(on){ var o=offstage(); cx=o.x; cy=o.y }
+    wasOn=on;
+  }
+  function glide(){
+    cx+=(tx-cx)*0.09;
+    cy+=(ty-cy)*0.09;
+    cur.style.transform='translate3d('+cx.toFixed(2)+'px,'+cy.toFixed(2)+'px,0)';
+    requestAnimationFrame(glide);
+  }
+  requestAnimationFrame(glide);
+
+  var frame=function(){
+    var r=sec.getBoundingClientRect();
+    var vh=pin.getBoundingClientRect().height||innerHeight;
+    var span=r.height-vh;
+    var q=span>0 ? clamp(-r.top/span,0,1) : 0;
+
+    /* the brief fills in, word by word */
+    var fillT=seg(q,.08,.60);
+    var n=Math.round(fillT*wordEls.length);
+    wordEls.forEach(function(w,i){
+      w.classList.toggle('hot',i<n);
+      w.classList.toggle('lead',i===n-1&&n<wordEls.length);
+    });
+    /* the caret rides immediately after the word that just filled */
+    if(caret._n!==n){
+      caret._n=n;
+      if(n<=0) textEl.insertBefore(caret,textEl.firstChild);
+      else wordEls[Math.min(n,wordEls.length)-1].after(caret);
+    }
+    caret.classList.toggle('on',q>.04&&q<.66);
+
+    /* everything but the box steps back while the brief is being written */
+    pin.style.setProperty('--rest',
+      (1-0.5*seg(q,.04,.16)*(1-seg(q,.80,.90))).toFixed(3));
+
+    var done=n>=wordEls.length;
+    /* the rim charges with the fill itself (not the rounded word count), so it starts
+       moving the instant the karaoke begins rather than waiting on the first word */
+    comp.style.setProperty('--charge',fillT.toFixed(3));
+    sendBtn.classList.toggle('armed',done);
+    pill.classList.toggle('hot',done);
+    comp.classList.toggle('armed',done);
+
+    /* the press holds long enough to register even at speed */
+    var press=q>=.72&&q<.80;
+    sendBtn.classList.toggle('pressed',press);
+    comp.classList.toggle('sending',q>=.72);
+
+    /* the manager is on stage only for the send */
+    var on=q>=.52&&q<.90;
+    cur.classList.toggle('on',on);
+    cur.classList.toggle('away',!on);
+    setVisible(on);
+    cur.classList.toggle('click',press);
+    park(sendBtn,2,2);
+  };
+  frame();
+  var queued=false;
+  addEventListener('scroll',function(){
+    if(queued) return; queued=true;
+    requestAnimationFrame(function(){ queued=false; frame() });
+  },{passive:true});
+  addEventListener('resize',frame,{passive:true});
+})();
+
+/* ---- fold 02: the blueprint, scroll-driven ---- */
 (function(){
   var sec=document.getElementById('aidemo'); if(!sec) return;
   var pin=sec.querySelector('.aidemopin');
   var eyebrow=document.getElementById('aiEyebrow');
   var stage=document.getElementById('aiStage');
-  var chat=document.getElementById('aiChat');
-  var textEl=document.getElementById('aiText');
-  var searchBtn=document.getElementById('aiSearchBtn');
   var submitBtn=document.getElementById('aiSubmit');
   var box=document.getElementById('aiBox');
   var prep=document.getElementById('aiPrep');
   var bp=document.getElementById('aiBp');
   var ready=document.getElementById('aiReady');
-  var pill=document.getElementById('aiPill');
   var cur=document.getElementById('hmCur');
   var fin1=document.getElementById('aiFin1');
   var fin2=document.getElementById('aiFin2');
-  var cards=[].slice.call(bp.querySelectorAll('.bpk'));
+  var tabs=[].slice.call(document.querySelectorAll('#bpTabs .bptab:not(.add)'));
+  var addTab=document.querySelector('#bpTabs .bptab.add');
+  var questions=[].slice.call(document.querySelectorAll('.bpq'));
+  var qLoaders=[].slice.call(document.querySelectorAll('.bqload'));
+  var leverPanel=document.getElementById('bpLever');
+  var leverOpts=[].slice.call(document.querySelectorAll('.bplopt'));
+  var cancelBtn=document.getElementById('bpCancel');
   var chip=document.getElementById('actChip');
   var title=document.getElementById('actTitle');
+  var desc=document.getElementById('actDesc');
   var dots=[].slice.call(document.querySelectorAll('#actDots i'));
   var ex=document.getElementById('aiEx'), ev=document.getElementById('aiEv'), dc=document.getElementById('aiDc');
   var wires=[].slice.call(ex.querySelectorAll('.wire:not(.reach)'));
@@ -77,55 +188,181 @@
   var chans=[].slice.call(ex.querySelectorAll('.exnode.chn'));
   var hub=document.getElementById('exHub');
   var exTicker=document.getElementById('exTicker');
+  var exDots=[].slice.call(ex.querySelectorAll('.exdotg'));
+  var exSvg=ex.querySelector('.exwires');
+  /* the viewBox is 100x100 with preserveAspectRatio="none", so its two axes scale by
+     different amounts. Handing that ratio to the packets lets them cancel it out. */
+  function sizeExDots(){
+    if(!exSvg) return;
+    var r=exSvg.getBoundingClientRect();
+    if(!r.width||!r.height) return;
+    exSvg.style.setProperty('--exAspect',(r.width/r.height).toFixed(4));
+  }
+  sizeExDots();
+  addEventListener('resize',sizeExDots,{passive:true});
+  if(window.ResizeObserver&&exSvg) new ResizeObserver(sizeExDots).observe(exSvg);
+  var exDivs=[].slice.call(ex.querySelectorAll('.exdiv'));
   var funs=[].slice.call(ev.querySelectorAll('.evf'));
   var evStack=document.getElementById('evStack');
   var evBtn=document.getElementById('evBtn');
-  var dcTicker=document.getElementById('dcTicker');
-  var dcEnd=document.getElementById('dcEnd');
-  var slots=[document.getElementById('dcSlot0'),document.getElementById('dcSlot1'),document.getElementById('dcSlot2')];
+  var dcGrid=document.getElementById('dcGrid');
+  var dcTiles=[].slice.call(document.querySelectorAll('.dctile'));
+  var dcLive=dcTiles.filter(function(t){return t.classList.contains('live')});
+  var dcPass=document.getElementById('dcPass');
+  var dcPp=document.getElementById('dcPp');
+  var dcBook=document.getElementById('dcBook');
+  var dcActs=[].slice.call(document.querySelectorAll('.dcact'));
+  var dcConf=document.getElementById('dcConf');
+  /* page 04's stamps: the homepage's own six dies, struck into this passport too */
+  var dcStampGrid=document.getElementById('dcStampGrid');
+  if(dcStampGrid){
+    var STAMPS=[
+     ["SYSTEM\nDESIGN","EARNED","14.07.2026","oval dbl","rgba(47,91,255,.72)",-7,"\u2708"],
+     ["DECISION\nMAKING","VERIFIED","02.08.2026","dbl","rgba(200,85,106,.8)",5,"\u2605"],
+     ["AGENT\nBUILDER","EARNED","19.08.2026","round","rgba(150,112,42,.9)",-3,"\u2605"],
+     ["INCIDENT\nRESPONSE","VERIFIED","27.08.2026","oval","rgba(23,48,95,.78)",8,"\u2708"],
+     ["TECHNICAL\nWRITING","EARNED","03.09.2026","pill dbl","rgba(150,112,42,.85)",-6,""],
+     ["SPACE FOR\nMORE","","","round dash","rgba(23,48,95,.34)",2,""]];
+    dcStampGrid.innerHTML=STAMPS.map(function(s,i){
+      return '<div class="st" data-i="'+i+'"><div class="sbox '+s[3]+'" style="--sc:'+s[4]+';rotate:'+s[5]+'deg">'+
+        (s[6]?'<i class="sg l">'+s[6]+'</i><i class="sg r">'+s[6]+'</i>':'')+
+        (s[1]?'<span class="stt">'+s[1]+'</span>':'')+
+        '<b class="snm">'+s[0]+'</b>'+
+        (s[2]?'<span class="sdt">'+s[2]+'</span>':'')+
+      '</div></div>';
+    }).join('');
+  }
+  /* the book's own parts, exactly as the homepage drives them */
+  var dcVerso=document.getElementById('dcVerso');
+  var dcSpine=document.getElementById('dcSpine');
+  var dcLeaves=[document.getElementById('dcCover'),document.getElementById('dcLeaf1'),
+    document.getElementById('dcLeaf2'),document.getElementById('dcLeaf3'),
+    document.getElementById('dcLeaf4')];
+  var dcCurls=dcLeaves.map(function(lf){
+    if(!lf) return null;
+    /* the homepage gives every leaf face a curl shadow; the port keeps it */
+    [].slice.call(lf.children).forEach(function(face){
+      if(face.querySelector&&!face.querySelector('.curl')){
+        var c=document.createElement('span'); c.className='curl'; face.appendChild(c);
+      }
+    });
+    return lf.querySelector('.curl');
+  });
+  /* the book is authored at 920x640; it is scaled to whatever this panel can give it */
+  function sizeBook(){
+    if(!dcPp) return;
+    var r=dcPp.getBoundingClientRect();
+    if(!r.width||!r.height) return;
+    /* The open spread is 920x640, but it is rotated on two axes so its painted box is
+       larger than that — the divisors carry the headroom that keeps it inside the panel. */
+    dcPp.style.setProperty('--pps',
+      Math.max(0.12, Math.min(r.width/990, r.height/700)).toFixed(4));
+  }
+  sizeBook();
+  addEventListener('resize',sizeBook,{passive:true});
+  /* the instance is held: an observer reachable only through its own observation list can
+     be collected, which ends the callbacks without any error */
+  var dcRO=null;
+  if(window.ResizeObserver&&dcPp){
+    dcRO=new ResizeObserver(sizeBook);
+    dcRO.observe(dcPp);
+  }
+  /* a short burst of paper for the offer */
+  if(dcConf){
+    /* 44 pieces thrown across the whole frame, not a pill's worth around a label */
+    for(var ci=0;ci<44;ci++){
+      var cp=document.createElement('i');
+      var ca=(ci/44)*Math.PI*2 + Math.random()*0.3;
+      var cd=90+Math.random()*230;
+      cp.style.setProperty('--cx',(Math.cos(ca)*cd).toFixed(1)+'px');
+      cp.style.setProperty('--cy',(Math.sin(ca)*cd*0.62-40).toFixed(1)+'px');
+      cp.style.setProperty('--cr',(Math.random()*900-450).toFixed(0)+'deg');
+      cp.style.background = ci%3===0?'var(--emerald)':(ci%3===1?'var(--mint,#e9d6aa)':'var(--emerald-tint,#fdfaf1)');
+      cp.style.animationDelay=(Math.random()*0.3).toFixed(2)+'s';
+      cp.style.animationDuration=(1.5+Math.random()*0.8).toFixed(2)+'s';
+      dcConf.appendChild(cp);
+    }
+  }
+  var dcSent=document.getElementById('dcSent');
 
-  var EXLOG=[['09:42','Approached via email'],['11:18','Response received'],
-    ['11:19','Candidate Journey shared'],['14:32','Assessment coordinated'],
-    ['16:07','Interview slot proposed']];
-  var DCLOG=[['16 SEP','Conversation held, notes recorded'],
-    ['16 SEP','Evidence attached to the record'],
-    ['17 SEP','Every candidate told where they stand']];
-  /* one line at a time, swapped in place — a ticker reads calmer than a stacked log */
+  /* the agent's running total, so the panel reports scale rather than one anecdote */
+  var EXLOG=[
+    ['09:42','Agent matched 504 profiles against the blueprint'],
+    ['10:15','156 candidates approached by email'],
+    ['11:18','39 responses received'],
+    ['11:47','24 candidate journeys shared'],
+    ['13:02','88 follow-ups sent on WhatsApp'],
+    ['14:32','17 assessments coordinated'],
+    ['15:20','12 evaluations returned and scored'],
+    ['16:07','9 interview slots proposed'],
+    ['16:44','6 calendar invites accepted'],
+    ['17:30','4 candidates cleared pre-screen']];
+  /* The line advances every 3s, read straight off the clock rather than from a timer.
+     setInterval plus a setTimeout for the fade was the freeze: a browser throttles both
+     while this section is off-screen, and when the throttle landed between the two the
+     .turn class stayed applied — a blank line — then the backlog fired at once, which
+     was the sudden shuffle. A derived slot cannot desync or burst. */
+  var EX_SLOT_MS=3000;
+  function exTickNow(){
+    if(!exTicker) return;
+    var slot=Math.floor(Date.now()/EX_SLOT_MS)%EXLOG.length;
+    if(exTicker._i===slot) return;
+    exTicker._i=slot;
+    exTicker.querySelector('b').textContent=EXLOG[slot][0];
+    exTicker.querySelector('span').textContent=EXLOG[slot][1];
+    /* re-trigger the entrance animation without a timer */
+    exTicker.classList.remove('turn');
+    void exTicker.offsetWidth;
+    exTicker.classList.add('turn');
+  }
+  /* its own frame loop, so the line advances whether or not the page is being scrolled.
+     rAF pauses off-screen and resumes cleanly, and because the slot is derived from the
+     clock rather than counted, a pause can never leave a backlog to rush through. */
+  (function exTickLoop(){
+    exTickNow();
+    requestAnimationFrame(exTickLoop);
+  })();
+  /* One line at a time, swapped in place — a ticker reads calmer than a stacked log.
+     The swap is synchronous and the fade is a re-triggered entrance animation: the old
+     version added .turn (which blanks the line) and removed it from a setTimeout, so a
+     throttled timer left the activity text missing until it was finally serviced. */
   function tick(el,list,i){
-    if(el._i===i||!list[i]) return;
-    el._i=i; el.classList.add('turn');
-    setTimeout(function(){
-      el.querySelector('b').textContent=list[i][0];
-      el.querySelector('span').textContent=list[i][1];
-      el.classList.remove('turn');
-    },220);
+    if(!el||el._i===i||!list[i]) return;
+    el._i=i;
+    el.querySelector('b').textContent=list[i][0];
+    el.querySelector('span').textContent=list[i][1];
+    el.classList.remove('turn');
+    void el.offsetWidth;
+    el.classList.add('turn');
   }
 
   var ACTS=[
-    ['DEFINE','One intent becomes a hiring blueprint.'],
-    ['DESIGN','Decide what you need to know before you meet them.'],
-    ['EXECUTE','Once the role is live, our agents move the process without you operating it.'],
-    ['EVIDENCE','See why someone is worth meeting.'],
-    ['DECIDE','Meet fewer candidates.<br>Know more about the ones you do.']
+    ['DESIGN','Decide what you need to know before you meet them.',
+      'CareerPassport drafts the role, competencies, journey, evaluation and communications from your brief.'],
+    ['EXECUTE','Once the role is live, our agents move the process without you operating it.',
+      'The blueprint goes to work: sourcing, outreach and scheduling run across every channel at once.'],
+    ['EVIDENCE','See why someone is worth meeting.',
+      'Every reply becomes a record — what was said, what it means, and why it matters for this role.'],
+    ['DECIDE','Meet fewer candidates.<br>Know more about the ones you do.',
+      'By the time you step in, the role is structured, the process has moved and the evidence is assembled. The conversation starts where judgment actually matters.']
   ];
   var actNow=-1;
+  var textCol=document.querySelector('.aitextcol');
   function setAct(i){
     if(i===actNow) return;
     actNow=i;
     chip.textContent=ACTS[i][0];
     title.innerHTML=ACTS[i][1];
+    desc.textContent=ACTS[i][2];
     dots.forEach(function(s,k){
       s.classList.toggle('on',k===i); s.classList.toggle('done',k<i);
     });
+    /* trigger a CSS reflow for the enter animation */
+    textCol.classList.add('swap');
+    void textCol.offsetWidth;
+    textCol.classList.remove('swap');
   }
-  var loaders=[].slice.call(bp.querySelectorAll('.bpload'));
 
-  var QUERY="I need a senior product leader who has built enterprise products, worked through ambiguity and can operate across engineering, sales and customers.";
-  textEl.innerHTML=QUERY.split(' ').map(function(w){ return '<span>'+w+'</span>' }).join(' ');
-  var wordEls=[].slice.call(textEl.querySelectorAll('span'));
-  var caret=document.createElement('span');
-  caret.className='aicaret'; caret.setAttribute('aria-hidden','true');
-  textEl.insertBefore(caret,textEl.firstChild);
 
   /* ---- the departures board behind everything ---- */
   var board=document.getElementById('flapBg');
@@ -196,13 +433,21 @@
     });
   }
 
-  var SVH_TOTAL=2200;
-  var A2=0.43; /* acts 1 and 2 occupy the first 43% */
+  /* Act 1 now plays in the hero, so this fold opens on act 2. Its clock is OFFSET rather
+     than rescaled — g starts at G0, exactly where act 2 began — so every beat below keeps
+     the number it was authored with. */
+  var G0=0.478*0.43; /* = act 2's opening beat expressed on this fold's clock */
+  var SVH_TOTAL=1750;
+  var A2=0.43;
   var setH=function(){ sec.style.height=SVH_TOTAL+'svh' };
   setH(); addEventListener('resize',setH,{passive:true});
 
   var clamp=function(v,a,b){ return Math.min(b,Math.max(a,v)) };
   var seg=function(v,a,b){ return clamp((v-a)/(b-a),0,1) };
+  /* The homepage's own easing. The leaf-flip geometry in act 5 was ported from there, so
+     the motion has to run on the same curve — on the homepage this sits beside clamp
+     and seg for the same reason. */
+  var ease=function(t){ return t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2 };
 
   /* ---- the hiring manager's cursor parks on whatever element it is given ---- */
   /* the cursor chases a target with critically-damped easing, so direction changes never snap */
@@ -212,7 +457,12 @@
   function offstage(){ return {x:stage.offsetWidth+150, y:stage.offsetHeight*0.42} }
   function park(el,ox,oy){
     if(!el) return;
-    var s=stage.getBoundingClientRect(), r=el.getBoundingClientRect();
+    var r=el.getBoundingClientRect();
+    /* A display:none target reports an all-zero rect, which used to send the cursor to the
+       panel's top-left corner and back — the random flight. An unrendered target is simply
+       ignored, so the cursor holds its last real position instead. */
+    if(!r.width||!r.height) return;
+    var s=stage.getBoundingClientRect();
     tx=r.left-s.left+r.width*0.5+(ox||0);
     ty=r.top-s.top+r.height*0.5+(oy||0);
     if(!seeded){ var o=offstage(); cx=o.x; cy=o.y; seeded=true }
@@ -236,7 +486,7 @@
     var r=sec.getBoundingClientRect();
     var vh=pin.getBoundingClientRect().height||document.documentElement.clientHeight||innerHeight;
     var span=r.height-vh;
-    var g=span>0 ? clamp(-r.top/span,0,1) : 0;
+    var g=G0+(span>0 ? clamp(-r.top/span,0,1) : 0)*(1-G0);
 
     /* the board drifts and reshuffles as the fold is scrolled. Its per-row transforms are
        the most expensive work in this function, so they are written only when the drift has
@@ -265,55 +515,75 @@
 
     /* acts 1 and 2 keep their own 0..1 clock inside the first 43% of the fold */
     var p=clamp(g/A2,0,1);
-    setAct(g<0.2055?0:g<0.452?1:g<0.652?2:g<0.852?3:4);
+    setAct(g<0.452?0:g<0.652?1:g<0.852?2:3);
 
-    /* act 1 — the brief fills in, word by word */
-    var wp=seg(p,.05,.36);
-    var n=Math.round(wp*wordEls.length);
-    wordEls.forEach(function(w,i){
-      w.classList.toggle('hot',i<n);
-      w.classList.toggle('lead',i===n-1&&n<wordEls.length);
-    });
-    /* the caret sits immediately after the word that just filled */
-    if(caret._n!==n){
-      caret._n=n;
-      if(n<=0) textEl.insertBefore(caret,textEl.firstChild);
-      else wordEls[Math.min(n,wordEls.length)-1].after(caret);
-    }
-    caret.classList.toggle('on',p>.03&&p<.44);
-
-    var done=n>=wordEls.length;
-    searchBtn.classList.toggle('armed',done);
-    pill.classList.toggle('hot',done);
-    chat.classList.toggle('searching',p>=.36);
-
-    /* the presses hold long enough to register even at speed */
-    var sendPress=p>=.415&&p<.475&&g<A2, subPress=p>=.895&&p<.945&&g<A2;
-    searchBtn.classList.toggle('pressed',sendPress);
+    /* act 2's approve press holds long enough to register even at speed */
+    var subPress=p>=.952&&p<.986&&g<A2;
     submitBtn.classList.toggle('pressed',subPress);
 
     /* act 2 — the box grows, prepares, then draws the blueprint */
-    chat.classList.toggle('off',p>=.478);
     box.classList.toggle('big',p>=.478);
     prep.classList.toggle('on',p>=.478&&p<.625);
     bp.classList.toggle('on',p>=.605&&g<.452);
 
-    /* every card loads at once, then every card fills at once */
-    var loading = p>=.62 && p<.70;
-    var filled = p>=.70;
-    cards.forEach(function(el){
-      el.classList.toggle('on',p>=.61);
-      el.classList.toggle('filled',filled);
+    /* tabs appear, then questions load and fill */
+    var tabsOn=p>=.60;
+    tabs.forEach(function(el,i){ el.classList.toggle('vis',tabsOn&&p>=.60+i*0.018) });
+    if(addTab) addTab.classList.toggle('vis',tabsOn&&p>=.654);
+    var qLoading=p>=.64&&p<.72;
+    var qFilled=p>=.72;
+    questions.forEach(function(el,i){
+      el.classList.toggle('vis',p>=.63+i*0.024);
+      el.classList.toggle('filled',qFilled);
     });
-    loaders.forEach(function(el){ el.classList.toggle('on',loading) });
-    ready.classList.toggle('on',p>=.71&&p<.86);
+    qLoaders.forEach(function(el){ el.classList.toggle('on',qLoading) });
+    ready.classList.toggle('on',p>=.73&&p<.82);
 
-    /* the hiring manager reviews each card, then submits */
+    /* ---- the review, as one gap-free timeline ----
+       Every window below is contiguous, and each names exactly one cursor target, so the
+       pointer always has somewhere real to be. The lever picker's own window bounds both
+       the grid and its Cancel button, so neither is ever a park target while hidden.
+         .700–.760  read the three questions on Rapid fire
+         .760–.788  Case study tab
+         .788–.816  Pick and defend tab
+         .816–.836  reach for + Add lever
+         .836–.892  scan the lever options
+         .892–.925  Cancel
+         .925–...   Accept blueprint                                                  */
+    var LEVER_IN=.816, LEVER_OUT=.925;
+    var showLever=p>=LEVER_IN&&p<LEVER_OUT;
+
+    var activeTab=0;
+    if(p>=.760&&p<.788) activeTab=1;
+    else if(p>=.788&&p<LEVER_IN) activeTab=2;
+    else if(showLever) activeTab=-1;
+    tabs.forEach(function(el,i){ el.classList.toggle('on',i===activeTab) });
+    if(addTab) addTab.classList.toggle('on',showLever);
+
+    var qsWrap=document.getElementById('bpQs');
+    if(leverPanel) leverPanel.classList.toggle('on',showLever);
+    if(qsWrap) qsWrap.style.display=showLever?'none':'';
+
+    /* the questions are read one at a time, and only while they are on screen */
     var hover=-1;
-    if(p>=.72&&p<.865) hover=Math.min(4,Math.floor(seg(p,.72,.865)*5));
-    cards.forEach(function(el,i){ el.classList.toggle('hov',i===hover) });
-    submitBtn.classList.toggle('on',p>=.865);
-    submitBtn.classList.toggle('armed',p>=.885);
+    if(p>=.700&&p<.760) hover=Math.min(2,Math.floor(seg(p,.700,.760)*3));
+    questions.forEach(function(el,i){ el.classList.toggle('hov',i===hover) });
+
+    /* Five levers are scanned and the last of them is "Binary choice", the tile Cancel
+       now sits directly under — so the cursor's final move in the picker is a short drop
+       straight down instead of a diagonal run to the footer. */
+    var LEVER_SCAN=[0,1,2,3,5];
+    var leverStep=-1;
+    if(p>=.836&&p<.892) leverStep=Math.min(4,Math.floor(seg(p,.836,.892)*5));
+    var leverHov=leverStep<0?-1:LEVER_SCAN[leverStep];
+    leverOpts.forEach(function(el,i){ el.classList.toggle('hov',i===leverHov) });
+    var onCancel=p>=.892&&p<LEVER_OUT;
+    if(cancelBtn){
+      cancelBtn.classList.toggle('on',showLever);
+      cancelBtn.classList.toggle('hov',onCancel);
+    }
+    submitBtn.classList.toggle('on',p>=.925);
+    submitBtn.classList.toggle('armed',p>=.940);
 
     /* the handover — the blueprint recedes, two lines land, the agent takes the role */
     bp.classList.toggle('done',p>=.95&&g<.452);
@@ -328,11 +598,20 @@
     wires.forEach(function(w,i){
       w.classList.toggle('lit', i<3 ? g>=.482+i*0.014 : g>=.552+(i-3)*0.016);
     });
+    exTickNow();
+
+    /* a packet appears only after its own line has been drawn, never before */
+    exDots.forEach(function(d){
+      var i=+d.getAttribute('data-w');
+      var lineAt = i<3 ? .482+i*0.014 : .552+(i-3)*0.016;
+      d.classList.toggle('on', g>=lineAt+0.02 && g<.655);
+    });
+    exDivs.forEach(function(d){ d.classList.toggle('on',g>=.474&&g<.655) });
     reach.forEach(function(w){
       var c=+w.getAttribute('data-r');
       w.classList.toggle('lit',g>=.566+c*0.016);
     });
-    tick(exTicker,EXLOG,Math.min(EXLOG.length-1,Math.floor(seg(g,.50,.648)*EXLOG.length)));
+
 
     /* ---------- act 4 · the pool narrows to one record worth reading ---------- */
     ev.classList.toggle('on',g>=.652&&g<.855);
@@ -345,40 +624,128 @@
     /* the press opens the deck */
     evStack.classList.toggle('spread',g>=.834);
 
-    /* ---------- act 5 · three conversations, and a record of each ---------- */
+    /* ---------- act 5 · one record read in full, then the decision ----------
+       g .852 .. 1, in contiguous beats, each naming one cursor target:
+         .852–.876  the twenty candidates arrive
+         .876–.912  the three cleared ones are read
+         .910–.918  one is opened
+         .918–.930  the grid clears and the record comes forward
+         .930–.952  the cover turns
+         .952–.968  the first leaf turns
+         .968–.986  Share offer
+         .986–1     the offer lands                                              */
     dc.classList.toggle('on',g>=.852);
-    slots.forEach(function(el,i){ if(el) el.classList.toggle('on',g>=.866+i*0.014) });
-    var pick=-1;
-    if(g>=.892) pick=Math.min(2,Math.floor(seg(g,.892,.952)*3));
-    var dcPress=(g>=.906&&g<.920)||(g>=.926&&g<.940)||(g>=.946&&g<.960);
-    slots.forEach(function(el,i){
-      if(!el) return;
-      /* once a conversation is booked it stays booked — the closing frame shows all three */
-      el.classList.toggle('picked',g>=.906+i*0.02);
-      el.classList.toggle('pressed',dcPress&&i===pick);
-      /* the actions open on whichever conversation the manager is on */
-      el.classList.toggle('hov',i===pick&&g<.962);
+    /* the panel's height changes with the act, and a reader scrolling in fires no resize */
+    sizeBook();
+    dcTiles.forEach(function(el,i){ el.classList.toggle('vis',g>=.856+i*0.0016) });
+
+    var dcOpen=g>=.918;
+    dcGrid.classList.toggle('gone',dcOpen);
+    dcPass.classList.toggle('on',dcOpen);
+
+    /* the three cleared candidates are read one at a time */
+    var dcHov=-1;
+    if(g>=.876&&g<.910) dcHov=Math.min(2,Math.floor(seg(g,.876,.910)*3));
+    dcLive.forEach(function(el,i){
+      el.classList.toggle('hov',i===dcHov&&!dcOpen);
+      el.classList.toggle('pressed',i===0&&g>=.910&&g<.918);
+      el.classList.toggle('chosen',i===0&&g>=.914);
     });
-    tick(dcTicker,DCLOG,Math.min(DCLOG.length-1,Math.floor(seg(g,.905,.985)*DCLOG.length)));
-    dcEnd.classList.toggle('on',g>=.966);
+
+    /* the leaves turn on the same easing and the same geometry the homepage uses, and
+       the book shuts again as the offer goes out — the record closes on the decision */
+    var dcFlips=[[.930,.952],[.952,.968],[9,9],[9,9],[9,9]];
+    var dcShut=ease(seg(g,.980,.992));
+    for(var li=0;li<dcLeaves.length;li++){
+      var dlf=dcLeaves[li]; if(!dlf) continue;
+      var lp=dcOpen?ease(seg(g,dcFlips[li][0],dcFlips[li][1]))*(1-dcShut):0;
+      var zw=(1-lp)*(4-li)*1.8 + lp*(li+1)*1.8 + Math.sin(Math.PI*lp)*14;
+      dlf.style.transform='translateZ('+zw.toFixed(2)+'px) rotateY('+(-180*lp).toFixed(2)+'deg)';
+      var turned=lp>0.5;
+      if(dlf.children[0]) dlf.children[0].style.visibility=turned?'hidden':'visible';
+      if(dlf.children[1]) dlf.children[1].style.visibility=turned?'visible':'hidden';
+      if(dcCurls[li]) dcCurls[li].style.opacity=(Math.sin(Math.PI*lp)*0.85).toFixed(3);
+    }
+    /* the open spread reveals its left page and the gutter shadow */
+    var dcO=dcOpen?ease(seg(g,.930,.952))*(1-dcShut):0;
+    if(dcVerso) dcVerso.style.setProperty('--vop',dcO.toFixed(3));
+    if(dcSpine) dcSpine.style.setProperty('--sop',dcO.toFixed(3));
+    if(dcBook){
+      /* A closed cover occupies only the right half of the 920 box, so it needs a
+         half-page shift to sit centred; an open spread fills the box and needs none.
+         That analytic offset centres the UNROTATED box, though — the rotateY and the
+         2400px perspective project the painted result somewhere else, by an amount that
+         grows as the column narrows. So the residual is measured off the painted faces
+         and folded back in; it converges in a frame and holds. */
+      var dcS=parseFloat(getComputedStyle(dcPp).getPropertyValue('--pps'))||0.3;
+      var dcCorr=parseFloat(dcBook.style.getPropertyValue('--bxc'))||0;
+      dcBook.style.setProperty('--bx',(-230*dcS*(1-dcO)+dcCorr).toFixed(1)+'px');
+      dcBook.style.transform='rotateY('+(-15+6*dcO).toFixed(2)+'deg) rotateX(5deg)';
+      if(dcOpen){
+        /* the painted extent: the cover face when shut, the two pages when open */
+        var pl,pr;
+        if(dcO>0.5){
+          var vr=dcVerso.getBoundingClientRect();
+          var rr=dcBook.querySelector('.pg.recto.base').getBoundingClientRect();
+          pl=vr.left; pr=rr.right;
+        }else{
+          var cf=dcBook.querySelector('#dcCover .cface').getBoundingClientRect();
+          pl=cf.left; pr=cf.right;
+        }
+        if(pr>pl){
+          var ppr=dcPp.getBoundingClientRect();
+          var delta=(ppr.left+ppr.width/2)-((pl+pr)/2);
+          if(Math.abs(delta)>0.5){
+            /* corrected in THIS frame, not the next: the projection offset is linear in
+               --bx, so one measured step lands it — waiting on a following frame left the
+               composition off-centre whenever frames were throttled */
+            dcCorr+=delta;
+            dcBook.style.setProperty('--bxc',dcCorr.toFixed(1)+'px');
+            dcBook.style.setProperty('--bx',(-230*dcS*(1-dcO)+dcCorr).toFixed(1)+'px');
+          }
+        }
+      }
+    }
+
+    /* the four actions, and the one the manager takes */
+    dcActs.forEach(function(el,i){ el.classList.toggle('vis',dcOpen&&g>=.934+i*0.004) });
+    var dcShare=dcActs[2];
+    var dcOnShare=g>=.968&&g<.992;
+    var dcPress=g>=.976&&g<.986;
+    dcActs.forEach(function(el,i){
+      el.classList.toggle('hov',i===2&&dcOnShare);
+      el.classList.toggle('armed',i===2&&g>=.972);
+      el.classList.toggle('pressed',i===2&&dcPress);
+    });
+    if(dcSent) dcSent.classList.toggle('on',g>=.988);
+    dcConf.classList.toggle('on',g>=.988);
 
     /* ---------- who is on stage, and where their hand is ---------- */
-    var curOn2 = (p>=.35&&p<.485&&g<A2) || (p>=.685&&p<.955&&g<A2) ||
-                 (g>=.762&&g<.852) || (g>=.876&&g<.968);
+    var curOn2 = (p>=.665&&p<.995&&g<A2) ||
+                 (g>=.762&&g<.852) || (g>=.872&&g<.992);
     cur.classList.toggle('on',curOn2);
     cur.classList.toggle('away',!curOn2);
     setVisible(curOn2);
-    cur.classList.toggle('click',sendPress||subPress||evPress||dcPress);
+    cur.classList.toggle('click',subPress||evPress||dcPress);
 
     if(g<A2){
-      if(p<.72) park(searchBtn,2,2);
-      else if(hover>=0) park(cards[hover],0,6);
+      /* one target per beat, in the order the beats run */
+      if(hover>=0) park(questions[hover],0,4);
+      else if(p>=.760&&p<.788) park(tabs[1],0,2);
+      else if(p>=.788&&p<LEVER_IN) park(tabs[2],0,2);
+      else if(p>=LEVER_IN&&p<.836) park(addTab,0,2);
+      else if(leverHov>=0) park(leverOpts[leverHov],0,3);
+      else if(onCancel) park(cancelBtn,2,2);
       else park(submitBtn,2,2);
     }else if(g<.86){
       if(g<.786) park(evStack.querySelector('.evpass'),0,10);
       else park(evBtn,2,2);
     }else{
-      park(slots[Math.max(0,pick)],2,2);
+      /* one target per beat; park() skips anything not rendered */
+      if(dcHov>=0) park(dcLive[dcHov],0,4);
+      else if(g>=.910&&g<.918) park(dcLive[0],0,4);
+      else if(dcOpen) park(dcShare,0,2);
+      else park(dcLive[0],0,4);
     }
   };
   frame();

@@ -1,39 +1,62 @@
 ---
 /**
- * 01 - Hero. Eyebrow, headline, lede, two CTAs and the mono strapline in the copy column
- * (`--copy`, 664px), with the product presentation beside it.
+ * 01 - Hero, now a pinned fold (`.heropin`, `id="herofold"`).
  *
- * Both product surfaces are empty `<image-slot>`s: no product screen grab or mobile UI has
- * been supplied. In production these become ordinary `<img>` tags with real files.
+ * Reworked in this revision: the product presentation and the mono strapline are gone.
+ * The brief is written here instead - `.hcomp` is a live Companion composer that types
+ * the hiring intent out as you scroll, and the hiring-manager cursor (`#heroCur`) moves
+ * to the send button. The blueprint the composer produces is the next section.
+ *
+ * The companies strip is no longer a section of its own: it sits inside `.herobot`, and
+ * the page script still fills `#logoTrack` with seven placeholder slots duplicated once
+ * for a seamless loop. All seven await real partner logos.
  */
 ---
 
-<section class="hero" data-screen-label="01">
-  <div class="bloom" aria-hidden="true"></div>
-  <div class="hcopy">
-    <p class="eyebrow gold"><i></i>Tell us who you need.</p>
-    <h1 style="color:#fff">Meet the people <span class="serif" style="color:#fff">worth your time.</span></h1>
-    <p class="lede">CareerPassport builds the hiring journey, runs it, and brings you the evidence. <b>You step in when there is a decision worth making.</b></p>
-    <div class="ctas">
-      <a class="btn" href="#close">Book a demo</a>
-      <a class="btn gh" href="#close">Post a role</a>
+<!-- ============ 01 · HERO · the brief is written here ============ -->
+<section class="hero" id="herofold" data-screen-label="01">
+  <div class="heropin">
+    <div class="bloom" aria-hidden="true"></div>
+    <div class="herotop">
+      <div class="hcopy">
+        <p class="eyebrow gold"><i></i>Tell us who you need.</p>
+        <h1 style="color:#fff">Meet the people <span class="serif" style="color:#fff">worth your time.</span></h1>
+        <p class="lede">CareerPassport builds the hiring journey, runs it, and brings you the evidence. <b>You step in when there is a decision worth making.</b></p>
+        <div class="ctas">
+          <a class="btn" href="#close">Book a demo</a>
+          <a class="btn gh" href="#close">Post a role</a>
+        </div>
+      </div>
     </div>
-    <p class="pmono">IN AN OCEAN OF CLAIMS &middot; ONE RECORD YOU CAN INSPECT</p>
-  </div>
-  <div class="hart">
-    <div class="present">
-      <span class="pglow" aria-hidden="true"></span>
-      <div class="pscreen">
-        <image-slot id="cmp-hero-product" shape="rect" radius="14"
-          placeholder="Drop a product screen grab (16:9)"></image-slot>
-        <span class="pchrome" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="plbl">PRODUCT &middot; LIVE ROLE</span>
+    <div class="herobot">
+      <div class="hcomp" id="hComp">
+        <div class="hcompfield">
+          <p class="aitext" id="hCompText"></p>
+        </div>
+        <div class="aibar">
+          <div class="aitools">
+            <span class="aitool" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M21.4 11.05 12.25 20.2a5.5 5.5 0 0 1-7.78-7.78l9.2-9.19a3.67 3.67 0 0 1 5.18 5.18l-9.2 9.2a1.83 1.83 0 0 1-2.6-2.6l8.5-8.48"></path></svg>
+            </span>
+            <span class="aipill" id="hCompPill">
+              <span class="exbot pillbot" aria-hidden="true"><i></i><i></i></span>
+              Companion
+            </span>
+          </div>
+          <button class="aisearch" id="hCompSend" aria-hidden="true" tabindex="-1">
+            <svg viewBox="0 0 24 24"><path d="M21 3 10.5 13.5M21 3l-6.8 18-3.7-7.5L3 9.8Z"></path></svg>
+            <span class="ring2" aria-hidden="true"></span>
+            <span class="ring" aria-hidden="true"></span>
+          </button>
+        </div>
       </div>
-      <div class="pphone">
-        <image-slot id="cmp-hero-mobile" shape="rect" radius="18"
-          placeholder="Drop the mobile UI (9:16)"></image-slot>
-        <span class="pnotch" aria-hidden="true"></span>
+      <div class="strip" aria-label="Companies hiring with CareerPassport">
+        <div class="track" id="logoTrack"></div>
       </div>
+    </div>
+    <div class="hmcur" id="heroCur" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M5 2.5 19.5 11l-6.6 1.7L9.6 19Z" fill="#e9d6aa" stroke="var(--emerald-deep)" stroke-width="1.2" stroke-linejoin="round"></path></svg>
+      <span class="hmlbl">Hiring manager</span>
     </div>
   </div>
 </section>

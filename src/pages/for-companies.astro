@@ -2,11 +2,15 @@
 /**
  * For Companies - hiring managers and talent teams.
  *
- * Architecture, deliberately different from the Partners page: every section is an
- * ordinary block in the document flow. Nothing is viewport-pinned except the process
- * stage, and no band heights are computed. This is a correction - an earlier build pinned
- * every fold and computed per-fold bands, and headings slid under the header while panels
- * disagreed about their available space.
+ * Reworked in the latest design pass. The page now opens on a PINNED hero where the brief
+ * is written: a Companion composer types the hiring intent out as you scroll, with the
+ * partner-logo strip absorbed into the same fold. The standalone logo strip and the
+ * boarding-pass testimonials are gone.
+ *
+ * Everything after the hero remains ordinary blocks in the document flow, except the
+ * process stage. That was a deliberate correction: an earlier build pinned every fold and
+ * computed per-fold bands, and headings slid under the header while panels disagreed
+ * about their available space.
  *
  * One grid governs the page (declared at the top of companies.css):
  *   --gut 20-72px gutters - --measure 1296px - --copy 664px - --sec 96-152px rhythm
@@ -16,9 +20,7 @@ import Header from '../components/chrome/Header.astro';
 import Footer from '../components/chrome/Footer.astro';
 import Ground from '../components/companies/Ground.astro';
 import Hero from '../components/companies/Hero.astro';
-import LogoStrip from '../components/companies/LogoStrip.astro';
 import ProcessDemo from '../components/companies/ProcessDemo.astro';
-import Testimonials from '../components/companies/Testimonials.astro';
 import Comparison from '../components/companies/Comparison.astro';
 import Closing from '../components/companies/Closing.astro';
 
@@ -33,9 +35,7 @@ import '../styles/companies.css';
   <Header />
 
   <Hero />
-  <LogoStrip />
   <ProcessDemo />
-  <Testimonials />
   <Comparison />
   <Closing />
 

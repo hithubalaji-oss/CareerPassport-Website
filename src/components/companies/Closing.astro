@@ -1,28 +1,28 @@
 ---
 /**
- * 06 - Closing. The hero figure's vocabulary resolved: a glowing ring, the product surface
- * and the passport cover, over the email capture.
+ * 04 - Closing. The glowing ring, the product surface and the passport cover, over the
+ * email capture.
  *
  * The capture validates on click or Enter and swaps the button to its `data-done` label.
  * No backend is wired - this is a front-end state change only. Point it at a real endpoint.
  */
 ---
 
+<!-- ============ 06 · CLOSING ============ -->
 <section class="close" id="close" data-screen-label="07">
   <div class="ccopy">
-    <p class="eyebrow gold rv"><i></i>The promise, resolved</p>
-    <h2 class="rv">Your next hire shouldn't require you to run the entire hiring process and yet get the evidence you want</h2>
-    <p class="lede rv">Tell CareerPassport who you need.</p>
+    <p class="eyebrow gold rv"><i></i>Intent in. Evidence out.</p>
+    <h2 class="rv">Start your next hire with <span class="serif">evidence for every claim on the CV.</span></h2>
     <div class="wait rv" data-capture>
       <input type="email" placeholder="you@company.com" aria-label="Your work email">
       <button data-done="Request sent">Request a demo</button>
     </div>
-    <p class="brandline rv">Intent in. Evidence out.</p>
   </div>
   <div class="cart" aria-hidden="true">
     <div class="oring"></div>
     <div class="palmglow"></div>
     <div class="present cpres">
+      <div class="pgroup">
       <div class="pscreen">
         <image-slot id="cmp-close-product" shape="rect" radius="14"
           placeholder="Drop a product screen grab (16:9)"></image-slot>
@@ -35,6 +35,7 @@
         <span class="pcvtitle">PASSPORT</span>
         <span class="pcvurl">careerpassport.ai/yourname</span>
         <span class="pcvchip" aria-hidden="true"><i></i></span>
+      </div>
       </div>
     </div>
   </div>

@@ -1,101 +1,95 @@
 ---
 /**
- * 03 - The process, pinned. The one viewport-pinned section on the page; everything else
- * is an ordinary block in the document flow.
+ * 02 - The process, pinned. Five acts - DEFINE, DESIGN, EXECUTE, EVIDENCE, DECIDE -
+ * advanced by scroll across a sticky stage that never moves.
  *
- * A sticky stage holds five acts - DEFINE, DESIGN, EXECUTE, EVIDENCE, DECIDE - and scroll
- * advances the act. The stage never moves, only its contents change. The step maths lives
- * in `src/scripts/companies.js` and is carried over verbatim; see the notes there on
- * measuring the pin rather than the window, and on the 1e-6 epsilon.
+ * Two changes in this revision:
+ *  - DESIGN is now a tabbed blueprint panel (`#bpTabs` / `#bpPanel` / `#bpQs`) with a
+ *    lever control, replacing the five flat blueprint cards.
+ *  - DECIDE now opens an actual passport - the same book object as the Homepage, with
+ *    its cover, spine, verso and five leaves - rather than a row of interview slots.
  *
- * Panes in the pinned stage cannot scroll: anything that does not fit is lost, which is
- * why every in-stage component has explicit tightening at 1199px and 767px.
+ * The step maths lives in `src/scripts/companies.js`, carried over verbatim: measure the
+ * pin rather than the window, and keep the 1e-6 epsilon on the stage floor.
+ * Panes in the pinned stage cannot scroll, so everything here tightens explicitly at
+ * 1199px and 767px instead of overflowing.
  */
 ---
 
+<!-- ============ 03 · FROM ONE SENTENCE TO A HIRING BLUEPRINT ============ -->
 <section class="aidemo" id="aidemo" data-screen-label="02" aria-label="From one sentence to a hiring blueprint">
   <div class="aidemopin">
     <div class="flapglow" aria-hidden="true"></div>
     <div class="flapbg" id="flapBg" aria-hidden="true"></div>
     <div class="flapvig" aria-hidden="true"></div>
     <div class="actdots" id="actDots" aria-hidden="true">
-      <i></i><i></i><i></i><i></i><i></i>
+      <i></i><i></i><i></i><i></i>
     </div>
     <div class="aiwrap">
-      <div class="acthead">
-        <span class="actchip" id="actChip">DEFINE</span>
-      </div>
-      <h3 class="acttitle" id="actTitle">One intent becomes a hiring blueprint.</h3>
-      <div class="aistage" id="aiStage">
+      <div class="aivisual">
+        <div class="aistage" id="aiStage">
         <div class="aibox" id="aiBox">
-          <div class="aichat" id="aiChat">
-            <div class="aifield">
-              <p class="aitext" id="aiText"></p>
-            </div>
-            <div class="aibar">
-              <div class="aitools">
-                <span class="aitool" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M21.4 11.05 12.25 20.2a5.5 5.5 0 0 1-7.78-7.78l9.2-9.19a3.67 3.67 0 0 1 5.18 5.18l-9.2 9.2a1.83 1.83 0 0 1-2.6-2.6l8.5-8.48"></path></svg>
-                </span>
-                <span class="aipill" id="aiPill">
-                  <span class="exbot pillbot" aria-hidden="true"><i></i><i></i></span>
-                  Companion
-                </span>
-              </div>
-              <button class="aisearch" id="aiSearchBtn" aria-hidden="true" tabindex="-1">
-                <svg viewBox="0 0 24 24"><path d="M21 3 10.5 13.5M21 3l-6.8 18-3.7-7.5L3 9.8Z"></path></svg>
-                <span class="ring2" aria-hidden="true"></span>
-                <span class="ring" aria-hidden="true"></span>
-              </button>
-            </div>
-          </div>
-
           <div class="aiprep" id="aiPrep">
             <span class="aidots" aria-hidden="true"><i></i><i></i><i></i></span>
             <p class="shimmer">Hiring blueprint is being prepared</p>
           </div>
 
           <div class="aibp" id="aiBp">
-            <div class="bpgrid">
-            <div class="bpk" data-bp="0">
-              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
-              <b class="bpi"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M4 20a8 8 0 0 1 16 0"></path></svg></b>
-              <strong>Role</strong>
-              <div class="bpload"><i></i><i></i><i></i></div>
-              <p class="bptxt">Senior Product Lead, enterprise platforms. Owns a surface used by paying customers, reporting to the VP Product. The remit is ambiguity: the space is defined, the roadmap is not.</p>
+            <div class="bptabs" id="bpTabs">
+              <span class="bptab on" data-tab="0">Rapid fire <em>5m</em></span>
+              <span class="bptab" data-tab="1">Case study <em>15m</em></span>
+              <span class="bptab" data-tab="2">Pick and defend <em>10m</em></span>
+              <span class="bptab add">+ Add lever</span>
             </div>
-            <div class="bpk" data-bp="1">
-              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
-              <b class="bpi"><svg viewBox="0 0 24 24"><path d="m9 12 2 2 4-4"></path><path d="M12 3 4 6v6c0 5 3.4 8.2 8 9 4.6-.8 8-4 8-9V6Z"></path></svg></b>
-              <strong>Competencies</strong>
-              <div class="bpload"><i></i><i></i><i></i></div>
-              <p class="bptxt">Enterprise depth. Judgment without complete information. Range across engineering, sales and customers.</p>
-            </div>
-            <div class="bpk" data-bp="2">
-              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
-              <b class="bpi"><svg viewBox="0 0 24 24"><circle cx="6" cy="19" r="2.5"></circle><circle cx="18" cy="5" r="2.5"></circle><path d="M8.5 19h6a4 4 0 0 0 0-8h-5a4 4 0 0 1 0-8H15"></path></svg></b>
-              <strong>Candidate Journey</strong>
-              <div class="bpload"><i></i><i></i><i></i></div>
-              <p class="bptxt">Five stages, evidence-led. Experience, a role exercise on an ambiguous brief, then cross-functional review.</p>
-            </div>
-            <div class="bpk" data-bp="3">
-              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
-              <b class="bpi"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"></path><path d="M8 3v18"></path></svg></b>
-              <strong>Evaluation Matrix</strong>
-              <div class="bpload"><i></i><i></i><i></i></div>
-              <p class="bptxt">Weighted for ambiguity and stakeholder range. Scored on shipped outcomes, not tenure.</p>
-            </div>
-            <div class="bpk" data-bp="4">
-              <span class="bpedit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"></path></svg>Edit</span>
-              <b class="bpi"><svg viewBox="0 0 24 24"><path d="M21 4H3v13h5v4l5-4h8Z"></path></svg></b>
-              <strong>Communications</strong>
-              <div class="bpload"><i></i><i></i><i></i></div>
-              <p class="bptxt">Framed around scope and the teams involved. Same message, same clock, every candidate.</p>
-            </div>
+            <div class="bppanel" id="bpPanel">
+              <div class="bpqs" id="bpQs">
+                <div class="bpq" data-q="0">
+                  <span class="bqhandle" aria-hidden="true">⋮⋮</span>
+                  <div class="bqbody">
+                    <div class="bpload bqload"><i></i><i></i><i></i></div>
+                    <p class="bqtext">Sales sold what engineering says it cannot build. Your first move?</p>
+                    <span class="bqhint">Long answer text</span>
+                  </div>
+                  <span class="bqtype">Paragraph <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
+                </div>
+                <div class="bpq" data-q="1">
+                  <span class="bqhandle" aria-hidden="true">⋮⋮</span>
+                  <div class="bqbody">
+                    <div class="bpload bqload"><i></i><i></i><i></i></div>
+                    <p class="bqtext">Three bets: one working, one flat, one losing. Plan next quarter.</p>
+                    <span class="bqhint"><svg viewBox="0 0 24 24" class="bqstar"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01Z"></path></svg><svg viewBox="0 0 24 24" class="bqstar"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01Z"></path></svg><svg viewBox="0 0 24 24" class="bqstar"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01Z"></path></svg><svg viewBox="0 0 24 24" class="bqstar"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01Z"></path></svg><svg viewBox="0 0 24 24" class="bqstar"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01Z"></path></svg></span>
+                  </div>
+                  <span class="bqtype">Rating <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
+                </div>
+                <div class="bpq" data-q="2">
+                  <span class="bqhandle" aria-hidden="true">⋮⋮</span>
+                  <div class="bqbody">
+                    <div class="bpload bqload"><i></i><i></i><i></i></div>
+                    <p class="bqtext">A key customer is about to churn mid-migration. What do you do?</p>
+                    <span class="bqhint">Upload a file</span>
+                  </div>
+                  <span class="bqtype">File upload <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
+                </div>
+              </div>
+              <div class="bplever" id="bpLever">
+                <div class="bplgrid">
+                  <span class="bplopt" data-lv="0">Rapid fire</span>
+                  <span class="bplopt" data-lv="1">Multiple choice</span>
+                  <span class="bplopt" data-lv="2">Do a demo</span>
+                  <span class="bplopt" data-lv="3">Rank order</span>
+                  <span class="bplopt" data-lv="4">Pick and defend</span>
+                  <span class="bplopt" data-lv="5">Binary choice</span>
+                  <span class="bplopt" data-lv="6">AI critic</span>
+                  <span class="bplopt" data-lv="7">Coding round</span>
+                  <span class="bplopt" data-lv="8">Case study</span>
+                  <span class="bplopt" data-lv="9">Flaunt or flex</span>
+                </div>
+                <button class="bplcancel" id="bpCancel" aria-hidden="true" tabindex="-1">Cancel</button>
+              </div>
             </div>
             <div class="bpfoot">
-              <span class="bpnote">DRAFTED FROM ONE BRIEF &middot; 5 SECTIONS</span>
-              <button class="bpsub" id="aiSubmit" aria-hidden="true" tabindex="-1">Approve blueprint<span class="ring2" aria-hidden="true"></span><span class="ring" aria-hidden="true"></span></button>
+              <span class="bpnote">EVALUATION MATRIX &middot; 3 LEVERS &middot; AI DRAFTED</span>
+              <button class="bpsub" id="aiSubmit" aria-hidden="true" tabindex="-1">Accept blueprint<span class="ring2" aria-hidden="true"></span><span class="ring" aria-hidden="true"></span></button>
             </div>
           </div>
 
@@ -114,26 +108,39 @@
               <span class="exagent"><i></i>Agent operating</span>
             </div>
             <div class="exmap" id="exMap">
+              <span class="exdiv d1" aria-hidden="true">DATABASE</span>
+              <span class="exdiv d2" aria-hidden="true">COMMUNICATION</span>
               <svg class="exwires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                <path class="wire" d="M16 24 C34 24 34 50 48 50"></path>
-                <path class="wire" d="M16 50 H48"></path>
-                <path class="wire" d="M16 76 C34 76 34 50 48 50"></path>
-                <path class="wire out" d="M52 50 C68 50 68 16 84 16"></path>
-                <path class="wire out" d="M52 50 C68 50 68 38 84 38"></path>
-                <path class="wire out" d="M52 50 C68 50 68 62 84 62"></path>
-                <path class="wire out" d="M52 50 C68 50 68 84 84 84"></path>
-                <path class="wire reach" data-r="0" d="M88 16 C94 16 94 7 101 7"></path>
-                <path class="wire reach" data-r="0" d="M88 16 H101"></path>
-                <path class="wire reach" data-r="0" d="M88 16 C94 16 94 25 101 25"></path>
-                <path class="wire reach" data-r="1" d="M88 38 C94 38 94 29 101 29"></path>
-                <path class="wire reach" data-r="1" d="M88 38 H101"></path>
-                <path class="wire reach" data-r="1" d="M88 38 C94 38 94 47 101 47"></path>
-                <path class="wire reach" data-r="2" d="M88 62 C94 62 94 53 101 53"></path>
-                <path class="wire reach" data-r="2" d="M88 62 H101"></path>
-                <path class="wire reach" data-r="2" d="M88 62 C94 62 94 71 101 71"></path>
-                <path class="wire reach" data-r="3" d="M88 84 C94 84 94 75 101 75"></path>
-                <path class="wire reach" data-r="3" d="M88 84 H101"></path>
-                <path class="wire reach" data-r="3" d="M88 84 C94 84 94 93 101 93"></path>
+                <path class="wire" id="exw0" pathLength="1" d="M16 24 C34 24 34 50 48 50"></path>
+                <path class="wire" id="exw1" pathLength="1" d="M16 50 H48"></path>
+                <path class="wire" id="exw2" pathLength="1" d="M16 76 C34 76 34 50 48 50"></path>
+                <path class="wire out" id="exw3" pathLength="1" d="M52 50 C68 50 68 16 84 16"></path>
+                <path class="wire out" id="exw4" pathLength="1" d="M52 50 C68 50 68 38 84 38"></path>
+                <path class="wire out" id="exw5" pathLength="1" d="M52 50 C68 50 68 62 84 62"></path>
+                <path class="wire out" id="exw6" pathLength="1" d="M52 50 C68 50 68 84 84 84"></path>
+                <!-- one glowing packet per line, walking left → right: every database box
+                     into the hub, then the hub out to every channel. The <g> takes the
+                     motion; the circle inside takes a counter-scale, because this viewBox
+                     is scaled non-uniformly and would otherwise flatten it to an oval. -->
+                <g class="exdotg" data-w="0"><animateMotion dur="2.8s" begin="0s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#exw0"/></animateMotion><circle class="exdot" r="0.4"/></g>
+                <g class="exdotg" data-w="1"><animateMotion dur="2.8s" begin="0.4s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#exw1"/></animateMotion><circle class="exdot" r="0.4"/></g>
+                <g class="exdotg" data-w="2"><animateMotion dur="2.8s" begin="0.8s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#exw2"/></animateMotion><circle class="exdot" r="0.4"/></g>
+                <g class="exdotg" data-w="3"><animateMotion dur="2.8s" begin="1.2s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#exw3"/></animateMotion><circle class="exdot" r="0.4"/></g>
+                <g class="exdotg" data-w="4"><animateMotion dur="2.8s" begin="1.6s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#exw4"/></animateMotion><circle class="exdot" r="0.4"/></g>
+                <g class="exdotg" data-w="5"><animateMotion dur="2.8s" begin="2s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#exw5"/></animateMotion><circle class="exdot" r="0.4"/></g>
+                <g class="exdotg" data-w="6"><animateMotion dur="2.8s" begin="2.4s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#exw6"/></animateMotion><circle class="exdot" r="0.4"/></g>
+                <path class="wire reach" pathLength="1" data-r="0" d="M88 16 C94 16 94 7 101 7"></path>
+                <path class="wire reach" pathLength="1" data-r="0" d="M88 16 H101"></path>
+                <path class="wire reach" pathLength="1" data-r="0" d="M88 16 C94 16 94 25 101 25"></path>
+                <path class="wire reach" pathLength="1" data-r="1" d="M88 38 C94 38 94 29 101 29"></path>
+                <path class="wire reach" pathLength="1" data-r="1" d="M88 38 H101"></path>
+                <path class="wire reach" pathLength="1" data-r="1" d="M88 38 C94 38 94 47 101 47"></path>
+                <path class="wire reach" pathLength="1" data-r="2" d="M88 62 C94 62 94 53 101 53"></path>
+                <path class="wire reach" pathLength="1" data-r="2" d="M88 62 H101"></path>
+                <path class="wire reach" pathLength="1" data-r="2" d="M88 62 C94 62 94 71 101 71"></path>
+                <path class="wire reach" pathLength="1" data-r="3" d="M88 84 C94 84 94 75 101 75"></path>
+                <path class="wire reach" pathLength="1" data-r="3" d="M88 84 H101"></path>
+                <path class="wire reach" pathLength="1" data-r="3" d="M88 84 C94 84 94 93 101 93"></path>
               </svg>
               <span class="exnode src" data-n="0" style="left:16%;top:24%"><b>128</b>Company database</span>
               <span class="exnode src" data-n="1" style="left:16%;top:50%"><b>64</b>Recruitment partners</span>
@@ -201,36 +208,134 @@
             </div>
             <div class="bpfoot">
               <span class="bpnote">EVERY CLAIM CONFIRMED BY THE ORGANISATION NAMED ON IT</span>
-              <button class="bpsub" id="evBtn" aria-hidden="true" tabindex="-1">Open passports<span class="ring2" aria-hidden="true"></span><span class="ring" aria-hidden="true"></span></button>
+              <button class="bpsub" id="evBtn" aria-hidden="true" tabindex="-1">See candidate<span class="ring2" aria-hidden="true"></span><span class="ring" aria-hidden="true"></span></button>
             </div>
           </div>
 
-          <!-- act 5 · the manager decides -->
+          <!-- act 5 · the manager reads one record, then decides -->
           <div class="aidc" id="aiDc">
             <div class="exhead">
-              <span class="exlbl">CONVERSATIONS &middot; SCHEDULED AND RECORDED</span>
+              <span class="exlbl">SHORTLIST &middot; CLEARED TO MEET</span>
               <span class="exagent"><i></i>Hiring manager in control</span>
             </div>
-            <div class="dcline" id="dcLine">
-              <span class="dcrail"></span>
-              <div class="dcslot" id="dcSlot0"><i></i><b>Ravi Kumar</b><span>TUE 10:00</span><span class="dcmenu" aria-hidden="true"><span>View interview summary</span><span>Schedule another call</span><span>Share offer</span><span class="no">Reject profile</span></span></div>
-              <div class="dcslot" id="dcSlot1"><i></i><b>Ashraf Ali</b><span>TUE 14:30</span><span class="dcmenu" aria-hidden="true"><span>View interview summary</span><span>Schedule another call</span><span>Share offer</span><span class="no">Reject profile</span></span></div>
-              <div class="dcslot" id="dcSlot2"><i></i><b>Meera Joshua</b><span>WED 09:00</span><span class="dcmenu" aria-hidden="true"><span>View interview summary</span><span>Schedule another call</span><span>Share offer</span><span class="no">Reject profile</span></span></div>
+
+            <div class="dcbody">
+            <!-- twenty candidates; three cleared the evaluation, the rest are held -->
+            <div class="dcgrid" id="dcGrid">
+                <span class="dctile live" data-c="0"><b>Ravi Kumar</b><em>View passport</em></span>
+                <span class="dctile live" data-c="1"><b>Ashraf Ali</b><em>View passport</em></span>
+                <span class="dctile live" data-c="2"><b>George</b><em>View passport</em></span>
+                <span class="dctile" data-c="3"><b>Rachit</b><em>View passport</em></span>
+                <span class="dctile" data-c="4"><b>Devika Rao</b><em>View passport</em></span>
+                <span class="dctile" data-c="5"><b>Hitesh</b><em>View passport</em></span>
+                <span class="dctile" data-c="6"><b>Arjun Bose</b><em>View passport</em></span>
+                <span class="dctile" data-c="7"><b>Om Prakash</b><em>View passport</em></span>
+                <span class="dctile" data-c="8"><b>Sana Farid</b><em>View passport</em></span>
+                <span class="dctile" data-c="9"><b>Nishant</b><em>View passport</em></span>
+                <span class="dctile" data-c="10"><b>Kabir Shah</b><em>View passport</em></span>
+                <span class="dctile" data-c="11"><b>Ananya Gupta</b><em>View passport</em></span>
+                <span class="dctile" data-c="12"><b>Saras</b><em>View passport</em></span>
+                <span class="dctile" data-c="13"><b>Manav Bhatt</b><em>View passport</em></span>
+                <span class="dctile" data-c="14"><b>Ritwik Sen</b><em>View passport</em></span>
+                <span class="dctile" data-c="15"><b>Tara Iqbal</b><em>View passport</em></span>
+                <span class="dctile" data-c="16"><b>Farhan Sheikh</b><em>View passport</em></span>
+                <span class="dctile" data-c="17"><b>Neha Bansal</b><em>View passport</em></span>
+                <span class="dctile" data-c="18"><b>Vikram Chand</b><em>View passport</em></span>
+                <span class="dctile" data-c="19"><b>Ishita Paul</b><em>View passport</em></span>
             </div>
-            <p class="exticker" id="dcTicker"><b>16 SEP</b><span>Conversation held, notes recorded</span></p>
-            <p class="dcend" id="dcEnd">By the time you step in, the role is structured, the process has moved and the evidence is assembled.</p>
+
+            <!-- the record itself, the same passport the homepage turns -->
+            <div class="dcpass" id="dcPass">
+              <div class="dcstage">
+              <div class="dcpp" id="dcPp">
+                <div class="book" id="dcBook">
+          <div class="pg verso" id="dcVerso"></div>
+          <div class="spine" id="dcSpine"></div>
+          <div class="pg recto base"></div>
+          
+          <div class="leaf" id="dcLeaf5" style="z-index:10"><div class="lf"><span class="pglbl">PAGE 10 / WHAT YOU ALREADY HAVE</span>
+          <div class="chips" style="gap:8px"><span class="chip">CV.pdf</span><span class="chip">LinkedIn</span><span class="chip">GitHub</span><span class="chip">Writing</span><span class="chip">Projects</span><span class="chip">Documents</span><span class="chip">Demos</span></div>
+          <p class="pgh" style="margin-top:26px">It listens. It remembers. It asks. It nudges.</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
+          <div class="leaf" id="dcLeaf4" style="z-index:20"><div class="lf"><span class="pglbl">PAGE 08 / A STAMP IS EARNED</span>
+          <p class="pgh" style="margin:auto 0;text-align:center">Evidence that demonstrates real depth<br>earns a signal that carries forward.</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 09 / THE RECORD SO FAR</span>
+          <p class="pgh" style="margin-top:6px">Every entry stays where you put it. Nothing here can be edited by anyone else.</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
+          <div class="leaf" id="dcLeaf3" style="z-index:30"><div class="lf"><span class="pglbl">PAGE 06 / A CURATED JOURNEY</span>
+          <div style="display:flex;flex-direction:column;gap:10px"><div class="jrow"><b>1</b><span>Revisit the failure timeline you kept at the time.</span></div><div class="jrow"><b>2</b><span>Explain the call you made under load.</span></div><div class="jrow"><b>3</b><span>Show the fix, and how you proved it held.</span></div></div>
+          <p style="margin-top:14px;font-size:14px;color:var(--mute)">Small. Curated. Built around what you already lived.</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 07 / EVIDENCE CREATED</span>
+          <div class="chips"><span class="chip">failure-timeline.md</span><span class="chip">decision-note.pdf</span><span class="chip">idempotency-patch.diff</span><span class="chip">load-test.csv</span></div>
+          <p class="pgh" style="margin-top:16px">An artifact of what you can actually do — not a claim that you can.</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
+          <div class="leaf" id="dcLeaf2" style="z-index:40"><div class="lf"><span class="pglbl">PAGE 04 / COLLECTED STAMPS</span>
+          <div class="stampWrap"><div class="stampGrid" id="dcStampGrid"></div>
+          <div class="verifying" id="dcVerifying"><i></i><span>Verifying your claims</span></div></div>
+          <div class="pgft">05 EARNED · 34 ARTIFACTS · SPACE FOR 24 MORE</div><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div>
+          </div><div class="lb"><span class="pglbl">PAGE 05 / YOUR COMPANION</span>
+          <div class="talk"><div class="bub them">You mentioned the ingest pipeline failed twice before it held. What changed the second time?</div><div class="bub you">We stopped trusting the retry queue and made the writes idempotent.</div><div class="bub them">That's worth showing. Want to walk through how you found it?</div></div><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
+          <div class="leaf" id="dcLeaf1" style="z-index:50"><div class="lf"><span class="pglbl">PAGE 02 / EXPERIENCE VISA</span>
+          <div class="visaWrap"><div class="visa"><div class="vhead"><b>EXPERIENCE VISA</b><span>CLASS E-1</span></div>
+          <div class="vbody"><div class="vorg"><i class="vlogo"></i><b>XYZ COMPANY</b><em>&mdash; Sr. Developer</em></div>
+          <p class="vsub">Platform engineering &amp; distributed systems.</p>
+          <div class="vdate">MAR 2023 &mdash; MAR 2025 &middot; 2 YRS</div>
+          <div class="vtags"><span class="vt">SKILLS</span><span class="vt">PROJECTS</span><span class="vt on">ENDORSEMENTS</span><span class="vt">IMPACT</span></div></div>
+          <div class="vseal"><i></i><span>VERIFIED</span></div></div></div><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 03 / THE CLAIM</span>
+          <div class="flat"><i></i><span>Designed the systems behind the platform.</span></div>
+          <div class="flat" style="margin-top:9px"><i></i><span>Made the architecture calls under real pressure.</span></div>
+          <div class="flat" style="margin-top:9px"><i></i><span>Built AI agents into the product.</span></div>
+          <div class="flat" style="margin-top:9px"><i></i><span>Ran incident response when things broke.</span></div>
+          <div class="flat" style="margin-top:9px"><i></i><span>Wrote the docs the team still works from.</span></div><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
+          <div class="leaf" id="dcCover" style="z-index:60">
+          <div class="cface">
+          <div class="cspine"></div><div class="foil" id="foil"></div>
+          <div class="clbl">CAREERPASSPORT</div>
+          <div class="crest"><i><b></b></i></div>
+          <div class="cword">PASSPORT</div>
+          <div class="chnd" id="dcChnd">careerpassport.ai/ravikumar</div>
+          <div class="ctally">05 STAMPS · 34 ARTIFACTS</div>
+          <div class="cchip"><i></i></div>
           </div>
+          <div class="cback"><span class="pglbl">PAGE 01 / IDENTITY</span>
+          <div style="display:flex;gap:18px"><div style="width:96px;height:122px;flex-shrink:0;border:1px solid var(--hairline);border-radius:6px;position:relative;overflow:hidden;background:rgba(23,48,95,.05)"><svg viewBox="0 0 96 122" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><circle cx="48" cy="46" r="20" fill="none" stroke="var(--hairline)" stroke-width="2"/><path d="M14 118c2-24 20-38 34-38s32 14 34 38" fill="none" stroke="var(--hairline)" stroke-width="2"/></svg><span style="position:absolute;left:0;right:0;bottom:6px;text-align:center;font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--mute)">[PHOTO]</span></div>
+          <div class="kv"><div><b>HANDLE</b><span id="dcPgHandle" style="font-weight:700">/ravikumar</span></div><div><b>ISSUED</b><span style="font-family:var(--mono);font-size:13.5px">[DATE]</span></div><div><b>ARTIFACTS</b><span style="font-family:var(--mono);font-size:13.5px">34 STORED</span></div></div></div>
+          <div style="margin-top:22.5px;padding-top:14px;border-top:1px solid var(--hairline);display:flex;flex-direction:column;gap:8px"><b style="font-family:var(--mono);font-size:10.5px;font-weight:400;letter-spacing:.16em;color:var(--mute)">RECENT ENTRIES</b><span style="font-size:14.5px;color:var(--body)">Migration runbook, annotated</span><span style="font-size:14.5px;color:var(--body)">Recorded rollback drill</span><span style="font-size:14.5px;color:var(--body)">Trade-off memo for Q3 roadmap</span><span style="font-size:14.5px;color:var(--body)">Upstream patch, merged</span></div><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div>
+          
+                </div>
+              </div>
+              </div>
+              <div class="dcsent" id="dcSent" aria-hidden="true">
+                <span class="dcsenticon">
+                  <svg viewBox="0 0 24 24"><path d="M3 7.5 12 13l9-5.5"></path><rect x="3" y="5" width="18" height="14" rx="2"></rect><path class="tick" d="m8.5 15.5 2.2 2.2 4.8-5"></path></svg>
+                </span>
+                <b>Offer letter sent to Ravi Kumar</b>
+                <span class="dcsentmeta">VIA EMAIL &middot; RECORDED ON THE PASSPORT</span>
+              </div>
+              </div>
+              <div class="dcacts" id="dcActs">
+                <span class="dcact" data-a="0">Evaluation summary</span>
+                <span class="dcact" data-a="1">Schedule call</span>
+                <span class="dcact" data-a="2">Share offer</span>
+                <span class="dcact no" data-a="3">Reject profile</span>
+              </div>
+            </div>
+            </div>
+
+            <div class="dcconf" id="dcConf" aria-hidden="true"></div>
+          </div>
+        </div>
         </div>
 
         <div class="hmcur" id="hmCur" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M5 2.5 19.5 11l-6.6 1.7L9.6 19Z" fill="var(--emerald)" stroke="var(--emerald-deep)" stroke-width="1.2" stroke-linejoin="round"></path></svg>
+          <svg viewBox="0 0 24 24"><path d="M5 2.5 19.5 11l-6.6 1.7L9.6 19Z" fill="#e9d6aa" stroke="var(--emerald-deep)" stroke-width="1.2" stroke-linejoin="round"></path></svg>
           <span class="hmlbl">Hiring manager</span>
         </div>
       </div>
-      <p class="airdy" id="aiReady">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12.5 5 5L20 6.5"></path></svg>
-        Hiring blueprint is ready
-      </p>
+      <div class="aitextcol">
+        <span class="actchip" id="actChip">DEFINE</span>
+        <h3 class="acttitle" id="actTitle">One intent becomes a hiring blueprint.</h3>
+        <p class="actdesc" id="actDesc">One brief. CareerPassport turns it into a structured hiring blueprint.</p>
+        <p class="airdy" id="aiReady">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12.5 5 5L20 6.5"></path></svg>
+          Hiring blueprint is ready
+        </p>
+      </div>
     </div>
   </div>
 </section>
