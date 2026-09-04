@@ -521,19 +521,30 @@
     var subPress=p>=.952&&p<.986&&g<A2;
     submitBtn.classList.toggle('pressed',subPress);
 
-    /* act 2 — the box grows, prepares, then draws the blueprint */
-    box.classList.toggle('big',p>=.478);
-    prep.classList.toggle('on',p>=.478&&p<.625);
-    bp.classList.toggle('on',p>=.605&&g<.452);
+    /* act 2 — the box grows, prepares, then draws the blueprint
+
+       PREP_IN..PREP_OUT is the "Hiring blueprint is being prepared" dwell. It was
+       .478–.625; halved to .478–.5515, because the shimmer held alone for roughly a
+       thousand pixels of scroll before anything else arrived.
+
+       The whole entrance cluster below moves earlier by the same PREP_CUT, so the
+       blueprint still meets the prep instead of a hole opening where the shimmer used to
+       be. The review timeline further down (.700 onward) is deliberately NOT shifted: it
+       is a contiguous cursor choreography, and the freed slack is better spent as a short
+       hold on the finished blueprint just before the cursor starts reading it. */
+    var PREP_IN=.478, PREP_OUT=.5515, PREP_CUT=.0735;
+    box.classList.toggle('big',p>=PREP_IN);
+    prep.classList.toggle('on',p>=PREP_IN&&p<PREP_OUT);
+    bp.classList.toggle('on',p>=.605-PREP_CUT&&g<.452);
 
     /* tabs appear, then questions load and fill */
-    var tabsOn=p>=.60;
-    tabs.forEach(function(el,i){ el.classList.toggle('vis',tabsOn&&p>=.60+i*0.018) });
-    if(addTab) addTab.classList.toggle('vis',tabsOn&&p>=.654);
-    var qLoading=p>=.64&&p<.72;
-    var qFilled=p>=.72;
+    var tabsOn=p>=.60-PREP_CUT;
+    tabs.forEach(function(el,i){ el.classList.toggle('vis',tabsOn&&p>=.60-PREP_CUT+i*0.018) });
+    if(addTab) addTab.classList.toggle('vis',tabsOn&&p>=.654-PREP_CUT);
+    var qLoading=p>=.64-PREP_CUT&&p<.72-PREP_CUT;
+    var qFilled=p>=.72-PREP_CUT;
     questions.forEach(function(el,i){
-      el.classList.toggle('vis',p>=.63+i*0.024);
+      el.classList.toggle('vis',p>=.63-PREP_CUT+i*0.024);
       el.classList.toggle('filled',qFilled);
     });
     qLoaders.forEach(function(el){ el.classList.toggle('on',qLoading) });
