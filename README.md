@@ -77,6 +77,29 @@ they did before.
 Nothing was regex-swept out of the stylesheets. The handoff records two occasions where
 that silently removed live rules, and both audits it recommends still return clean.
 
+### Keeping the repo in step with Claude Design
+
+Claude Design owns the design; exporting from it overwrites `site/`, and `src/` is derived
+from `site/` — page CSS and scroll drivers carried over byte-for-byte, section markup sliced
+programmatically. That makes an import **destructive to anything tuned in code**: a change
+with no counterpart in `site/` is silently reverted.
+
+Anything in that category is registered in [`LOCAL-DELTAS.md`](LOCAL-DELTAS.md), with why it
+exists, how to re-apply it and how to verify it. After every import:
+
+```bash
+npm run check:deltas
+```
+
+Each delta asserts both a marker that exists only in the implemented version and the design
+file's original, whose reappearance proves the import won. Anything reported MISSING must be
+re-applied before pushing. The checker also flags a delta whose problem has since been fixed
+upstream, so the entry can be retired rather than carried forever.
+
+The import loop is: export from Claude Design → commit to the repo → diff against the
+previous commit → re-derive `src/` → `npm run check:deltas` → re-verify against the new
+prototypes → push.
+
 ### Deliberate differences from the prototypes
 
 1. **Routes replace filenames.** `Homepage.html` -> `/`, `For Companies.html` ->
