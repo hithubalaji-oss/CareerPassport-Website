@@ -88,8 +88,19 @@ Anything in that category is registered in [`LOCAL-DELTAS.md`](LOCAL-DELTAS.md),
 exists, how to re-apply it and how to verify it. After every import:
 
 ```bash
-npm run check:deltas
+npm run check          # both checks below
 ```
+
+`npm run check:design` first, on the export itself. Pages get renamed in Claude Design —
+`Homepage.html` may arrive as `index.html` — and two things then go wrong: the import reads
+these by path, and a rename whose links do not follow leaves the design prototypes with
+broken navigation and an artboard wrapper pointing at nothing. The shipped site is insulated
+(routes come from `src/pages/` filenames and the nav from `nav-links.ts`, so no design
+filename reaches the build), but the design side breaks silently. The check reports the name
+each page arrived under and verifies every internal link and `.dc.html` wrapper resolves. To
+teach it a new name, add an alias to `PAGES` in `scripts/check-design-files.mjs`.
+
+Then `npm run check:deltas`, on the re-derived `src/`.
 
 Each delta asserts both a marker that exists only in the implemented version and the design
 file's original, whose reappearance proves the import won. Anything reported MISSING must be
@@ -97,8 +108,8 @@ re-applied before pushing. The checker also flags a delta whose problem has sinc
 upstream, so the entry can be retired rather than carried forever.
 
 The import loop is: export from Claude Design → commit to the repo → diff against the
-previous commit → re-derive `src/` → `npm run check:deltas` → re-verify against the new
-prototypes → push.
+previous commit → `npm run check:design` → re-derive `src/` → `npm run check:deltas` →
+re-verify against the new prototypes → push.
 
 ### Deliberate differences from the prototypes
 

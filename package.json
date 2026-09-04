@@ -9,8 +9,9 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check",
-    "check:deltas": "node scripts/check-deltas.mjs"
+    "check": "npm run check:design && npm run check:deltas",
+    "check:deltas": "node scripts/check-deltas.mjs",
+    "check:design": "node scripts/check-design-files.mjs"
   },
   "devDependencies": {
     "astro": "^5.6.1"
