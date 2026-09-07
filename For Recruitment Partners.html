@@ -1,0 +1,2333 @@
+<title>CareerPassport — For Recruitment Partners</title>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#0a0c0b"/><rect x="70" y="118" width="180" height="164" rx="14" fill="none" stroke="#d8b877" stroke-opacity=".5" stroke-dasharray="6 5"/><circle cx="110" cy="158" r="7" fill="#d8b877"/><circle cx="168" cy="142" r="5" fill="#e9d6aa" opacity=".8"/><circle cx="212" cy="182" r="6" fill="#d8b877" opacity=".7"/><circle cx="132" cy="212" r="5" fill="#e9d6aa" opacity=".6"/><circle cx="196" cy="246" r="7" fill="#d8b877" opacity=".85"/><path d="M110 158L168 142M168 142L212 182M110 158L132 212M132 212L196 246M212 182L196 246" stroke="#d8b877" stroke-opacity=".35"/><circle cx="316" cy="200" r="26" fill="none" stroke="#7ba4ff" stroke-opacity=".5"/><path d="M250 200h40" stroke="#7ba4ff" stroke-opacity=".5" stroke-dasharray="4 4"/></svg></template>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="_ds/careerpassport-design-system-a8d325d2-717b-4d0b-85f0-302544f1ad1d/tokens.bundle.css">
+<link rel="stylesheet" href="cp-shared.css">
+<style>
+/* page-specific: the private network, the board collapse, the collaboration boundary */
+@property --p{syntax:"<number>";inherits:true;initial-value:0}
+@property --occ{syntax:"<number>";inherits:true;initial-value:0}
+/* inherits:true so ::after can read it — a registered non-inheriting property resolves to
+   its initial value inside a pseudo-element, which silenced the foil rule */
+@property --r{syntax:"<number>";inherits:true;initial-value:0}
+
+
+}
+
+.net{position:relative;flex:1;min-height:0}
+.net svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.nbound{fill:rgba(216,184,119,.03);stroke:rgba(216,184,119,.4);stroke-width:1;stroke-dasharray:6 5;vector-effect:non-scaling-stroke}
+.nlink{stroke:rgba(216,184,119,.16);stroke-width:1;fill:none;vector-effect:non-scaling-stroke;
+  transition:stroke .6s var(--ease)}
+.nnode{fill:rgba(233,214,170,.34);transition:fill .6s var(--ease),r .6s var(--ease)}
+.nrole{fill:none;stroke:rgba(122,132,128,.5);stroke-width:1;vector-effect:non-scaling-stroke;transition:stroke .6s var(--ease)}
+.nclient{fill:none;stroke:rgba(123,164,255,.55);stroke-width:1;vector-effect:non-scaling-stroke}
+.on .nnode.hot{fill:var(--emerald)}
+.on .nlink.hot{stroke:rgba(216,184,119,.55)}
+.on .nrole.hot{stroke:rgba(216,184,119,.8)}
+.nlbl{font-family:var(--mono);font-size:7.5px;letter-spacing:.2em;fill:rgba(216,184,119,.8)}
+.nlbl.mute{fill:rgba(122,132,128,.75)}
+.nlbl.blue{fill:rgba(123,164,255,.8)}
+.search{display:flex;align-items:center;gap:9px;padding:11px 14px;border-radius:100px;
+  background:var(--panel-raised);border:1px solid rgba(216,184,119,.34);box-shadow:0 0 26px rgba(216,184,119,.1)}
+.search i{width:5px;height:5px;border-radius:50%;background:var(--emerald);flex-shrink:0;box-shadow:0 0 8px rgba(216,184,119,.8)}
+.search span{font-size:12.5px;line-height:1.35;color:var(--ink)}
+.ctx{display:flex;flex-direction:column;gap:5px}
+.ctxr{display:flex;align-items:baseline;gap:10px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em}
+.ctxr b{font-weight:400;color:var(--meta);width:82px;flex-shrink:0}
+.ctxr span{color:var(--emerald)}
+.swap{opacity:0;transition:opacity .55s var(--ease)}
+.swap.on{opacity:1}
+.ctx,.net,.split,.acts,.vs,.agree{min-height:0}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;flex:1;min-height:0}
+.bcol{display:flex;flex-direction:column;gap:4px;min-width:0}
+.bcol b{font-family:var(--mono);font-size:7px;font-weight:400;letter-spacing:.1em;color:var(--meta);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bcol i{height:11px;border-radius:3px;background:var(--panel-raised);border:1px solid var(--hairline)}
+.acts{display:flex;flex-direction:column;gap:6px}
+.act{display:flex;align-items:center;gap:9px;padding:8px 12px;border:1px solid var(--hairline);border-radius:7px;background:var(--panel-raised)}
+.act.on{border-color:rgba(216,184,119,.34)}
+.act b{font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.14em;color:rgba(216,184,119,.6);width:18px;flex-shrink:0}
+.act span{font-size:12.5px;font-weight:500;letter-spacing:-.01em;color:var(--ink)}
+.act em{margin-left:auto;font-style:normal;font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:var(--meta)}
+.act.on em{color:var(--emerald)}
+.pause{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:8px;
+  border:1px dashed rgba(216,184,119,.55);background:rgba(216,184,119,.06)}
+.pause b{font-family:var(--mono);font-size:9.5px;font-weight:400;letter-spacing:.16em;color:var(--emerald)}
+.pause em{margin-left:auto;font-style:normal;font-size:10.5px;font-weight:600;letter-spacing:.06em;
+  padding:5px 11px;border-radius:100px;background:var(--emerald);color:var(--emerald-deep);white-space:nowrap}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:9px;flex:1;min-height:0}
+.zoneb{display:flex;flex-direction:column;gap:6px;padding:11px;border-radius:9px;min-width:0}
+.zoneb.priv{border:1px dashed rgba(216,184,119,.45);background:rgba(216,184,119,.03)}
+.zoneb.pub{border:1px solid rgba(123,164,255,.3);background:rgba(123,164,255,.03)}
+.zoneb>b{font-family:var(--mono);font-size:7.5px;font-weight:400;letter-spacing:.18em;color:rgba(216,184,119,.8)}
+.zoneb.pub>b{color:rgba(123,164,255,.85)}
+.ent{display:flex;flex-direction:column;gap:4px}
+.ent span{padding:5px 8px;border:1px solid var(--hairline);border-radius:5px;font-family:var(--mono);
+  font-size:8px;letter-spacing:.12em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:.5s var(--ease)}
+.ent span.on{border-color:rgba(123,164,255,.5);color:var(--link)}
+.dots{display:flex;flex-wrap:wrap;gap:5px}
+.dots i{width:7px;height:7px;border-radius:50%;background:rgba(233,214,170,.3)}
+.dots i.hot{background:var(--emerald);box-shadow:0 0 6px rgba(216,184,119,.7)}
+.agree{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;padding:11px 13px;border-radius:8px;
+  border:1px solid rgba(216,184,119,.28);background:var(--panel-raised)}
+.agree div{display:flex;flex-direction:column;gap:1px;min-width:0}
+.agree b{font-family:var(--mono);font-size:7.5px;font-weight:400;letter-spacing:.16em;color:var(--meta)}
+.agree span{font-size:11.5px;font-weight:600;letter-spacing:-.01em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pipe{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-family:var(--mono);font-size:8.5px;letter-spacing:.14em}
+.pipe b{font-weight:400;padding:5px 9px;border:1px solid var(--hairline);border-radius:100px;color:var(--meta);
+  white-space:nowrap;transition:.5s var(--ease)}
+.pipe b.on{border-color:rgba(216,184,119,.4);color:var(--emerald)}
+.pipe em{font-style:normal;color:rgba(216,184,119,.4)}
+.vs{display:grid;grid-template-columns:.8fr 1.2fr;gap:10px;flex:1;min-height:0}
+.old{display:flex;flex-direction:column;gap:7px;padding:12px;border:1px solid var(--hairline);border-radius:9px;
+  background:var(--panel-raised);opacity:.5}
+.old b{font-family:var(--mono);font-size:8.5px;font-weight:400;letter-spacing:.1em;color:var(--muted);word-break:break-all}
+.old p{font-size:11px;line-height:1.4;color:var(--muted)}
+.new{display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid rgba(216,184,119,.32);border-radius:9px;
+  background:var(--panel-raised);box-shadow:0 0 24px rgba(216,184,119,.08);min-width:0}
+.new>b{font-family:var(--mono);font-size:8px;font-weight:400;letter-spacing:.18em;color:rgba(216,184,119,.8)}
+.nr{display:flex;flex-direction:column;gap:1px;padding:6px 0;border-top:1px solid var(--hairline)}
+.nr:first-of-type{border-top:0;padding-top:0}
+.nr b{font-family:var(--mono);font-size:7.5px;font-weight:400;letter-spacing:.16em;color:var(--meta)}
+.nr span{font-size:11.5px;line-height:1.35;color:var(--ink)}
+.trace{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:clamp(9px,.78vw,11px);letter-spacing:.2em;color:var(--faint)}
+.trace em{font-style:normal;color:rgba(216,184,119,.5)}
+.trace b{font-weight:400;color:var(--muted)}
+.ways{display:flex;flex-direction:column;gap:13px}
+.way{display:flex;flex-direction:column;gap:3px}
+.way b{font-size:clamp(16px,1.24vw,19px);font-weight:600;letter-spacing:-.02em;color:var(--gold)}
+.way p{font-size:clamp(14px,1.05vw,16.5px);line-height:1.5;color:var(--muted)}
+@media (max-width:1024px){
+  [data-mob="off"]{display:none!important}
+  .acts,.ctx,.ent{flex:1;min-height:0;overflow:hidden;justify-content:center}
+  .acts{gap:4px}
+  .act{padding:3px 7px;gap:6px}
+  .act span{font-size:10.5px}
+  .act b{font-size:8px;width:14px}
+  .act em{font-size:7px}
+  .pause{padding:7px 9px}.pause b{font-size:8.5px}.pause em{font-size:9px;padding:4px 8px}
+  .search{padding:8px 11px}.search span{font-size:10.5px}
+  .ctxr{font-size:8px}.ctxr b{width:62px}
+  .board{gap:3px}.bcol b{font-size:6px}.bcol i{height:8px}
+  .split{gap:6px;flex:1;min-height:0}
+  .vs{grid-auto-rows:minmax(0,1fr)}
+  .old,.new{overflow:hidden;min-height:0}
+  .new .nr:nth-of-type(n+4){display:none}
+  .vs{align-items:stretch}
+  .vs>*{align-self:stretch}
+  .dots i{width:6px;height:6px}.zoneb{padding:8px;gap:4px}.zoneb>b{font-size:6.5px;letter-spacing:.14em}
+  .ent span{font-size:7px;padding:4px 6px}
+  .agree{padding:7px 9px;gap:3px 8px;grid-auto-rows:minmax(0,1fr);min-height:0;overflow:hidden}
+  .ctx,.net,.split,.acts,.vs{min-height:0;overflow:hidden}
+  .pipe{flex-shrink:0}
+
+.agree span{font-size:9.5px}.agree b{font-size:6.5px}
+  .pipe{font-size:7px;gap:4px}.pipe b{padding:4px 7px}
+  .vs{gap:7px}.old,.new{padding:8px;gap:4px}
+  .old b{font-size:7px}.old p{font-size:9.5px}
+  .new>b{font-size:7px}.nr{padding:4px 0}.nr b{font-size:6.5px}.nr span{font-size:9.5px;line-height:1.25}
+  .ways{gap:8px}.way b{font-size:13.5px}.way p{font-size:11.5px;line-height:1.35}
+  .nlbl{font-size:6px}
+}@media (max-width:900px){ }
+
+/* ---------- footer: one compact row, so the closing fold and the footer land in the
+   same viewport. The three pages sit side by side, hairline-separated. ---------- */
+/* the three pages in a row, divided by a hairline rather than stacked */
+/* The wordmark seats into the page by its own vertical fade — no horizontal mask, which
+   is what was removing the C and the T. */
+/* the lit pass is the edge only, so the glow reads as light catching the letterforms */
+@media (prefers-reduced-motion:reduce){.fmlit{display:none}}
+@media (max-width:900px){
+  .ftop{flex-direction:column;align-items:center;text-align:center}
+}
+/* ---------- 01 hero: ported from the For Companies page, on this page's own gold.
+   One presented pair — a 16:9 product frame with the mobile UI standing in front of
+   its lower-right — sized as ONE group, so the arrangement never changes with the
+   viewport, only its scale. ---------- */
+/* the closing art: the same presented pair as For Companies, passport standing in front */
+/* The width is capped so the 4/3 height can never exceed .oart's own min-height, which is
+   what bounds this art (For Companies uses .cart for that; .oart is its counterpart here).
+   Container units can't do the job: .oart's height comes from min-height, which is not a
+   definite outside size, so cqh resolves to 0. The selector is .oart .cpres because
+ otherwise wins on source order and collapses it. */
+
+
+@media (max-width:1024px){
+
+}
+
+
+
+
+.pcvwm{font-family:var(--mono);font-size:3.6cqw;letter-spacing:.34em;color:var(--emerald);
+  opacity:.9}
+.pcvseal{position:relative;width:33%;aspect-ratio:1;margin:auto 0 0;border-radius:50%;
+  display:grid;place-items:center;
+  border:1px solid color-mix(in srgb,var(--emerald) 62%,transparent)}
+.pcvseal::before{content:"";position:absolute;inset:11%;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--emerald) 34%,transparent)}
+.pcvseal i{width:34%;height:44%;border-radius:2px 2px 5px 5px;background:var(--emerald)}
+.pcvtitle{margin-top:auto;font-size:9.6cqw;font-weight:700;letter-spacing:.26em;
+  color:var(--emerald-tint,#fdfaf1)}
+.pcvurl{margin-top:4%;font-family:var(--mono);font-size:3.4cqw;letter-spacing:.06em;
+  color:color-mix(in srgb,var(--emerald) 62%,transparent)}
+.pcvchip{margin:auto 0 0;width:23%;aspect-ratio:1.4;border-radius:2px;display:grid;
+  place-items:center;border:1px solid color-mix(in srgb,var(--emerald) 55%,transparent)}
+.pcvchip i{width:34%;aspect-ratio:1;border-radius:50%;
+  background:color-mix(in srgb,var(--emerald) 55%,transparent)}
+
+/* ---------- type, matched to For Companies -----------------------------------------
+   Same two mono jobs (section eyebrow, spec-sheet label) at the same sizes, and the same
+   display/lede scale, so the three pages read as one typeface system rather than three. */
+:root{
+  /* the artboard grid, taken from For Companies verbatim */
+  --measure:1296px; --copy2:640px;
+  --eyebrow-size:11px; --eyebrow-track:.26em;
+  --label-size:8.5px; --label-track:.14em;
+  --r-chrome:6px; --r-card:12px; --r-card-lg:16px; --r-flap:4px;
+  --frame-w:min(39vw,62vh);
+  /* the sticky header's own height — defined once, since the new code referenced it
+     with two different fallbacks and the real value is neither */
+  --hdr:60px;
+}
+/* The eyebrow and label tokens hold at every width — they are fixed sizes on both pages.
+   The display and lede scale is matched on the DESKTOP layout, which is where For Companies
+   uses it; below 1024 cp-shared's own step-down continues to apply, because there the copy
+   column is a locked-height box and the smaller scale is what makes it fit. */
+/* ported verbatim from For Companies — the base display scale, unscoped, so no heading
+   can fall back to the body line-height wherever it sits in the document */
+.eyebrow{font-size:var(--eyebrow-size);letter-spacing:var(--eyebrow-track);color:var(--faint)}
+.eyebrow.gold{color:var(--emerald)}
+.eyebrow i{background:rgba(255,255,255,.22);opacity:1}
+.eyebrow.gold i{background:color-mix(in srgb,var(--emerald) 60%,transparent)}
+.lede b{font-weight:400;color:var(--body)}
+@media (min-width:1025px){
+  .col h1,.hero h1{font-size:clamp(38px,5.1vw,74px);font-weight:600;letter-spacing:-.024em;
+    line-height:1.06}
+  .col h2,.col.tight h2,.col.dense h2,.wcol h2,.ocopy h2{font-size:clamp(30px,4.1vw,60px);
+    font-weight:600;letter-spacing:-.022em;line-height:1.08}
+  .lede,.col.dense .lede{font-size:clamp(16px,1.22vw,17.5px);line-height:1.62;
+    color:var(--mute);max-width:590px}
+  .fine,.col.dense .fine{font-size:13.5px;line-height:1.55;color:var(--faint);max-width:52ch}
+  .kicker{font-size:clamp(19px,2.1vw,29px)}
+}
+
+/* ---------- instrument widgets ----------------------------------------------------
+   Each claim on this page carries a small live readout instead of a sentence. They share
+   one card shell so the folds read as one instrument panel, and they stage off the fold
+   engine's existing .stp / data-step mechanism. Gold marks the live row and nothing else. */
+/* a fold with no scene has the whole width to itself */
+/* a full-width section in ordinary flow — the pattern .outro already uses */
+.wcol{position:relative;z-index:10;width:min(1100px,100%);margin-inline:auto;
+  display:flex;flex-direction:column;gap:clamp(18px,2.6vh,30px);padding:0 var(--gut)}
+.wcol .eyebrow,.wcol h2{align-self:flex-start}
+.wcol h2{font-size:clamp(28px,3.6vw,52px);font-weight:600;letter-spacing:-.022em;line-height:1.08}
+.wcol>.lede{max-width:64ch}
+
+.nx{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-radius:12px;
+  background:var(--panel);border:1px solid var(--hairline)}
+.nxh{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.nxl{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--faint);
+  text-transform:uppercase;white-space:nowrap}
+.nxv{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--emerald)}
+.nxv.bad{color:var(--error,#f2544a)}
+
+/* — the audit log: the same object with and without a trail — */
+.nxlog{display:flex;flex-direction:column;gap:3px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.04em;color:var(--mute)}
+.nxlog span{display:flex;gap:9px;padding:3px 0;border-bottom:1px solid var(--hairline)}
+.nxlog span:last-child{border-bottom:0}
+.nxlog b{color:var(--faint);font-weight:400;flex-shrink:0}
+.nxlog em{font-style:normal;color:var(--body)}
+.nxlog .q{color:var(--error,#f2544a)}
+
+/* — the approval gate — */
+.nxgate{display:flex;flex-direction:column;gap:6px}
+.nxrow{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:8px 11px;border-radius:8px;background:rgba(255,255,255,.028);
+  border:1px solid var(--hairline);font-size:12px;color:var(--body);letter-spacing:-.012em}
+.nxtag{flex-shrink:0;font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;
+  padding:3px 7px;border-radius:4px;
+  background:rgba(255,255,255,.05);color:var(--faint)}
+.nxrow.ok{border-color:color-mix(in srgb,var(--emerald) 42%,transparent);
+  background:color-mix(in srgb,var(--emerald) 6%,transparent)}
+.nxrow.ok .nxtag{background:color-mix(in srgb,var(--emerald) 18%,transparent);color:var(--emerald)}
+.nxrow.wait .nxtag{background:rgba(232,169,58,.16);color:var(--warning,#e8a93a)}
+
+/* — the broken / fixed pair: one object, two states, side by side — */
+.nxpair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.nxpair>.nx{gap:9px}
+.nxpair>.nx.was{opacity:.62}
+.nxpair>.nx.was .nxl{color:var(--faint)}
+.nxpair>.nx.now{border-color:color-mix(in srgb,var(--emerald) 34%,transparent);
+  box-shadow:0 0 34px -14px color-mix(in srgb,var(--emerald) 40%,transparent)}
+@media(max-width:720px){.nxpair{grid-template-columns:1fr}}
+
+/* the passport cover at card scale, so the artifact itself makes the point */
+.nxpp{display:flex;align-items:flex-start;gap:13px;min-width:0}
+.nxpp .nxlog{flex:1;min-width:0}
+.ppmini{container-type:inline-size;flex:0 0 auto;
+  height:clamp(74px,10.5vh,102px);width:auto;aspect-ratio:.715;position:relative;display:flex;flex-direction:column;align-items:center;
+  padding:8% 8% 7%;
+  background:
+    repeating-linear-gradient(128deg,rgba(255,255,255,.028) 0 1px,transparent 1px 8px),
+    linear-gradient(205deg,#22407a 0%,var(--emerald-mid,#1b3564) 34%,var(--emerald-deep,#10203f) 100%);
+  border-radius:var(--r-flap) 8px 8px var(--r-flap);
+  box-shadow:0 2px 2px rgba(0,0,0,.5),0 10px 22px -8px rgba(0,0,0,.8)}
+.ppmini::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6%;
+  background:linear-gradient(90deg,rgba(0,0,0,.45),transparent)}
+.ppmini .pcvwm{font-size:4.4cqw;letter-spacing:.26em}
+.ppmini .pcvseal{width:38%}
+.ppmini .pcvtitle{font-size:11cqw;letter-spacing:.2em}
+.ppmini .pcvchip{width:26%}
+
+/* — the numbered process — */
+.nxnum{display:flex;flex-direction:column;gap:1px}
+.nxnum>div{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;align-items:start;
+  padding:14px 0;border-top:1px solid var(--hairline)}
+.nxnum>div:last-child{border-bottom:1px solid var(--hairline)}
+.nxi{grid-row:1 / span 2;width:34px;height:34px;border-radius:var(--r-chrome);display:grid;
+  place-items:center;background:color-mix(in srgb,var(--emerald) 9%,transparent);
+  border:1px solid color-mix(in srgb,var(--emerald) 24%,transparent);color:var(--emerald)}
+.nxi svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+.nxnh{grid-column:2;display:flex;align-items:baseline;gap:11px}
+.nxnum i{font-family:var(--mono);font-size:var(--label-size);letter-spacing:var(--label-track);
+  color:var(--emerald);font-style:normal}
+.nxnum b{font-size:14.5px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.nxnum p{grid-column:2;font-size:12.5px;line-height:1.5;color:var(--body)}
+.col .nxi{width:26px;height:26px}
+.col .nxi svg{width:14px;height:14px}
+
+/* — the comparison table, ported from For Companies so both pages read identically.
+     Every row says what the category actually gives you, so the contrast names itself. */
+.cmp{position:relative;border:1px solid var(--hairline);border-radius:var(--r-card-lg);
+  overflow:hidden;background:var(--panel)}
+.cmpg{display:grid;grid-template-columns:minmax(190px,1.25fr) repeat(4,minmax(0,1fr));
+  min-width:0}
+.cmph{display:flex;flex-direction:column;gap:3px;padding:20px 18px 18px;
+  border-bottom:1px solid var(--hairline)}
+.cmph b{font-size:clamp(13px,1.1vw,16px);font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.cmph span{font-family:var(--mono);font-size:var(--label-size);
+  letter-spacing:var(--label-track);color:var(--faint)}
+.cmph.us,.cell.us{background:color-mix(in srgb,var(--emerald) 5%,transparent);
+  border-inline:1px solid color-mix(in srgb,var(--emerald) 28%,transparent)}
+.cmph.us{border-top:1px solid color-mix(in srgb,var(--emerald) 28%,transparent)}
+.cmpg>.cell.us:last-of-type{border-bottom:1px solid color-mix(in srgb,var(--emerald) 28%,transparent)}
+.cmph.us b{color:var(--emerald)}
+.cmph.us span{color:color-mix(in srgb,var(--emerald) 75%,transparent)}
+.cmpr{display:flex;flex-direction:column;gap:3px;padding:18px;
+  border-bottom:1px solid var(--hairline);border-right:1px solid var(--hairline)}
+.cmpr>b{font-size:clamp(13px,1.05vw,15px);font-weight:600;letter-spacing:-.018em;color:var(--body)}
+.cmpr>span{font-family:var(--mono);font-size:var(--label-size);
+  letter-spacing:var(--label-track);color:var(--faint)}
+.cell{position:relative;z-index:2;display:flex;align-items:flex-start;gap:9px;padding:16px 14px;
+  border-bottom:1px solid var(--hairline)}
+.cell svg{width:13px;height:13px;flex-shrink:0;margin-top:2px;fill:none;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+.cell.yes svg{stroke:var(--emerald)}
+.cell.no svg{stroke:var(--faint)}
+.cell p{font-size:11.5px;line-height:1.42;color:var(--faint)}
+.cell.yes p{color:var(--body)}
+.cmpg>.cell:last-child,.cmpg>.cmpr:last-of-type{border-bottom:0}
+/* the stacked reading of the same table, verbatim from For Companies */
+.cmpm{display:none;flex-direction:column;gap:10px}
+.cmpb{border:1px solid var(--hairline);border-radius:11px;overflow:hidden;background:var(--panel)}
+.cmpb>b{display:block;padding:13px 15px 12px;font-size:14px;font-weight:600;letter-spacing:-.02em;
+  color:var(--ink);border-bottom:1px solid var(--hairline)}
+.cmpb .mus{display:flex;align-items:flex-start;gap:9px;padding:12px 15px;
+  background:color-mix(in srgb,var(--emerald) 6%,transparent);border-bottom:1px solid var(--hairline)}
+.cmpb .mus svg{width:13px;height:13px;flex-shrink:0;margin-top:2px;fill:none;stroke:var(--emerald);
+  stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.cmpb .mus div{display:flex;flex-direction:column;gap:2px}
+.cmpb .mus em{font-style:normal;font-family:var(--mono);font-size:8px;letter-spacing:.16em;
+  color:color-mix(in srgb,var(--emerald) 80%,transparent)}
+.cmpb .mus p{font-size:12.5px;line-height:1.42;color:var(--body)}
+.cmpb .mo{display:flex;gap:10px;padding:9px 15px;border-top:1px solid rgba(255,255,255,.04)}
+.cmpb .mo em{flex:0 0 40%;font-style:normal;font-family:var(--mono);font-size:8px;
+  letter-spacing:.14em;color:var(--faint);padding-top:1px}
+.cmpb .mo p{flex:1;font-size:11.5px;line-height:1.4;color:var(--faint)}
+/* the comparison stops being a table and becomes one block per capability */
+@media (max-width:1199px){
+  .cmp{display:none}
+  .cmpm{display:flex}
+}
+
+/* — the ROI calculator — */
+.nxcalc{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);
+  gap:clamp(18px,2.4vw,34px);align-items:start}
+.nxin{display:flex;flex-direction:column;gap:16px}
+.nxfield{display:flex;flex-direction:column;gap:7px}
+.nxfh{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.nxfh b{font-size:12.5px;font-weight:500;color:var(--body);letter-spacing:-.012em}
+.nxfh em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--emerald)}
+.nxfield input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;
+  border-radius:2px;background:var(--hairline);outline:0}
+.nxfield input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+  width:15px;height:15px;border-radius:50%;background:var(--emerald);
+  border:2px solid var(--void);box-shadow:0 1px 4px rgba(0,0,0,.6);cursor:pointer}
+.nxfield input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;
+  background:var(--emerald);border:2px solid var(--void);cursor:pointer}
+.nxfield input[type=range]:focus-visible{outline:2px solid var(--emerald);outline-offset:3px}
+.nxfield small{font-size:11px;line-height:1.4;color:var(--faint)}
+.nxout{display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:12px;
+  background:var(--panel);border:1px solid color-mix(in srgb,var(--emerald) 30%,transparent)}
+.nxbig{font-size:clamp(30px,3.6vw,48px);font-weight:600;letter-spacing:-.022em;
+  line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+.nxsub{display:grid;grid-template-columns:1fr 1fr;gap:1px}
+.nxsub>div{display:flex;flex-direction:column;gap:2px;padding:9px 0;
+  border-top:1px solid var(--hairline)}
+.nxsub b{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums}
+.nxsub span{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:var(--faint);
+  text-transform:uppercase}
+@media(max-width:820px){.nxcalc{grid-template-columns:1fr}.nxsub{grid-template-columns:1fr 1fr}}
+
+/* Inside the copy column the widgets run compact: at <=1024px .col is a fixed-height
+   box with overflow:hidden (cp-shared.css pins its top AND bottom), so anything in here
+   has to fit a ~250px budget. The full-width folds keep the roomy scale. */
+/* In the stacked branch cp-shared pins the copy column's top AND bottom, so its height is
+   locked and it clips. A column carrying a widget starts 6svh higher, which buys ~32px of
+   real headroom at a 540px viewport — enough that the fit no longer depends on any single
+   row's line height. The shared rule is left alone; this only widens the budget. */
+@media (max-width:1024px){
+  .col:has(.nx),.col:has(.nxpair),.col:has(.nxnum){
+    top:calc(52px + 37svh + 6px);bottom:1.5svh;
+    justify-content:flex-start;gap:6px}
+  /* the widget rows are the bulk of the height in here, so they carry the reduction */
+  .col .nxrow{padding:4px 9px;font-size:11.5px}
+  .col .nxgate{gap:3px}
+  .col .nxnum>div{padding:7px 0;gap:2px 11px}
+  .col .nxi{width:24px;height:24px}
+  .col .nxi svg{width:13px;height:13px}
+  .col .nxnum b{font-size:12.5px}
+  .col .nxnum p{font-size:11.5px;line-height:1.4}
+  .col .nxpair{gap:8px}
+  .col .nxrow{padding:3px 9px}
+  .col .nxlog span{padding:0}
+  /* a .fine inside a widget is a footnote on a readout that already states the fact —
+     the gate row itself says RECRUITER APPROVAL. It is the first thing to go, not the
+     card it annotates. */
+  .col .nx .fine{display:none}
+}
+.col .nx{gap:6px;padding:6px 12px;border-radius:10px}
+.col .nxl,.col .nxv{font-size:8.5px;letter-spacing:.12em}
+.col .nxlog{font-size:9.5px;gap:0}
+.col .nxlog span{padding:1px 0;gap:7px}
+.col .nxpair{gap:9px}
+.col .nxrow{padding:4px 9px;font-size:11px}
+.col .nxtag{font-size:8px;padding:2px 6px}
+.col .nxnum>div{padding:6px 0;gap:0 11px}
+.col .nxnum b{font-size:12.5px}
+.col .nxnum p{margin-top:2px;font-size:11.5px;line-height:1.4}
+.col .nx .fine{font-size:10.5px;line-height:1.4}
+
+/* — the integration marquee — */
+.nxmarq{position:relative;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.nxmarq>div{display:flex;gap:10px;width:max-content;animation:nxmarq 30s linear infinite}
+@keyframes nxmarq{to{translate:-50% 0}}
+.nxmarq span{flex-shrink:0;padding:6px 12px;border-radius:100px;
+  border:1px solid var(--hairline);background:var(--panel);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--mute);
+  text-transform:uppercase}
+@media(prefers-reduced-motion:reduce){.nxmarq>div{animation:none}}
+
+/* the folds sit on the artboard measure: copy in the left half, panel in the right */
+@media (min-width:1025px){
+  .col,.col.tight,.col.dense{width:calc(50% - clamp(14px,1.6vw,22px));margin-left:0;gap:24px}
+}
+
+/* one section shell, matching For Companies */
+.artsec{position:relative;z-index:10;padding:var(--sec) var(--gut);scroll-margin-top:var(--hdr)}
+.inner{width:min(var(--measure),100%);margin-inline:auto}
+.shead{display:flex;gap:clamp(28px,3vw,40px);align-items:flex-start}
+.shead>.sh{width:min(var(--copy2),100%);flex-shrink:0;display:flex;flex-direction:column;gap:26px}
+.shead.wide>.sh{width:100%;flex-shrink:1}
+.shead.wide>.sl{display:none}
+.oneline{font-size:clamp(22px,3.05vw,44px);white-space:nowrap}
+@media (max-width:760px){.oneline{white-space:normal;font-size:clamp(24px,5.4vw,34px)}}
+@media (max-width:1199px){
+  .shead{flex-direction:column;gap:clamp(20px,2.6vh,30px)}
+  .shead>.sh{width:100%}
+}
+
+/* ---------- 01 hero ---------- */
+.hero{--art:min(57vw,86vh);--artpad:0px;
+  position:relative;z-index:10;min-height:100svh;
+  /* .bloom is 130% wide, and on the locked pages it is clipped by .heropin{overflow:hidden}.
+     This hero has no such ancestor, so it clips its own: `clip` rather than `hidden` because
+     it does not create a scroll container. The clip edge is the padding box, so the labels
+     that overhang .hnet into the gutter are kept. */
+  overflow-x:clip;
+  display:grid;grid-template-columns:minmax(0,1fr) var(--art);
+  grid-template-rows:1fr auto;
+  grid-template-areas:"copy art" "strip strip";
+  gap:0;align-items:center;
+  padding:calc(var(--hdr) + clamp(16px,2.6vh,36px)) var(--gut) 0}
+.hero .hcopy{grid-area:copy;position:relative;z-index:2;
+  /* 15% past its own track — the copy sits above the diagram (z-index 1), so the
+     overlap is deliberate rather than clipped */
+  width:115%;
+  display:flex;flex-direction:column;align-items:flex-start;text-align:left;
+  gap:clamp(16px,2.2vh,26px)}
+.hero .lede{max-width:46ch}
+
+.hero,.artsec,.outro,.ftr{
+  width:min(100%,var(--shell)); margin-inline:auto }
+
+/* ---------- fold 02: a swapping card deck -------------------------------------------
+   The CardSwap mechanic — a skewed 3D stack where the front card drops, the rest promote
+   forward, and the dropped card returns to the back — rebuilt in plain CSS transforms and
+   one timer. No React, no GSAP: this is a static handoff site, and the two locked pages
+   carry no framework. Easing is the component's calm 'linear' preset rather than its
+   elastic one, since the design system rules out bounce. */
+/* This fold now uses the real .fold > .pin > .col.tight.dense structure, so its copy column
+   INHERITS whatever governs folds 03/04 rather than restating it — including the desktop
+   rules that constrain the pin to --measure and size .col at calc(50% - clamp(14px,1.6vw,22px)).
+   The deck is a flex sibling taking the remaining half of that same padded box, which is
+   exactly the region .zone occupies, so no value is duplicated and none can drift. */
+/* The deck cross-fades on the fold's own occupancy, exactly as #stage does for folds 03/04
+   — its --stageOp comes from the same occ value that drives .col's opacity, so panel and
+   copy arrive together. .painzone lives inside the section rather than in #stage, so it has
+   to opt into that curve explicitly; --occ is published on the fold and inherits down. */
+.painzone{flex:1;min-width:0;display:grid;place-items:center;pointer-events:none;
+  margin-left:clamp(14px,1.6vw,22px);opacity:var(--occ,1)}
+
+/* the stage owns the perspective; the deck is the transform space */
+/* The card that drops out of the stack travels well past the section, and neither the
+   stage nor the section clipped it — so it painted over the next fold. It fades on the way
+   down and back in once it has landed at the back slot. Upstream gets away without this
+   because its container is a hero corner where the drop leaves the viewport. */
+.swi{width:38px;height:38px;flex-shrink:0;border-radius:var(--r-chrome);display:grid;
+  place-items:center;background:color-mix(in srgb,var(--emerald) 10%,transparent);
+  border:1px solid color-mix(in srgb,var(--emerald) 26%,transparent);color:var(--emerald)}
+.swi svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+.swm{margin-top:auto;display:flex;align-items:baseline;gap:9px;padding-top:11px;
+  border-top:1px solid var(--hairline)}
+.swm b{font-family:var(--mono);font-size:15px;color:var(--emerald);letter-spacing:-.01em}
+.swm span{font-family:var(--mono);font-size:var(--label-size);
+  letter-spacing:var(--label-track);text-transform:uppercase;color:var(--faint)}
+
+@media (max-width:1024px){
+  /* .painzone is a sibling of .col, not part of #stage, so only its left/right bounds have
+     to match .zone — its HEIGHT does not. .zone's 37svh is a budget for the device frame,
+     whose whole type inventory is 8-10.5px mono; a card carrying a headline and a paragraph
+     cannot live inside it. The deck gets a region sized to its own content, .col starts
+     below that region rather than below .zone's, and there is no scale at all — so every
+     card size is the authored one. */
+  /* Fixed to the viewport, not absolute inside .pin. The pin's sticky range here is only
+     270px, so an absolute child scrolled away past the release while .col — which cp-shared
+     makes position:fixed at this width — stayed put. #stage, the frame folds 03/04's panel
+     lives in, is fixed for exactly this reason; z-index 5 seats the deck between it (4) and
+     the copy column (6). Its opacity:var(--occ) already retires it with the fold, so being
+     fixed cannot leave it lingering over the next one. */
+  .painzone{position:fixed;top:52px;left:0;right:0;z-index:5;
+    height:min(304px,56svh);margin-left:0;padding:0 calc(var(--gut) + var(--bleed));place-items:center}
+  .painzone #fpain .col,#fpain .col.tight,#fpain .col.dense{
+    top:calc(52px + min(304px,56svh) + 8px)}
+  .swdeck,}
+@media (max-width:1199px) and (min-width:1025px){
+  .swdeck,}
+@media (max-width:600px){
+  .swdeck,}
+@media (prefers-reduced-motion:reduce){
+  }
+
+/* ---------- the hero network -----------------------------------------------------------
+   The hub is the passport; the inner ring is what the partner already owns; the outer ring
+   is where it travels. Both rings are radial-only, so the two can rotate at DIFFERENT rates
+   without any wire's geometry becoming invalid — which is what makes it read as orbiting
+   rather than as one rigid picture being turned.
+   The column and the diagram derive from one measure (--art minus the label overhang), so
+   the composition cannot outgrow its track at any window shape. */
+/* below this the three orbiting labels cannot clear each other at any phase */
+@container (max-width:420px){
+  }
+/* and below this the passport mark would read as a dot, so it scales up against the rings
+   rather than the whole diagram having to grow */
+@container (max-width:300px){
+  .hnhubg{transform:scale(1.55);transform-origin:350px 280px;transform-box:view-box}
+}
+@container (max-width:220px){
+  .hnhubg{transform:scale(2)}
+}
+/* the light the whole diagram sits in — one bloom, on the accent, blurred */
+/* a slow light travels the rim, so the outermost ring is doing something */
+@keyframes hnrim{to{stroke-dashoffset:-560}}
+@media (prefers-reduced-motion:reduce){.hnring.rim{animation:none}}
+
+/* rings and wires at real contrast — this is the subject, not the background */
+/* a cropped rim arc gives the square panel something in its corners */
+
+/* the two node tiers differ by 2x, not by 2px */
+
+/* a packet is a comet: rotate="auto" points the streak along its own wire, and the
+   arrival pulse fires on the node as it lands */
+
+/* the hub is the passport itself, in the cover navy and gold */
+.hnhub{fill:var(--panel);stroke:color-mix(in srgb,var(--emerald) 42%,transparent);
+  stroke-width:1.4;vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 6px 18px rgba(0,0,0,.75))}
+.hnhubi{fill:none;stroke:color-mix(in srgb,var(--emerald) 18%,transparent);stroke-width:1;
+  vector-effect:non-scaling-stroke}
+.hnbook{fill:var(--emerald-mid,#1b3564);
+  stroke:color-mix(in srgb,var(--emerald) 55%,transparent);stroke-width:1;
+  vector-effect:non-scaling-stroke}
+.hnspine{fill:rgba(0,0,0,.4)}
+.hnseal{fill:none;stroke:var(--emerald);stroke-width:1.3;vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 5px color-mix(in srgb,var(--emerald) 70%,transparent))}
+.hnbar{fill:var(--emerald);opacity:.85}
+
+/* Labels are HTML at real token sizes, placed by polar transform about the hub. Each one
+   rides its OWN ring's rotation, so a label can never drift off its node. */
+@media (prefers-reduced-motion:reduce){
+}
+/* the partner strip, in the marquee idiom the other pages use */
+.strip{grid-area:strip;position:relative;z-index:2;
+  padding:clamp(10px,1.8vh,20px) 0 clamp(18px,3vh,34px);overflow:hidden;
+  margin-inline:calc(var(--gut) * -1);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.track{display:flex;gap:clamp(28px,4vw,64px);width:max-content;
+  animation:rpmarq 46s linear infinite}
+.strip:hover .track{animation-play-state:paused}
+@keyframes rpmarq{to{translate:-50% 0}}
+.track .lg image-slot{display:block;width:100%;height:100%}
+.track .lg{width:clamp(108px,9.6vw,146px);height:clamp(32px,3.2vw,44px);flex-shrink:0;
+  opacity:.45;transition:opacity .3s var(--ease)}
+.track .lg:hover{opacity:1}
+.track image-slot{width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.track{animation:none}}
+
+.bloom{position:absolute;top:-34vh;left:50%;width:130%;height:900px;translate:-50% 0;
+  z-index:0;pointer-events:none;filter:blur(40px);
+  background:
+    radial-gradient(38% 42% at 32% 44%,color-mix(in srgb,var(--emerald-mid,#1b3564) 74%,transparent),transparent 72%),
+    radial-gradient(34% 38% at 62% 38%,color-mix(in srgb,var(--emerald) 26%,transparent),transparent 70%),
+    radial-gradient(26% 30% at 74% 62%,color-mix(in srgb,var(--mint,#e9d6aa) 14%,transparent),transparent 72%)}
+.hero .hero .lede b{font-weight:600;color:var(--ink)}
+.hart{position:relative;z-index:1;flex:1 1 460px;min-width:400px;
+  height:clamp(340px,56vh,620px);overflow:visible;container-type:size}
+
+
+
+
+
+
+
+
+
+
+.pglow{position:absolute;left:50cqw;top:50cqh;width:min(88cqw,150cqh);aspect-ratio:1;
+  translate:-50% -50%;z-index:1;opacity:.4;filter:blur(28px);
+  background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--emerald) 20%,transparent),transparent 68%)}
+@media (max-width:1199px){
+  .hero{grid-template-columns:1fr;grid-template-rows:auto auto auto;
+    grid-template-areas:"copy" "art" "strip";min-height:auto;
+    padding-bottom:0;gap:clamp(14px,2.4vh,28px) 0}
+  .hero .lede{max-width:52ch}
+  .hero{--art:auto}
+
+  .hero .hcopy{width:100%}
+  /* cp-shared centres .eyebrow and .ctas from 1024 down for the stacked .col folds.
+     The hero is flush left at every width, like its source, so it opts out across the
+     whole stacked range rather than the shared rule being changed. */
+  .hero .eyebrow,.hero .ctas{justify-content:flex-start}
+}
+@media (max-width:900px){
+  .hart{height:min(42vh,320px)}
+}
+
+
+/* ================= the page shell ==========================================
+   Content is capped and centred; beyond it the canvas simply continues, so a
+   2560px monitor shows the same layout as a 1728px one rather than flinging the
+   two panels to opposite edges. In-flow and sticky boxes cap by width; the
+   viewport-fixed panel surface caps by its own insets, since its containing
+   block is the window rather than a parent. Chrome bars stay full-bleed and cap
+   their PADDING, so the header rule still spans the screen. */
+:root{
+  /* the header bar's own inset — identical on all three pages. Kept separate from
+     --gut, which drives every section body and legitimately differs per page. */
+  --hgut:clamp(20px,4.4vw,72px);
+  --shell:1728px; --bleed:max(0px,calc((100% - var(--shell)) / 2)); }.stage{ left:var(--bleed); right:var(--bleed) }
+/* Layer 3: the hero diagram and its column derive from the SHELL, not the window. */
+:root{ --shellw:min(100vw,var(--shell)) }
+.hero{ --art:min(calc(var(--shellw) * .52),70vh) }/* chrome-scale actions: the marketing .btn pill stays out of the header */@media (max-width:1024px){}
+
+/* ---- one breakpoint for the whole bar --------------------------------------
+   The burger actually turns on at 900px on these pages, but the nav-hiding rules
+   sat at 1024px — so 901-1024px had neither the desktop bar nor the sheet, and the
+   header rendered brand-only. Both sides of the switch are declared together here,
+   last in the sheet, so the pair cannot drift apart again and no earlier duplicate
+   can shadow them. */
+@media (min-width:901px){}
+@media (max-width:900px){}
+
+
+/* ================= footer ==================================================
+   Given room of its own rather than compressed into the closing viewport. Three
+   blocks on one generous row: a two-line wordmark lockup, the pages in the
+   header's own nav idiom (36px padded hit area, 8px radius, one panel step on
+   hover), and the social set as circular icon buttons — the one place the system
+   allows a full circle. */
+
+/* the pages, in the header's nav idiom */
+
+@media (max-width:900px){
+  .ftop{flex-direction:column;align-items:center;text-align:center;gap:26px}
+}
+
+
+/* ---- footer pages: the header's nav rule verbatim, stacked ------------------
+   Every earlier .fnav rule is removed rather than layered over — the hairline
+   dividers in the old row layout were surviving as border-left on a button that
+   no longer wanted them, and five generations of the rule had piled up. This is
+   the only .fnav declaration on the page, and its button metrics are copied from
+   .nav a so the two navs cannot drift. */
+.fnav{display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+  font-size:14px;font-weight:500;letter-spacing:-.01em}
+.fnav a{display:inline-flex;align-items:center;height:36px;padding:0 16px;
+  border-radius:8px;color:var(--mute);white-space:nowrap;text-decoration:none;
+  transition:color .16s var(--ease),background .16s var(--ease)}
+.fnav a:hover{color:var(--ink);background:var(--hairline-soft)}
+.fnav a.here{color:var(--emerald);background:color-mix(in srgb,var(--emerald) 10%,transparent)}
+@media (max-width:900px){
+  .fnav{align-items:center}
+}
+
+
+/* ================= footer ==================================================
+   One authoritative declaration, identical on all three pages. Every earlier
+   generation is removed rather than overridden — index was carrying ten stale
+   rules and For Companies a narrow-width .ftop stack the other two lacked,
+   which is why the three footers had drifted apart. */
+.ftr{position:relative;z-index:10;display:flex;flex-direction:column;
+  gap:clamp(34px,5vh,58px);
+  margin-top:clamp(72px,10vh,132px);padding:clamp(44px,6vh,76px) var(--gut) 0;
+  background:transparent;overflow:hidden}
+.ftop{display:flex;align-items:flex-start;justify-content:space-between;
+  gap:clamp(28px,4vw,72px);flex-wrap:wrap}
+.fright{display:flex;flex-direction:row;align-items:center;gap:14px}
+/* the footer's own CTA pair. Its own classes rather than the page-level .btn, because
+   the three pages carry different secondary modifiers (.gh here, .sec there) and this block
+   has to render identically on all of them. 48px pills, per the system's marketing-CTA
+   shape — which is what the capture bar they replace already used. */
+.fbtns{display:flex;flex-wrap:wrap;gap:10px}
+.fbtn{display:inline-flex;align-items:center;justify-content:center;height:48px;
+  padding:0 22px;border:0;border-radius:100px;white-space:nowrap;text-decoration:none;
+  font-family:var(--sans);font-size:14.5px;font-weight:600;letter-spacing:-.01em;
+  background:var(--emerald);color:var(--emerald-deep);
+  box-shadow:0 1px 1px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.2);
+  transition:background .16s var(--ease),color .16s var(--ease),border-color .16s var(--ease)}
+.fbtn:hover{background:#e3ca94;color:var(--emerald-deep)}
+.fbtn.gh{background:transparent;color:var(--body);border:1px solid var(--hairline);
+  box-shadow:none}
+.fbtn.gh:hover{background:var(--panel-raised);color:var(--ink);
+  border-color:color-mix(in srgb,var(--emerald) 40%,transparent)}
+.fsoc{display:flex;align-items:center;gap:10px}
+.fsoc a{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;
+  border:1px solid var(--hairline);color:var(--mute);transition:.16s var(--ease)}
+.fsoc a:hover{color:var(--emerald);
+  border-color:color-mix(in srgb,var(--emerald) 45%,transparent);background:var(--panel-raised)}
+.fsoc svg{width:16px;height:16px;fill:currentColor;stroke:none}
+/* the wordmark seats into the page by its own vertical fade, softening only the
+   last fifth so the second line is not washed out */
+.fmark{display:block;width:100%;height:auto;margin-bottom:-2px;overflow:visible;
+  -webkit-mask-image:linear-gradient(180deg,#000 72%,rgba(0,0,0,.78) 90%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 72%,rgba(0,0,0,.78) 90%,transparent 100%)}
+.fmark text{font-family:var(--display)}
+.fmfill{fill:url(#fmg)}
+.fmlit{fill:none;stroke:url(#fmedge);stroke-width:1.6;
+  filter:drop-shadow(0 0 6px color-mix(in srgb,var(--emerald) 8%,transparent))}
+@media (prefers-reduced-motion:reduce){.fmlit{display:none}}
+.fcr{padding:0 0 26px;text-align:center;font-size:12px;color:var(--mute)}
+@media (max-width:900px){
+  .ftop{flex-direction:column;align-items:center;text-align:center;gap:26px}
+  .fright{align-items:center;justify-content:center}
+}
+
+
+/* ---- footer CTA + the right stack ----------------------------------------
+   The brand mark is gone from the footer — the giant wordmark below already
+   closes the page, so a second lockup was saying the same thing twice. Its slot
+   now carries the page's own primary action. A marketing pill, not the header's
+   chrome square: the footer is a band, and the system reserves pills for
+   marketing CTAs and 6px squares for chrome. */
+.fcta{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.fcta .fctal{font-family:var(--font-eyebrow);font-size:11px;letter-spacing:.26em;
+  text-transform:uppercase;color:var(--emerald)}
+/* socials first, the site map beneath them */
+.fright{display:flex;flex-direction:column;align-items:flex-end;gap:18px}
+.fnav{align-items:flex-end}
+@media (max-width:900px){
+  .fcta{align-items:center}
+  .fright{align-items:center}
+  .fnav{align-items:center}
+}
+
+
+/* ---- footer CTA: the design system's own email-capture pill ----------------
+   A lone button asked for a click with nothing to type into; this is the same
+   .wait element the closing folds use, so the footer's ask matches the page's.
+   The socials sit under it and the site map keeps the right edge. */
+.ftop{align-items:flex-start}
+.fcta{flex:1 1 420px;max-width:520px;display:flex;flex-direction:column;
+  align-items:flex-start;gap:clamp(16px,2.2vh,24px)}
+.fcta .wait{width:100%}
+.fnav{align-items:flex-end;margin-left:auto}
+@media (max-width:900px){
+  .fcta{flex:1 1 auto;align-items:center;max-width:none;width:100%}
+  .fcta .fsoc{justify-content:center}
+  .fnav{align-items:center;margin-left:0}
+}
+
+
+/* ================= the seven screens =======================================
+   One screen per viewport, each a two-panel band: the argument on the left, the
+   artifact on the right. Nothing is pinned and nothing scrubs — the copy is the
+   copy and the visual is a still object, which is what lets every band breathe.
+   Room is deliberate: the shell is capped, the columns are fluid, and the
+   vertical rhythm is a share of the viewport rather than a fixed number. */
+@media (min-width:1025px){
+  .stkband .scin{grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr)}
+}
+.scr{position:relative;z-index:10;min-height:100svh;display:grid;align-content:stretch;
+  padding:calc(var(--hdr) + clamp(28px,4vh,56px)) 0 clamp(28px,4vh,56px)}
+.scin{width:min(100%,var(--shell,1728px));margin-inline:auto;
+  padding:0 calc(var(--gut) + var(--bleed,0px));
+  display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);
+  gap:clamp(34px,5vw,92px);align-items:stretch}
+.scopy{display:flex;flex-direction:column;justify-content:center;
+  gap:clamp(15px,2vh,24px)}
+.scopy h2{margin:0}
+.scopy .lede{max-width:46ch}
+.scopy .plain{margin:2px 0 0;padding:0;list-style:none;
+  display:flex;flex-direction:column;gap:8px}
+.scopy .plain li{position:relative;padding-left:18px;font-size:13.5px;line-height:1.5;
+  color:var(--body)}
+.scopy .plain li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:1px;
+  background:var(--emerald)}
+.scopy.mid{align-items:center;text-align:center}
+.scopy.mid .lede{max-width:58ch}
+.scopy.mid .eyebrow{justify-content:center}
+/* the brief's closing line for each screen — a claim, not a caption */
+.hline{font-size:clamp(15px,1.28vw,18.5px);font-weight:500;letter-spacing:-.02em;
+  line-height:1.4;color:var(--ink)}
+.hline.mid{text-align:center;margin-top:clamp(20px,3vh,34px)}
+.sart{min-width:0;display:flex;flex-direction:column;justify-content:center}
+
+/* — 02 · six scattered sources become one queryable network — */
+
+
+/* — 03 · the pipeline itself — */
+
+
+/* — 04 · the channels an agent works across — */
+
+
+/* — 05 · three ways to work, each with its own action — */
+.mech{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(14px,1.6vw,22px);margin-top:clamp(26px,4vh,46px)}
+.mcard{display:flex;flex-direction:column;gap:9px;
+  padding:clamp(20px,2vw,28px);border-radius:var(--r-card-lg,16px);
+  background:var(--panel);border:1px solid var(--hairline);
+  transition:border-color .18s var(--ease),background .18s var(--ease)}
+.mcard:hover{border-color:color-mix(in srgb,var(--emerald) 40%,transparent);
+  background:var(--panel-raised)}
+.mcard b{font-size:clamp(15px,1.24vw,18px);font-weight:600;letter-spacing:-.024em;
+  line-height:1.24;color:var(--ink)}
+.mcard p{flex:1;font-size:13.5px;line-height:1.55;color:var(--body)}
+/* — 06 · one collaboration panel, and where the money stands — */
+
+
+/* A short window is the one case where a viewport-tall band cannot hold its own content:
+   at 540px tall the usable budget is ~390px and the artifacts need 420-470. Rather than
+   compress the panels for a case real desktops never hit, the band gives up its
+   viewport lock and the page simply scrolls — nothing clips at any height. */
+@media (min-height:1000px){
+  .scr{min-height:0;align-content:center;padding-block:clamp(52px,6vh,104px)}
+}
+@media (max-height:780px){
+  .scr{min-height:0;align-content:center;padding-block:clamp(40px,6vh,72px)}
+}
+@media (max-width:1024px){
+  .scin{grid-template-columns:1fr;gap:clamp(24px,3.4vh,40px)}
+  .scr{min-height:0;padding:clamp(56px,9vh,110px) 0}
+  .scopy .lede,.scopy.mid .lede{max-width:60ch}
+  .mech{grid-template-columns:1fr}
+  .stk{--stk-w:100%}
+}
+@media (max-width:620px){
+  .dnodes{gap:5px}
+  .dnode{min-height:56px;padding:8px 1px;gap:6px}
+  .dnode b{font-size:7.5px;letter-spacing:.06em}
+  .dia svg.fi{width:16px;height:16px}
+}
+
+
+/* ---- 05 · the three ways to work, as a scroll-driven stack ----------------------
+   The ScrollStack behaviour: the band is taller than the viewport, its contents pin, and
+   each card rises into place then settles under the next one — scaling down and stepping
+   back as the stack builds, so the whole set is legible at the end. Driven by the band's
+   own scroll progress rather than a smooth-scroll library: this page has no Lenis, and
+   introducing one would take over scrolling for every other fold on the site. */
+/* display:block matters: .scr is a centred grid, and a sticky child of a centred grid
+   track can only stick inside that track — which is exactly one viewport tall, so it
+   never sticks at all and the stack just scrolls past. As a block, the pin's containing
+   block is the whole 2.6-viewport band. */
+/* align-content applies to block containers in current Chrome, so .scr's centring was
+   still pushing the pin 432px down the band and eating half its sticky range */
+#s5.stkband{align-content:normal;display:block;min-height:0;height:calc(100svh * 1.7);padding:0}
+.stkpin{position:sticky;top:0;height:100svh;display:grid;align-content:center;
+  padding:calc(var(--hdr) + clamp(24px,4vh,56px)) 0 clamp(24px,4vh,56px)}
+.stk{--stk-w:100%;--stk-h:398px;--stk-step:22px;
+  position:relative;width:100%;
+  height:calc(var(--stk-h) + var(--stk-step) * 2 + 12px)}
+.stkc{position:absolute;left:0;top:0;
+  width:min(100%,var(--stk-w));height:var(--stk-h);padding:20px;
+  display:grid;grid-template-columns:minmax(0,1fr) clamp(150px,33%,268px);
+  align-items:stretch;overflow:hidden;
+  border-radius:20px;
+  /* the panel steps up toward the light rather than sitting flat */
+  background:
+    radial-gradient(120% 140% at 88% 18%,color-mix(in srgb,var(--emerald) 7%,transparent),transparent 62%),
+    linear-gradient(158deg,var(--panel-raised) 0%,var(--panel) 58%);
+  border:1px solid var(--hairline);
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset,
+    0 2px 2px rgba(0,0,0,.5),0 28px 60px -20px rgba(0,0,0,.94);
+  transform-origin:top center;backface-visibility:hidden;will-change:transform;
+  translate:0 var(--ty,0px);scale:var(--sc,1);opacity:var(--op,1)}
+/* a foil hairline catches the top edge of whichever card is in front */
+.stkc::after{content:"";position:absolute;left:22px;right:22px;top:0;height:1px;
+  pointer-events:none;opacity:0;transition:opacity .4s var(--ease);
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--mint) 85%,transparent),
+    transparent)}
+.stkc.lead::after{opacity:.9}
+.stkc.lead{border-color:color-mix(in srgb,var(--emerald) 38%,transparent);
+  box-shadow:0 1px 0 rgba(255,255,255,.05) inset,
+    0 0 0 1px color-mix(in srgb,var(--emerald) 12%,transparent),
+    0 2px 2px rgba(0,0,0,.5),0 34px 70px -20px rgba(0,0,0,.95)}
+/* a card that has not started rising is not painted at all, so nothing can be read
+   through anything — visibility:hidden also takes it out of hit-testing */
+.stkc[data-wait]{visibility:hidden}
+.stkc:not(.lead):not([data-wait]){cursor:pointer}
+.stkbody{position:relative;z-index:2;min-width:0;display:flex;flex-direction:column;
+  align-items:flex-start;justify-content:center;gap:clamp(9px,1.5vh,15px);padding:0}
+/* the plate a photograph drops into. Masked into the card on its left edge and
+   desaturated so the gold stays the brightest thing on the surface — the design
+   system's own instruction for photography. */
+.stkimg{position:relative;min-width:0;overflow:hidden}
+/* ---- the card mark: one large thin-stroke glyph that draws itself in -----------------
+   Each element carries pathLength="100", so a single dash pair (100 / 100 -> 0) draws any
+   shape regardless of its real length, and the stagger is one custom property per element.
+   Deliberately NOT vector-effect:non-scaling-stroke: its interaction with pathLength is
+   what left the earlier network wires painting only a fraction of their length. After the
+   draw the whole mark breathes — a 9s opacity drift, slower than attention, so it reads as
+   a lit surface rather than an animation. */
+.gly{position:absolute;top:50%;right:0;
+  width:min(100%,272px);height:auto;translate:0 -50%;
+  overflow:visible;pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 18%);
+  mask-image:linear-gradient(90deg,transparent,#000 18%)}
+.gly .gs{fill:none;stroke:color-mix(in srgb,var(--emerald) 46%,transparent);
+  stroke-width:1.25;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:100;stroke-dashoffset:100}
+.gly .gsec .gs{stroke:color-mix(in srgb,var(--emerald) 22%,transparent)}
+.gly .gdot{fill:var(--emerald);opacity:0}
+
+.stkc.drawn .gly .gs{animation:gdraw 1.15s cubic-bezier(.33,1,.68,1) var(--d,0s) forwards}
+.stkc.drawn .gly .gdot{animation:gpop .5s var(--ease) 1.05s forwards}
+.stkc.drawn .gly{animation:gbreathe 9s ease-in-out 1.7s infinite}
+@keyframes gdraw{to{stroke-dashoffset:0}}
+@keyframes gpop{to{opacity:.85}}
+@keyframes gbreathe{0%,100%{opacity:.82}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  .gly{animation:none}
+  .gly .gs{stroke-dashoffset:0}
+  .gly .gdot{opacity:.85}
+}
+.stkc b{position:relative;max-width:min(100%,26ch);
+  font-size:clamp(19px,1.9vw,29px);font-weight:600;letter-spacing:-.032em;
+  line-height:1.16;color:var(--ink)}
+.stkc p{position:relative;flex:1;max-width:min(100%,38ch);margin:0;
+  font-size:clamp(13.5px,1.1vw,15.5px);line-height:1.6;color:var(--body)}
+.stkc .btn{position:relative}
+/* the hero's primary button, with room for the arrow */
+.stkc .btn{gap:9px}
+.stkc .btn .swar{stroke-width:2.4}
+/* the icon tile, as in the reference: a rounded square holding one glyph */
+/* the icon tile carries the card's identity now that the numbers are gone: foil fill,
+   an inset highlight along its top edge, and a soft bloom under it */
+.swi{position:relative;display:grid;place-items:center;width:46px;height:46px;
+  margin-bottom:clamp(8px,1.4vh,16px);border-radius:14px;
+  background:linear-gradient(158deg,color-mix(in srgb,var(--emerald) 26%,transparent),
+    color-mix(in srgb,var(--emerald) 9%,transparent));
+  border:1px solid color-mix(in srgb,var(--emerald) 40%,transparent);
+  box-shadow:0 1px 0 color-mix(in srgb,var(--mint) 34%,transparent) inset,
+    0 10px 24px -12px color-mix(in srgb,var(--emerald) 55%,transparent);
+  color:var(--mint)}
+.swi svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+/* a gold wash keeps depth on the right of the card, behind the diagram */
+.stkc::before{content:"";position:absolute;right:-90px;top:50%;width:340px;height:340px;z-index:0;
+  translate:0 -50%;pointer-events:none;border-radius:50%;
+  background:radial-gradient(circle,color-mix(in srgb,var(--emerald) 12%,transparent),
+    transparent 66%)}
+.swar{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:1024px){
+  .stk{--stk-w:100%;--stk-h:352px;--stk-step:20px}
+  .stkc{grid-template-columns:minmax(0,1fr) clamp(176px,42%,236px)}
+}
+/* No pin, no scaling — the three cards read as a list. Two cases need exactly this: a
+   reader who has asked for reduced motion, and any viewport under 1024px, where a pinned
+   single column would have to hold 561px of copy and cards inside a 432px budget and the
+   overflow falls outside the locked viewport. */
+@media (prefers-reduced-motion:reduce),(max-width:1024px){
+  #s5.stkband{height:auto;padding:clamp(48px,7vh,88px) 0}
+  .stkpin{position:static;height:auto;padding:0}
+  .stk{height:auto;display:flex;flex-direction:column;gap:14px}
+  .stkc{position:relative;height:auto;min-height:var(--stk-h);
+    translate:none;scale:1;opacity:1;visibility:visible}
+  /* the driver's staging classes must not be able to hold a card back here */
+  .stkc[data-wait]{visibility:visible}
+}
+@media (max-width:1024px){
+}
+
+/* ---- the four diagrams -------------------------------------------------------------
+   Same device as the stack's card mark: every stroke carries pathLength="100" so one
+   dash pair draws any shape, and each element's delay is a custom property. The whole
+   diagram draws once when its band reveals — icons and connection lines carry the
+   meaning, so the copy beside them is an eyebrow, a headline and one line. */
+.dia{position:relative;flex:1;display:flex;flex-direction:column;
+  justify-content:space-between;
+  min-height:min(300px,34svh);max-height:538px;
+  padding:clamp(22px,2.4vw,36px);border-radius:var(--r-card-lg,16px);
+  background:var(--panel);border:1px solid var(--hairline)}
+.dia .gs{fill:none;stroke:color-mix(in srgb,var(--emerald) 34%,transparent);
+  stroke-width:1.2;vector-effect:non-scaling-stroke;
+  stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:100;stroke-dashoffset:100}
+.dia .gdot{fill:var(--emerald);opacity:0}
+.dia [style*="--d"]:not(svg):not(path):not(circle){opacity:0;translate:0 8px}
+.stg.on .dia [style*="--d"]:not(svg):not(path):not(circle),
+.sart.in .dia [style*="--d"]:not(svg):not(path):not(circle){
+  animation:dpop .5s cubic-bezier(.33,1,.68,1) var(--d,0s) forwards}
+.sart.in .dia .gs{animation:gdraw 1s cubic-bezier(.33,1,.68,1) var(--d,0s) forwards}
+.sart.in .dia .gdot{animation:gpop .45s var(--ease) 1s forwards}
+@keyframes dpop{to{opacity:1;translate:0 0}}
+/* every icon in a diagram: one tile, one weight */
+.dia svg:not(.dwire):not(.wfwire):not(.prail):not(.awire):not(.pjoin):not(.fi){width:18px;height:18px;
+  fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.dia svg.fi{width:18px;height:18px;fill:currentColor;stroke:none}
+@media (prefers-reduced-motion:reduce){
+  .dia [style*="--d"]{opacity:1!important;translate:none!important;animation:none!important}
+  .dia .gs{stroke-dashoffset:0}
+  .dia .gdot{opacity:.85}
+}
+
+/* — 02 · six sources converge — */
+.dnodes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+.dnode{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+  min-height:74px;padding:12px 4px;
+  border-radius:var(--r-chrome,6px);background:var(--panel-raised);
+  border:1px solid var(--hairline);color:var(--emerald)}
+.dnode b{font-family:var(--mono);font-size:8.5px;font-weight:400;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--emerald)}
+
+#dia2{justify-content:flex-start;gap:0}
+.dwire{display:block;flex:0 0 auto;width:100%;height:72px;overflow:visible}
+.dwire .fw{fill:none;stroke:rgba(216,184,119,.34);stroke-width:1;
+  vector-effect:non-scaling-stroke}
+.dwire .fdots{opacity:.9}
+.dwire .fdot{fill:var(--emerald);filter:drop-shadow(0 0 3px rgba(216,184,119,.85));
+  transform:scale(1,var(--dsy,1))}
+/* the wires land on this panel, and the query bar lives inside it */
+.dhub{position:relative;flex:0 0 auto;min-height:331px;display:flex;flex-direction:column;
+  border-radius:var(--r-card-lg,16px);overflow:hidden;background:var(--panel);
+  border:1px solid color-mix(in srgb,var(--emerald) 40%,transparent);
+  box-shadow:0 2px 2px rgba(0,0,0,.5),0 22px 48px -18px rgba(0,0,0,.9)}
+.dhubbar{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:11px 16px;border-bottom:1px solid var(--hairline)}
+.dhubname{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;
+  letter-spacing:-.02em;color:var(--ink)}
+.dhubtag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--emerald)}
+.dhubm{width:9px;height:12px;border-radius:1px 3px 3px 1px;background:var(--emerald)}
+/* the search home: greeting, composer, suggested queries — centred in the body */
+.dhome{position:relative;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;padding:24px 16px 30px}
+.dhome::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(46% 58% at 50% 46%,rgba(216,184,119,.11),transparent 70%),
+    radial-gradient(38% 46% at 16% 78%,rgba(52,80,127,.20),transparent 72%),
+    radial-gradient(40% 50% at 88% 22%,rgba(249,230,172,.07),transparent 70%);
+  filter:blur(40px)}
+.dhome::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(216,184,119,.09) 1px,transparent 1px);
+  background-size:22px 22px;
+  mask-image:radial-gradient(72% 78% at 50% 50%,#000 20%,transparent 78%)}
+.dhome>*{position:relative;z-index:1}
+.dgreet{margin:0;font-family:var(--display);font-size:clamp(16px,1.35vw,20px);font-weight:600;
+  letter-spacing:-.036em;line-height:1.16;color:var(--ink);text-align:center}
+.dask{display:flex;flex:0 0 auto;align-items:center;gap:12px;
+  width:min(100%,520px);height:56px;padding:0 8px 0 16px;
+  border-radius:100px;background:var(--panel-raised);
+  border:1px solid color-mix(in srgb,var(--emerald) 32%,transparent);color:var(--emerald)}
+.dask em{flex:1;font-style:normal;font-size:13px;color:var(--body)}
+.daskgo{flex:0 0 auto;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;
+  background:var(--emerald);color:var(--emerald-deep)}
+.daskgo svg{width:17px;height:17px}
+.dsugs{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;
+  width:min(100%,560px)}
+.dsug{padding:7px 13px;border-radius:100px;background:var(--panel-raised);
+  border:1px solid var(--hairline);font-size:11.5px;color:var(--body);white-space:nowrap}
+.danss{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.dans{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  min-height:50px;padding:11px 17px;border-radius:var(--r-card,12px);background:var(--panel-raised);
+  border:1px solid var(--hairline)}
+.dans b{font-size:13.5px;font-weight:600;letter-spacing:-.018em;color:var(--ink)}
+.dans em{font-style:normal;font-family:var(--mono);font-size:9px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--body)}
+
+/* — 03 · the role as a dashboard: title bar, stage counts, candidate table ------------
+   A real interface panel rather than a diagram — which is the design system's own device
+   for the place a product image would sit. Ivory ink on navy panels, hairline structure,
+   gold only on the live stage and the one candidate at offer. */
+#dia2{flex:0 0 auto;min-height:0;max-height:none}
+#dia4{flex:0 0 auto;min-height:0;max-height:none;padding:0}
+.wfcanvas{flex:0 0 auto;min-height:292px}
+.dia.dash{flex:0 0 auto;min-height:0;max-height:none;
+  justify-content:flex-start;gap:0;padding:0;overflow:hidden;
+  border-radius:var(--r-card-lg,16px);background:var(--panel);
+  border:1px solid var(--hairline);
+  box-shadow:0 2px 2px rgba(0,0,0,.5),0 22px 48px -18px rgba(0,0,0,.9)}
+.dbar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:11px 16px;border-bottom:1px solid var(--hairline)}
+.dbl{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;
+  letter-spacing:-.02em;color:var(--ink)}
+.dbdot{width:6px;height:6px;border-radius:50%;background:var(--emerald)}
+.dbr{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--emerald)}
+.dstats{flex:0 0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  border-bottom:1px solid var(--hairline)}
+.dstat{display:flex;flex-direction:column;gap:4px;padding:11px 14px;
+  border-left:1px solid var(--hairline-soft)}
+.dstat:first-child{border-left:0}
+.dstat u{font-family:var(--mono);font-size:20px;font-weight:400;text-decoration:none;
+  letter-spacing:-.03em;color:var(--ink);line-height:1.2}
+.dstat b{font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--mute)}
+.dstat.live u{color:var(--emerald)}
+.dstat.live b{color:var(--mute)}
+.dtbl{flex:0 0 auto;display:flex;flex-direction:column}
+.dhead,.drow{display:grid;grid-template-columns:minmax(0,1fr) 96px 62px 36px;
+  align-items:center;gap:10px;padding:0 16px}
+.dhead{flex:0 0 auto;height:34px;border-bottom:1px solid var(--hairline-soft)}
+.dhead b,.dhead em,.dhead u,.dhead s{font-family:var(--mono);font-size:10px;font-weight:400;
+  font-style:normal;text-decoration:none;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--mute)}
+.dhead u,.dhead s,.drow u,.drow s{text-align:right}
+.drow{flex:0 0 auto;min-height:38px;padding-block:4px;
+  border-bottom:1px solid var(--hairline-soft)}
+.drow:last-child{border-bottom:0}
+.drow b{font-size:12.5px;font-weight:600;letter-spacing:-.018em;color:var(--ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drow i{display:none}
+.drow em,.drow u,.drow s{align-self:center}
+.drow u{font-family:var(--mono);font-size:11px;text-decoration:none;color:var(--body)}
+.drow s{font-family:var(--mono);font-size:10px;text-decoration:none;color:var(--mute)}
+.ptag{justify-self:start;font-style:normal;font-family:var(--mono);font-size:10px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--body);
+  padding:4px 8px;border-radius:100px;border:1px solid var(--hairline);white-space:nowrap}
+.ptag.on{color:var(--emerald);border-color:color-mix(in srgb,var(--emerald) 40%,transparent);
+  background:color-mix(in srgb,var(--emerald) 10%,transparent)}
+
+/* — 04 · the agentic workflow as a node graph — */
+.wfcanvas{position:relative;flex:1 1 auto;min-height:0;width:100%;
+  border-radius:var(--r-card-lg,16px);background:var(--panel);
+  border:1px solid var(--hairline);overflow:hidden}
+.wfcanvas::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.6;
+  background-image:radial-gradient(rgba(216,184,119,.08) 1px,transparent 1px);
+  background-size:20px 20px}
+.wfwire{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.wfwire .wp{fill:none;stroke:rgba(216,184,119,.34);stroke-width:1;
+  vector-effect:non-scaling-stroke}
+.wfgrid{position:relative;z-index:1;height:100%;display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));
+  gap:10px clamp(8px,1.4%,16px);padding:14px}
+.wfnode,.wftrig,.wfmerge,.wfgate,.wfidle{grid-area:var(--ga);align-self:center;
+  display:flex;flex-direction:column;align-items:flex-start;gap:4px;
+  min-width:0;padding:10px 11px;
+  border-radius:var(--r-card,12px);background:var(--panel-raised);
+  border:1px solid var(--hairline);color:var(--mute)}
+.wfnode i,.wftrig i,.wfmerge i,.wfgate i,.wfidle i{display:grid;place-items:center;
+  width:26px;height:26px;border-radius:7px;background:var(--panel);
+  border:1px solid var(--hairline)}
+.dia svg.fi{width:18px;height:18px}
+.wfnode b,.wftrig b,.wfmerge b,.wfgate b,.wfidle b{font-size:11.5px;font-weight:600;
+  letter-spacing:-.016em;line-height:1.22;color:var(--ink)}
+.wfnode em,.wftrig em,.wfmerge em,.wfgate em,.wfidle em{font-style:normal;
+  font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--body)}
+/* the trigger and the merge are the graph's fixed points; the gate is the one human step */
+
+.wftrig i,.wfmerge i{color:var(--emerald)}
+.wfgate{border-color:color-mix(in srgb,var(--emerald) 40%,transparent);
+  background:color-mix(in srgb,var(--emerald) 10%,transparent)}
+.wfgate i{color:var(--emerald);border-color:color-mix(in srgb,var(--emerald) 34%,transparent)}
+.wfgate em{color:var(--emerald)}
+.wfidle{opacity:.72}
+@media (max-width:1024px){
+  .wfgrid{gap:8px 6px;padding:10px}
+  .wfnode,.wftrig,.wfmerge,.wfgate,.wfidle{padding:8px 8px;gap:3px}
+  .wfnode b,.wftrig b,.wfmerge b,.wfgate b,.wfidle b{font-size:10.5px}
+  .wfnode em,.wftrig em,.wfmerge em,.wfgate em,.wfidle em{font-size:10px;letter-spacing:.07em}
+  .wfnode i,.wftrig i,.wfmerge i,.wfgate i,.wfidle i{width:22px;height:22px;border-radius:6px}
+  .dia svg.fi{width:15px;height:15px}
+}
+
+/* — 06 · two parties, three agreed terms, one chain — */
+.pair{flex:1;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;gap:clamp(8px,1.4vw,18px)}
+.pparty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+  min-height:clamp(112px,17vh,156px);padding:18px 12px;
+  border-radius:var(--r-card,12px);background:var(--panel-raised);
+  border:1px solid var(--hairline);color:var(--emerald)}
+.pparty b{font-size:13.5px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.pparty em{font-style:normal;font-family:var(--mono);font-size:8.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--body)}
+.pjoin{width:clamp(96px,15vw,132px);height:auto;overflow:visible}
+.agreed{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;
+  margin-top:clamp(18px,3vh,34px)}
+.agreed span{display:flex;align-items:center;justify-content:center;gap:10px;
+  height:clamp(46px,7vh,58px);
+  border-radius:var(--r-card,12px);
+  background:color-mix(in srgb,var(--emerald) 9%,transparent);
+  border:1px solid color-mix(in srgb,var(--emerald) 30%,transparent);color:var(--emerald)}
+.agreed b{font-size:12.5px;font-weight:500;letter-spacing:-.014em;color:var(--ink)}
+.chain2{display:flex;flex-wrap:wrap;align-items:center;gap:7px;
+  margin-top:clamp(16px,2.4vh,28px)}
+.c2{display:inline-flex;align-items:center;padding:6px 11px;border-radius:100px;
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.11em;text-transform:uppercase;
+  border:1px solid var(--hairline);color:var(--faint);white-space:nowrap}
+.c2.done{color:var(--emerald);border-color:color-mix(in srgb,var(--emerald) 34%,transparent)}
+.c2.now{color:var(--emerald);background:color-mix(in srgb,var(--emerald) 14%,transparent);
+  border-color:color-mix(in srgb,var(--emerald) 52%,transparent)}
+.c2+.c2::before{content:"";width:9px;height:1px;margin-right:11px;margin-left:-11px;
+  background:var(--hairline)}
+
+@media (max-width:1024px){
+  .dnode{min-height:64px;padding:10px 2px;gap:7px}
+  .agent{grid-template-columns:minmax(0,240px) 56px minmax(0,116px)}
+  .pair{grid-template-columns:1fr;gap:10px}
+  .pjoin{justify-self:center;rotate:90deg}
+}
+
+/* — 06 · one collaboration panel, and where the payout stands — */
+.deal{flex:0 0 auto;border-radius:var(--r-card-lg,16px);overflow:hidden;background:var(--panel);
+  border:1px solid var(--hairline);
+  box-shadow:0 2px 2px rgba(0,0,0,.5),0 22px 48px -18px rgba(0,0,0,.9)}
+.dealhd{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:13px 18px;border-bottom:1px solid var(--hairline)}
+.nxl{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--mute)}
+.nxv{font-family:var(--mono);font-size:10px;letter-spacing:.13em;color:var(--emerald)}
+.terms{display:flex;flex-direction:column}
+.trow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:14px;
+  padding:10px 18px;border-bottom:1px solid var(--hairline-soft)}
+.trow b{font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;
+  font-weight:400;color:var(--mute)}
+.trow em{font-style:normal;font-size:13px;font-weight:500;letter-spacing:-.016em;color:var(--ink)}
+.trow.ok em{color:var(--emerald)}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:14px 18px}
+.cstep{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--mute);white-space:nowrap}
+.cstep.done{color:var(--emerald)}
+.ctick{display:grid;place-items:center;width:13px;height:13px;border-radius:50%;
+  background:color-mix(in srgb,var(--emerald) 16%,transparent);color:var(--emerald)}
+.ctick svg{width:8px;height:8px;fill:none;stroke:currentColor;stroke-width:3.2;
+  stroke-linecap:round;stroke-linejoin:round}
+.cdot{width:13px;height:13px;border-radius:50%;border:1px dashed var(--hairline)}
+.carr{font-style:normal;color:var(--hairline)}
+
+
+/* ================= the report devices ==================================================
+   Two full-bleed slabs bracket the narrative: a counter slab that carries its claims as
+   numbers rather than sentences, and a statement slab with no artifact at all. Their job
+   is rhythm — the page needs sections that are NOT a copy column beside a card, or every
+   band reads the same and the whole thing flattens into a brochure. */
+.slab{position:relative;z-index:10;display:grid;align-content:center;
+  padding:clamp(96px,15vh,190px) 0}
+.slabin{width:min(100%,var(--shell,1728px));margin-inline:auto;
+  padding:0 calc(var(--gut) + var(--bleed,0px));
+  display:flex;flex-direction:column;gap:clamp(26px,4vh,52px)}
+.slabh{margin:0;max-width:22ch;font-family:var(--display);
+  font-size:clamp(30px,4.1vw,60px);font-weight:600;letter-spacing:-.05em;line-height:1.02;
+  color:var(--ink);text-wrap:pretty}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(16px,2.4vw,44px);border-top:1px solid var(--hairline);padding-top:clamp(22px,3vh,40px)}
+.stat{display:flex;flex-direction:column;gap:8px;min-width:0}
+.statv{display:flex;align-items:baseline;gap:2px;font-family:var(--display);
+  font-size:clamp(46px,7vw,104px);font-weight:600;letter-spacing:-.055em;line-height:.92;
+  color:var(--emerald);font-variant-numeric:tabular-nums}
+.statv em{font-style:normal;font-size:.42em;letter-spacing:-.02em}
+.stat b{font-size:clamp(14px,1.2vw,17px);font-weight:600;letter-spacing:-.022em;
+  line-height:1.32;color:var(--ink);max-width:24ch}
+.stat i{font-style:normal;font-size:13px;line-height:1.5;color:var(--body);max-width:26ch}
+/* the statement slab: one line, nothing else on the screen */
+.slab.quote{padding:clamp(120px,20vh,240px) 0}
+.pull{margin:0;max-width:26ch;font-family:var(--display);
+  font-size:clamp(34px,5vw,76px);font-weight:600;letter-spacing:-.052em;line-height:1;
+  color:var(--ink)}
+
+/* ================= the pinned narrative ================================================
+   Four acts, one artifact stage. The stage persists and its contents cross-fade act to
+   act, which is the device the For Companies page uses — it is what makes this read as
+   one continuous argument instead of four separate slides. */
+.story{position:relative;z-index:10;height:calc(100svh * 4.4)}
+.storypin{position:sticky;top:0;height:100svh;display:grid;align-content:center;
+  padding:calc(var(--hdr) + clamp(24px,4vh,56px)) 0 clamp(24px,4vh,56px)}
+.storyin{width:min(100%,var(--shell,1728px));margin-inline:auto;
+  padding:0 calc(var(--gut) + var(--bleed,0px));
+  display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);
+  gap:clamp(24px,3.4vw,64px);align-items:center}
+/* the chapter rail — the report's spine, and the reader's position in it */
+/* the acts share one box and cross-fade, so the copy never reflows the layout */
+.storyacts{position:relative;min-width:0;
+  /* the floor is the TALLEST act (218px narrow) plus the 14px entry translate, so the
+     shortest act does not decide the box and the longest cannot spill out of it */
+  min-height:clamp(400px,46vh,440px);overflow:visible}
+/* NB: the plain .act class is already taken on this page family by the DEFINE chip,
+   which draws a bordered panel. This one is .storyact. */
+.storyact{position:absolute;inset:0;display:flex;flex-direction:column;
+  justify-content:center;gap:clamp(13px,1.9vh,22px);
+  opacity:0;translate:0 14px;pointer-events:none;
+  transition:opacity .42s var(--ease),translate .42s var(--ease)}
+.storyact.on{opacity:1;translate:0 0;pointer-events:auto}
+.storyact .scopy{display:contents}
+/* the artifact stage */
+.stage2{position:relative;min-width:0;min-height:clamp(300px,44vh,470px);
+  display:grid;align-items:center}
+/* the artifacts were authored as children of .scr/.sart; inside the stage they must simply
+   fill their cell, and the two that sized from the old band get an explicit floor */
+.stg>.dia,.stg>.deal{width:100%}
+.stg>.dia{display:flex;flex-direction:column}
+.stg{grid-area:1 / 1;min-width:0;opacity:0;scale:.985;pointer-events:none;
+  transition:opacity .46s var(--ease),scale .46s var(--ease)}
+.stg.on{opacity:1;scale:1;pointer-events:auto}
+/* a hairline progress line along the foot of the pin */
+.storybar{position:absolute;left:calc(var(--gut) + var(--bleed,0px));
+  right:calc(var(--gut) + var(--bleed,0px));bottom:clamp(16px,2.6vh,30px);
+  height:1px;background:var(--hairline)}
+.storybar i{display:block;height:1px;width:calc(var(--sp,0) * 100%);
+  background:linear-gradient(90deg,color-mix(in srgb,var(--emerald) 40%,transparent),
+    var(--emerald))}
+
+@media (max-width:1024px){
+  .stats{grid-template-columns:1fr;gap:clamp(20px,3vh,34px)}
+  /* no pin: height auto, static position, and the acts/scenes flow as four sections */
+  .story{height:auto}
+  .storypin{position:static;height:auto;align-content:start;
+    padding:clamp(56px,9vh,110px) 0}
+  .storyin{grid-template-columns:minmax(0,1fr);gap:0}
+  .storyacts{position:static;min-height:0;display:flex;flex-direction:column;gap:0}
+  .storyact{position:static;inset:auto;opacity:1;translate:none;pointer-events:auto;
+    gap:clamp(13px,2vh,20px)}
+  .stage2{min-height:0;display:flex;flex-direction:column;gap:0}
+  .stg{grid-area:auto;opacity:1;scale:1;pointer-events:auto}
+  /* every scene is visible at once here, so nothing may depend on .on */
+  .stg .dia [style*="--d"]:not(svg):not(path):not(circle){
+    opacity:1;translate:none;animation:none}
+  /* interleave: each act sits directly above its own scene */
+  .storyacts,.stage2{display:contents}
+  .storyact{order:calc(var(--o) * 2)}
+  .stg{order:calc(var(--o) * 2 + 1);margin:clamp(20px,3vh,30px) 0 clamp(46px,7vh,84px)}
+  .storyin{display:flex;flex-direction:column}
+  .storybar{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .storyact,.stg{transition:none}
+}
+
+
+/* ================= the hero, restated =================================================
+   No diagram. The design system permits exactly one mesh gradient per page and puts it in
+   the hero behind nothing but a headline — so that is what this is: ivory type at display
+   scale, a gold-foil accent with a light travelling across it, and a single navy-to-gold
+   mesh at 40px blur. Nothing here has a coordinate system, so nothing can drift. */
+.hero{--art:0px;--artpad:0px;
+  /* one centred column: the art track is gone, so copy and strip both span it */
+  grid-template-columns:minmax(0,1fr);grid-template-areas:"copy" "strip";
+  justify-items:center;text-align:center}
+.hero .hcopy{grid-area:copy;max-width:min(100%,66vw);z-index:2;
+  align-items:center;text-align:center}
+.hero .ctas{justify-content:center}
+/* the strip rises 48px out of the hero's foot */
+.hero .strip{grid-area:strip;justify-self:stretch;margin-bottom:48px}
+.hbig{margin:0;max-width:15em;margin-inline:auto;font-family:var(--display);
+  font-size:clamp(38px,5.5vw,86px);font-weight:600;letter-spacing:-.055em;line-height:.94;
+  color:var(--ink);text-wrap:balance}
+/* the foil: a champagne-to-gold fill clipped to the glyphs, with a highlight window that
+   slides across so a few letters at a time catch the light */
+}
+.hero .lede{max-width:52ch;margin-inline:auto;z-index:2}
+.hero .ctas{z-index:2}
+/* one mesh: navy body, a tile-highlight bloom low left, gold and champagne high right */
+.hmesh{position:absolute;inset:-18% -6% -10%;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(38% 46% at 78% 24%,rgba(221,188,107,.20),transparent 68%),
+    radial-gradient(26% 32% at 92% 46%,rgba(248,230,172,.13),transparent 70%),
+    radial-gradient(46% 54% at 16% 84%,rgba(52,80,127,.30),transparent 72%),
+    radial-gradient(34% 40% at 52% 8%,rgba(52,80,127,.16),transparent 74%);
+  filter:blur(40px)}
+/* a very fine gold weave, masked away from the type so the copy stays clean */
+.hgrain{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(221,188,107,.10) 1px,transparent 1px);
+  background-size:26px 26px;
+  -webkit-mask-image:radial-gradient(72% 82% at 76% 40%,#000 10%,transparent 72%);
+  mask-image:radial-gradient(72% 82% at 76% 40%,#000 10%,transparent 72%)}
+@media (max-width:1024px){
+  .hero .hcopy{max-width:100%}
+  .hero .strip{margin-bottom:48px}
+  .hbig{font-size:clamp(34px,7.4vw,58px);letter-spacing:-.044em;max-width:16em}
+  .hgrain{-webkit-mask-image:radial-gradient(90% 60% at 50% 30%,#000 10%,transparent 76%);
+    mask-image:radial-gradient(90% 60% at 50% 30%,#000 10%,transparent 76%)}
+}
+@media (prefers-reduced-motion:reduce){
+  }
+@media print{.reveal{opacity:1!important;translate:none!important}}
+
+
+/* ---- 04 · the graph, lifted ---------------------------------------------------------
+   Sizes, padding and gaps are untouched — only the surfaces. Every node now uses the same
+   recipe as the ScrollStack cards, which is the most premium thing on this site: a panel
+   that steps up toward a light source, an inset highlight along its top edge, and a real
+   shadow. The tiles carry foil. Nothing here is a new colour. */
+.wfcanvas{
+  background:
+    radial-gradient(58% 62% at 62% 26%,color-mix(in srgb,var(--emerald) 7%,transparent),transparent 68%),
+    radial-gradient(48% 54% at 14% 84%,rgba(52,80,127,.18),transparent 72%),
+    linear-gradient(162deg,var(--panel-raised) 0%,var(--panel) 62%);
+  box-shadow:0 1px 0 rgba(255,255,255,.035) inset,
+    0 2px 2px rgba(0,0,0,.5),0 30px 64px -22px rgba(0,0,0,.95)}
+/* a vignette so the graph sits in light rather than on a flat sheet */
+.wfcanvas::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(78% 84% at 50% 46%,transparent 42%,rgba(0,0,0,.42) 100%)}
+.wfgrid{z-index:2}
+.wfwire{z-index:1}
+.wfwire .wp{stroke:rgba(216,184,119,.42)}
+
+.wfnode,.wftrig,.wfmerge,.wfgate,.wfidle{
+  background:linear-gradient(158deg,
+    color-mix(in srgb,var(--emerald) 5%,var(--panel-raised)) 0%,var(--panel) 66%);
+  border-color:var(--hairline);
+  box-shadow:0 1px 0 rgba(255,255,255,.045) inset,
+    0 1px 1px rgba(0,0,0,.5),0 16px 34px -14px rgba(0,0,0,.9)}
+/* the foil tile — the card's .swi treatment at node scale */
+.wfnode i,.wftrig i,.wfmerge i,.wfgate i,.wfidle i{
+  background:linear-gradient(158deg,color-mix(in srgb,var(--emerald) 24%,transparent),
+    color-mix(in srgb,var(--emerald) 8%,transparent));
+  border-color:color-mix(in srgb,var(--emerald) 38%,transparent);
+  box-shadow:0 1px 0 color-mix(in srgb,var(--mint) 30%,transparent) inset,
+    0 8px 18px -10px color-mix(in srgb,var(--emerald) 55%,transparent);
+  color:var(--mint)}
+.wfnode i svg,.wftrig i svg,.wfmerge i svg,.wfgate i svg,.wfidle i svg{stroke-width:1.4}
+/* the trigger and the human gate are the two nodes that matter: a foil hairline catches
+   their top edge, the way the lead card's does */
+.wftrig::before,.wfgate::before{content:"";position:absolute;left:14px;right:14px;top:0;
+  height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,
+    color-mix(in srgb,var(--mint) 80%,transparent),transparent)}
+.wfgate{border-color:color-mix(in srgb,var(--emerald) 46%,transparent);
+  background:linear-gradient(158deg,
+    color-mix(in srgb,var(--emerald) 13%,var(--panel-raised)) 0%,
+    color-mix(in srgb,var(--emerald) 4%,var(--panel)) 100%);
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,
+    0 0 0 1px color-mix(in srgb,var(--emerald) 12%,transparent),
+    0 18px 40px -14px rgba(0,0,0,.92)}
+/* opaque, not faded: the idle path is quieter by ink, not by letting the canvas through */
+.wfidle{opacity:1;background:linear-gradient(158deg,var(--panel-raised) 0%,var(--panel) 66%)}
+.wfidle b{color:var(--body)}
+.wfidle em{color:var(--body)}
+.wfidle i{background:linear-gradient(158deg,
+    color-mix(in srgb,var(--emerald) 12%,var(--panel-raised)),
+    color-mix(in srgb,var(--emerald) 5%,var(--panel)));
+  border-color:var(--hairline);box-shadow:0 1px 0 rgba(255,255,255,.04) inset;
+  color:var(--mute)}
+
+
+/* ---- the three remaining artifact surfaces get the graph's light ---------------------
+   The same recipe as .wfcanvas: a panel that steps up toward a light source, a gold bloom
+   high right, a navy bloom low left, and a vignette so the surface is lit rather than flat.
+   Written once for all three; nothing inside them moves, and each keeps its own structure
+   (the funnel scrolls nothing, the dashboard and the deal panel clip their contents, so
+   the vignette rides on a ::before behind the content rather than an ::after over it). */
+#dia2,.dia.dash,.deal{
+  background:
+    radial-gradient(56% 60% at 74% 20%,color-mix(in srgb,var(--emerald) 7%,transparent),transparent 68%),
+    radial-gradient(48% 56% at 12% 88%,rgba(52,80,127,.18),transparent 72%),
+    linear-gradient(162deg,var(--panel-raised) 0%,var(--panel) 62%);
+  box-shadow:0 1px 0 rgba(255,255,255,.035) inset,
+    0 2px 2px rgba(0,0,0,.5),0 30px 64px -22px rgba(0,0,0,.95)}
+/* the vignette. .dia.dash and .deal are overflow:hidden and their children are flex rows,
+   so a full-bleed layer must be absolutely positioned and sit UNDER the content. */
+#dia2::before,.dia.dash::before,.deal::before{content:"";position:absolute;inset:0;z-index:0;
+  pointer-events:none;border-radius:inherit;
+  background:radial-gradient(78% 86% at 50% 44%,transparent 42%,rgba(0,0,0,.40) 100%)}
+.dia.dash,.deal{position:relative}
+/* everything the panels actually draw sits above it */
+#dia2>*,.dia.dash>*,.deal>*{position:relative;z-index:1}
+
+/* ---- the closing passport cover, taken verbatim from For Companies so the two pages
+   show the identical object. Do not restyle here: edit it there and re-copy. ---- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@keyframes cringspin{to{rotate:360deg}}
+@keyframes oturn{to{rotate:360deg}}
+@keyframes palmpulse{from{opacity:.55}to{opacity:1}}
+
+/* ================= the closing visual, copied from For Companies =====================
+   Straight copy: the same markup, the same rules, in the same source order, appended last
+   so nothing on this page can win the cascade against it. --figH is declared here because
+   the glow is sized from it and it lives on .figwrap over there, which this page has not.
+   Do not restyle any of this here — edit it on For Companies and re-copy. */
+.oart{--figH:min(52vh,420px)}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media(prefers-reduced-motion:reduce){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+@media (max-width:900px){
+
+
+}
+
+/* ================= the closing visual, copied from For Companies =====================
+   A straight copy: same markup, same rules, same source order, appended last so nothing
+   on this page outranks it. --figH is declared on .cart here because the glow is sized
+   from it and it lives on .figwrap over there, which this page does not have.
+   Do not restyle any of this here — edit it on For Companies and re-copy. */
+.cart{--figH:min(52vh,420px)}
+.present{position:absolute;inset:0;z-index:2}
+.pphone{position:absolute;right:-6%;bottom:-7%;height:72%;aspect-ratio:9/16;z-index:4;
+  border-radius:var(--r-card-lg);overflow:hidden;background:var(--panel-raised);
+  border:1px solid color-mix(in srgb,var(--emerald) 26%,transparent);
+  box-shadow:var(--sh-float)}
+.pphone image-slot{position:absolute;inset:0;width:100%;height:100%}
+.pnotch{position:absolute;left:50%;top:8px;translate:-50% 0;z-index:2;width:34%;height:5px;
+  border-radius:3px;background:rgba(255,255,255,.14)}
+.pgroup{position:absolute;left:50cqw;top:50cqh;translate:-50% -50%;
+  width:var(--frame-w);aspect-ratio:16/9;z-index:2}
+.pscreen{position:absolute;inset:0;z-index:3;
+  border-radius:var(--r-card-lg);overflow:hidden;background:var(--panel);
+  border:1px solid color-mix(in srgb,var(--emerald) 22%,transparent);
+  box-shadow:var(--sh-float)}
+.pscreen image-slot{position:absolute;inset:0;width:100%;height:100%}
+.pchrome{position:absolute;left:11px;top:11px;z-index:2;display:flex;gap:5px}
+.pchrome i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.16)}
+.plbl{position:absolute;right:11px;bottom:9px;z-index:2;font-family:var(--mono);font-size:8px;
+  letter-spacing:.2em;color:var(--emerald);opacity:.75}
+.pphone{height:66%;right:-4%;bottom:-6%}
+.cpface{position:absolute;inset:0;container-type:inline-size;overflow:hidden;line-height:1}
+.cpface .cspine{position:absolute;inset:0 auto 0 0;width:3.48%;
+  background:linear-gradient(90deg,rgba(0,0,0,.6),transparent)}
+.cpface .clbl{position:absolute;top:8.75%;inset-inline:0;text-align:center;
+  font-family:var(--mono);font-size:2.93cqw;letter-spacing:.34em;color:rgba(216,184,119,.8)}
+.cpface .crest{position:absolute;top:22.5%;left:50%;translate:-50% 0;
+  width:50.87%;aspect-ratio:1;border-radius:50%;
+  border:1.5px solid rgba(216,184,119,.7);display:grid;place-items:center}
+.cpface .crest i{width:73.08%;aspect-ratio:1;border-radius:50%;
+  border:1px solid rgba(216,184,119,.45);display:grid;place-items:center}
+.cpface .crest i b{position:relative;display:grid;place-items:center;
+  width:30.77%;aspect-ratio:72 / 93;border-radius:4px;
+  background:rgba(216,184,119,.85)}
+.cpface .cring{position:absolute;inset:0;width:100%;height:100%;
+  animation:cringspin 44s linear infinite}
+.cpface .cring text{font-family:var(--mono);font-size:8.5px;font-weight:500;
+  letter-spacing:.18em;dominant-baseline:central;fill:rgba(216,184,119,.66)}
+.cpface .cring text.cdia{font-size:5.6px;letter-spacing:normal;fill:rgba(216,184,119,.9)}
+.cpface .cfp{width:70.8%;aspect-ratio:1;object-fit:contain;
+  mix-blend-mode:multiply;opacity:.36}
+.cpface .chnd{position:absolute;top:69.06%;inset-inline:0;padding-inline:5.2%;
+  display:flex;flex-direction:column;align-items:center;gap:.78%;
+  font-family:var(--mono);color:rgba(216,184,119,.34);transition:color .35s var(--ease)}
+.cpface .chd{font-size:2.39cqw;letter-spacing:.2em;color:rgba(216,184,119,.42)}
+.cpface .chh{font-size:4.57cqw;letter-spacing:.06em;line-height:1.1;max-width:100%;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cpface .chnd.on{color:var(--mint)}
+.cpface .ctally{position:absolute;top:78.75%;inset-inline:0;text-align:center;
+  font-family:var(--mono);font-size:2.61cqw;letter-spacing:.2em;
+  color:rgba(216,184,119,.7);opacity:var(--tally,0)}
+.cpface .cchip{position:absolute;bottom:7.5%;left:50%;translate:-50% 0;
+  width:20.87%;display:flex;flex-direction:column;align-items:center;gap:.78%}
+.cpface .cchip svg{width:100%;height:auto;aspect-ratio:83 / 30;display:block;
+  fill:rgba(216,184,119,.72)}
+.cpface .cchip span{font-family:var(--mono);font-size:1.74cqw;letter-spacing:.24em;
+  color:rgba(216,184,119,.5)}
+.cpface .chd,.cpface .ctally,.cpface .cchip span{display:none}
+.cpface .evstamp{position:absolute;top:4.7%;right:4.7%;font-family:var(--mono);
+  font-size:2.17cqw;letter-spacing:.2em;color:var(--emerald);
+  padding:1.7% 2.6%;border:1px solid color-mix(in srgb,var(--emerald) 55%,transparent);
+  border-radius:2px}
+.cart{position:relative;display:grid;place-items:center;min-height:min(64vh,500px)}
+.cpres{position:relative;width:100%;min-height:calc(var(--frame-w) * .72);aspect-ratio:4/3;
+  inset:auto;container-type:size}
+.cpassport{padding:0;
+  background:
+    repeating-linear-gradient(128deg,rgba(255,255,255,.028) 0 1px,transparent 1px 8px),
+    linear-gradient(205deg,#22407a 0%,var(--emerald-mid,#1b3564) 34%,var(--emerald-deep,#10203f) 100%);
+  border-radius:var(--r-flap) var(--r-card-lg) var(--r-card-lg) var(--r-flap)}
+.cpres .pphone{aspect-ratio:.715}
+.cpassport::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5%;z-index:2;
+  background:linear-gradient(90deg,rgba(0,0,0,.45),transparent)}
+.oring{position:absolute;width:min(38vw,390px);aspect-ratio:1;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--emerald) 28%,transparent);
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--emerald) 14%,transparent),color-mix(in srgb,var(--emerald) 4%,transparent) 52%,transparent 74%);
+  box-shadow:inset 0 0 80px color-mix(in srgb,var(--emerald) 6%,transparent)}
+.oring::after{content:"";position:absolute;inset:-13%;border-radius:50%;
+  border:1px dashed rgba(123,164,255,.16);animation:oturn 52s linear infinite}
+.palmglow{position:absolute;z-index:2;left:84.5%;top:31.5%;width:calc(var(--figH) * .34);
+  aspect-ratio:1;translate:-50% -50%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--emerald) 30%,transparent),transparent 70%);
+  animation:palmpulse 4.5s ease-in-out infinite alternate}
+.cart{order:-1;min-height:min(38vh,300px)}
+.oring{width:min(64vw,250px)}
+@media(prefers-reduced-motion:reduce){
+  .cpface{position:absolute;inset:0;container-type:inline-size;overflow:hidden;line-height:1}
+  .cpface .cspine{position:absolute;inset:0 auto 0 0;width:3.48%;
+  background:linear-gradient(90deg,rgba(0,0,0,.6),transparent)}
+  .cpface .clbl{position:absolute;top:8.75%;inset-inline:0;text-align:center;
+  font-family:var(--mono);font-size:2.93cqw;letter-spacing:.34em;color:rgba(216,184,119,.8)}
+  .cpface .crest{position:absolute;top:22.5%;left:50%;translate:-50% 0;
+  width:50.87%;aspect-ratio:1;border-radius:50%;
+  border:1.5px solid rgba(216,184,119,.7);display:grid;place-items:center}
+  .cpface .crest i{width:73.08%;aspect-ratio:1;border-radius:50%;
+  border:1px solid rgba(216,184,119,.45);display:grid;place-items:center}
+  .cpface .crest i b{position:relative;display:grid;place-items:center;
+  width:30.77%;aspect-ratio:72 / 93;border-radius:4px;
+  background:rgba(216,184,119,.85)}
+  .cpface .cring{position:absolute;inset:0;width:100%;height:100%;
+  animation:cringspin 44s linear infinite}
+  .cpface .cring text{font-family:var(--mono);font-size:8.5px;font-weight:500;
+  letter-spacing:.18em;dominant-baseline:central;fill:rgba(216,184,119,.66)}
+  .cpface .cring text.cdia{font-size:5.6px;letter-spacing:normal;fill:rgba(216,184,119,.9)}
+  .cpface .cfp{width:70.8%;aspect-ratio:1;object-fit:contain;
+  mix-blend-mode:multiply;opacity:.36}
+  .cpface .chnd{position:absolute;top:69.06%;inset-inline:0;padding-inline:5.2%;
+  display:flex;flex-direction:column;align-items:center;gap:.78%;
+  font-family:var(--mono);color:rgba(216,184,119,.34);transition:color .35s var(--ease)}
+  .cpface .chd{font-size:2.39cqw;letter-spacing:.2em;color:rgba(216,184,119,.42)}
+  .cpface .chh{font-size:4.57cqw;letter-spacing:.06em;line-height:1.1;max-width:100%;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cpface .chnd.on{color:var(--mint)}
+  .cpface .ctally{position:absolute;top:78.75%;inset-inline:0;text-align:center;
+  font-family:var(--mono);font-size:2.61cqw;letter-spacing:.2em;
+  color:rgba(216,184,119,.7);opacity:var(--tally,0)}
+  .cpface .cchip{position:absolute;bottom:7.5%;left:50%;translate:-50% 0;
+  width:20.87%;display:flex;flex-direction:column;align-items:center;gap:.78%}
+  .cpface .cchip svg{width:100%;height:auto;aspect-ratio:83 / 30;display:block;
+  fill:rgba(216,184,119,.72)}
+  .cpface .cchip span{font-family:var(--mono);font-size:1.74cqw;letter-spacing:.24em;
+  color:rgba(216,184,119,.5)}
+}
+@media (max-width:900px){
+  .cart{order:-1;min-height:min(38vh,300px)}
+  .oring{width:min(64vw,250px)}
+}
+</style>
+<link rel="stylesheet" href="cp-header.css">
+
+<div class="paper" aria-hidden="true"></div>
+<div class="rose" aria-hidden="true"></div>
+<div class="prog"></div>
+<header class="hdr">
+  <a class="brand" href="index.html"><i></i><span>CAREERPASSPORT</span></a>
+  <div class="hend">
+    <nav class="nav">
+      <a href="For Companies.html">For companies</a>
+      <a class="here" href="For Recruitment Partners.html">For recruitment partners</a>
+    </nav>
+    <span class="hsep" aria-hidden="true"></span>
+    <div class="hcta">
+      <a class="nbtn gh" href="#outro">Sign up</a>
+      <a class="nbtn" href="#outro">Free demo</a>
+    </div>
+  </div>
+  <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
+</header>
+<nav class="mnav" id="mnav">
+  <a href="For Companies.html">For companies</a>
+  <a href="For Recruitment Partners.html">For recruitment partners</a>
+  <div class="mcta">
+    <a class="nbtn gh" href="#outro">Sign up</a>
+    <a class="nbtn" href="#outro">Free demo</a>
+  </div>
+</nav>
+
+<!-- ============ ONE PRIVATE NETWORK, EVOLVING ============ -->
+<main>
+
+<!-- ============ 01 · HERO ============ -->
+<section class="hero" data-screen-label="01" data-keystop>
+  <div class="hmesh" aria-hidden="true"></div>
+  <div class="hgrain" aria-hidden="true"></div>
+  <div class="hcopy">
+    <h1 class="hbig">Fastest way to grow your recruitment business</h1>
+    <p class="lede">Whether you are a solopreneur, headhunter or a recruitment agency, CareerPassport helps you get more from the candidates, clients and relationships you already have.</p>
+    <div class="ctas">
+      <a class="btn gh" href="#outro">Book a demo</a>
+      <a class="btn" href="#outro">Sign up as a partner</a>
+    </div>
+  </div>
+
+  <div class="strip" aria-label="Recruitment partners on CareerPassport">
+    <div class="track" id="logoTrack"></div>
+  </div>
+</section>
+
+<section class="slab" id="slab1" data-screen-label="02" data-keystop>
+  <div class="slabin">
+    <p class="eyebrow gold reveal"><i></i>The partner problem</p>
+    <h2 class="slabh reveal">Most recruitment businesses already own the thing they are short of.</h2>
+    <div class="stats">
+      <div class="stat reveal" style="--i:0">
+        <span class="statv" data-to="70">0<em>%</em></span>
+        <b>of a partner database is never searched again</b><i>after the first placement</i>
+      </div>
+      <div class="stat reveal" style="--i:1">
+        <span class="statv" data-to="3.4">0<em>x</em></span>
+        <b>more roles worked per consultant</b><i>when the pipeline runs itself</i>
+      </div>
+      <div class="stat reveal" style="--i:2">
+        <span class="statv" data-to="48">0<em>hrs</em></span>
+        <b>saved on outreach and scheduling</b><i>in an average week</i>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="story" id="story" data-screen-label="03" data-keystop>
+  <div class="storypin">
+    <div class="storyin">
+      <div class="storyacts">
+        <div class="storyact on" data-i="0" style="--o:0">
+          <div class="scopy">
+      <p class="eyebrow gold"><i></i>01 / Your data</p>
+      <h2>Make your scattered database <em class="serif">searchable</em></h2>
+      <p class="lede">Turn the candidate network you already own into a living, queryable business asset.</p>
+      <p class="hline">Scattered data &rarr; private talent intelligence.</p>
+      <p class="fine">Your personal candidate database always stays private.</p>
+          </div>
+        </div>
+        <div class="storyact" data-i="1" style="--o:1">
+          <div class="scopy">
+      <p class="eyebrow gold"><i></i>02 / Your operating system</p>
+      <h2>Process applicants. <em class="serif">Don't just track them.</em></h2>
+      <p class="lede">Move beyond recording recruitment activity. Structure the role, process candidates and keep the work moving.</p>
+      <p class="hline">One place to manage your roles, candidates and hiring activity.</p>
+          </div>
+        </div>
+        <div class="storyact" data-i="2" style="--o:2">
+          <div class="scopy">
+      <p class="eyebrow gold"><i></i>03 / Your AI workforce</p>
+      <h2>Let technology handle the <em class="serif">repetitive motion.</em></h2>
+      <p class="lede">Design agentic workflows across the pipeline from outreach to evaluation to shortlisting criteria to scheduling.</p>
+      <p class="hline">Customise agents for execution and keep humans for judgement and relationships.</p>
+          </div>
+        </div>
+        <div class="storyact" data-i="3" style="--o:3">
+          <div class="scopy">
+      <p class="eyebrow gold"><i></i>04 / Partner network</p>
+      <h2>Grow together. With the terms <em class="serif">clear from the start.</em></h2>
+      <p class="lede">Recruitment partnerships work when everyone knows what has been agreed. CareerPassport brings the commercial details into the same workflow.</p>
+      <ul class="plain">
+        <li>No guessing who owns what</li>
+        <li>No ambiguity on commercials</li>
+        <li>Clear visibility on where your payout stands</li>
+      </ul>
+          </div>
+        </div>
+      </div>
+      <div class="stage2">
+        <div class="stg on" data-i="0" style="--o:0">
+          <div class="dia" id="dia2">
+        <div class="dnodes">
+          <span class="dnode" style="--d:0.00s"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c-4.4 0-7.6 1.2-7.6 2.9S7.6 8 12 8s7.6-1.2 7.6-2.9S16.4 2.2 12 2.2Z"/><path d="M4.4 8.2v3.1c0 1.7 3.2 2.9 7.6 2.9s7.6-1.2 7.6-2.9V8.2c-1.6 1.2-4.4 1.8-7.6 1.8s-6-.6-7.6-1.8Z"/><path d="M4.4 14.5v3.1c0 1.7 3.2 2.9 7.6 2.9s7.6-1.2 7.6-2.9v-3.1c-1.6 1.2-4.4 1.8-7.6 1.8s-6-.6-7.6-1.8Z"/></svg><b>ATS</b></span>
+          <span class="dnode" style="--d:0.06s"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h16a1 1 0 0 1 1 1v3.6H3V4a1 1 0 0 1 1-1Z"/><path d="M3 9.2h6.2v5.6H3V9.2Zm7.8 0H21v5.6H10.8V9.2ZM3 16.4h6.2V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3.6Zm7.8 0H21V20a1 1 0 0 1-1 1h-8.2a1 1 0 0 1-1-1v-3.6Z"/></svg><b>Excel</b></span>
+          <span class="dnode" style="--d:0.12s"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.4 7.3 12 13.4l9.6-6.1A2 2 0 0 0 19.7 5H4.3a2 2 0 0 0-1.9 2.3Z"/><path d="M12 15.3 2.2 9.1V17a2 2 0 0 0 2 2h15.6a2 2 0 0 0 2-2V9.1L12 15.3Z"/></svg><b>Email</b></span>
+          <span class="dnode" style="--d:0.18s"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6c-5.2 0-9.4 3.7-9.4 8.3 0 2.5 1.2 4.7 3.2 6.2l-.9 4.1a.5.5 0 0 0 .74.55l4.06-2.36c.75.14 1.53.21 2.34.21 5.2 0 9.4-3.7 9.4-8.7S17.2 2.6 12 2.6Z"/></svg><b>WhatsApp</b></span>
+          <span class="dnode" style="--d:0.24s"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.6 2H6.4A2.4 2.4 0 0 0 4 4.4v15.2A2.4 2.4 0 0 0 6.4 22h11.2a2.4 2.4 0 0 0 2.4-2.4V8.4h-5.2a1.2 1.2 0 0 1-1.2-1.2V2Z"/><path d="M15.2 2.4V6.8h4.4L15.2 2.4Z"/></svg><b>Notes</b></span>
+          <span class="dnode" style="--d:0.30s"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.2 6.6A2.4 2.4 0 0 1 5.6 4.2h3.6a2 2 0 0 1 1.62.82l1.1 1.5h6.48a2.4 2.4 0 0 1 2.4 2.4v9.06a2.4 2.4 0 0 1-2.4 2.4H5.6a2.4 2.4 0 0 1-2.4-2.4V6.6Z"/></svg><b>Files</b></span>
+        </div>
+        <svg class="dwire" viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true">
+          <path class="fw" id="rpw0" d="M25 0C25 32 25 30 150 60"/>
+          <path class="fw" id="rpw1" d="M75 0C75 30 88 32 150 60"/>
+          <path class="fw" id="rpw2" d="M125 0C125 30 132 34 150 60"/>
+          <path class="fw" id="rpw3" d="M175 0C175 30 168 34 150 60"/>
+          <path class="fw" id="rpw4" d="M225 0C225 30 212 32 150 60"/>
+          <path class="fw" id="rpw5" d="M275 0C275 32 275 30 150 60"/>
+          <g class="fdots">
+          <g class="fdotw"><animateMotion dur="5.4s" begin="0.00s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.35;1"><mpath href="#rpw0"/></animateMotion><circle class="fdot" r="1.37"><animate attributeName="opacity" dur="5.4s" begin="0.00s" repeatCount="indefinite" calcMode="linear" values="1;1;0;0" keyTimes="0;0.35;0.38;1"/></circle></g>
+          <g class="fdotw"><animateMotion dur="5.4s" begin="0.10s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.35;1"><mpath href="#rpw1"/></animateMotion><circle class="fdot" r="1.37"><animate attributeName="opacity" dur="5.4s" begin="0.10s" repeatCount="indefinite" calcMode="linear" values="1;1;0;0" keyTimes="0;0.35;0.38;1"/></circle></g>
+          <g class="fdotw"><animateMotion dur="5.4s" begin="0.20s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.35;1"><mpath href="#rpw2"/></animateMotion><circle class="fdot" r="1.37"><animate attributeName="opacity" dur="5.4s" begin="0.20s" repeatCount="indefinite" calcMode="linear" values="1;1;0;0" keyTimes="0;0.35;0.38;1"/></circle></g>
+          <g class="fdotw"><animateMotion dur="5.4s" begin="0.30s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.35;1"><mpath href="#rpw3"/></animateMotion><circle class="fdot" r="1.37"><animate attributeName="opacity" dur="5.4s" begin="0.30s" repeatCount="indefinite" calcMode="linear" values="1;1;0;0" keyTimes="0;0.35;0.38;1"/></circle></g>
+          <g class="fdotw"><animateMotion dur="5.4s" begin="0.40s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.35;1"><mpath href="#rpw4"/></animateMotion><circle class="fdot" r="1.37"><animate attributeName="opacity" dur="5.4s" begin="0.40s" repeatCount="indefinite" calcMode="linear" values="1;1;0;0" keyTimes="0;0.35;0.38;1"/></circle></g>
+          <g class="fdotw"><animateMotion dur="5.4s" begin="0.50s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.35;1"><mpath href="#rpw5"/></animateMotion><circle class="fdot" r="1.37"><animate attributeName="opacity" dur="5.4s" begin="0.50s" repeatCount="indefinite" calcMode="linear" values="1;1;0;0" keyTimes="0;0.35;0.38;1"/></circle></g>
+          </g>
+        </svg>
+        <div class="dhub" style="--d:.72s">
+          <div class="dhubbar">
+            <span class="dhubname"><i class="dhubm" aria-hidden="true"></i>CareerPassport</span>
+            <span class="dhubtag">YOUR TALENT NETWORK</span>
+          </div>
+          <div class="dhome">
+            <p class="dgreet">Who are you looking for?</p>
+            <span class="dask">
+              <svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 2.4a8.2 8.2 0 0 1 6.44 13.3l4.3 4.3a1.2 1.2 0 0 1-1.7 1.7l-4.3-4.3A8.2 8.2 0 1 1 10.6 2.4Zm0 2.4a5.8 5.8 0 1 0 0 11.6 5.8 5.8 0 0 0 0-11.6Z"/></svg>
+              <em>Ask your talent network&hellip;</em>
+              <i class="daskgo" aria-hidden="true"><svg class="fi" viewBox="0 0 24 24"><path d="M4.6 11.2h11.2L11.5 6.9a1.1 1.1 0 0 1 1.56-1.56l6.2 6.2a1.1 1.1 0 0 1 0 1.56l-6.2 6.2a1.1 1.1 0 0 1-1.56-1.56l4.3-4.3H4.6a1.2 1.2 0 0 1 0-2.4Z"/></svg></i>
+            </span>
+            <div class="dsugs">
+              <span class="dsug">Enterprise sales, 8+ years</span>
+              <span class="dsug">Placed before, open to move</span>
+              <span class="dsug">Spoke in the last 6 months</span>
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="stg" data-i="1" style="--o:1">
+          <div class="dia dash" id="dia3">
+        <div class="dbar">
+          <span class="dbl"><i class="dbdot" aria-hidden="true"></i>CareerPassport</span>
+          <span class="dbr">LIVE ROLE</span>
+        </div>
+        <div class="dstats">
+            <span class="dstat" style="--d:0.24s">
+              <u>46</u><b>Sourced</b>
+            </span>
+            <span class="dstat" style="--d:0.31s">
+              <u>19</u><b>Screening</b>
+            </span>
+            <span class="dstat live" style="--d:0.38s">
+              <u>11</u><b>Evaluation</b>
+            </span>
+            <span class="dstat" style="--d:0.45s">
+              <u>2</u><b>Offer</b>
+            </span>
+        </div>
+        <div class="dtbl">
+          <span class="dhead"><b>Candidate</b><em>Stage</em><u>Evidence</u><s>Last</s></span>
+          <span class="drow" style="--d:0.62s">
+            <b>Priya Raghavan</b><i>Enterprise sales</i>
+            <em class="ptag">Evaluation</em>
+            <u>3 / 4</u><s>2h</s>
+          </span>
+          <span class="drow" style="--d:0.69s">
+            <b>Ashraf Kalam</b><i>Payments platform</i>
+            <em class="ptag on">Offer</em>
+            <u>4 / 4</u><s>1d</s>
+          </span>
+          <span class="drow" style="--d:0.76s">
+            <b>Ravi Kumar</b><i>B2B SaaS</i>
+            <em class="ptag">Screening</em>
+            <u>1 / 4</u><s>3d</s>
+          </span>
+          <span class="drow" style="--d:0.83s">
+            <b>Meera Sundaram</b><i>Platform sales</i>
+            <em class="ptag">Screening</em>
+            <u>2 / 4</u><s>4d</s>
+          </span>
+          <span class="drow" style="--d:0.90s">
+            <b>Nikhil Barot</b><i>Solutions consulting</i>
+            <em class="ptag">Sourced</em>
+            <u>0 / 4</u><s>6d</s>
+          </span>
+          <span class="drow" style="--d:0.97s">
+            <b>Sanjana Bhatt</b><i>Mid-market sales</i>
+            <em class="ptag">Screening</em>
+            <u>1 / 4</u><s>7d</s>
+          </span>
+          <span class="drow" style="--d:1.04s">
+            <b>Tarun Menezes</b><i>Partnerships</i>
+            <em class="ptag">Sourced</em>
+            <u>0 / 4</u><s>9d</s>
+          </span>
+        </div>
+      </div>
+        </div>
+        <div class="stg" data-i="2" style="--o:2">
+          <div class="dia" id="dia4">
+        <div class="wfcanvas">
+          <svg class="wfwire" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path class="wp" id="wfw0" d="M10 50H20Q24 50 24 17H30"/>
+            <path class="wp" id="wfw1" d="M10 50H20Q24 50 24 83H30"/>
+            <path class="wp" id="wfw2" d="M30 17H44Q48 17 48 50H50"/>
+            <path class="wp" id="wfw3" d="M30 83H44Q48 83 48 50H50"/>
+            <path class="wp" id="wfw4" d="M50 50H70"/>
+            <path class="wp" id="wfw5" d="M70 50H82Q86 50 86 17H90"/>
+            <path class="wp" id="wfw6" d="M70 50H82Q86 50 86 83H90"/>
+         </svg>
+          <div class="wfgrid">
+            <span class="wftrig" style="--ga:2 / 1"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2.6 4.8 13.2h5.6L9.6 21.4 18 10.6h-5.8L13 2.6Z"/></svg></i><b>New mandate</b><em>TRIGGER</em></span>
+            <span class="wfnode" style="--ga:1 / 2"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.6" cy="10.6" r="6.4"/><path d="m15.4 15.4 5 5"/></svg></i><b>Search network</b><em>MATCH</em></span>
+            <span class="wfnode" style="--ga:3 / 2"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.4 3.2 10.6 13.4"/><path d="M21.4 3.2 15 21l-4.4-7.6L3 9l18.4-5.8Z"/></svg></i><b>Personalised outreach</b><em>EMAIL &middot; WHATSAPP</em></span>
+            <span class="wfmerge" style="--ga:2 / 3"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.4" cy="5.6" r="2.3"/><circle cx="5.4" cy="18.4" r="2.3"/><circle cx="18.6" cy="12" r="2.3"/><path d="M7.7 6.6c3.4 1 4.4 3.2 8.6 5M7.7 17.4c3.4-1 4.4-3.2 8.6-5"/></svg></i><b>Merge</b><em>APPEND</em></span>
+            <span class="wfnode" style="--ga:2 / 4"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.4 14.6 9l6 .9-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.9l6-.9L12 3.4Z"/></svg></i><b>Evaluate replies</b><em>SCORE</em></span>
+            <span class="wfgate" style="--ga:1 / 5"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9.6" cy="8" r="3.5"/><path d="M3 20a6.6 6.6 0 0 1 13.2 0"/><path d="m17.2 12.4 1.9 1.9 3.3-3.3"/></svg></i><b>Shortlist to client</b><em>YOUR CALL</em></span>
+            <span class="wfidle" style="--ga:3 / 5"><i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="5.4" width="17.6" height="15.4" rx="2.4"/><path d="M3.2 10.4h17.6M8.2 3.2v4M15.8 3.2v4"/></svg></i><b>Keep nurturing</b><em>NO ACTION</em></span>
+          </div>
+        </div>
+</div>
+        </div>
+        <div class="stg" data-i="3" style="--o:3">
+          <div class="deal">
+        <div class="dealhd"><span class="nxl">Collaboration agreement</span><span class="nxv">SIGNED</span></div>
+        <div class="terms">
+            <span class="trow ok"><b>Role</b><em>Enterprise Sales Manager</em></span>
+            <span class="trow"><b>Role owner</b><em>Recruitment Partner A</em></span>
+            <span class="trow"><b>Candidate owner</b><em>Recruitment Partner B</em></span>
+            <span class="trow ok"><b>Fee</b><em>Agreed</em></span>
+            <span class="trow ok"><b>Partner split</b><em>Agreed</em></span>
+            <span class="trow ok"><b>Payment terms</b><em>Visible</em></span>
+        </div>
+        <div class="chain">
+            <span class="cstep done"><i class="ctick"><svg viewBox="0 0 24 24"><path d="m4 12.5 5 5L20 6.5"/></svg></i>Submitted</span>
+            <i class="carr" aria-hidden="true">&rarr;</i>
+            <span class="cstep done"><i class="ctick"><svg viewBox="0 0 24 24"><path d="m4 12.5 5 5L20 6.5"/></svg></i>Interviewed</span>
+            <i class="carr" aria-hidden="true">&rarr;</i>
+            <span class="cstep done"><i class="ctick"><svg viewBox="0 0 24 24"><path d="m4 12.5 5 5L20 6.5"/></svg></i>Joined</span>
+            <i class="carr" aria-hidden="true">&rarr;</i>
+            <span class="cstep done"><i class="ctick"><svg viewBox="0 0 24 24"><path d="m4 12.5 5 5L20 6.5"/></svg></i>Invoice raised</span>
+            <i class="carr" aria-hidden="true">&rarr;</i>
+            <span class="cstep"><i class="cdot"></i>Payout due</span>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+    <div class="storybar" aria-hidden="true"><i></i></div>
+  </div>
+</section>
+
+<section class="scr stkband" id="s5" data-screen-label="05" data-keystop>
+  <div class="stkpin">
+    <div class="scin">
+      <div class="scopy">
+        <h2 class="reveal">More demand to work on. <em class="serif">More ways to fulfil.</em></h2>
+        <p class="lede reveal">CareerPassport connects recruitment partners to a curated network of companies and recruitment businesses.</p>
+        <p class="hline reveal">A curated network for you</p>
+      </div>
+      <div class="sart">
+        <div class="stk" id="stk">
+            <article class="stkc" data-i="0">
+              <div class="stkbody">
+                <i class="swi" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></i>
+                <b>Work on new opportunities</b>
+                <p>Access relevant roles posted by companies and recruitment partners across the sectors you want to work in.</p>
+                <a class="btn" href="#outro">Show interest<svg class="swar" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+              </div>
+              <div class="stkimg" aria-hidden="true">
+                <svg class="gly" viewBox="0 0 236 300">
+                <g class="gsec">
+                  <path class="gs" pathLength="100" style="--d:0s" d="M38 60h68v68H38z"/>
+                  <path class="gs" pathLength="100" style="--d:.06s" d="M122 60h68v68h-68z"/>
+                  <path class="gs" pathLength="100" style="--d:.12s" d="M38 144h68v68H38z"/>
+                  <path class="gs" pathLength="100" style="--d:.18s" d="M122 144h68v68h-68z"/>
+                </g>
+                <circle class="gs" pathLength="100" style="--d:.34s" cx="128" cy="150" r="58"/>
+                <path class="gs" pathLength="100" style="--d:.62s" d="M170 192 214 236"/>
+                <circle class="gdot" cx="128" cy="150" r="4.5"/>
+                </svg>
+              </div>
+            </article>
+            <article class="stkc" data-i="1">
+              <div class="stkbody">
+                <i class="swi" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="7" width="19" height="13.5" rx="2.5"/><path d="M16 7V5.2A2.2 2.2 0 0 0 13.8 3h-3.6A2.2 2.2 0 0 0 8 5.2V7"/><path d="M2.5 12.5h19"/></svg></i>
+                <b>Run your own client roles</b>
+                <p>Manage your existing mandates privately using CareerPassport.</p>
+                <a class="btn" href="#outro">Post a job<svg class="swar" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+              </div>
+              <div class="stkimg" aria-hidden="true">
+                <svg class="gly" viewBox="0 0 236 300">
+                <path class="gs" pathLength="100" style="--d:0s" d="M30 96h64l20 26h88v134H30z"/>
+                <path class="gs" pathLength="100" style="--d:.26s" d="M30 148h172"/>
+                <g class="gsec">
+                  <circle class="gs" pathLength="100" style="--d:.44s" cx="164" cy="216" r="38"/>
+                  <circle class="gs" pathLength="100" style="--d:.54s" cx="164" cy="216" r="24"/>
+                  <path class="gs" pathLength="100" style="--d:.64s" d="M164 240v34l-14-12M164 274l14-12"/>
+                </g>
+                <circle class="gdot" cx="164" cy="216" r="4.5"/>
+                </svg>
+              </div>
+            </article>
+            <article class="stkc" data-i="2">
+              <div class="stkbody">
+                <i class="swi" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M2.6 20a6.4 6.4 0 0 1 12.8 0"/><path d="M16.2 5.3a3.4 3.4 0 0 1 0 5.4"/><path d="M18.4 20a6.6 6.6 0 0 0-2.1-4.7"/></svg></i>
+                <b>Get help fulfilling your roles</b>
+                <p>Open selected mandates to the partner network when you need extra reach, and decide the commercial split.</p>
+                <a class="btn" href="#outro">Go to marketplace<svg class="swar" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+              </div>
+              <div class="stkimg" aria-hidden="true">
+                <svg class="gly" viewBox="0 0 236 300">
+                <circle class="gs" pathLength="100" style="--d:0s" cx="94" cy="150" r="56"/>
+                <circle class="gs" pathLength="100" style="--d:.26s" cx="166" cy="150" r="56"/>
+                <g class="gsec">
+                  <path class="gs" pathLength="100" style="--d:.48s" d="M130 96v108"/>
+                </g>
+                <circle class="gdot" cx="130" cy="150" r="4.5"/>
+                </svg>
+              </div>
+            </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slab quote" id="slab2" data-screen-label="04" data-keystop>
+  <div class="slabin">
+    <p class="eyebrow gold reveal"><i></i>What changes</p>
+    <p class="pull reveal">Technology should run the process. <em class="serif">You should own the relationship.</em></p>
+  </div>
+</section>
+</main>
+
+<section class="outro" id="outro">
+  <div class="ocopy">
+    <p class="eyebrow gold reveal"><i></i>Partner with CareerPassport</p>
+    <h2 class="reveal">Modern recruitment agency looking to <em class="serif">scale their business?</em></h2>
+    <p class="lede reveal">CareerPassport gives recruitment partners the technology, demand and trusted network they need to run better, fulfil faster and grow their business.</p>
+    <p class="fine reveal">For recruitment agencies, solopreneurs and headhunters</p>
+  </div>
+  <div class="cart" aria-hidden="true">
+    <div class="oring"></div>
+    <div class="palmglow"></div>
+    <div class="present cpres">
+      <div class="pgroup">
+      <div class="pscreen">
+        <image-slot id="rp-close-product" shape="rect" radius="14"
+          placeholder="Drop a product screen grab (16:9)"></image-slot>
+        <span class="pchrome" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="plbl">PRODUCT &middot; LIVE ROLE</span>
+      </div>
+      <div class="pphone cpassport">
+        <div class="cpface">
+            <div class="cspine"></div>
+            <div class="clbl">CAREERPASSPORT</div>
+            <div class="crest">
+              <svg class="cring" viewBox="0 0 156 156" aria-hidden="true">
+                <defs><path id="cringClose" d="M78 78 m-66.875 0 a66.875 66.875 0 1 1 133.75 0 a66.875 66.875 0 1 1 -133.75 0"/></defs>
+                <text><textPath href="#cringClose" startOffset="12.07%" text-anchor="middle">SEAL OF TRUST</textPath></text>
+                <text class="cdia"><textPath href="#cringClose" startOffset="32.43%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+                <text><textPath href="#cringClose" startOffset="62.07%" text-anchor="middle">EVIDENCE OF YOUR CLAIMS</textPath></text>
+                <text class="cdia"><textPath href="#cringClose" startOffset="91.71%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+              </svg>
+              <i><b><img class="cfp" src="assets/fingerprint.png" alt=""></b></i>
+            </div>
+            <div class="chnd on"><span class="chd">careerpassport.ai</span><span class="chh">your-handle</span></div>
+            
+            <div class="cchip">
+              <svg viewBox="0 0 83 30" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width="2" height="30"/><rect x="5" y="0" width="3" height="30"/><rect x="11" y="0" width="1" height="30"/><rect x="16" y="0" width="1" height="30"/><rect x="23" y="0" width="1" height="30"/><rect x="28" y="0" width="3" height="30"/><rect x="34" y="0" width="1" height="30"/><rect x="40" y="0" width="2" height="30"/><rect x="45" y="0" width="1" height="30"/><rect x="50" y="0" width="4" height="30"/><rect x="57" y="0" width="2" height="30"/><rect x="62" y="0" width="3" height="30"/><rect x="68" y="0" width="1" height="30"/><rect x="73" y="0" width="1" height="30"/><rect x="79" y="0" width="2" height="30"/></svg>
+              <span>CP&middot;4417&middot;YN</span>
+            </div>
+          </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="ftr" data-keystop>
+  <div class="ftop">
+    <div class="fcta">
+      <p class="fctal">Grow your recruitment business</p>
+      <div class="fbtns">
+        <a class="fbtn" href="#outro">Download the app</a>
+        <a class="fbtn gh" href="#outro">Free demo</a>
+      </div>
+      <div class="fsoc">
+        <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.42v1.56h.05a3.75 3.75 0 0 1 3.37-1.85c3.6 0 4.27 2.37 4.27 5.46ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56ZM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.22.8 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.75V1.75C24 .78 23.2 0 22.22 0Z"/></svg></a>
+        <a href="#" aria-label="Twitter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.46l8.6-9.83L0 1.15h7.59l5.44 7.2Zm-1.29 19.49h2.04L6.49 3.24H4.3Z"/></svg></a>
+        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C8.74 0 8.33.02 7.05.07 5.78.13 4.9.33 4.14.63a5.6 5.6 0 0 0-2.02 1.32A5.6 5.6 0 0 0 .8 3.97c-.3.76-.5 1.64-.56 2.91C.19 8.16.17 8.57.17 12s.02 3.84.07 5.12c.06 1.27.26 2.15.56 2.91a5.6 5.6 0 0 0 1.32 2.02 5.6 5.6 0 0 0 2.02 1.32c.76.3 1.64.5 2.91.56 1.28.05 1.69.07 5.12.07s3.84-.02 5.12-.07c1.27-.06 2.15-.26 2.91-.56a5.6 5.6 0 0 0 2.02-1.32 5.6 5.6 0 0 0 1.32-2.02c.3-.76.5-1.64.56-2.91.05-1.28.07-1.69.07-5.12s-.02-3.84-.07-5.12c-.06-1.27-.26-2.15-.56-2.91a5.6 5.6 0 0 0-1.32-2.02A5.6 5.6 0 0 0 20.03.63c-.76-.3-1.64-.5-2.91-.56C15.84.02 15.43 0 12 0Zm0 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23a3.7 3.7 0 0 1-.9 1.38 3.7 3.7 0 0 1-1.38.9c-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16Zm0 3.68a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32Zm0 10.16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm7.85-10.4a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0Z"/></svg></a>
+        <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.08 0 12 0 12s0 3.92.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.81ZM9.55 15.57V8.43L15.82 12Z"/></svg></a>
+      </div>
+    </div>
+    <nav class="fnav">
+      <a href="index.html">Home</a>
+      <a href="For Companies.html">For companies</a>
+      <a class="here" href="For Recruitment Partners.html">For recruitment partners</a>
+      <a href="#">Blogs</a>
+    </nav>
+  </div>
+  <svg class="fmark" viewBox="0 0 1000 322" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <defs>
+      <linearGradient id="fmg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="var(--ink)" stop-opacity=".14"/>
+        <stop offset=".55" stop-color="var(--ink)" stop-opacity=".053"/>
+        <stop offset="1" stop-color="var(--ink)" stop-opacity=".014"/>
+      </linearGradient>
+      <linearGradient id="fmedge" gradientUnits="objectBoundingBox" x1="-.3" y1="0" x2="0" y2="0">
+        <stop offset="0" stop-color="var(--emerald)" stop-opacity="0"/>
+        <stop offset=".5" stop-color="var(--mint,#e9d6aa)" stop-opacity=".135"/>
+        <stop offset="1" stop-color="var(--emerald)" stop-opacity="0"/>
+        <animate attributeName="x1" values="-.3;1" dur="11s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="0;1.3" dur="11s" repeatCount="indefinite"/>
+      </linearGradient>
+    </defs>
+    <text class="fmfill" x="500" y="146" text-anchor="middle" font-size="182" font-weight="900">CAREER</text>
+    <text class="fmlit" x="500" y="146" text-anchor="middle" font-size="182" font-weight="900">CAREER</text>
+    <text class="fmfill" x="500" y="304" text-anchor="middle" font-size="182" font-weight="900">PASSPORT</text>
+    <text class="fmlit" x="500" y="304" text-anchor="middle" font-size="182" font-weight="900">PASSPORT</text>
+  </svg>
+  <p class="fcr">&copy; 2026 CareerPassport Technologies Inc</p>
+</footer>
+
+<script src="image-slot.js"></script>
+<script src="cp-page.js"></script>
+<script>
+/* the funnel packets: the wire svg is preserveAspectRatio="none", so x and y scale by
+   different factors and every circle in it would render as an oval. The dots take the
+   inverse on y; the paths keep the stretch. */
+(function(){
+  var svg=document.querySelector('#dia2 .dwire'); if(!svg) return;
+  function sync(){
+    var r=svg.getBoundingClientRect();
+    if(!r.width||!r.height) return;
+    svg.style.setProperty('--dsy',((r.width/300)/(r.height/60)).toFixed(4));
+  }
+  sync();
+  if(window.ResizeObserver) new ResizeObserver(sync).observe(svg);
+  addEventListener('resize',sync,{passive:true});
+})();
+
+/* ---- the partners strip: user-filled slots, duplicated for a seamless loop ---- */
+(function(){
+  var track=document.getElementById('logoTrack'); if(!track) return;
+  var N=7, html='';
+  for(var pass=0;pass<2;pass++){
+    for(var i=1;i<=N;i++){
+      html+='<div class="lg"><image-slot id="rp-logo-'+i+'" shape="rect" '+
+        (pass?'aria-hidden="true" ':'')+'placeholder="Logo '+i+'"></image-slot></div>';
+    }
+  }
+  track.innerHTML=html;
+})();
+
+/* ---- the pinned narrative -----------------------------------------------------------
+   One 0..1 progress for the fold, divided into four equal acts with a short cross-fade at
+   each boundary. Ticked from the scroll event directly (rAF is throttled to nothing while
+   the document is hidden, and this page's other drivers already tick this way). */
+(function(){
+  var band=document.getElementById('story'); if(!band) return;
+  var acts=[].slice.call(band.querySelectorAll('.storyact'));
+  var stgs=[].slice.call(band.querySelectorAll('.stg'));
+  var bar=band.querySelector('.storybar i');
+  var N=acts.length; if(!N) return;
+  var cur=-1;
+  var pin=band.querySelector('.storypin');
+  function frame(){
+    /* no pin, no sequence: the acts and scenes are ordinary stacked sections there */
+    if(pin&&getComputedStyle(pin).position!=='sticky'){
+      if(cur!==-2){
+        cur=-2;
+        acts.forEach(function(c){ c.classList.add('on') });
+        stgs.forEach(function(c){ c.classList.add('on') });
+      }
+      return;
+    }
+    var r=band.getBoundingClientRect();
+    var span=r.height-innerHeight;
+    var p=span>0?Math.max(0,Math.min(1,-r.top/span)):0;
+    if(bar) bar.parentNode.style.setProperty('--sp',p.toFixed(4));
+    /* the last act holds to the end of the band rather than flicking past */
+    var i=Math.min(N-1,Math.floor(p*N*1.02));
+    if(i===cur) return;
+    cur=i;
+    acts.forEach(function(c,k){ c.classList.toggle('on',k===i) });
+    stgs.forEach(function(c,k){ c.classList.toggle('on',k===i) });
+  }
+  frame();
+  var last=0;
+  addEventListener('scroll',function(){
+    var now=Date.now(); if(now-last<12) return; last=now; frame();
+  },{passive:true});
+  addEventListener('resize',frame,{passive:true});
+})();
+
+/* ---- the counter slab ---------------------------------------------------------------
+   Each number counts up once, when its slab first enters. Numbers are the report's way of
+   carrying a claim, so they must land as an event rather than being there on arrival. */
+(function(){
+  var vals=[].slice.call(document.querySelectorAll('.statv')); if(!vals.length) return;
+  var reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function run(el){
+    var to=parseFloat(el.getAttribute('data-to')), dec=(to%1)?1:0;
+    var unit=el.querySelector('em');
+    if(reduced){ el.firstChild.nodeValue=to.toFixed(dec); return }
+    var t0=null, D=1150;
+    function step(now){
+      if(t0===null) t0=now;
+      var t=Math.min(1,(now-t0)/D);
+      var e=1-Math.pow(1-t,3);
+      el.firstChild.nodeValue=(to*e).toFixed(dec);
+      if(t<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  if(!('IntersectionObserver' in window)){ vals.forEach(run); return }
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ run(e.target); io.unobserve(e.target) } });
+  },{threshold:.6});
+  vals.forEach(function(el){ io.observe(el) });
+})();
+
+/* ---- 05 · the scroll stack -----------------------------------------------------------
+   Each card owns a window in the band's scroll progress: it rises into place, then steps
+   back and scales down for every card that lands on top of it, which is what keeps the
+   whole stack readable at the end. Ticked from the scroll event directly rather than rAF,
+   because rAF is throttled to nothing while the document is hidden. */
+(function(){
+  var stk=document.getElementById('stk'); if(!stk) return;
+  var band=document.getElementById('s5');
+  var cards=[].slice.call(stk.querySelectorAll('.stkc'));
+  if(!cards.length) return;
+  var N=cards.length, ITEM_SCALE=0.045;
+  var reduced=matchMedia('(prefers-reduced-motion:reduce)');
+
+  function step(){ return parseFloat(getComputedStyle(stk).getPropertyValue('--stk-step'))||24 }
+  function ease(t){ return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2 }
+  function clamp01(v){ return v<0?0:v>1?1:v }
+
+  function frame(){
+    if(reduced.matches){
+      cards.forEach(function(c){ c.style.removeProperty('--ty');
+        c.style.removeProperty('--sc'); c.style.removeProperty('--op');
+        c.removeAttribute('data-wait'); c.classList.remove('lead');
+        c.classList.add('drawn') });
+      return;
+    }
+    var r=band.getBoundingClientRect();
+    var span=r.height-innerHeight;
+    var p=span>0?clamp01(-r.top/span):0;
+    var STEP=step();
+    /* card 0 is present from the first frame, so the band opens with copy AND a card;
+       cards 1..N-1 share the scroll that follows */
+    var slice=1/(N-1+0.3);
+    cards.forEach(function(c,i){
+      var enter=i===0 ? 1 : ease(clamp01((p-(i-1)*slice)/(slice*0.7)));
+      var depth=0;
+      for(var j=i+1;j<N;j++) depth+=ease(clamp01((p-(j-1)*slice)/(slice*0.7)));
+      var ty=(1-enter)*150 + i*STEP;
+      c.style.setProperty('--ty',ty.toFixed(1)+'px');
+      c.style.setProperty('--sc',(1-depth*ITEM_SCALE).toFixed(3));
+      c.style.setProperty('--op',enter.toFixed(3));
+      c.style.zIndex=i+1;
+      /* unpainted until it starts rising — visibility also takes it out of hit-testing */
+      if(enter<=0.001) c.setAttribute('data-wait',''); else c.removeAttribute('data-wait');
+      c.classList.toggle('lead',depth<0.5&&enter>0.5);
+      c.classList.toggle('drawn',enter>0.3);
+    });
+  }
+
+  var last=0;
+  function onScroll(){
+    var now=Date.now();
+    if(now-last<12) return;
+    last=now; frame();
+  }
+  frame();
+  addEventListener('scroll',onScroll,{passive:true});
+  addEventListener('resize',frame,{passive:true});
+  reduced.addEventListener('change',frame);
+})();
+</script>
+</body>
+</html>

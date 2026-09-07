@@ -1,0 +1,10 @@
+/* The source spec documents no hover/press states. These are the minimum
+   needed for usable interaction; keep them near-invisible. */
+:root{
+--ease-standard:cubic-bezier(.4,0,.2,1); /* @kind other */
+--duration-fast:120ms; /* @kind other */
+--duration-base:180ms; /* @kind other */
+--hover-ink:#5ff293;       /* emerald fill brightens */
+--hover-surface:#1c211f;   /* panels lift one step, never to white */
+--press-scale:0.99 /* @kind other */
+}

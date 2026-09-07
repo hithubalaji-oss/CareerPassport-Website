@@ -1,0 +1,127 @@
+/* The Google Fonts request lives in each page's <head> as a top-level <link>, not as an
+   @import here: nested inside this sheet the browser cannot begin it until this file has
+   been parsed, and the CSSOM cannot read a cross-origin imported sheet at all. */
+/* CareerPassport tokens, concatenated. The eight token files plus styles.css were nine
+   render-blocking requests, and styles.css is an @import list — so the tokens were not
+   even requested until it had been fetched and parsed. Same CSS, one request, with any
+   @import hoisted to the top where the spec requires it. Edit the token files and
+   regenerate this file. */
+
+/* ---- tokens/fonts.css ---- */
+/* Poppins (display) + Inter (body, labels, eyebrows) + Geist Mono (code only).
+   No local binaries were provided; served from Google Fonts. */
+
+:root{
+--font-display:"Poppins",Helvetica,Arial,sans-serif;
+--font-sans:"Inter",Helvetica,Arial,sans-serif;
+--font-eyebrow:"Inter",Helvetica,Arial,sans-serif;
+--font-mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+--eyebrow-track:0.72px;
+}
+
+/* ---- tokens/colors.css ---- */
+:root{
+/* ---- base neutrals: dark-first. The canvas is near-black, the ink is near-white. ---- */
+--void:#0a0c0b;--panel:#121514;--panel-raised:#181c1a;--hairline-soft:#1c211f;--hairline:#262c29;
+--canvas:#0a0c0b;--canvas-elevated:#121514;
+--ink:#f4f7f5;--body:#a6afab;--mute:#7a8480;--faint:#5b6562;
+--white:#ffffff;--black:#000000;
+/* ---- accent family: Navy & Gold Foil — navy cover, gold foil, cream paper.
+   Token names are unchanged; the values are the passport's own palette. ---- */
+--emerald-deep:#10203f;--emerald-mid:#1b3564;--emerald:#d8b877;--mint:#e9d6aa;--emerald-tint:#fdfaf1;
+/* ---- link tiers: passport stamp blue ---- */
+--link:#7ba4ff;--link-deep:#b9cdff;--link-soft:#0f1a33;
+/* ---- semantic (tuned for dark surfaces) ---- */
+--error:#f2544a;--error-deep:#ffa39c;--error-soft:#2b1614;
+--warning:#e8a93a;--warning-soft:#2a2113;--warning-deep:#f0b849;
+--success:var(--emerald);
+/* ---- brand gradient trio (passport ramp: cover → gold → paper) ---- */
+--gradient-transit-start:#091530;--gradient-transit-end:#1b3564;
+--gradient-growth-start:#1b3564;--gradient-growth-end:#d8b877;
+--gradient-signal-start:#d8b877;--gradient-signal-end:#e9d6aa;
+--gradient-transit:linear-gradient(90deg,var(--gradient-transit-start),var(--gradient-transit-end));
+--gradient-growth:linear-gradient(90deg,var(--gradient-growth-start),var(--gradient-growth-end));
+--gradient-signal:linear-gradient(90deg,var(--gradient-signal-start),var(--gradient-signal-end));
+/* the hero mesh: the brand's only decorative system — navy cover light with a gold foil bloom */
+--gradient-mesh:radial-gradient(42% 62% at 16% 26%,rgba(27,53,100,.9) 0%,rgba(27,53,100,0) 70%),radial-gradient(46% 66% at 40% 8%,rgba(216,184,119,.3) 0%,rgba(216,184,119,0) 72%),radial-gradient(40% 60% at 64% 30%,rgba(123,164,255,.2) 0%,rgba(123,164,255,0) 70%),radial-gradient(38% 58% at 86% 16%,rgba(216,184,119,.2) 0%,rgba(216,184,119,0) 70%),radial-gradient(50% 72% at 96% 54%,rgba(9,21,48,.95) 0%,rgba(9,21,48,0) 74%); /* @kind color */
+/* ---- semantic aliases (use these in components) ---- */
+--primary:var(--emerald);--on-primary:var(--emerald-deep);
+--text-heading:var(--ink);--text-body:var(--body);--text-mute:var(--mute);--text-faint:var(--faint);
+--text-link:var(--link);--text-link-press:var(--link-deep);--text-on-dark:var(--ink);
+--surface-page:var(--void);--surface-card:var(--panel);--surface-well:var(--hairline-soft);
+--surface-input:var(--panel-raised);--surface-code:var(--panel);
+--border-hairline:var(--hairline);--border-strong:var(--emerald);
+--focus-ring:var(--emerald)
+}
+
+/* ---- tokens/typography.css ---- */
+:root{
+--weight-regular:400;--weight-medium:500;--weight-semibold:600;
+/* display-xl — hero headline */
+--display-xl-size:48px;--display-xl-line:48px;--display-xl-track:-2.4px;--display-xl-weight:600;
+/* heading-lg — major section heading */
+--heading-lg-size:32px;--heading-lg-line:40px;--heading-lg-track:-1.28px;--heading-lg-weight:600;
+/* heading-md — sub-section / card heading */
+--heading-md-size:20px;--heading-md-line:28px;--heading-md-track:-0.4px;--heading-md-weight:600;
+/* label-sm — strong label, nav emphasis */
+--label-sm-size:14px;--label-sm-line:20px;--label-sm-track:-0.28px;--label-sm-weight:500;
+/* eyebrow — uppercase section eyebrow, Inter (was mono) */
+--eyebrow-size:12px;--eyebrow-line:16px;--eyebrow-weight:500;
+/* legacy aliases */
+--mono-eyebrow-size:var(--eyebrow-size);--mono-eyebrow-line:var(--eyebrow-line);--mono-eyebrow-track:var(--eyebrow-track);--mono-eyebrow-weight:var(--eyebrow-weight);
+/* body */
+--body-lg-size:16px;--body-lg-line:24px;
+--body-md-size:14px;--body-md-line:20px;
+--body-sm-size:12px;--body-sm-line:16px;
+/* buttons */
+--button-lg-size:16px;--button-lg-line:20px;--button-lg-weight:500;
+--button-md-size:14px;--button-md-line:20px;--button-md-weight:500;
+/* code */
+--code-size:14px;--code-line:20px
+}
+
+/* ---- tokens/spacing.css ---- */
+:root{
+--space-unit:4px;
+--space-xxs:4px;--space-xs:8px;--space-sm:12px;--space-md:16px;--space-lg:24px;--space-xl:32px;
+--space-2xl:40px;--space-3xl:64px;--space-4xl:96px;--space-section:128px;
+--container-max:1200px;--container-gutter:24px;
+--card-pad:24px;--card-pad-lg:32px
+}
+
+/* ---- tokens/radius.css ---- */
+:root{
+--radius-none:0px;--radius-sm:6px;--radius-md:12px;--radius-lg:16px;
+--radius-pill-category:64px;--radius-pill:100px;--radius-full:9999px
+}
+
+/* ---- tokens/elevation.css ---- */
+:root{
+--elevation-0:none;
+--elevation-1:0px 1px 1px rgba(0,0,0,.5);
+--elevation-2:0px 2px 2px rgba(0,0,0,.4),0px 12px 28px -6px rgba(0,0,0,.65),inset 0 0 0 1px var(--hairline);
+--border-1:1px solid var(--border-hairline)
+}
+
+/* ---- tokens/motion.css ---- */
+/* The source spec documents no hover/press states. These are the minimum
+   needed for usable interaction; keep them near-invisible. */
+:root{
+--ease-standard:cubic-bezier(.4,0,.2,1); /* @kind other */
+--duration-fast:120ms; /* @kind other */
+--duration-base:180ms; /* @kind other */
+--hover-ink:#5ff293;       /* emerald fill brightens */
+--hover-surface:#1c211f;   /* panels lift one step, never to white */
+--press-scale:0.99 /* @kind other */
+}
+
+/* ---- tokens/base.css ---- */
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-page);color:var(--text-body);font-family:var(--font-sans);font-size:var(--body-md-size);line-height:var(--body-md-line);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{color:var(--text-heading);margin:0;font-weight:var(--weight-semibold)}
+p{margin:0;text-wrap:pretty}
+a{color:var(--text-link);text-decoration:none}
+a:hover{color:var(--text-link-press);text-decoration:underline}
+code,pre{font-family:var(--font-mono);font-size:var(--code-size);line-height:var(--code-line)}
+::selection{background:var(--link-soft);color:var(--ink)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
