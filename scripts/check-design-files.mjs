@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 /**
- * Sanity-checks the Claude Design export in site/ before it is re-derived into src/.
+ * Sanity-checks the Claude Design export before it is re-derived into src/.
+ *
+ * The 8 Sep export lands at the repository root rather than in a site/ folder, and renamed
+ * the homepage to index.html — both handled below.
  *
  * Two things go wrong when pages are renamed in Claude Design:
  *
@@ -20,12 +23,12 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, basename } from 'node:path';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = join(root, 'site');
+const SITE = root; // the 8 Sep export lands at the repository root, not in a site/ folder
 
 /* Each live page, with the names it is known to travel under. Add an alias here if
    Claude Design renames one again; the resolver takes the first that exists. */
 const PAGES = [
-  { key: 'homepage', aliases: ['Homepage.html', 'index.html'] },
+  { key: 'homepage', aliases: ['index.html', 'Homepage.html'] },
   { key: 'companies', aliases: ['For Companies.html'] },
   { key: 'partners', aliases: ['For Recruitment Partners.html'] },
 ];
@@ -33,12 +36,12 @@ const PAGES = [
 let failed = 0;
 const resolved = {};
 
-console.log('Design export in site/\n');
+console.log('Design export\n');
 
 for (const { key, aliases } of PAGES) {
   const found = aliases.find((a) => existsSync(join(SITE, a)));
   if (!found) {
-    console.log(`  MISSING  ${key}: none of ${aliases.join(', ')} exist in site/`);
+    console.log(`  MISSING  ${key}: none of ${aliases.join(', ')} exist`);
     failed++;
     continue;
   }
@@ -58,7 +61,7 @@ for (const [key, file] of Object.entries(resolved)) {
   if (broken.length) {
     failed++;
     console.log(`  BROKEN   ${file}`);
-    for (const b of broken) console.log(`           -> ${b} does not exist in site/`);
+    for (const b of broken) console.log(`           -> ${b} does not exist`);
   } else {
     console.log(`  ok       ${file.padEnd(32)} ${new Set(targets).size} distinct target(s), all resolve`);
   }
@@ -68,14 +71,14 @@ for (const [key, file] of Object.entries(resolved)) {
 console.log('\nArtboard wrappers\n');
 for (const f of readdirSync(root).filter((f) => f.endsWith('.dc.html'))) {
   const src = readFileSync(join(root, f), 'utf8');
-  const m = src.match(/<iframe[^>]*src="\.\/site\/([^"]+)"/);
-  if (!m) { console.log(`  ok       ${f} (no site/ iframe)`); continue; }
+  const m = src.match(/<iframe[^>]*src="\.\/(?:site\/)?([^"]+)"/);
+  if (!m) { console.log(`  ok       ${f} (no page iframe)`); continue; }
   const target = decodeURIComponent(m[1]);
   if (present.has(basename(target))) {
-    console.log(`  ok       ${f.padEnd(36)} -> site/${target}`);
+    console.log(`  ok       ${f.padEnd(36)} -> ${target}`);
   } else {
     failed++;
-    console.log(`  BROKEN   ${f} -> site/${target} does not exist`);
+    console.log(`  BROKEN   ${f} -> ${target} does not exist`);
   }
 }
 

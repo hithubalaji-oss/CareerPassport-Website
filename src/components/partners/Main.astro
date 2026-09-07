@@ -1,0 +1,338 @@
+---
+/**
+ * The page body, rebuilt in the 8 Sep pass. The old six pinned folds over one persistent
+ * network panel are gone; it is now hero, a slab, the long `story` section, a stacked
+ * band, and a quote slab — ordinary blocks, matching the direction For Companies moved to.
+ *
+ * It still loads `cp-shared.css` and `cp-page.js` for the shared fold engine and reveal
+ * behaviour, with its own inline driver on top.
+ */
+---
+
+<main>
+
+<!-- ============ 01 · HERO ============ -->
+<section class="hero" data-screen-label="01" data-keystop>
+  <div class="hmesh" aria-hidden="true"></div>
+  <div class="hgrain" aria-hidden="true"></div>
+  <div class="hcopy">
+    <h1 class="hbig">Fastest way to grow your recruitment business</h1>
+    <p class="lede">Whether you are a solopreneur, headhunter or a recruitment agency, CareerPassport helps you get more from the candidates, clients and relationships you already have.</p>
+    <div class="ctas">
+      <a class="btn gh" href="#outro">Book a demo</a>
+      <a class="btn" href="#outro">Sign up as a partner</a>
+    </div>
+  </div>
+
+  <div class="strip" aria-label="Recruitment partners on CareerPassport">
+    <div class="track" id="logoTrack"></div>
+  </div>
+</section>
+
+<section class="slab" id="slab1" data-screen-label="02" data-keystop>
+  <div class="slabin">
+    <p class="eyebrow gold reveal"><i></i>The partner problem</p>
+    <h2 class="slabh reveal">Most recruitment businesses already own the thing they are short of.</h2>
+    <div class="stats">
+      <div class="stat reveal" style="--i:0">
+        <span class="statv" data-to="70">0<em>%</em></span>
+        <b>of a partner database is never searched again</b><i>after the first placement</i>
+      </div>
+      <div class="stat reveal" style="--i:1">
+        <span class="statv" data-to="3.4">0<em>x</em></span>
+        <b>more roles worked per consultant</b><i>when the pipeline runs itself</i>
+      </div>
+      <div class="stat reveal" style="--i:2">
+        <span class="statv" data-to="48">0<em>hrs</em></span>
+        <b>saved on outreach and scheduling</b><i>in an average week</i>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="story" id="story" data-screen-label="03" data-keystop>
+  <div class="storypin">
+    <div class="storyin">
+      <div class="storyacts">
+        <div class="storyact on" data-i="0" style="--o:0">
+          <div class="scopy">
+      <p class="eyebrow gold"><i></i>01 / Your data</p>
+      <h2>Make your scattered database <em class="serif">searchable</em></h2>
+      <p class="lede">Turn the candidate network you already own into a living, queryable business asset.</p>
+      <p class="hline">Scattered data &rarr; private talent intelligence.</p>
+      <p class="fine">Your personal candidate database always stays private.</p>
+          </div>
+        </div>
+        <div class="storyact" data-i="1" style="--o:1">
+          <div class="scopy">
+      <p class="eyebrow gold"><i></i>02 / Your operating system</p>
+      <h2>Process applicants. <em class="serif">Don't just track them.</em></h2>
+      <p class="lede">Move beyond recording recruitment activity. Structure the role, process candidates and keep the work moving.</p>
+      <p class="hline">One place to manage your roles, candidates and hiring activity.</p>
+          </div>
+        </div>
+        <div class="storyact" data-i="2" style="--o:2">
+          <div class="scopy">
+      <p class="eyebrow gold"><i></i>03 / Your AI workforce</p>
+      <h2>Let technology handle the <em class="serif">repetitive motion.</em></h2>
+      <p class="lede">Design agentic workflows across the pipeline from outreach to evaluation to shortlisting criteria to scheduling.</p>
+      <p class="hline">Customise agents for execution and keep humans for judgement and relationships.</p>
+          </div>
+        </div>
+        <div class="storyact" data-i="3" style="--o:3">
+          <div class="scopy">
+      <p class="eyebrow gold"><i></i>04 / Partner network</p>
+      <h2>Grow together. With the terms <em class="serif">clear from the start.</em></h2>
+      <p class="lede">Recruitment partnerships work when everyone knows what has been agreed. CareerPassport brings the commercial details into the same workflow.</p>
+      <ul class="plain">
+        <li>No guessing who owns what</li>
+        <li>No ambiguity on commercials</li>
+        <li>Clear visibility on where your payout stands</li>
+      </ul>
+          </div>
+        </div>
+      </div>
+      <div class="stage2">
+        <div class="stg on" data-i="0" style="--o:0">
+          <div class="dia" id="dia2">
+        <div class="dnodes">
+          <span class="dnode" style="--d:0.00s"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c-4.4 0-7.6 1.2-7.6 2.9S7.6 8 12 8s7.6-1.2 7.6-2.9S16.4 2.2 12 2.2Z"/><path d="M4.4 8.2v3.1c0 1.7 3.2 2.9 7.6 2.9s7.6-1.2 7.6-2.9V8.2c-1.6 1.2-4.4 1.8-7.6 1.8s-6-.6-7.6-1.8Z"/><path d="M4.4 14.5v3.1c0 1.7 3.2 2.9 7.6 2.9s7.6-1.2 7.6-2.9v-3.1c-1.6 1.2-4.4 1.8-7.6 1.8s-6-.6-7.6-1.8Z"/></svg><b>ATS</b></span>
+          <span class="dnode" style="--d:0.06s"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h16a1 1 0 0 1 1 1v3.6H3V4a1 1 0 0 1 1-1Z"/><path d="M3 9.2h6.2v5.6H3V9.2Zm7.8 0H21v5.6H10.8V9.2ZM3 16.4h6.2V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3.6Zm7.8 0H21V20a1 1 0 0 1-1 1h-8.2a1 1 0 0 1-1-1v-3.6Z"/></svg><b>Excel</b></span>
+          <span class="dnode" style="--d:0.12s"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.4 7.3 12 13.4l9.6-6.1A2 2 0 0 0 19.7 5H4.3a2 2 0 0 0-1.9 2.3Z"/><path d="M12 15.3 2.2 9.1V17a2 2 0 0 0 2 2h15.6a2 2 0 0 0 2-2V9.1L12 15.3Z"/></svg><b>Email</b></span>
+          <span class="dnode" style="--d:0.18s"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6c-5.2 0-9.4 3.7-9.4 8.3 0 2.5 1.2 4.7 3.2 6.2l-.9 4.1a.5.5 0 0 0 .74.55l4.06-2.36c.75.14 1.53.21 2.34.21 5.2 0 9.4-3.7 9.4-8.7S17.2 2.6 12 2.6Z"/></svg><b>WhatsApp</b></span>
+          <span class="dnode" style="--d:0.24s"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.6 2H6.4A2.4 2.4 0 0 0 4 4.4v15.2A2.4 2.4 0 0 0 6.4 22h11.2a2.4 2.4 0 0 0 2.4-2.4V8.4h-5.2a1.2 1.2 0 0 1-1.2-1.2V2Z"/><path d="M15.2 2.4V6.8h4.4L15.2 2.4Z"/></svg><b>Notes</b></span>
+          <span class="dnode" style="--d:0.30s"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.2 6.6A2.4 2.4 0 0 1 5.6 4.2h3.6a2 2 0 0 1 1.62.82l1.1 1.5h6.48a2.4 2.4 0 0 1 2.4 2.4v9.06a2.4 2.4 0 0 1-2.4 2.4H5.6a2.4 2.4 0 0 1-2.4-2.4V6.6Z"/></svg><b>Files</b></span>
+        </div>
+        <svg class="dwire" viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true">
+          <path class="fw" id="rpw0" d="M25 0C25 32 25 30 150 60"/>
+          <path class="fw" id="rpw1" d="M75 0C75 30 88 32 150 60"/>
+          <path class="fw" id="rpw2" d="M125 0C125 30 132 34 150 60"/>
+          <path class="fw" id="rpw3" d="M175 0C175 30 168 34 150 60"/>
+          <path class="fw" id="rpw4" d="M225 0C225 30 212 32 150 60"/>
+          <path class="fw" id="rpw5" d="M275 0C275 32 275 30 150 60"/>
+          <g class="fdots">
+          <g class="fdotw"><animateMotion dur="5.4s" begin="0.00s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.35;1"><mpath href="#rpw0"/></animateMotion><circle class="fdot" r="1.37"><animate attributeName="opacity" dur="5.4s" begin="0.00s" repeatCount="indefinite" calcMode="linear" values="1;1;0;0" keyTimes="0;0.35;0.38;1"/></circle></g>
+          <g class="fdotw"><animateMotion dur="5.4s" begin="0.10s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.35;1"><mpath href="#rpw1"/></animateMotion><circle class="fdot" r="1.37"><animate attributeName="opacity" dur="5.4s" begin="0.10s" repeatCount="indefinite" calcMode="linear" values="1;1;0;0" keyTimes="0;0.35;0.38;1"/></circle></g>
+          <g class="fdotw"><animateMotion dur="5.4s" begin="0.20s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.35;1"><mpath href="#rpw2"/></animateMotion><circle class="fdot" r="1.37"><animate attributeName="opacity" dur="5.4s" begin="0.20s" repeatCount="indefinite" calcMode="linear" values="1;1;0;0" keyTimes="0;0.35;0.38;1"/></circle></g>
+          <g class="fdotw"><animateMotion dur="5.4s" begin="0.30s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.35;1"><mpath href="#rpw3"/></animateMotion><circle class="fdot" r="1.37"><animate attributeName="opacity" dur="5.4s" begin="0.30s" repeatCount="indefinite" calcMode="linear" values="1;1;0;0" keyTimes="0;0.35;0.38;1"/></circle></g>
+          <g class="fdotw"><animateMotion dur="5.4s" begin="0.40s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.35;1"><mpath href="#rpw4"/></animateMotion><circle class="fdot" r="1.37"><animate attributeName="opacity" dur="5.4s" begin="0.40s" repeatCount="indefinite" calcMode="linear" values="1;1;0;0" keyTimes="0;0.35;0.38;1"/></circle></g>
+          <g class="fdotw"><animateMotion dur="5.4s" begin="0.50s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.35;1"><mpath href="#rpw5"/></animateMotion><circle class="fdot" r="1.37"><animate attributeName="opacity" dur="5.4s" begin="0.50s" repeatCount="indefinite" calcMode="linear" values="1;1;0;0" keyTimes="0;0.35;0.38;1"/></circle></g>
+          </g>
+        </svg>
+        <div class="dhub" style="--d:.72s">
+          <div class="dhubbar">
+            <span class="dhubname"><i class="dhubm" aria-hidden="true"></i>CareerPassport</span>
+            <span class="dhubtag">YOUR TALENT NETWORK</span>
+          </div>
+          <div class="dhome">
+            <p class="dgreet">Who are you looking for?</p>
+            <span class="dask">
+              <svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 2.4a8.2 8.2 0 0 1 6.44 13.3l4.3 4.3a1.2 1.2 0 0 1-1.7 1.7l-4.3-4.3A8.2 8.2 0 1 1 10.6 2.4Zm0 2.4a5.8 5.8 0 1 0 0 11.6 5.8 5.8 0 0 0 0-11.6Z"/></svg>
+              <em>Ask your talent network&hellip;</em>
+              <i class="daskgo" aria-hidden="true"><svg class="fi" viewBox="0 0 24 24"><path d="M4.6 11.2h11.2L11.5 6.9a1.1 1.1 0 0 1 1.56-1.56l6.2 6.2a1.1 1.1 0 0 1 0 1.56l-6.2 6.2a1.1 1.1 0 0 1-1.56-1.56l4.3-4.3H4.6a1.2 1.2 0 0 1 0-2.4Z"/></svg></i>
+            </span>
+            <div class="dsugs">
+              <span class="dsug">Enterprise sales, 8+ years</span>
+              <span class="dsug">Placed before, open to move</span>
+              <span class="dsug">Spoke in the last 6 months</span>
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="stg" data-i="1" style="--o:1">
+          <div class="dia dash" id="dia3">
+        <div class="dbar">
+          <span class="dbl"><i class="dbdot" aria-hidden="true"></i>CareerPassport</span>
+          <span class="dbr">LIVE ROLE</span>
+        </div>
+        <div class="dstats">
+            <span class="dstat" style="--d:0.24s">
+              <u>46</u><b>Sourced</b>
+            </span>
+            <span class="dstat" style="--d:0.31s">
+              <u>19</u><b>Screening</b>
+            </span>
+            <span class="dstat live" style="--d:0.38s">
+              <u>11</u><b>Evaluation</b>
+            </span>
+            <span class="dstat" style="--d:0.45s">
+              <u>2</u><b>Offer</b>
+            </span>
+        </div>
+        <div class="dtbl">
+          <span class="dhead"><b>Candidate</b><em>Stage</em><u>Evidence</u><s>Last</s></span>
+          <span class="drow" style="--d:0.62s">
+            <b>Priya Raghavan</b><i>Enterprise sales</i>
+            <em class="ptag">Evaluation</em>
+            <u>3 / 4</u><s>2h</s>
+          </span>
+          <span class="drow" style="--d:0.69s">
+            <b>Ashraf Kalam</b><i>Payments platform</i>
+            <em class="ptag on">Offer</em>
+            <u>4 / 4</u><s>1d</s>
+          </span>
+          <span class="drow" style="--d:0.76s">
+            <b>Ravi Kumar</b><i>B2B SaaS</i>
+            <em class="ptag">Screening</em>
+            <u>1 / 4</u><s>3d</s>
+          </span>
+          <span class="drow" style="--d:0.83s">
+            <b>Meera Sundaram</b><i>Platform sales</i>
+            <em class="ptag">Screening</em>
+            <u>2 / 4</u><s>4d</s>
+          </span>
+          <span class="drow" style="--d:0.90s">
+            <b>Nikhil Barot</b><i>Solutions consulting</i>
+            <em class="ptag">Sourced</em>
+            <u>0 / 4</u><s>6d</s>
+          </span>
+          <span class="drow" style="--d:0.97s">
+            <b>Sanjana Bhatt</b><i>Mid-market sales</i>
+            <em class="ptag">Screening</em>
+            <u>1 / 4</u><s>7d</s>
+          </span>
+          <span class="drow" style="--d:1.04s">
+            <b>Tarun Menezes</b><i>Partnerships</i>
+            <em class="ptag">Sourced</em>
+            <u>0 / 4</u><s>9d</s>
+          </span>
+        </div>
+      </div>
+        </div>
+        <div class="stg" data-i="2" style="--o:2">
+          <div class="dia" id="dia4">
+        <div class="wfcanvas">
+          <svg class="wfwire" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path class="wp" id="wfw0" d="M10 50H20Q24 50 24 17H30"/>
+            <path class="wp" id="wfw1" d="M10 50H20Q24 50 24 83H30"/>
+            <path class="wp" id="wfw2" d="M30 17H44Q48 17 48 50H50"/>
+            <path class="wp" id="wfw3" d="M30 83H44Q48 83 48 50H50"/>
+            <path class="wp" id="wfw4" d="M50 50H70"/>
+            <path class="wp" id="wfw5" d="M70 50H82Q86 50 86 17H90"/>
+            <path class="wp" id="wfw6" d="M70 50H82Q86 50 86 83H90"/>
+         </svg>
+          <div class="wfgrid">
+            <span class="wftrig" style="--ga:2 / 1"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2.6 4.8 13.2h5.6L9.6 21.4 18 10.6h-5.8L13 2.6Z"/></svg></i><b>New mandate</b><em>TRIGGER</em></span>
+            <span class="wfnode" style="--ga:1 / 2"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.6" cy="10.6" r="6.4"/><path d="m15.4 15.4 5 5"/></svg></i><b>Search network</b><em>MATCH</em></span>
+            <span class="wfnode" style="--ga:3 / 2"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.4 3.2 10.6 13.4"/><path d="M21.4 3.2 15 21l-4.4-7.6L3 9l18.4-5.8Z"/></svg></i><b>Personalised outreach</b><em>EMAIL &middot; WHATSAPP</em></span>
+            <span class="wfmerge" style="--ga:2 / 3"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.4" cy="5.6" r="2.3"/><circle cx="5.4" cy="18.4" r="2.3"/><circle cx="18.6" cy="12" r="2.3"/><path d="M7.7 6.6c3.4 1 4.4 3.2 8.6 5M7.7 17.4c3.4-1 4.4-3.2 8.6-5"/></svg></i><b>Merge</b><em>APPEND</em></span>
+            <span class="wfnode" style="--ga:2 / 4"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.4 14.6 9l6 .9-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.9l6-.9L12 3.4Z"/></svg></i><b>Evaluate replies</b><em>SCORE</em></span>
+            <span class="wfgate" style="--ga:1 / 5"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9.6" cy="8" r="3.5"/><path d="M3 20a6.6 6.6 0 0 1 13.2 0"/><path d="m17.2 12.4 1.9 1.9 3.3-3.3"/></svg></i><b>Shortlist to client</b><em>YOUR CALL</em></span>
+            <span class="wfidle" style="--ga:3 / 5"><i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="5.4" width="17.6" height="15.4" rx="2.4"/><path d="M3.2 10.4h17.6M8.2 3.2v4M15.8 3.2v4"/></svg></i><b>Keep nurturing</b><em>NO ACTION</em></span>
+          </div>
+        </div>
+</div>
+        </div>
+        <div class="stg" data-i="3" style="--o:3">
+          <div class="deal">
+        <div class="dealhd"><span class="nxl">Collaboration agreement</span><span class="nxv">SIGNED</span></div>
+        <div class="terms">
+            <span class="trow ok"><b>Role</b><em>Enterprise Sales Manager</em></span>
+            <span class="trow"><b>Role owner</b><em>Recruitment Partner A</em></span>
+            <span class="trow"><b>Candidate owner</b><em>Recruitment Partner B</em></span>
+            <span class="trow ok"><b>Fee</b><em>Agreed</em></span>
+            <span class="trow ok"><b>Partner split</b><em>Agreed</em></span>
+            <span class="trow ok"><b>Payment terms</b><em>Visible</em></span>
+        </div>
+        <div class="chain">
+            <span class="cstep done"><i class="ctick"><svg viewBox="0 0 24 24"><path d="m4 12.5 5 5L20 6.5"/></svg></i>Submitted</span>
+            <i class="carr" aria-hidden="true">&rarr;</i>
+            <span class="cstep done"><i class="ctick"><svg viewBox="0 0 24 24"><path d="m4 12.5 5 5L20 6.5"/></svg></i>Interviewed</span>
+            <i class="carr" aria-hidden="true">&rarr;</i>
+            <span class="cstep done"><i class="ctick"><svg viewBox="0 0 24 24"><path d="m4 12.5 5 5L20 6.5"/></svg></i>Joined</span>
+            <i class="carr" aria-hidden="true">&rarr;</i>
+            <span class="cstep done"><i class="ctick"><svg viewBox="0 0 24 24"><path d="m4 12.5 5 5L20 6.5"/></svg></i>Invoice raised</span>
+            <i class="carr" aria-hidden="true">&rarr;</i>
+            <span class="cstep"><i class="cdot"></i>Payout due</span>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+    <div class="storybar" aria-hidden="true"><i></i></div>
+  </div>
+</section>
+
+<section class="scr stkband" id="s5" data-screen-label="05" data-keystop>
+  <div class="stkpin">
+    <div class="scin">
+      <div class="scopy">
+        <h2 class="reveal">More demand to work on. <em class="serif">More ways to fulfil.</em></h2>
+        <p class="lede reveal">CareerPassport connects recruitment partners to a curated network of companies and recruitment businesses.</p>
+        <p class="hline reveal">A curated network for you</p>
+      </div>
+      <div class="sart">
+        <div class="stk" id="stk">
+            <article class="stkc" data-i="0">
+              <div class="stkbody">
+                <i class="swi" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></i>
+                <b>Work on new opportunities</b>
+                <p>Access relevant roles posted by companies and recruitment partners across the sectors you want to work in.</p>
+                <a class="btn" href="#outro">Show interest<svg class="swar" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+              </div>
+              <div class="stkimg" aria-hidden="true">
+                <svg class="gly" viewBox="0 0 236 300">
+                <g class="gsec">
+                  <path class="gs" pathLength="100" style="--d:0s" d="M38 60h68v68H38z"/>
+                  <path class="gs" pathLength="100" style="--d:.06s" d="M122 60h68v68h-68z"/>
+                  <path class="gs" pathLength="100" style="--d:.12s" d="M38 144h68v68H38z"/>
+                  <path class="gs" pathLength="100" style="--d:.18s" d="M122 144h68v68h-68z"/>
+                </g>
+                <circle class="gs" pathLength="100" style="--d:.34s" cx="128" cy="150" r="58"/>
+                <path class="gs" pathLength="100" style="--d:.62s" d="M170 192 214 236"/>
+                <circle class="gdot" cx="128" cy="150" r="4.5"/>
+                </svg>
+              </div>
+            </article>
+            <article class="stkc" data-i="1">
+              <div class="stkbody">
+                <i class="swi" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="7" width="19" height="13.5" rx="2.5"/><path d="M16 7V5.2A2.2 2.2 0 0 0 13.8 3h-3.6A2.2 2.2 0 0 0 8 5.2V7"/><path d="M2.5 12.5h19"/></svg></i>
+                <b>Run your own client roles</b>
+                <p>Manage your existing mandates privately using CareerPassport.</p>
+                <a class="btn" href="#outro">Post a job<svg class="swar" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+              </div>
+              <div class="stkimg" aria-hidden="true">
+                <svg class="gly" viewBox="0 0 236 300">
+                <path class="gs" pathLength="100" style="--d:0s" d="M30 96h64l20 26h88v134H30z"/>
+                <path class="gs" pathLength="100" style="--d:.26s" d="M30 148h172"/>
+                <g class="gsec">
+                  <circle class="gs" pathLength="100" style="--d:.44s" cx="164" cy="216" r="38"/>
+                  <circle class="gs" pathLength="100" style="--d:.54s" cx="164" cy="216" r="24"/>
+                  <path class="gs" pathLength="100" style="--d:.64s" d="M164 240v34l-14-12M164 274l14-12"/>
+                </g>
+                <circle class="gdot" cx="164" cy="216" r="4.5"/>
+                </svg>
+              </div>
+            </article>
+            <article class="stkc" data-i="2">
+              <div class="stkbody">
+                <i class="swi" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M2.6 20a6.4 6.4 0 0 1 12.8 0"/><path d="M16.2 5.3a3.4 3.4 0 0 1 0 5.4"/><path d="M18.4 20a6.6 6.6 0 0 0-2.1-4.7"/></svg></i>
+                <b>Get help fulfilling your roles</b>
+                <p>Open selected mandates to the partner network when you need extra reach, and decide the commercial split.</p>
+                <a class="btn" href="#outro">Go to marketplace<svg class="swar" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+              </div>
+              <div class="stkimg" aria-hidden="true">
+                <svg class="gly" viewBox="0 0 236 300">
+                <circle class="gs" pathLength="100" style="--d:0s" cx="94" cy="150" r="56"/>
+                <circle class="gs" pathLength="100" style="--d:.26s" cx="166" cy="150" r="56"/>
+                <g class="gsec">
+                  <path class="gs" pathLength="100" style="--d:.48s" d="M130 96v108"/>
+                </g>
+                <circle class="gdot" cx="130" cy="150" r="4.5"/>
+                </svg>
+              </div>
+            </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slab quote" id="slab2" data-screen-label="04" data-keystop>
+  <div class="slabin">
+    <p class="eyebrow gold reveal"><i></i>What changes</p>
+    <p class="pull reveal">Technology should run the process. <em class="serif">You should own the relationship.</em></p>
+  </div>
+</section>
+</main>

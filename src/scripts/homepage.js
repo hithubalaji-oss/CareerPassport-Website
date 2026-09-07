@@ -17,11 +17,9 @@ for(var dd=0;dd<8;dd++){
   dust+='<i style="left:'+(rnd()*100).toFixed(1)+'%;top:'+(18+rnd()*70).toFixed(1)+'%;width:'+ds+'px;height:'+ds+
    'px;animation-duration:'+(8+rnd()*10).toFixed(1)+'s;animation-delay:-'+(rnd()*14).toFixed(1)+'s"></i>';
 }
-/* Served from public/ at the site root, so both resolve the same on every route.
-   Same-origin matters for the hero: the video is chroma-keyed on a canvas, and a
-   cross-origin source would taint it and make getImageData throw. */
-var CROWD_SRC='/uploads/Crowd-6ce23065.png';
-var LIFT_SRC='/assets/hero-lift.mp4';
+var RES=(window.__resources||{});
+var CROWD_SRC=RES.crowdPlate||'uploads/Crowd-6ce23065.png';
+var LIFT_SRC=RES.heroLift||'assets/hero-lift.mp4';
 $('#crowd').innerHTML='<div class="cbg" id="cbg"><img id="cbgImg" src="'+CROWD_SRC+'" alt=""></div>'+
   '<div class="hglow" id="hglow"></div>'+
   '<div class="heroFig" id="hero"><div class="hbloom"></div>'+
@@ -36,12 +34,12 @@ $('#crowd').innerHTML='<div class="cbg" id="cbg"><img id="cbgImg" src="'+CROWD_S
 var CLAIMS=[
  'Built a $200M business in 2 months','AI product development leader',
  'Results-driven professional','10x growth, every quarter',
- 'Visionary. Builder. Operator.','Scaled teams from 4 to 400',
- 'Award-winning innovator','Ex-FAANG. Serial founder.',
+ 'Visionary. Builder. Operator','Scaled teams from 4 to 400',
+ 'Award-winning innovator','Ex-FAANG. Serial founder',
  'Turned around a failing division','Top 1% performer, 5 years running',
  'Thought leader in GenAI','Delivered $50M in savings',
  'Trusted advisor to the C-suite','Product visionary & storyteller',
- 'Growth hacker. Revenue machine.','Transformational change agent'];
+ 'Growth hacker. Revenue machine','Transformational change agent'];
 /* anchor slots: x%, y%, depth 0 = nearest */
 var SLOTS=[[16,30,.9],[31,24,.72],[47,20,.95],[63,25,.66],[80,31,.88],
            [23,45,.42],[41,40,.5],[59,39,.34],[77,46,.46],
@@ -49,7 +47,7 @@ var SLOTS=[[16,30,.9],[31,24,.72],[47,20,.95],[63,25,.66],[80,31,.88],
 (function(){
   var host=$('#claims'); if(!host) return;
   var N=2, html='';
-  for(var i=0;i<N;i++) html+='<figure class="clb"><figcaption>THE CLAIM</figcaption><b></b><span class="ctail"></span></figure>';
+  for(var i=0;i<N;i++) html+='<figure class="clb"><b></b><span class="ctail"></span></figure>';
   host.innerHTML=html;
   var cards=[].slice.call(host.querySelectorAll('.clb'));
   var pool=CLAIMS.slice(), used=[];
@@ -125,10 +123,17 @@ var SLOTS=[[16,30,.9],[31,24,.72],[47,20,.95],[63,25,.66],[80,31,.88],
 })();
 
 /* fold 4: a three-layer flow — sources into the Companion, Companion into the passport */
-var SRC=["CV.pdf","LinkedIn","GitHub","Writing","Projects"];
+var SRC=[
+ ['CV.pdf','<path d="M6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm8 1.8V8h4.2ZM8 12.5h8V14H8Zm0 3.5h8v1.5H8Z"/>'],
+ ['LinkedIn','<path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.42v1.56h.05a3.75 3.75 0 0 1 3.37-1.85c3.6 0 4.27 2.37 4.27 5.46ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56ZM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.22.8 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.75V1.75C24 .78 23.2 0 22.22 0Z"/>'],
+ ['GitHub','<path d="M12 .3a12 12 0 0 0-3.79 23.4c.6.1.82-.26.82-.58v-2.02c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.75.09-.73.09-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.6-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22v3.29c0 .32.2.7.82.58A12 12 0 0 0 12 .3Z"/>'],
+ ['Writing','<path d="M20.7 3.3a2.5 2.5 0 0 0-3.54 0l-1.06 1.06 4.6 4.6 1.06-1.07a2.5 2.5 0 0 0 0-3.53Zm-5.66 2.2L3.6 16.9a2 2 0 0 0-.51.87l-1.06 3.6a.7.7 0 0 0 .87.87l3.6-1.06a2 2 0 0 0 .87-.51L18.8 9.2Z"/>'],
+ ['Projects','<path d="M11.6 2.2a1 1 0 0 1 .8 0l9 4a.6.6 0 0 1 0 1.1l-9 4a1 1 0 0 1-.8 0l-9-4a.6.6 0 0 1 0-1.1ZM2.6 11.6l2.2-1 6.4 2.85a2 2 0 0 0 1.6 0l6.4-2.84 2.2.99a.6.6 0 0 1 0 1.1l-9 4a1 1 0 0 1-.8 0l-9-4a.6.6 0 0 1 0-1.1Zm0 4.8 2.2-1 6.4 2.85a2 2 0 0 0 1.6 0l6.4-2.84 2.2.99a.6.6 0 0 1 0 1.1l-9 4a1 1 0 0 1-.8 0l-9-4a.6.6 0 0 1 0-1.1Z"/>']
+];
 $('#orbSrc').innerHTML='<div class="flow" id="flow">'+
   '<svg class="fsvg" preserveAspectRatio="none"></svg>'+
-  '<div class="ftiles">'+SRC.map(function(s){return '<span class="ftile">'+s+'</span>'}).join('')+'</div>'+
+  '<div class="ftiles">'+SRC.map(function(s){
+      return '<span class="ftile"><svg class="fti" viewBox="0 0 24 24" aria-hidden="true">'+s[1]+'</svg>'+s[0]+'</span>'}).join('')+'</div>'+
   '<div class="fbot">'+
     '<div class="fbh"><span class="fbot-ai" aria-hidden="true"><i></i><i></i></span>'+
       '<b>COMPANION</b><small>WORK AUTHENTICATION LOOP</small></div>'+
@@ -149,7 +154,7 @@ $('#orbSrc').innerHTML='<div class="flow" id="flow">'+
           '<span class="vfrec"><i></i>REC</span>'+
           '<span class="lvl"><i></i><i></i><i></i><i></i></span></div></div>'+
       '<div class="fst stamp"><div class="stampb">'+
-        '<div class="sbox dbl" style="--sc:rgba(253,178,60,.85)">'+
+        '<div class="sbox dbl" style="--sc:rgba(216,184,119,.85)">'+
           '<i class="sg l">\u2605</i><i class="sg r">\u2605</i>'+
           '<span class="stt">VERIFIED</span>'+
           '<span class="snm">PRODUCT\nDESIGNER</span>'+
@@ -175,11 +180,15 @@ function buildFlow(){
     var tr=t.getBoundingClientRect();
     var x=tr.left+tr.width/2-r.left, y=tr.bottom-r.top, m=(y+byT)/2;
     paths+='<path id="fp'+i+'" d="M'+x.toFixed(1)+' '+y.toFixed(1)+' C'+x.toFixed(1)+' '+m.toFixed(1)+','+bx.toFixed(1)+' '+m.toFixed(1)+','+bx.toFixed(1)+' '+byT.toFixed(1)+'"/>';
-    dots+='<circle class="fdot d1" r="2.1"><animateMotion dur="2.8s" begin="'+(i*0.5).toFixed(2)+'s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#fp'+i+'"/></animateMotion></circle>';
+    var b=(i*0.05).toFixed(2);
+    dots+='<circle class="fdot" r="2.1" opacity="0">'
+      +'<animateMotion dur="5.4s" begin="'+b+'s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.28;1" calcMode="linear"><mpath href="#fp'+i+'"/></animateMotion>'
+      +'<animate attributeName="opacity" dur="5.4s" begin="'+b+'s" repeatCount="indefinite" values="0;1;1;0;0" keyTimes="0;0.03;0.25;0.28;1" calcMode="linear"/>'
+      +'</circle>';
   });
 
   svg.setAttribute('viewBox','0 0 '+r.width.toFixed(1)+' '+r.height.toFixed(1));
-  svg.innerHTML='<g class="fl1">'+paths+'</g>'+dots;
+  svg.innerHTML='<g class="fl1">'+paths+'</g><g class="fdots">'+dots+'</g>';
 }
 /* The Companion's log keeps its own time — it is a process that runs whether or not you
    are watching, so it is deliberately not tied to scroll. Six lines; the last one is the
@@ -247,10 +256,10 @@ $('#stampGrid').innerHTML=STAMPS.map(function(s,i){
   '</div></div>';
 }).join('');
 
-var BEATS=[["01","Connect what already exists","Your CV, LinkedIn, GitHub, writing, projects, documents and demos flow in."],
- ["02","Talk about what you're living","Your Companion listens, remembers, asks and nudges."],
- ["03","Follow a curated journey","Revisit something you built. Explain a decision. Solve something. Create something."],
- ["04","Evidence, then a Stamp","The moment becomes an artifact — and real depth earns a signal that carries forward."]];
+var BEATS=[["01","Connect what already exists","Your CV, LinkedIn, GitHub, writing, projects, documents and demos flow in"],
+ ["02","Talk about what you're living","Your Companion listens, remembers, asks and nudges"],
+ ["03","Follow a curated journey","Revisit something you built. Explain a decision. Solve something. Create something"],
+ ["04","Evidence, then a Stamp","The moment becomes an artifact — and real depth earns a signal that carries forward"]];
 $('#beatList').innerHTML=BEATS.map(function(b){
   return '<div class="bt"><b>'+b[0]+'</b><div><h3>'+b[1]+'</h3><p>'+b[2]+'</p></div></div>';
 }).join('');
@@ -268,7 +277,7 @@ var stage=$('#stage'),zone=$('.zone'),book=$('#book'),wrap=$('#bookwrap'),cover=
     cbg=$('#cbg'),
     hpalm=$('#hpalm'), heroVideo=$('#heroVideo'), heroCv=$('#heroCv'), heroCx=heroCv.getContext('2d'),
     mesh=$('#f1 .mesh'), paper=$('#paper'), rose=$('#rose'),
-    orbSrc=$('#orbSrc'),flow=$('#flow'),flowBuilt=0,f4el=$('#f4');
+    orbSrc=$('#orbSrc'),flow=$('#flow'),flowBuilt=0,duckAdj=0,f4el=$('#f4');
 
 
 /* a shading pass on each leaf, driven only by opacity while it swings */
@@ -308,6 +317,7 @@ var DL=[];
   measure();
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(measure).catch(function(){});
   addEventListener('resize',measure);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(measure);
 })();
 function drawLines(g){
   if(!DL.length) return;
@@ -499,7 +509,8 @@ try{
   zone.style.translate=(-50*duck).toFixed(1)+'px '+(50*duck).toFixed(1)+'px';
   zone.style.scale=(1+0.10*duck).toFixed(4);
   s *= (1 - 0.78*duck + hover);
-  var duckY = 470*duck + Math.sin(ms*0.34+1.1)*9*duck;
+  /* duckAdj is solved from the measured layer gaps at the end of this frame */
+  var duckY = (470+duckAdj)*duck + Math.sin(ms*0.34+1.1)*9*duck;
   /* the dock (hand), the fold-4 exit and the outro fly-in all write into these, so the
      three phases add rather than overwrite one another */
   var dockTX=0, dockTY=0, dockRot=0;
@@ -620,6 +631,18 @@ try{
        drop to the cover, run into the cover's middle. The passport paints above this
        layer, so the overshoot is hidden and the tilt of the cover cannot leave a gap. */
     var nr=nod.getBoundingClientRect(), bkr=cover.getBoundingClientRect();
+    /* equal spacing: the gap above the Companion sets the gap below it. Solved rather than
+       tuned, and damped so the passport's hover keeps breathing around the target instead
+       of fighting it. Only runs once the duck has settled, so the ramp is not chased. */
+    var tlr=flow.querySelector('.ftiles').getBoundingClientRect();
+    var effS=(parseFloat(zone.style.scale)||1)*s;
+    if(duck>0.85&&effS>0.02&&tlr.height>4){
+      var want=nr.bottom+(nr.top-tlr.bottom);
+      /* the bound is wide because duckY is expressed in the book's own 920x640 space,
+         which the wrap scales down by an order of magnitude at fold 4 — the solved value
+         is legitimately in the thousands there and is not a tuned constant */
+      duckAdj=clamp(duckAdj+((want-bkr.top)/effS/duck)*0.18,-400,6000);
+    }
     var len=(bkr.top-nr.bottom)+bkr.height*0.5;
     if(len>10){ fline.style.height=len.toFixed(1)+'px'; fline.style.opacity=''; }
     else { fline.style.height='0px'; fline.style.opacity='0'; }
@@ -697,15 +720,46 @@ function drawHeroFrame(liftP,outP,ms){
   if(f>0.02){ heroCx.globalAlpha=f; heroCx.drawImage(hvFrames[i1],0,0); heroCx.globalAlpha=1; }
 }
 
+/* ---- generic email capture, matching the other two pages' [data-capture] contract ---- */
+(function(){
+  [].slice.call(document.querySelectorAll('[data-capture]')).forEach(function(fm){
+    var i=fm.querySelector('input'), b=fm.querySelector('button');
+    if(!i||!b) return;
+    var done=b.getAttribute('data-done')||'Sent';
+    b.addEventListener('click',function(){
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(i.value.trim())) return i.focus();
+      fm.classList.add('done'); b.textContent=done; i.readOnly=true;
+    });
+    i.addEventListener('keydown',function(e){ if(e.key==='Enter') b.click() });
+  });
+})();
+
 /* ---------- handle entry writes onto the cover ---------- */
-var input=$('#handle'),field=$('#field'),chnd=$('#chnd'),avail=$('#avail'),pgH=$('#pgHandle');
+var input=$('#handle'),field=$('#field'),chnd=$('#chnd'),chh=$('#chh'),avail=$('#avail'),pgH=$('#pgHandle');
+/* The cover's handle line is rebuilt character by character, and only characters that
+   were not there a keystroke ago get .nu — so appending one letter flashes one letter
+   rather than the whole line, and deleting flashes nothing. */
+var hPrev='';
+function paintHandle(str, live){
+  if(str===hPrev) return;
+  var same=0, n=Math.min(str.length,hPrev.length);
+  while(same<n && str[same]===hPrev[same]) same++;
+  var out='';
+  for(var i=0;i<str.length;i++){
+    out+='<i'+(live&&i>=same?' class="nu" style="animation-delay:'+((i-same)*0.045).toFixed(3)+'s"':'')+'>'
+      +(str[i]==='-'?'&#8209;':str[i])+'</i>';
+  }
+  chh.innerHTML=out;
+  hPrev=str;
+}
+paintHandle('your-handle', false);
 input.addEventListener('input',function(){
   if(reserveMode!=='handle') return;
   var v=(input.value||'').toLowerCase().replace(/[^a-z0-9._-]/g,'').slice(0,22);
-  chnd.textContent='careerpassport.ai/'+(v||'yourname');
-  pgH.textContent='/'+(v||'yourname');
+  paintHandle(v||'your-handle', !!v);
+  pgH.textContent='/'+(v||'your-handle');
   chnd.classList.toggle('on',!!v);
-  pgids.forEach(function(n){n.textContent='/'+(v||'yourname')});
+  pgids.forEach(function(n){n.textContent='/'+(v||'your-handle')});
   field.classList.toggle('on',!!v);
   if(reserveMode==='handle') reserve.disabled=!v;
   avail.classList.toggle('on',!!v);

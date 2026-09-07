@@ -1,19 +1,10 @@
 ---
 /**
- * For Companies - hiring managers and talent teams.
+ * For Companies — hiring managers and talent teams.
  *
- * Reworked in the latest design pass. The page now opens on a PINNED hero where the brief
- * is written: a Companion composer types the hiring intent out as you scroll, with the
- * partner-logo strip absorbed into the same fold. The standalone logo strip and the
- * boarding-pass testimonials are gone.
- *
- * Everything after the hero remains ordinary blocks in the document flow, except the
- * process stage. That was a deliberate correction: an earlier build pinned every fold and
- * computed per-fold bands, and headings slid under the header while panels disagreed
- * about their available space.
- *
- * One grid governs the page (declared at the top of companies.css):
- *   --gut 20-72px gutters - --measure 1296px - --copy 664px - --sec 96-152px rhythm
+ * Opens on a pinned hero where the brief is written, then the pinned process stage.
+ * Everything else is an ordinary block in the document flow — a deliberate correction, as
+ * an earlier build pinned every fold and headings slid under the header.
  */
 import Base from '../layouts/Base.astro';
 import Header from '../components/chrome/Header.astro';
@@ -24,6 +15,7 @@ import ProcessDemo from '../components/companies/ProcessDemo.astro';
 import Comparison from '../components/companies/Comparison.astro';
 import Closing from '../components/companies/Closing.astro';
 
+import '../styles/cp-header.css';
 import '../styles/companies.css';
 ---
 
@@ -33,14 +25,13 @@ import '../styles/companies.css';
 >
   <Ground />
   <Header />
-
   <Hero />
   <ProcessDemo />
   <Comparison />
   <Closing />
-
-  <Footer />
+  <Footer cta="Hire on evidence" />
 
   <script src="/image-slot.js" is:inline></script>
   <script src="../scripts/companies.js"></script>
+  <script src="../scripts/cp-keys.js"></script>
 </Base>

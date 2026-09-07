@@ -1,18 +1,15 @@
 ---
 /**
- * 04 - Closing. The glowing ring, the product surface and the passport cover, over the
- * email capture.
- *
- * The capture validates on click or Enter and swaps the button to its `data-done` label.
- * No backend is wired - this is a front-end state change only. Point it at a real endpoint.
+ * 04 — Closing. The glowing ring, the product surface and the passport cover, over the
+ * email capture. Front-end state change only; point it at a real endpoint.
  */
 ---
 
 <!-- ============ 06 · CLOSING ============ -->
-<section class="close" id="close" data-screen-label="07">
+<section class="close" id="close" data-screen-label="07" data-keystop>
   <div class="ccopy">
-    <p class="eyebrow gold rv"><i></i>Intent in. Evidence out.</p>
-    <h2 class="rv">Start your next hire with <span class="serif">evidence for every claim on the CV.</span></h2>
+    <p class="eyebrow gold rv"><i></i>Intent in. Evidence out</p>
+    <h2 class="rv">Start your next hire with <span class="serif">evidence for every claim on the CV</span></h2>
     <div class="wait rv" data-capture>
       <input type="email" placeholder="you@company.com" aria-label="Your work email">
       <button data-done="Request sent">Request a demo</button>
@@ -30,11 +27,26 @@
         <span class="plbl">PRODUCT &middot; LIVE ROLE</span>
       </div>
       <div class="pphone cpassport">
-        <span class="pcvwm">CAREERPASSPORT</span>
-        <span class="pcvseal" aria-hidden="true"><i></i></span>
-        <span class="pcvtitle">PASSPORT</span>
-        <span class="pcvurl">careerpassport.ai/yourname</span>
-        <span class="pcvchip" aria-hidden="true"><i></i></span>
+        <div class="cpface">
+            <div class="cspine"></div>
+            <div class="clbl">CAREERPASSPORT</div>
+            <div class="crest">
+              <svg class="cring" viewBox="0 0 156 156" aria-hidden="true">
+                <defs><path id="cringClose" d="M78 78 m-66.875 0 a66.875 66.875 0 1 1 133.75 0 a66.875 66.875 0 1 1 -133.75 0"/></defs>
+                <text><textPath href="#cringClose" startOffset="12.07%" text-anchor="middle">SEAL OF TRUST</textPath></text>
+                <text class="cdia"><textPath href="#cringClose" startOffset="32.43%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+                <text><textPath href="#cringClose" startOffset="62.07%" text-anchor="middle">EVIDENCE OF YOUR CLAIMS</textPath></text>
+                <text class="cdia"><textPath href="#cringClose" startOffset="91.71%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+              </svg>
+              <i><b><img class="cfp" src="assets/fingerprint.png" alt=""></b></i>
+            </div>
+            <div class="chnd on"><span class="chd">careerpassport.ai</span><span class="chh">your-handle</span></div>
+            
+            <div class="cchip">
+              <svg viewBox="0 0 83 30" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width="2" height="30"/><rect x="5" y="0" width="3" height="30"/><rect x="11" y="0" width="1" height="30"/><rect x="16" y="0" width="1" height="30"/><rect x="23" y="0" width="1" height="30"/><rect x="28" y="0" width="3" height="30"/><rect x="34" y="0" width="1" height="30"/><rect x="40" y="0" width="2" height="30"/><rect x="45" y="0" width="1" height="30"/><rect x="50" y="0" width="4" height="30"/><rect x="57" y="0" width="2" height="30"/><rect x="62" y="0" width="3" height="30"/><rect x="68" y="0" width="1" height="30"/><rect x="73" y="0" width="1" height="30"/><rect x="79" y="0" width="2" height="30"/></svg>
+              <span>CP&middot;4417&middot;YN</span>
+            </div>
+          </div>
       </div>
       </div>
     </div>

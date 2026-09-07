@@ -1,14 +1,17 @@
 ---
 /**
- * Shared document shell. Everything visual comes from the bound CareerPassport design
- * system; each page then layers its own stylesheet, which opens with a `:root` block
- * mapping the system's semantic tokens onto page-local names.
+ * Shared document shell.
  *
- * Geist is loaded from Google Fonts by the design system's `tokens/fonts.css`. Offline,
- * the pages fall back to Arial and the tight negative tracking reads wrong — self-hosting
- * the .woff2 files is the fix, and the only remaining network dependency.
+ * The Google Fonts request is a top-level <link>, not an @import inside the token sheet:
+ * nested there the browser cannot begin it until that file has been parsed, and the CSSOM
+ * cannot read a cross-origin imported sheet at all. The 8 Sep design moved to Poppins for
+ * display and Inter for body, keeping Geist Mono for code and eyebrows.
+ *
+ * Tokens arrive as one bundled sheet. The eight token files plus styles.css were nine
+ * render-blocking requests, and styles.css was an @import list — so the tokens were not
+ * even requested until it had been fetched and parsed.
  */
-import '../styles/ds/styles.css';
+import '../styles/ds/tokens.bundle.css';
 
 interface Props {
   title: string;
@@ -29,6 +32,13 @@ const { title, description } = Astro.props;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      crossorigin="anonymous"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+    />
     <slot name="head" />
   </head>
   <body>

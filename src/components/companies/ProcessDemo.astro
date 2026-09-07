@@ -1,23 +1,19 @@
 ---
 /**
- * 02 - The process, pinned. Five acts - DEFINE, DESIGN, EXECUTE, EVIDENCE, DECIDE -
- * advanced by scroll across a sticky stage that never moves.
+ * 02 — The process, pinned. Five acts advanced by scroll across a sticky stage.
  *
- * Two changes in this revision:
- *  - DESIGN is now a tabbed blueprint panel (`#bpTabs` / `#bpPanel` / `#bpQs`) with a
- *    lever control, replacing the five flat blueprint cards.
- *  - DECIDE now opens an actual passport - the same book object as the Homepage, with
- *    its cover, spine, verso and five leaves - rather than a row of interview slots.
+ * The prep screen now resolves on the clock as well as on scroll — `prepDone` is
+ * `p>=.545 || (prepArmed && now-prepArmed>1150)` — so stopping mid-scroll cannot leave a
+ * reader parked on a spinner. That supersedes the local delta that used to halve this
+ * dwell; see the Retired section of LOCAL-DELTAS.md.
  *
- * The step maths lives in `src/scripts/companies.js`, carried over verbatim: measure the
- * pin rather than the window, and keep the 1e-6 epsilon on the stage floor.
- * Panes in the pinned stage cannot scroll, so everything here tightens explicitly at
- * 1199px and 767px instead of overflowing.
+ * Panes in the pinned stage cannot scroll, so everything tightens explicitly at the
+ * breakpoints rather than overflowing.
  */
 ---
 
 <!-- ============ 03 · FROM ONE SENTENCE TO A HIRING BLUEPRINT ============ -->
-<section class="aidemo" id="aidemo" data-screen-label="02" aria-label="From one sentence to a hiring blueprint">
+<section class="aidemo" id="aidemo" data-screen-label="02" data-keystop aria-label="From one sentence to a hiring blueprint">
   <div class="aidemopin">
     <div class="flapglow" aria-hidden="true"></div>
     <div class="flapbg" id="flapBg" aria-hidden="true"></div>
@@ -31,64 +27,67 @@
         <div class="aibox" id="aiBox">
           <div class="aiprep" id="aiPrep">
             <span class="aidots" aria-hidden="true"><i></i><i></i><i></i></span>
-            <p class="shimmer">Hiring blueprint is being prepared</p>
+            <p class="shimmer">Understanding the requirements from the search prompt</p>
           </div>
 
           <div class="aibp" id="aiBp">
-            <div class="bptabs" id="bpTabs">
-              <span class="bptab on" data-tab="0">Rapid fire <em>5m</em></span>
-              <span class="bptab" data-tab="1">Case study <em>15m</em></span>
-              <span class="bptab" data-tab="2">Pick and defend <em>10m</em></span>
-              <span class="bptab add">+ Add lever</span>
-            </div>
-            <div class="bppanel" id="bpPanel">
-              <div class="bpqs" id="bpQs">
-                <div class="bpq" data-q="0">
-                  <span class="bqhandle" aria-hidden="true">⋮⋮</span>
-                  <div class="bqbody">
-                    <div class="bpload bqload"><i></i><i></i><i></i></div>
-                    <p class="bqtext">Sales sold what engineering says it cannot build. Your first move?</p>
-                    <span class="bqhint">Long answer text</span>
-                  </div>
-                  <span class="bqtype">Paragraph <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
-                </div>
-                <div class="bpq" data-q="1">
-                  <span class="bqhandle" aria-hidden="true">⋮⋮</span>
-                  <div class="bqbody">
-                    <div class="bpload bqload"><i></i><i></i><i></i></div>
-                    <p class="bqtext">Three bets: one working, one flat, one losing. Plan next quarter.</p>
-                    <span class="bqhint"><svg viewBox="0 0 24 24" class="bqstar"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01Z"></path></svg><svg viewBox="0 0 24 24" class="bqstar"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01Z"></path></svg><svg viewBox="0 0 24 24" class="bqstar"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01Z"></path></svg><svg viewBox="0 0 24 24" class="bqstar"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01Z"></path></svg><svg viewBox="0 0 24 24" class="bqstar"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01Z"></path></svg></span>
-                  </div>
-                  <span class="bqtype">Rating <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
-                </div>
-                <div class="bpq" data-q="2">
-                  <span class="bqhandle" aria-hidden="true">⋮⋮</span>
-                  <div class="bqbody">
-                    <div class="bpload bqload"><i></i><i></i><i></i></div>
-                    <p class="bqtext">A key customer is about to churn mid-migration. What do you do?</p>
-                    <span class="bqhint">Upload a file</span>
-                  </div>
-                  <span class="bqtype">File upload <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
+            <div class="bpform" id="bpForm">
+              <div class="bpgrp" data-gr="0">
+                <span class="bpglbl">Technology requirements<em>2 selected</em></span>
+                <div class="bpchips" id="bpChips">
+                  <span class="bpchip pick" data-c="0">Python</span>
+                  <span class="bpchip" data-c="1">Java</span>
+                  <span class="bpchip" data-c="2">CSS</span>
+                  <span class="bpchip pick" data-c="3">SQL</span>
+                  <span class="bpchip" data-c="4">Prompt engineering</span>
+                  <span class="bpchip" data-c="5">Data structures</span>
+                  <span class="bpchip add" id="bpAdd">+ Add others</span>
                 </div>
               </div>
-              <div class="bplever" id="bpLever">
-                <div class="bplgrid">
-                  <span class="bplopt" data-lv="0">Rapid fire</span>
-                  <span class="bplopt" data-lv="1">Multiple choice</span>
-                  <span class="bplopt" data-lv="2">Do a demo</span>
-                  <span class="bplopt" data-lv="3">Rank order</span>
-                  <span class="bplopt" data-lv="4">Pick and defend</span>
-                  <span class="bplopt" data-lv="5">Binary choice</span>
-                  <span class="bplopt" data-lv="6">AI critic</span>
-                  <span class="bplopt" data-lv="7">Coding round</span>
-                  <span class="bplopt" data-lv="8">Case study</span>
-                  <span class="bplopt" data-lv="9">Flaunt or flex</span>
+
+              <div class="bpgrp" data-gr="1">
+                <span class="bpglbl">Expertise level<em id="bpLvlOut">Advanced</em></span>
+                <div class="bpslide" id="bpSlide">
+                  <span class="bptrack"><i class="bpfill" id="bpFill"></i></span>
+                  <span class="bpthumb" id="bpThumb"></span>
+               </div>
+              </div>
+
+              <div class="bpgrp" data-gr="2">
+                <span class="bpglbl">Evaluation matrix<em id="bpMxOut">3 of 9</em></span>
+                <div class="bpmx" id="bpMx">
+                  <span class="bpmxc pick" data-m="0">
+                    <b>Knowledge structure</b><em>Multiple choice</em>
+                  </span>
+                  <span class="bpmxc" data-m="1">
+                    <b>Instinct &amp; trade-offs</b><em>Binary choice</em>
+                  </span>
+                  <span class="bpmxc" data-m="2">
+                    <b>Prioritisation</b><em>Rank order</em>
+                  </span>
+                  <span class="bpmxc pick" data-m="3">
+                    <b>Reasoning under challenge</b><em>Pick & defend</em>
+                  </span>
+                  <span class="bpmxc" data-m="4">
+                    <b>Capability in action</b><em>Do a demo</em>
+                  </span>
+                  <span class="bpmxc" data-m="5">
+                    <b>Process + build quality</b><em>Coding experience</em>
+                  </span>
+                  <span class="bpmxc pick" data-m="6">
+                    <b>Transferability</b><em>Case study</em>
+                  </span>
+                  <span class="bpmxc" data-m="7">
+                    <b>Ownership &amp; authenticity</b><em>Live AI critique</em>
+                  </span>
+                  <span class="bpmxc" data-m="8">
+                    <b>Open canvas for unusual proof</b><em>Flaunt</em>
+                  </span>
                 </div>
-                <button class="bplcancel" id="bpCancel" aria-hidden="true" tabindex="-1">Cancel</button>
               </div>
             </div>
             <div class="bpfoot">
-              <span class="bpnote">EVALUATION MATRIX &middot; 3 LEVERS &middot; AI DRAFTED</span>
+              <span class="bpnote">DRAFTED FROM THE PROMPT &middot; YOURS TO ADJUST</span>
               <button class="bpsub" id="aiSubmit" aria-hidden="true" tabindex="-1">Accept blueprint<span class="ring2" aria-hidden="true"></span><span class="ring" aria-hidden="true"></span></button>
             </div>
           </div>
@@ -146,12 +145,12 @@
               <span class="exnode src" data-n="1" style="left:16%;top:50%"><b>64</b>Recruitment partners</span>
               <span class="exnode src" data-n="2" style="left:16%;top:76%"><b>312</b>CareerPassport</span>
               <span class="exhub" id="exHub"><span class="exbot" aria-hidden="true"><i></i><i></i></span>COMPANION</span>
-              <span class="exnode chn" data-c="0" style="left:84%;top:16%">Gmail</span>
-              <span class="exnode chn" data-c="1" style="left:84%;top:38%">WhatsApp</span>
-              <span class="exnode chn" data-c="2" style="left:84%;top:62%">LinkedIn</span>
+              <span class="exnode chn" data-c="0" style="left:84%;top:16%">Communications</span>
+              <span class="exnode chn" data-c="1" style="left:84%;top:38%">Collect Evidences</span>
+              <span class="exnode chn" data-c="2" style="left:84%;top:62%">Review Profiles</span>
               <span class="exnode chn" data-c="3" style="left:84%;top:84%">Calendar</span>
             </div>
-            <p class="exticker" id="exTicker"><b>09:42</b><span>Approached via email</span></p>
+            <p class="exticker" id="exTicker"><span>Approached via email</span></p>
           </div>
 
           <!-- act 4 · the evidence comes back -->
@@ -161,48 +160,98 @@
               <span class="exagent ev"><i></i>Approval requested</span>
             </div>
             <div class="evbody">
-              <div class="evfun" id="evFun">
-                <div class="evf" data-f="0"><i style="--w:100%"></i><b>504</b><span>Approached</span></div>
-                <div class="evf" data-f="1"><i style="--w:62%"></i><b>312</b><span>Replied</span></div>
-                <div class="evf" data-f="2"><i style="--w:26%"></i><b>131</b><span>Journey completed</span></div>
-                <div class="evf" data-f="3"><i style="--w:8%"></i><b>4</b><span>Worth meeting</span></div>
-              </div>
               <div class="evstack" id="evStack">
                 <div class="evpass" data-p="0" style="--i:0;z-index:10">
-                  <span class="pcvwm">CAREERPASSPORT</span>
-                  <span class="pcvseal" aria-hidden="true"><i></i></span>
-                  <span class="pcvtitle">PASSPORT</span>
-                  <span class="pcvname">Ravi Kumar</span>
-                  <span class="pcvurl">careerpassport.ai/ravi-kumar</span>
-                  <span class="pcvchip" aria-hidden="true"><i></i></span>
-                  <span class="evstamp">VERIFIED</span>
+                  <div class="cpface">
+            <div class="cspine"></div>
+            <div class="clbl">CAREERPASSPORT</div>
+            <div class="crest">
+              <svg class="cring" viewBox="0 0 156 156" aria-hidden="true">
+                <defs><path id="cringEv0" d="M78 78 m-66.875 0 a66.875 66.875 0 1 1 133.75 0 a66.875 66.875 0 1 1 -133.75 0"/></defs>
+                <text><textPath href="#cringEv0" startOffset="12.07%" text-anchor="middle">SEAL OF TRUST</textPath></text>
+                <text class="cdia"><textPath href="#cringEv0" startOffset="32.43%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+                <text><textPath href="#cringEv0" startOffset="62.07%" text-anchor="middle">EVIDENCE OF YOUR CLAIMS</textPath></text>
+                <text class="cdia"><textPath href="#cringEv0" startOffset="91.71%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+              </svg>
+              <i><b><img class="cfp" src="assets/fingerprint.png" alt=""></b></i>
+            </div>
+            <div class="chnd on"><span class="chd">careerpassport.ai</span><span class="chh">ravikumar</span></div>
+            
+            <div class="cchip">
+              <svg viewBox="0 0 83 30" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width="2" height="30"/><rect x="5" y="0" width="3" height="30"/><rect x="11" y="0" width="1" height="30"/><rect x="16" y="0" width="1" height="30"/><rect x="23" y="0" width="1" height="30"/><rect x="28" y="0" width="3" height="30"/><rect x="34" y="0" width="1" height="30"/><rect x="40" y="0" width="2" height="30"/><rect x="45" y="0" width="1" height="30"/><rect x="50" y="0" width="4" height="30"/><rect x="57" y="0" width="2" height="30"/><rect x="62" y="0" width="3" height="30"/><rect x="68" y="0" width="1" height="30"/><rect x="73" y="0" width="1" height="30"/><rect x="79" y="0" width="2" height="30"/></svg>
+              <span>CP&middot;4417&middot;YN</span>
+            </div>
+            <span class="evstamp">VERIFIED</span>
+          </div>
                 </div>
                 <div class="evpass" data-p="1" style="--i:1;z-index:9">
-                  <span class="pcvwm">CAREERPASSPORT</span>
-                  <span class="pcvseal" aria-hidden="true"><i></i></span>
-                  <span class="pcvtitle">PASSPORT</span>
-                  <span class="pcvname">Ashraf Ali</span>
-                  <span class="pcvurl">careerpassport.ai/ashraf-ali</span>
-                  <span class="pcvchip" aria-hidden="true"><i></i></span>
-                  <span class="evstamp">VERIFIED</span>
+                  <div class="cpface">
+            <div class="cspine"></div>
+            <div class="clbl">CAREERPASSPORT</div>
+            <div class="crest">
+              <svg class="cring" viewBox="0 0 156 156" aria-hidden="true">
+                <defs><path id="cringEv1" d="M78 78 m-66.875 0 a66.875 66.875 0 1 1 133.75 0 a66.875 66.875 0 1 1 -133.75 0"/></defs>
+                <text><textPath href="#cringEv1" startOffset="12.07%" text-anchor="middle">SEAL OF TRUST</textPath></text>
+                <text class="cdia"><textPath href="#cringEv1" startOffset="32.43%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+                <text><textPath href="#cringEv1" startOffset="62.07%" text-anchor="middle">EVIDENCE OF YOUR CLAIMS</textPath></text>
+                <text class="cdia"><textPath href="#cringEv1" startOffset="91.71%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+              </svg>
+              <i><b><img class="cfp" src="assets/fingerprint.png" alt=""></b></i>
+            </div>
+            <div class="chnd on"><span class="chd">careerpassport.ai</span><span class="chh">ashrafali</span></div>
+            
+            <div class="cchip">
+              <svg viewBox="0 0 83 30" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width="2" height="30"/><rect x="5" y="0" width="3" height="30"/><rect x="11" y="0" width="1" height="30"/><rect x="16" y="0" width="1" height="30"/><rect x="23" y="0" width="1" height="30"/><rect x="28" y="0" width="3" height="30"/><rect x="34" y="0" width="1" height="30"/><rect x="40" y="0" width="2" height="30"/><rect x="45" y="0" width="1" height="30"/><rect x="50" y="0" width="4" height="30"/><rect x="57" y="0" width="2" height="30"/><rect x="62" y="0" width="3" height="30"/><rect x="68" y="0" width="1" height="30"/><rect x="73" y="0" width="1" height="30"/><rect x="79" y="0" width="2" height="30"/></svg>
+              <span>CP&middot;4417&middot;YN</span>
+            </div>
+            <span class="evstamp">VERIFIED</span>
+          </div>
                 </div>
                 <div class="evpass" data-p="2" style="--i:2;z-index:8">
-                  <span class="pcvwm">CAREERPASSPORT</span>
-                  <span class="pcvseal" aria-hidden="true"><i></i></span>
-                  <span class="pcvtitle">PASSPORT</span>
-                  <span class="pcvname">Meera Joshua</span>
-                  <span class="pcvurl">careerpassport.ai/meera-joshua</span>
-                  <span class="pcvchip" aria-hidden="true"><i></i></span>
-                  <span class="evstamp">VERIFIED</span>
+                  <div class="cpface">
+            <div class="cspine"></div>
+            <div class="clbl">CAREERPASSPORT</div>
+            <div class="crest">
+              <svg class="cring" viewBox="0 0 156 156" aria-hidden="true">
+                <defs><path id="cringEv2" d="M78 78 m-66.875 0 a66.875 66.875 0 1 1 133.75 0 a66.875 66.875 0 1 1 -133.75 0"/></defs>
+                <text><textPath href="#cringEv2" startOffset="12.07%" text-anchor="middle">SEAL OF TRUST</textPath></text>
+                <text class="cdia"><textPath href="#cringEv2" startOffset="32.43%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+                <text><textPath href="#cringEv2" startOffset="62.07%" text-anchor="middle">EVIDENCE OF YOUR CLAIMS</textPath></text>
+                <text class="cdia"><textPath href="#cringEv2" startOffset="91.71%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+              </svg>
+              <i><b><img class="cfp" src="assets/fingerprint.png" alt=""></b></i>
+            </div>
+            <div class="chnd on"><span class="chd">careerpassport.ai</span><span class="chh">meerajoshua</span></div>
+            
+            <div class="cchip">
+              <svg viewBox="0 0 83 30" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width="2" height="30"/><rect x="5" y="0" width="3" height="30"/><rect x="11" y="0" width="1" height="30"/><rect x="16" y="0" width="1" height="30"/><rect x="23" y="0" width="1" height="30"/><rect x="28" y="0" width="3" height="30"/><rect x="34" y="0" width="1" height="30"/><rect x="40" y="0" width="2" height="30"/><rect x="45" y="0" width="1" height="30"/><rect x="50" y="0" width="4" height="30"/><rect x="57" y="0" width="2" height="30"/><rect x="62" y="0" width="3" height="30"/><rect x="68" y="0" width="1" height="30"/><rect x="73" y="0" width="1" height="30"/><rect x="79" y="0" width="2" height="30"/></svg>
+              <span>CP&middot;4417&middot;YN</span>
+            </div>
+            <span class="evstamp">VERIFIED</span>
+          </div>
                 </div>
                 <div class="evpass" data-p="3" style="--i:3;z-index:7">
-                  <span class="pcvwm">CAREERPASSPORT</span>
-                  <span class="pcvseal" aria-hidden="true"><i></i></span>
-                  <span class="pcvtitle">PASSPORT</span>
-                  <span class="pcvname">Sana Qureshi</span>
-                  <span class="pcvurl">careerpassport.ai/sana-qureshi</span>
-                  <span class="pcvchip" aria-hidden="true"><i></i></span>
-                  <span class="evstamp">VERIFIED</span>
+                  <div class="cpface">
+            <div class="cspine"></div>
+            <div class="clbl">CAREERPASSPORT</div>
+            <div class="crest">
+              <svg class="cring" viewBox="0 0 156 156" aria-hidden="true">
+                <defs><path id="cringEv3" d="M78 78 m-66.875 0 a66.875 66.875 0 1 1 133.75 0 a66.875 66.875 0 1 1 -133.75 0"/></defs>
+                <text><textPath href="#cringEv3" startOffset="12.07%" text-anchor="middle">SEAL OF TRUST</textPath></text>
+                <text class="cdia"><textPath href="#cringEv3" startOffset="32.43%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+                <text><textPath href="#cringEv3" startOffset="62.07%" text-anchor="middle">EVIDENCE OF YOUR CLAIMS</textPath></text>
+                <text class="cdia"><textPath href="#cringEv3" startOffset="91.71%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+              </svg>
+              <i><b><img class="cfp" src="assets/fingerprint.png" alt=""></b></i>
+            </div>
+            <div class="chnd on"><span class="chd">careerpassport.ai</span><span class="chh">sanaqureshi</span></div>
+            
+            <div class="cchip">
+              <svg viewBox="0 0 83 30" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width="2" height="30"/><rect x="5" y="0" width="3" height="30"/><rect x="11" y="0" width="1" height="30"/><rect x="16" y="0" width="1" height="30"/><rect x="23" y="0" width="1" height="30"/><rect x="28" y="0" width="3" height="30"/><rect x="34" y="0" width="1" height="30"/><rect x="40" y="0" width="2" height="30"/><rect x="45" y="0" width="1" height="30"/><rect x="50" y="0" width="4" height="30"/><rect x="57" y="0" width="2" height="30"/><rect x="62" y="0" width="3" height="30"/><rect x="68" y="0" width="1" height="30"/><rect x="73" y="0" width="1" height="30"/><rect x="79" y="0" width="2" height="30"/></svg>
+              <span>CP&middot;4417&middot;YN</span>
+            </div>
+            <span class="evstamp">VERIFIED</span>
+          </div>
                 </div>
               </div>
             </div>
@@ -255,42 +304,63 @@
           
           <div class="leaf" id="dcLeaf5" style="z-index:10"><div class="lf"><span class="pglbl">PAGE 10 / WHAT YOU ALREADY HAVE</span>
           <div class="chips" style="gap:8px"><span class="chip">CV.pdf</span><span class="chip">LinkedIn</span><span class="chip">GitHub</span><span class="chip">Writing</span><span class="chip">Projects</span><span class="chip">Documents</span><span class="chip">Demos</span></div>
-          <p class="pgh" style="margin-top:26px">It listens. It remembers. It asks. It nudges.</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
+          <p class="pgh" style="margin-top:26px">It listens. It remembers. It asks. It nudges</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
           <div class="leaf" id="dcLeaf4" style="z-index:20"><div class="lf"><span class="pglbl">PAGE 08 / A STAMP IS EARNED</span>
-          <p class="pgh" style="margin:auto 0;text-align:center">Evidence that demonstrates real depth<br>earns a signal that carries forward.</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 09 / THE RECORD SO FAR</span>
-          <p class="pgh" style="margin-top:6px">Every entry stays where you put it. Nothing here can be edited by anyone else.</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
+          <p class="pgh" style="margin:auto 0;text-align:center">Evidence that demonstrates real depth<br>earns a signal that carries forward</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 09 / THE RECORD SO FAR</span>
+          <p class="pgh" style="margin-top:6px">Every entry stays where you put it. Nothing here can be edited by anyone else</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
           <div class="leaf" id="dcLeaf3" style="z-index:30"><div class="lf"><span class="pglbl">PAGE 06 / A CURATED JOURNEY</span>
-          <div style="display:flex;flex-direction:column;gap:10px"><div class="jrow"><b>1</b><span>Revisit the failure timeline you kept at the time.</span></div><div class="jrow"><b>2</b><span>Explain the call you made under load.</span></div><div class="jrow"><b>3</b><span>Show the fix, and how you proved it held.</span></div></div>
-          <p style="margin-top:14px;font-size:14px;color:var(--mute)">Small. Curated. Built around what you already lived.</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 07 / EVIDENCE CREATED</span>
+          <div style="display:flex;flex-direction:column;gap:10px"><div class="jrow"><b>1</b><span>Revisit the failure timeline you kept at the time</span></div><div class="jrow"><b>2</b><span>Explain the call you made under load</span></div><div class="jrow"><b>3</b><span>Show the fix, and how you proved it held</span></div></div>
+          <p style="margin-top:14px;font-size:14px;color:var(--mute)">Small. Curated. Built around what you already lived</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 07 / EVIDENCE CREATED</span>
           <div class="chips"><span class="chip">failure-timeline.md</span><span class="chip">decision-note.pdf</span><span class="chip">idempotency-patch.diff</span><span class="chip">load-test.csv</span></div>
-          <p class="pgh" style="margin-top:16px">An artifact of what you can actually do — not a claim that you can.</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
+          <p class="pgh" style="margin-top:16px">An artifact of what you can actually do — not a claim that you can</p><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
           <div class="leaf" id="dcLeaf2" style="z-index:40"><div class="lf"><span class="pglbl">PAGE 04 / COLLECTED STAMPS</span>
           <div class="stampWrap"><div class="stampGrid" id="dcStampGrid"></div>
           <div class="verifying" id="dcVerifying"><i></i><span>Verifying your claims</span></div></div>
+          <span class="pgsub">ATTACHED WORK &middot; OPEN TO INSPECT</span>
+          <div class="atts">
+            <span class="att"><b>Project demo.mp3</b></span>
+            <span class="att"><b>Assignment.pdf</b></span>
+            <span class="att"><b>Evaluation.pdf</b></span>
+            <span class="att"><b>Walkthrough.mp4</b></span>
+          </div>
           <div class="pgft">05 EARNED · 34 ARTIFACTS · SPACE FOR 24 MORE</div><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div>
           </div><div class="lb"><span class="pglbl">PAGE 05 / YOUR COMPANION</span>
           <div class="talk"><div class="bub them">You mentioned the ingest pipeline failed twice before it held. What changed the second time?</div><div class="bub you">We stopped trusting the retry queue and made the writes idempotent.</div><div class="bub them">That's worth showing. Want to walk through how you found it?</div></div><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
           <div class="leaf" id="dcLeaf1" style="z-index:50"><div class="lf"><span class="pglbl">PAGE 02 / EXPERIENCE VISA</span>
           <div class="visaWrap"><div class="visa"><div class="vhead"><b>EXPERIENCE VISA</b><span>CLASS E-1</span></div>
           <div class="vbody"><div class="vorg"><i class="vlogo"></i><b>XYZ COMPANY</b><em>&mdash; Sr. Developer</em></div>
-          <p class="vsub">Platform engineering &amp; distributed systems.</p>
+          <p class="vsub">Platform engineering &amp; distributed systems</p>
           <div class="vdate">MAR 2023 &mdash; MAR 2025 &middot; 2 YRS</div>
           <div class="vtags"><span class="vt">SKILLS</span><span class="vt">PROJECTS</span><span class="vt on">ENDORSEMENTS</span><span class="vt">IMPACT</span></div></div>
           <div class="vseal"><i></i><span>VERIFIED</span></div></div></div><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 03 / THE CLAIM</span>
-          <div class="flat"><i></i><span>Designed the systems behind the platform.</span></div>
-          <div class="flat" style="margin-top:9px"><i></i><span>Made the architecture calls under real pressure.</span></div>
-          <div class="flat" style="margin-top:9px"><i></i><span>Built AI agents into the product.</span></div>
-          <div class="flat" style="margin-top:9px"><i></i><span>Ran incident response when things broke.</span></div>
-          <div class="flat" style="margin-top:9px"><i></i><span>Wrote the docs the team still works from.</span></div><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
+          <div class="flat"><i></i><span>Designed the systems behind the platform</span></div>
+          <div class="flat" style="margin-top:9px"><i></i><span>Made the architecture calls under real pressure</span></div>
+          <div class="flat" style="margin-top:9px"><i></i><span>Built AI agents into the product</span></div>
+          <div class="flat" style="margin-top:9px"><i></i><span>Ran incident response when things broke</span></div>
+          <div class="flat" style="margin-top:9px"><i></i><span>Wrote the docs the team still works from</span></div><div class="pgid"><span class="hnd">/ravikumar</span><i></i><span>CP · 4417</span></div></div></div>
           <div class="leaf" id="dcCover" style="z-index:60">
           <div class="cface">
           <div class="cspine"></div><div class="foil" id="foil"></div>
-          <div class="clbl">CAREERPASSPORT</div>
-          <div class="crest"><i><b></b></i></div>
-          <div class="cword">PASSPORT</div>
-          <div class="chnd" id="dcChnd">careerpassport.ai/ravikumar</div>
-          <div class="ctally">05 STAMPS · 34 ARTIFACTS</div>
-          <div class="cchip"><i></i></div>
+          <div class="cpface">
+            <div class="cspine"></div>
+            <div class="clbl">CAREERPASSPORT</div>
+            <div class="crest">
+              <svg class="cring" viewBox="0 0 156 156" aria-hidden="true">
+                <defs><path id="cringDecide" d="M78 78 m-66.875 0 a66.875 66.875 0 1 1 133.75 0 a66.875 66.875 0 1 1 -133.75 0"/></defs>
+                <text><textPath href="#cringDecide" startOffset="12.07%" text-anchor="middle">SEAL OF TRUST</textPath></text>
+                <text class="cdia"><textPath href="#cringDecide" startOffset="32.43%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+                <text><textPath href="#cringDecide" startOffset="62.07%" text-anchor="middle">EVIDENCE OF YOUR CLAIMS</textPath></text>
+                <text class="cdia"><textPath href="#cringDecide" startOffset="91.71%" text-anchor="middle">&#9670; &#9670; &#9670;</textPath></text>
+              </svg>
+              <i><b><img class="cfp" src="assets/fingerprint.png" alt=""></b></i>
+            </div>
+            <div class="chnd on"><span class="chd">careerpassport.ai</span><span class="chh">ravikumar</span></div>
+            <div class="ctally">05 STAMPS · 34 ARTIFACTS</div>
+            <div class="cchip">
+              <svg viewBox="0 0 83 30" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width="2" height="30"/><rect x="5" y="0" width="3" height="30"/><rect x="11" y="0" width="1" height="30"/><rect x="16" y="0" width="1" height="30"/><rect x="23" y="0" width="1" height="30"/><rect x="28" y="0" width="3" height="30"/><rect x="34" y="0" width="1" height="30"/><rect x="40" y="0" width="2" height="30"/><rect x="45" y="0" width="1" height="30"/><rect x="50" y="0" width="4" height="30"/><rect x="57" y="0" width="2" height="30"/><rect x="62" y="0" width="3" height="30"/><rect x="68" y="0" width="1" height="30"/><rect x="73" y="0" width="1" height="30"/><rect x="79" y="0" width="2" height="30"/></svg>
+              <span>CP&middot;4417&middot;YN</span>
+            </div>
+          </div>
           </div>
           <div class="cback"><span class="pglbl">PAGE 01 / IDENTITY</span>
           <div style="display:flex;gap:18px"><div style="width:96px;height:122px;flex-shrink:0;border:1px solid var(--hairline);border-radius:6px;position:relative;overflow:hidden;background:rgba(23,48,95,.05)"><svg viewBox="0 0 96 122" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><circle cx="48" cy="46" r="20" fill="none" stroke="var(--hairline)" stroke-width="2"/><path d="M14 118c2-24 20-38 34-38s32 14 34 38" fill="none" stroke="var(--hairline)" stroke-width="2"/></svg><span style="position:absolute;left:0;right:0;bottom:6px;text-align:center;font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--mute)">[PHOTO]</span></div>
@@ -304,15 +374,14 @@
                 <span class="dcsenticon">
                   <svg viewBox="0 0 24 24"><path d="M3 7.5 12 13l9-5.5"></path><rect x="3" y="5" width="18" height="14" rx="2"></rect><path class="tick" d="m8.5 15.5 2.2 2.2 4.8-5"></path></svg>
                 </span>
-                <b>Offer letter sent to Ravi Kumar</b>
+                <b>Invite sent to Ravi Kumar</b>
                 <span class="dcsentmeta">VIA EMAIL &middot; RECORDED ON THE PASSPORT</span>
               </div>
               </div>
               <div class="dcacts" id="dcActs">
                 <span class="dcact" data-a="0">Evaluation summary</span>
-                <span class="dcact" data-a="1">Schedule call</span>
-                <span class="dcact" data-a="2">Share offer</span>
-                <span class="dcact no" data-a="3">Reject profile</span>
+                <span class="dcact" data-a="1">Share an invite</span>
+                <span class="dcact no" data-a="2">Reject profile</span>
               </div>
             </div>
             </div>
@@ -329,8 +398,8 @@
       </div>
       <div class="aitextcol">
         <span class="actchip" id="actChip">DEFINE</span>
-        <h3 class="acttitle" id="actTitle">One intent becomes a hiring blueprint.</h3>
-        <p class="actdesc" id="actDesc">One brief. CareerPassport turns it into a structured hiring blueprint.</p>
+        <h3 class="acttitle" id="actTitle">One intent becomes a hiring blueprint</h3>
+        <p class="actdesc" id="actDesc">One brief. CareerPassport turns it into a structured hiring blueprint</p>
         <p class="airdy" id="aiReady">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12.5 5 5L20 6.5"></path></svg>
           Hiring blueprint is ready

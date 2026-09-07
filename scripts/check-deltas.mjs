@@ -24,23 +24,27 @@ const read = (p) => (existsSync(join(root, p)) ? readFileSync(join(root, p), 'ut
 const DELTAS = [
   {
     id: 'D1',
-    title: 'Halved "blueprint is being prepared" dwell',
-    file: 'src/scripts/companies.js',
-    design: 'site/For Companies.html',
-    // the implemented version names its constants; the original inlined the literals
-    present: ['PREP_OUT=.5515', 'PREP_CUT=.0735', 'p>=PREP_IN&&p<PREP_OUT'],
-    reverted: ["prep.classList.toggle('on',p>=.478&&p<.625)"],
-    upstreamFixed: (designSrc) => !designSrc.includes("p>=.478&&p<.625"),
+    title: 'Invalid CSS dropped from the Partners stylesheet',
+    file: 'src/styles/partners.css',
+    design: 'For Recruitment Partners.html',
+    present: [
+      'NOTE: the prototype has a stray "}" here',
+      'NOTE: the prototype has three dangling ".swdeck," fragments here',
+      'NOTE: the foil rule this comment describes is gone',
+    ],
+    // each malformed fragment, whose reappearance means the import won
+    reverted: [/initial-value:0\}\s*\n\s*\n\s*\}\s*\n/, /\.swdeck,\}/],
+    upstreamFixed: (designSrc) =>
+      !/initial-value:0\}\s*\n\s*\n\s*\}\s*\n/.test(designSrc) && !/\.swdeck,\}/.test(designSrc),
   },
   {
     id: 'D2',
-    title: 'Stray "}" dropped from the Partners stylesheet',
-    file: 'src/styles/partners.css',
-    design: 'site/For Recruitment Partners.html',
-    present: ['NOTE: the prototype has a stray "}" here'],
-    // the orphan brace sits between the @property block and .net{
-    reverted: [/initial-value:0\}\s*\n\s*\n\s*\}\s*\n/],
-    upstreamFixed: (designSrc) => !/initial-value:0\}\s*\n\s*\n\s*\}\s*\n/.test(designSrc),
+    title: '--hdr raised to the header\'s real height',
+    file: 'src/components/chrome/Header.astro',
+    design: 'For Recruitment Partners.html',
+    present: ['if (measured > declared) root.style.setProperty', 'Number.isFinite(declared)'],
+    // the design declaring its real height would make the guard a no-op
+    upstreamFixed: (designSrc) => !/--hdr:60px/.test(designSrc),
   },
 ];
 

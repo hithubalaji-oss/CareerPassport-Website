@@ -33,14 +33,18 @@ All three pages, so navigation between them works as designed:
 
 | Route | Source | Component |
 |---|---|---|
-| `/` | `site/Homepage.html` | `src/pages/index.astro` |
-| `/for-companies` | `site/For Companies.html` | `src/pages/for-companies.astro` |
-| `/for-recruitment-partners` | `site/For Recruitment Partners.html` | `src/pages/for-recruitment-partners.astro` |
+| `/` | `index.html` | `src/pages/index.astro` |
+| `/for-companies` | `For Companies.html` | `src/pages/for-companies.astro` |
+| `/for-recruitment-partners` | `For Recruitment Partners.html` | `src/pages/for-recruitment-partners.astro` |
 
-The Partners page still runs the older pinned-fold system (`cp-shared.css` + `cp-page.js`),
-which is the site's remaining architectural inconsistency - the handoff recommends
-rebuilding it on the Companies grid, which would retire both files (*Known gaps*, item 5).
-It is ported faithfully here; restructuring is a separate decision.
+The Partners page was rebuilt in the 8 Sep pass, resolving the architectural inconsistency
+the handoff flagged: its six pinned folds over one persistent panel are gone. It still loads
+`cp-shared.css` and `cp-page.js` for the shared fold engine and reveal behaviour, alongside
+the new `cp-header.css` and `cp-keys.js`.
+
+Typography changed in that pass too: **Poppins** for display and **Inter** for body, with
+Geist Mono retained for code and eyebrows. Tokens arrive as one bundled `tokens.bundle.css`
+rather than nine render-blocking requests.
 
 ### How it is put together
 
@@ -79,9 +83,9 @@ that silently removed live rules, and both audits it recommends still return cle
 
 ### Keeping the repo in step with Claude Design
 
-Claude Design owns the design; exporting from it overwrites `site/`, and `src/` is derived
-from `site/` — page CSS and scroll drivers carried over byte-for-byte, section markup sliced
-programmatically. That makes an import **destructive to anything tuned in code**: a change
+Claude Design owns the design; exporting from it overwrites the root `.html` files and the
+shared `cp-*.css` / `cp-*.js`, and `src/` is derived from those — page CSS and scroll drivers
+carried over byte-for-byte, section markup sliced programmatically. That makes an import **destructive to anything tuned in code**: a change
 with no counterpart in `site/` is silently reverted.
 
 Anything in that category is registered in [`LOCAL-DELTAS.md`](LOCAL-DELTAS.md), with why it

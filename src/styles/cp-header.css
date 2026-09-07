@@ -1,0 +1,95 @@
+/* CareerPassport — the site header, as ONE file.
+   ====================================================================================
+   Why this exists: the three pages each carried their own inline copy of this CSS. There
+   was no shared component to copy — there were three copies by construction, and every
+   time the header was "unified" it meant pasting a fresh block into each page on top of
+   whatever was already there. That is how three generations of nav rules accumulated on
+   the homepage, how one page ended up with a different --gut, and how the .here rule
+   survived on two pages and not the third. Identical rule TEXT is also not enough on its
+   own, because the text is made of tokens: same rule, different token value, different
+   render.
+
+   So the header is now a single stylesheet that all three pages link, last, after their
+   own <style> block. One file to change, and the pages cannot disagree.
+
+   It owns the bar only. Page bodies keep their own --gut, which legitimately differs. */
+
+:root{
+  /* the bar's own inset, so it never inherits a page's body gutter */
+  --hgut:clamp(20px,4.4vw,72px);
+}
+
+.hdr{position:fixed;inset:0 0 auto;z-index:80;display:flex;align-items:center;
+  justify-content:space-between;gap:20px;
+  padding:16px var(--hgut);
+  padding-inline:calc(var(--hgut) + var(--bleed,0px));
+  background:linear-gradient(180deg,rgba(10,12,11,.92),transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--hairline)}
+
+/* ---- wordmark ---- */
+.hdr .brand{display:flex;align-items:center;gap:11px;color:var(--ink)}
+.hdr .brand i{width:20px;height:27px;border-radius:3px 6px 6px 3px;
+  background:var(--gradient-transit);
+  border:1px solid color-mix(in srgb,var(--emerald) 50%,transparent)}
+.hdr .brand span{font-family:var(--display);font-size:clamp(13.5px,1.12vw,16px);
+  font-weight:600;letter-spacing:.1em;white-space:nowrap}
+
+/* ---- the right-hand group: pages, a hairline, then actions ---- */
+.hdr .hend{display:flex;align-items:center;gap:clamp(10px,1.3vw,20px)}
+.hdr .nav{display:flex;align-items:center;gap:4px;
+  font-size:14px;font-weight:500;letter-spacing:-.01em;white-space:nowrap}
+/* a padded, rounded hit area — what makes these read as pages rather than loose words,
+   and what creates the spacing between them */
+.hdr .nav a{display:inline-flex;align-items:center;height:36px;padding:0 16px;
+  border-radius:8px;color:var(--mute);text-decoration:none;
+  transition:color .16s var(--ease),background .16s var(--ease)}
+/* literal, not tokens: identical rule text still rendered differently when a token
+   resolved differently in a page's context. These cannot. */
+.hdr .nav a:hover{color:#f4f7f5;background:#1c211f;border-radius:8px;text-decoration:none}
+.hdr .nav a:active{color:#f4f7f5;background:#262c29;border-radius:8px}
+.hdr .nav a.here{color:#d8b877;background:rgba(216,184,119,.1);border-radius:8px}
+.hdr .hsep{flex-shrink:0;width:1px;height:22px;background:var(--hairline)}
+
+/* ---- chrome-scale actions: the marketing pill stays out of the bar ---- */
+.hdr .hcta{display:flex;align-items:center;gap:8px}
+.hdr .nbtn{display:inline-flex;align-items:center;justify-content:center;
+  height:36px;padding:0 16px;border:0;border-radius:8px;white-space:nowrap;
+  text-decoration:none;
+  font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:-.01em;
+  background:var(--emerald);color:var(--emerald-deep);
+  box-shadow:0 1px 1px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.2);
+  transition:background .16s var(--ease),color .16s var(--ease),
+    border-color .16s var(--ease)}
+.hdr .nbtn:hover{background:#e3ca94;color:#10203f}
+.hdr .nbtn.gh{background:transparent;color:var(--body);
+  border:1px solid var(--hairline);box-shadow:none}
+.hdr .nbtn.gh:hover{background:#181c1a;color:#f4f7f5;border-color:rgba(216,184,119,.4)}
+
+/* ---- the burger and the sheet ---- */
+.hdr .burger{display:none;flex-direction:column;justify-content:center;gap:5px;
+  width:44px;height:44px;padding:0 9px;border:0;background:transparent}
+.hdr .burger i{height:1.5px;background:var(--ink)}
+.mnav{display:none;position:fixed;inset:58px 0 auto;z-index:79;flex-direction:column;
+  padding:12px var(--hgut) 20px;
+  background:rgba(10,12,11,.97);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--hairline)}
+.mnav.open{display:flex}
+.mnav a{display:flex;align-items:center;min-height:52px;font-size:15.5px;font-weight:600;
+  letter-spacing:.08em;color:var(--mute);text-decoration:none;
+  border-bottom:1px solid var(--hairline)}
+.mnav a:last-child{border:0}
+.mcta{display:flex;gap:10px;padding-top:14px}
+.mcta .nbtn{flex:1;height:46px;font-size:14px}
+
+/* ---- one breakpoint for the whole bar, both sides declared together ---- */
+@media (min-width:901px){
+  .hdr .hend{display:flex}
+  .hdr .nav{display:flex}
+  .hdr .burger{display:none}
+}
+@media (max-width:900px){
+  .hdr .hend{display:none}
+  .hdr .nav{display:none}
+  .hdr .burger{display:flex}
+}

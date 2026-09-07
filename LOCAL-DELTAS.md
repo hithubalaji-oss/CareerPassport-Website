@@ -1,18 +1,19 @@
 # Local deltas
 
 Changes that live **only in `src/`** and have no counterpart in the Claude Design files
-under `site/`.
+at the repository root.
 
 ## Why this file exists
 
 The project has two sources of truth:
 
-- **Claude Design** owns the design. Exporting from it overwrites `site/`.
-- **`src/`** is derived from `site/` — the page CSS and scroll drivers are carried over
+- **Claude Design** owns the design. Exporting from it overwrites the root `.html` files
+  and their shared `cp-*.css` / `cp-*.js`.
+- **`src/`** is derived from those — the page CSS and scroll drivers are carried over
   byte-for-byte, and the section markup is sliced from source programmatically.
 
 So the normal import is *destructive to anything tuned in code*: re-deriving `src/` from a
-fresh `site/` silently reverts it. Every such change is registered below, and
+fresh export silently reverts it. Every such change is registered below, and
 `npm run check:deltas` proves each one is still present.
 
 ## The loop after a design import
@@ -30,73 +31,77 @@ there and delete the entry.
 
 ---
 
-## D1 — Halved "Hiring blueprint is being prepared" dwell
-
-| | |
-|---|---|
-| **File** | `src/scripts/companies.js` |
-| **Design file still says** | `prep.classList.toggle('on',p>=.478&&p<.625)` |
-| **Commit** | `cf324ff` |
-| **Status** | Active — not reflected in Claude Design |
-
-**What.** The prep shimmer's window was `p` .478–.625. It is now .478–.5515, half the
-original .147 span. The whole entrance cluster below it — blueprint panel, tabs, `+ Add
-lever`, question load and fill — moves earlier by the same `PREP_CUT = .0735`.
-
-**Why.** The shimmer held alone from .478 to ~.60, roughly a thousand pixels of scroll,
-before the first tab appeared. Cutting the prep short *without* also moving the entrance
-cluster would open a hole where the shimmer used to be.
-
-**Deliberately not changed.** The review timeline from `.700` onward — the cursor
-choreography that reads the questions, walks the tabs, opens the lever picker and accepts.
-Each of its windows names exactly one cursor target, and shifting it would only move the
-freed slack to the end of the act, where the blueprint sits accepted and idle.
-
-**How to re-apply.** In the `act 2` block, replace the literals with the named constants:
-
-```js
-var PREP_IN=.478, PREP_OUT=.5515, PREP_CUT=.0735;
-box.classList.toggle('big',p>=PREP_IN);
-prep.classList.toggle('on',p>=PREP_IN&&p<PREP_OUT);
-bp.classList.toggle('on',p>=.605-PREP_CUT&&g<.452);
-
-var tabsOn=p>=.60-PREP_CUT;
-tabs.forEach(function(el,i){ el.classList.toggle('vis',tabsOn&&p>=.60-PREP_CUT+i*0.018) });
-if(addTab) addTab.classList.toggle('vis',tabsOn&&p>=.654-PREP_CUT);
-var qLoading=p>=.64-PREP_CUT&&p<.72-PREP_CUT;
-var qFilled=p>=.72-PREP_CUT;
-questions.forEach(function(el,i){
-  el.classList.toggle('vis',p>=.63-PREP_CUT+i*0.024);
-  el.classList.toggle('filled',qFilled);
-});
-```
-
-Leave `ready.classList.toggle('on',p>=.73&&p<.82)` and everything after it alone.
-
-**How to verify.** Sweep the fold and read the live DOM: prep should run .478–.553, the
-first tab appear at ~.528, the panel crossfade at ~.540, and questions fill by ~.665 — with
-no scroll position where the prep is gone and nothing has arrived.
-
----
-
-## D2 — Stray `}` dropped from the Partners stylesheet
+## D1 — Invalid CSS dropped from the Partners stylesheet
 
 | | |
 |---|---|
 | **File** | `src/styles/partners.css` |
-| **Design file still says** | an orphan `}` after the `@property` block, before `.net{` |
-| **Commit** | `7b1c3e6` |
+| **Source** | `For Recruitment Partners.html` |
 | **Status** | Active — worth fixing in Claude Design, which would retire this entry |
 
-**What.** `site/For Recruitment Partners.html` has a stray `}` that closes nothing,
-introduced alongside the `@property` block in the last design pass. It is dropped from the
-extracted CSS.
+**What.** Three separate pieces of malformed CSS are removed from the extracted sheet:
 
-**Why.** Browsers skip an orphan brace and carry on, which is why the design file still
-renders — but it is invalid CSS and PostCSS rejects the whole sheet, failing the build.
+1. An orphan `}` after the `@property` block, before `.net{`.
+2. Three dangling `.swdeck,` fragments — a selector list ending in a comma with no
+   declaration block, one inside each of three `@media` blocks.
+3. An orphan `}` where a `.foil` rule used to be, right after the comment describing it.
 
-**How to re-apply.** After extracting `partners.css`, delete the lone `}` that sits between
-`@property --r{...}` and `.net{`. Nothing else changes; it has no visual effect.
+All three are deletion scars: a rule was removed and part of its syntax left behind. None
+of the classes involved (`.swdeck`, the foil) appears anywhere in the markup, so dropping
+the remnants loses nothing.
 
-**Retire this entry** by deleting that brace in the design file — then the extraction is
-clean and no delta is needed.
+**Why it matters.** PostCSS rejects the whole sheet, so the build fails outright — but this
+is not only strictness. An orphan `}` browsers skip. A dangling `selector,` with no `{` is
+worse: the parser keeps consuming tokens looking for a `{`, so the rules that follow can be
+swallowed into the prelude and silently lost. That is a real bug in the design file, not a
+tooling difference.
+
+**How to re-apply.** After extracting `partners.css`, delete: the lone `}` between
+`@property --r{...}` and `.net{`; the three `.swdeck,` lines; and the lone `}` after the
+"the foil" comment. Nothing else changes.
+
+**Retire this entry** by fixing all three in the design file. The handoff's own CSS audits
+catch this class of bug: *classes used in markup with no rule anywhere*, and *classes whose
+only rules sit inside `@media` blocks*.
+
+---
+
+## D2 — `--hdr` raised to the header's real height
+
+| | |
+|---|---|
+| **File** | `src/components/chrome/Header.astro` |
+| **Source** | `For Recruitment Partners.html` declares `--hdr:60px` |
+| **Status** | Active — fix the declared value in Claude Design and this stops having any effect |
+
+**What.** A `ResizeObserver` publishes `--hdr` as the header's measured height, but only when
+that is **larger** than the value the page declared. It never lowers it, and writes nothing
+at all on a page that declares no value.
+
+**Why.** The Partners page declares `--hdr:60px` while its header actually measures 69px at
+the design width. `--hdr` feeds `scroll-margin-top` on `.artsec` and the hero's top padding,
+so a declared value smaller than the real header leaves roughly 9px of an anchored section
+sitting underneath it. For Companies declares 83px against the same 69px header — larger,
+so deliberately roomier spacing, and the guard leaves it alone.
+
+This is the one delta that changes rendering rather than just letting the build succeed: the
+Partners page sits ~4px lower than the prototype, and that difference is the correction.
+
+**How to re-apply.** It lives in `Header.astro` and survives a re-derivation, since the
+chrome is a component rather than sliced markup. Verify it is still guarded both ways: only
+raises, and no-ops when `--hdr` is undeclared.
+
+**Retire this entry** by declaring the real height in the design file — `--hdr:69px`, or
+better, whatever the header actually measures. Then the observer never fires and the
+implementation matches the prototype pixel for pixel.
+
+---
+
+## Retired
+
+**Halved "blueprint is being prepared" dwell** (was D1, commit `cf324ff`) — retired at the
+8 Sep import. The design now resolves the prep itself: `prepDone` is
+`p>=.545 || (prepArmed && now-prepArmed>1150)`, which is marginally shorter than the .5515
+this delta set *and* adds a 1150 ms clock cap, so stopping mid-scroll can no longer park a
+reader on the spinner. Re-applying the patch would have fought that mechanism and
+reinstated a hard upper bound the code no longer has.

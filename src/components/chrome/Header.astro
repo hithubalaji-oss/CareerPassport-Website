@@ -1,21 +1,15 @@
 ---
 /**
- * Sticky header — brand lockup, the three nav links, and a burger below 900px.
+ * Sticky header — brand lockup, the two interior pages, and the sign-up / demo pair, with
+ * a burger below the mobile breakpoint that opens the same links plus the same two CTAs.
  *
- * `--hdr` feeds the hero's top padding, section scroll-margin and the document's
- * scroll-padding-top. The stylesheet authors it as a constant (83px) and the header
- * actually measures ~60px at the design width, so the authored value is deliberate
- * spacing, not a stale guess - and it is safe in the direction that matters.
+ * Redesigned in the 8 Sep pass: the nav no longer carries a "home" link (the brand lockup
+ * is the way back), and gains `.hend` / `.hsep` / `.hcta`. Its styling now lives in the
+ * shared `cp-header.css` rather than each page's own block, so the three pages cannot
+ * disagree about their chrome.
  *
- * The failure the handoff documents is the OTHER direction: an earlier build hard-coded
- * 71px against a real 83px, and headings slid under the header on anchor jumps. So the
- * observer below only ever RAISES `--hdr`, never lowers it. That keeps the authored
- * spacing pixel-accurate while still guaranteeing the clearance can never be too small
- * when the header wraps, the font falls back, or a longer wordmark is dropped in.
- *
- * No logo file has ever been supplied. The mark is a 20x27 passport chip in
- * `--gradient-transit` plus the wordmark set in type. Supply an SVG and it replaces the
- * chip here, in the footer, and in the bundler thumbnail.
+ * No logo file has ever been supplied. The mark is a passport chip plus the wordmark set
+ * in type; supply an SVG and it replaces the chip here and in the footer.
  */
 import { NAV_LINKS, isCurrent } from './nav-links';
 
@@ -24,44 +18,50 @@ const pathname = Astro.url.pathname;
 
 <header class="hdr">
   <a class="brand" href="/"><i></i><span>CAREERPASSPORT</span></a>
-  <nav class="nav">
-    {NAV_LINKS.map(({ href, label }) => (
-      <a class={isCurrent(href, pathname) ? 'here' : undefined} href={href}>{label}</a>
-    ))}
-  </nav>
+  <div class="hend">
+    <nav class="nav">
+      {NAV_LINKS.map(({ href, label }) => (
+        <a class={isCurrent(href, pathname) ? 'here' : undefined} href={href}>{label}</a>
+      ))}
+    </nav>
+    <span class="hsep" aria-hidden="true"></span>
+    <div class="hcta">
+      <a class="nbtn gh" href="#outro">Sign up</a>
+      <a class="nbtn" href="#outro">Free demo</a>
+    </div>
+  </div>
   <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
 </header>
 
 <nav class="mnav" id="mnav">
   {NAV_LINKS.map(({ href, label }) => <a href={href}>{label}</a>)}
+  <div class="mcta">
+    <a class="nbtn gh" href="#outro">Sign up</a>
+    <a class="nbtn" href="#outro">Free demo</a>
+  </div>
 </nav>
 
 <script>
-  /* Guarantee `--hdr` is never smaller than the header actually is, without shrinking the
-     spacing the stylesheets authored.
+  /* `--hdr` feeds hero padding, section scroll-margin and scroll-padding-top. Each page
+     declares its own value (For Companies 83px, Partners 60px); the Homepage neither
+     declares nor reads it.
 
-     The two pages state the baseline differently: For Companies declares `--hdr:83px` on
-     :root, while For Recruitment Partners never declares it and instead reads it per use
-     as `var(--hdr, 83px)`. A fallback inside a var() call is invisible to
-     getComputedStyle, so an undeclared value must NOT be read as zero — doing that made
-     this script write the measured 60px, defeat the 83px fallback, and shorten the
-     Partners hero by 23px.
-
-     Hence: fall back to the same 83px the stylesheets use, and only ever WRITE when the
-     measurement would raise the value. Staying silent otherwise leaves each page's own
-     declaration or fallback to apply exactly as designed. */
-  const AUTHORED_FALLBACK = 83;
+     The failure worth guarding is a declared value SMALLER than the header really is —
+     then headings slide under it on anchor jumps. So this only ever RAISES the value, and
+     writes nothing at all when the page has not declared one. Staying silent leaves each
+     page's own declaration to apply exactly as authored. */
   const hdr = document.querySelector<HTMLElement>('.hdr');
   if (hdr) {
     const root = document.documentElement;
     const declared = parseFloat(getComputedStyle(root).getPropertyValue('--hdr'));
-    const baseline = Number.isFinite(declared) ? declared : AUTHORED_FALLBACK;
-    const publish = () => {
-      const measured = Math.ceil(hdr.getBoundingClientRect().height);
-      if (measured > baseline) root.style.setProperty('--hdr', `${measured}px`);
-      else root.style.removeProperty('--hdr');
-    };
-    publish();
-    new ResizeObserver(publish).observe(hdr);
+    if (Number.isFinite(declared)) {
+      const publish = () => {
+        const measured = Math.ceil(hdr.getBoundingClientRect().height);
+        if (measured > declared) root.style.setProperty('--hdr', `${measured}px`);
+        else root.style.removeProperty('--hdr');
+      };
+      publish();
+      new ResizeObserver(publish).observe(hdr);
+    }
   }
 </script>

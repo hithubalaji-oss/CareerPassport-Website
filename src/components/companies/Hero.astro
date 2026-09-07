@@ -1,27 +1,21 @@
 ---
 /**
- * 01 - Hero, now a pinned fold (`.heropin`, `id="herofold"`).
- *
- * Reworked in this revision: the product presentation and the mono strapline are gone.
- * The brief is written here instead - `.hcomp` is a live Companion composer that types
- * the hiring intent out as you scroll, and the hiring-manager cursor (`#heroCur`) moves
- * to the send button. The blueprint the composer produces is the next section.
- *
- * The companies strip is no longer a section of its own: it sits inside `.herobot`, and
- * the page script still fills `#logoTrack` with seven placeholder slots duplicated once
- * for a seamless loop. All seven await real partner logos.
+ * 01 — Hero, a pinned fold. The brief is written here: the Companion composer types the
+ * hiring intent out as you scroll, the send button arms once the sentence completes, and
+ * the hiring-manager cursor enters to press it. Only then does the pin release into the
+ * blueprint fold. The partner-logo strip sits in the same fold.
  */
 ---
 
 <!-- ============ 01 · HERO · the brief is written here ============ -->
-<section class="hero" id="herofold" data-screen-label="01">
+<section class="hero" id="herofold" data-screen-label="01" data-keystop>
   <div class="heropin">
     <div class="bloom" aria-hidden="true"></div>
     <div class="herotop">
       <div class="hcopy">
-        <p class="eyebrow gold"><i></i>Tell us who you need.</p>
-        <h1 style="color:#fff">Meet the people <span class="serif" style="color:#fff">worth your time.</span></h1>
-        <p class="lede">CareerPassport builds the hiring journey, runs it, and brings you the evidence. <b>You step in when there is a decision worth making.</b></p>
+        <p class="eyebrow gold"><i></i>Tell us who you need</p>
+        <h1 style="color:#fff">Meet the people <span class="serif" style="color:#fff">worth your time</span></h1>
+        <p class="lede">CareerPassport builds the hiring journey, runs it, and brings you the evidence. <b>You step in when there is a decision worth making</b></p>
         <div class="ctas">
           <a class="btn" href="#close">Book a demo</a>
           <a class="btn gh" href="#close">Post a role</a>

@@ -1,12 +1,11 @@
 ---
 /**
- * Homepage - candidate-facing, and the most motion-heavy page in the set.
+ * Homepage — candidate-facing, and the most motion-heavy page in the set.
  *
  * Five tall folds plus a closing act, with one passport object persisting across all of
  * them. All motion runs from a single requestAnimationFrame loop in homepage.js: one
- * `frame()` that reads every fold's getBoundingClientRect in a batch at the top and THEN
- * writes. That split is load-bearing - interleaving reads and writes causes layout thrash
- * on every frame.
+ * frame() that reads every fold's getBoundingClientRect in a batch and THEN writes. That
+ * split is load-bearing — interleaving reads and writes causes layout thrash every frame.
  */
 import Base from '../layouts/Base.astro';
 import Header from '../components/chrome/Header.astro';
@@ -16,6 +15,7 @@ import Passport from '../components/homepage/Passport.astro';
 import Folds from '../components/homepage/Folds.astro';
 import Outro from '../components/homepage/Outro.astro';
 
+import '../styles/cp-header.css';
 import '../styles/homepage.css';
 ---
 
@@ -24,8 +24,8 @@ import '../styles/homepage.css';
   description="Your work, your projects, your skills — turned into a record employers can actually trust. One that keeps growing with you."
 >
   <Fragment slot="head">
-    {/* The hero plate and the crowd are injected by script, so the browser cannot see
-        them in the markup. Preloading gets the fetches started during parse. */}
+    {/* Both are injected by script, so the browser cannot see them in the markup.
+        Preloading gets the fetches started during parse. */}
     <link rel="preload" as="image" href="/uploads/Crowd-6ce23065.png" />
     <link rel="preload" as="video" href="/assets/hero-lift.mp4" type="video/mp4" />
   </Fragment>
@@ -35,7 +35,9 @@ import '../styles/homepage.css';
   <Passport />
   <Folds />
   <Outro />
-  <Footer />
+  <Footer cta="Your passport, waiting" />
 
   <script src="../scripts/homepage.js"></script>
+  <script src="../scripts/homepage-extra.js"></script>
+  <script src="../scripts/cp-keys.js"></script>
 </Base>

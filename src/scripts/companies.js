@@ -70,7 +70,7 @@
   var setH=function(){ sec.style.height=SVH+'svh' };
   setH(); addEventListener('resize',setH,{passive:true});
 
-  var QUERY="I need a senior product leader who has built enterprise products, worked through ambiguity and can operate across engineering, sales and customers.";
+  var QUERY="I need a senior product leader who has built enterprise products, worked through ambiguity and can operate across engineering, sales and customers";
   textEl.innerHTML=QUERY.split(' ').map(function(w){ return '<span>'+w+'</span>' }).join(' ');
   var wordEls=[].slice.call(textEl.querySelectorAll('span'));
   var caret=document.createElement('span');
@@ -170,13 +170,21 @@
   var cur=document.getElementById('hmCur');
   var fin1=document.getElementById('aiFin1');
   var fin2=document.getElementById('aiFin2');
-  var tabs=[].slice.call(document.querySelectorAll('#bpTabs .bptab:not(.add)'));
-  var addTab=document.querySelector('#bpTabs .bptab.add');
-  var questions=[].slice.call(document.querySelectorAll('.bpq'));
-  var qLoaders=[].slice.call(document.querySelectorAll('.bqload'));
-  var leverPanel=document.getElementById('bpLever');
-  var leverOpts=[].slice.call(document.querySelectorAll('.bplopt'));
-  var cancelBtn=document.getElementById('bpCancel');
+  var bpGroups=[].slice.call(document.querySelectorAll('.bpgrp'));
+  var chips=[].slice.call(document.querySelectorAll('#bpChips .bpchip:not(.add)'));
+  var addChip=document.getElementById('bpAdd');
+  var LVL_N=5;
+  var sFill=document.getElementById('bpFill'), sThumb=document.getElementById('bpThumb');
+  var lvlOut=document.getElementById('bpLvlOut'), mxOut=document.getElementById('bpMxOut');
+  var mxCells=[].slice.call(document.querySelectorAll('.bpmxc'));
+  var LVL_NAMES=['Beginner','Intermediate','Advanced','Pro','Expert'];
+  /* the manager's edits: two more technologies, one more level, two more evaluations */
+  var CHIP_ADD=[4,5], MX_ADD=[4,7];
+  var CHIP_BASE=[0,3], MX_BASE=[0,3,6];
+  /* The processing screen must not be a resting place. Once act 2 is entered the screen is
+     armed, and it completes on its own clock as well as on scroll — so a reader who stops
+     mid-thought still sees the form assemble rather than being left on a spinner. */
+  var prepArmed=0, prepPump=0;
   var chip=document.getElementById('actChip');
   var title=document.getElementById('actTitle');
   var desc=document.getElementById('actDesc');
@@ -202,7 +210,6 @@
   addEventListener('resize',sizeExDots,{passive:true});
   if(window.ResizeObserver&&exSvg) new ResizeObserver(sizeExDots).observe(exSvg);
   var exDivs=[].slice.call(ex.querySelectorAll('.exdiv'));
-  var funs=[].slice.call(ev.querySelectorAll('.evf'));
   var evStack=document.getElementById('evStack');
   var evBtn=document.getElementById('evBtn');
   var dcGrid=document.getElementById('dcGrid');
@@ -248,24 +255,31 @@
     });
     return lf.querySelector('.curl');
   });
-  /* the book is authored at 920x640; it is scaled to whatever this panel can give it */
+  /* The book is authored at 920x640 and rotated on two axes. At the final tilt
+     (rotateY -9deg through a 2400px perspective) the near edge magnifies by ~1.03 while
+     cos(9deg) shrinks the span by ~0.99, so the painted box lands a shade UNDER 920 — and
+     during the cover's swing the leaf rotates about the spine and stays inside the box. A
+     fixed 1.08 of horizontal headroom therefore covers every angle. It is deliberately a
+     constant: this factor used to be refined from measurements each frame, which meant the
+     scale could change mid-animation, which is a visible size step. */
+  var dcPad=1.08;
+  var dcStage=dcPp?dcPp.parentElement:null;
   function sizeBook(){
-    if(!dcPp) return;
-    var r=dcPp.getBoundingClientRect();
+    if(!dcPp||!dcStage) return;
+    var r=dcStage.getBoundingClientRect();
     if(!r.width||!r.height) return;
-    /* The open spread is 920x640, but it is rotated on two axes so its painted box is
-       larger than that — the divisors carry the headroom that keeps it inside the panel. */
     dcPp.style.setProperty('--pps',
-      Math.max(0.12, Math.min(r.width/990, r.height/700)).toFixed(4));
+      Math.max(0.12, Math.min(r.width/(920*dcPad), r.height/700)).toFixed(4));
   }
-  sizeBook();
-  addEventListener('resize',sizeBook,{passive:true});
+  function resizeBook(){ sizeBook() }
+  resizeBook();
+  addEventListener('resize',resizeBook,{passive:true});
   /* the instance is held: an observer reachable only through its own observation list can
      be collected, which ends the callbacks without any error */
   var dcRO=null;
-  if(window.ResizeObserver&&dcPp){
-    dcRO=new ResizeObserver(sizeBook);
-    dcRO.observe(dcPp);
+  if(window.ResizeObserver&&dcStage){
+    dcRO=new ResizeObserver(resizeBook);
+    dcRO.observe(dcStage);
   }
   /* a short burst of paper for the offer */
   if(dcConf){
@@ -287,16 +301,16 @@
 
   /* the agent's running total, so the panel reports scale rather than one anecdote */
   var EXLOG=[
-    ['09:42','Agent matched 504 profiles against the blueprint'],
-    ['10:15','156 candidates approached by email'],
-    ['11:18','39 responses received'],
-    ['11:47','24 candidate journeys shared'],
-    ['13:02','88 follow-ups sent on WhatsApp'],
-    ['14:32','17 assessments coordinated'],
-    ['15:20','12 evaluations returned and scored'],
-    ['16:07','9 interview slots proposed'],
-    ['16:44','6 calendar invites accepted'],
-    ['17:30','4 candidates cleared pre-screen']];
+    'Agent matched 504 profiles against the blueprint',
+    '156 candidates approached by email',
+    '39 responses received',
+    '24 candidate journeys shared',
+    '88 follow-ups sent on WhatsApp',
+    '17 assessments coordinated',
+    '12 evaluations returned and scored',
+    '9 interview slots proposed',
+    '6 calendar invites accepted',
+    '4 candidates cleared pre-screen'];
   /* The line advances every 3s, read straight off the clock rather than from a timer.
      setInterval plus a setTimeout for the fade was the freeze: a browser throttles both
      while this section is off-screen, and when the throttle landed between the two the
@@ -308,8 +322,7 @@
     var slot=Math.floor(Date.now()/EX_SLOT_MS)%EXLOG.length;
     if(exTicker._i===slot) return;
     exTicker._i=slot;
-    exTicker.querySelector('b').textContent=EXLOG[slot][0];
-    exTicker.querySelector('span').textContent=EXLOG[slot][1];
+    exTicker.querySelector('span').textContent=EXLOG[slot];
     /* re-trigger the entrance animation without a timer */
     exTicker.classList.remove('turn');
     void exTicker.offsetWidth;
@@ -337,14 +350,14 @@
   }
 
   var ACTS=[
-    ['DESIGN','Decide what you need to know before you meet them.',
-      'CareerPassport drafts the role, competencies, journey, evaluation and communications from your brief.'],
-    ['EXECUTE','Once the role is live, our agents move the process without you operating it.',
-      'The blueprint goes to work: sourcing, outreach and scheduling run across every channel at once.'],
-    ['EVIDENCE','See why someone is worth meeting.',
-      'Every reply becomes a record — what was said, what it means, and why it matters for this role.'],
-    ['DECIDE','Meet fewer candidates.<br>Know more about the ones you do.',
-      'By the time you step in, the role is structured, the process has moved and the evidence is assembled. The conversation starts where judgment actually matters.']
+    ['DESIGN','Decide what you need to know before you meet them',
+      'CareerPassport drafts the role, competencies, journey, evaluation and communications from your brief'],
+    ['EXECUTE','Once the role is live, our agents move the process without you operating it',
+      'The blueprint goes to work: sourcing, outreach and scheduling run across every channel at once'],
+    ['EVIDENCE','See why someone is worth meeting',
+      'Every reply becomes a record — what was said, what it means, and why it matters for this role'],
+    ['DECIDE','Meet fewer candidates.<br>Know more about the ones you do',
+      'By the time you step in, the role is structured, the process has moved and the evidence is assembled. The conversation starts where judgment actually matters']
   ];
   var actNow=-1;
   var textCol=document.querySelector('.aitextcol');
@@ -439,6 +452,36 @@
   var G0=0.478*0.43; /* = act 2's opening beat expressed on this fold's clock */
   var SVH_TOTAL=1750;
   var A2=0.43;
+  /* ---- the composed frames, for keyboard readers ----------------------------------
+     A pinned fold is one section but nineteen states, so a reader on the arrow keys was
+     paying ~349 presses to cross it against ~140 wheel notches. These are the moments
+     where something has LANDED — never mid-transition — and the keyboard engine below
+     steps between them. Expressed in g, beside the clock they belong to. */
+  sec.__stops=[
+    0,      /* the panel opens, reading the prompt */
+    .234,   /* the three inputs assembled      (p .545) */
+    .284,   /* technologies chosen             (p .660) */
+    .310,   /* expertise raised                (p .720) */
+    .353,   /* evaluations chosen              (p .820) */
+    .383,   /* accepted                        (p .892) */
+    .404,   /* the journey launched            (p .940) */
+    .494,   /* the sources lit */
+    .550,   /* the Companion wired out */
+    .600,   /* the channels and their reach */
+    .630,   /* the agent operating */
+    .658,   /* the records stacked */
+    .740,   /* one record chosen */
+    .804,   /* the deck fanned */
+    .876,   /* the cleared candidates read */
+    .918,   /* the record comes forward */
+    .952,   /* the cover turned */
+    .986    /* the offer sent */
+  ];
+  sec.__toY=function(gv){
+    var vh=pin.getBoundingClientRect().height||innerHeight;
+    var sp=sec.offsetHeight-vh;
+    return Math.round(sec.offsetTop + sp*clamp((gv-G0)/(1-G0),0,1));
+  };
   var setH=function(){ sec.style.height=SVH_TOTAL+'svh' };
   setH(); addEventListener('resize',setH,{passive:true});
 
@@ -503,7 +546,6 @@
           row.el.style.transform='perspective(760px) rotateX('+(-d*7).toFixed(2)+'deg) scale('+
             (1-away*0.05).toFixed(3)+')';
           row.el.style.opacity=(0.5+0.5*away).toFixed(2);
-          row.el.style.filter=away>0.55?'none':'blur('+((0.55-away)*2.1).toFixed(2)+'px)';
         }
       });
       board.style.opacity=(0.46-0.15*Math.abs(g-0.5)*2).toFixed(3);
@@ -518,122 +560,121 @@
     setAct(g<0.452?0:g<0.652?1:g<0.852?2:3);
 
     /* act 2's approve press holds long enough to register even at speed */
-    var subPress=p>=.952&&p<.986&&g<A2;
+    var subPress=p>=.858&&p<.892&&g<A2;
     submitBtn.classList.toggle('pressed',subPress);
 
-    /* act 2 — the box grows, prepares, then draws the blueprint
+    /* act 2 — the prompt is read, then the three inputs are set
+         .478–.545  reading the prompt (latched: also completes on its own clock)
+         .545       the three groups assemble, staggered in CSS
+         .600–.655  two more technologies are added
+         .655–.720  the expertise level is raised to Pro
+         .720–.820  two more evaluations are chosen
+         .830       Accept is offered, .845 armed and the blueprint reads ready
+         .858–.892  the press
+         .900       the panel recedes, .912 finalised, .940 launched                  */
+    box.classList.toggle('big',p>=.478);
 
-       PREP_IN..PREP_OUT is the "Hiring blueprint is being prepared" dwell. It was
-       .478–.625; halved to .478–.5515, because the shimmer held alone for roughly a
-       thousand pixels of scroll before anything else arrived.
-
-       The whole entrance cluster below moves earlier by the same PREP_CUT, so the
-       blueprint still meets the prep instead of a hole opening where the shimmer used to
-       be. The review timeline further down (.700 onward) is deliberately NOT shifted: it
-       is a contiguous cursor choreography, and the freed slack is better spent as a short
-       hold on the finished blueprint just before the cursor starts reading it. */
-    var PREP_IN=.478, PREP_OUT=.5515, PREP_CUT=.0735;
-    box.classList.toggle('big',p>=PREP_IN);
-    prep.classList.toggle('on',p>=PREP_IN&&p<PREP_OUT);
-    bp.classList.toggle('on',p>=.605-PREP_CUT&&g<.452);
-
-    /* tabs appear, then questions load and fill */
-    var tabsOn=p>=.60-PREP_CUT;
-    tabs.forEach(function(el,i){ el.classList.toggle('vis',tabsOn&&p>=.60-PREP_CUT+i*0.018) });
-    if(addTab) addTab.classList.toggle('vis',tabsOn&&p>=.654-PREP_CUT);
-    var qLoading=p>=.64-PREP_CUT&&p<.72-PREP_CUT;
-    var qFilled=p>=.72-PREP_CUT;
-    questions.forEach(function(el,i){
-      el.classList.toggle('vis',p>=.63-PREP_CUT+i*0.024);
-      el.classList.toggle('filled',qFilled);
-    });
-    qLoaders.forEach(function(el){ el.classList.toggle('on',qLoading) });
-    ready.classList.toggle('on',p>=.73&&p<.82);
-
-    /* ---- the review, as one gap-free timeline ----
-       Every window below is contiguous, and each names exactly one cursor target, so the
-       pointer always has somewhere real to be. The lever picker's own window bounds both
-       the grid and its Cancel button, so neither is ever a park target while hidden.
-         .700–.760  read the three questions on Rapid fire
-         .760–.788  Case study tab
-         .788–.816  Pick and defend tab
-         .816–.836  reach for + Add lever
-         .836–.892  scan the lever options
-         .892–.925  Cancel
-         .925–...   Accept blueprint                                                  */
-    var LEVER_IN=.816, LEVER_OUT=.925;
-    var showLever=p>=LEVER_IN&&p<LEVER_OUT;
-
-    var activeTab=0;
-    if(p>=.760&&p<.788) activeTab=1;
-    else if(p>=.788&&p<LEVER_IN) activeTab=2;
-    else if(showLever) activeTab=-1;
-    tabs.forEach(function(el,i){ el.classList.toggle('on',i===activeTab) });
-    if(addTab) addTab.classList.toggle('on',showLever);
-
-    var qsWrap=document.getElementById('bpQs');
-    if(leverPanel) leverPanel.classList.toggle('on',showLever);
-    if(qsWrap) qsWrap.style.display=showLever?'none':'';
-
-    /* the questions are read one at a time, and only while they are on screen */
-    var hover=-1;
-    if(p>=.700&&p<.760) hover=Math.min(2,Math.floor(seg(p,.700,.760)*3));
-    questions.forEach(function(el,i){ el.classList.toggle('hov',i===hover) });
-
-    /* Five levers are scanned and the last of them is "Binary choice", the tile Cancel
-       now sits directly under — so the cursor's final move in the picker is a short drop
-       straight down instead of a diagonal run to the footer. */
-    var LEVER_SCAN=[0,1,2,3,5];
-    var leverStep=-1;
-    if(p>=.836&&p<.892) leverStep=Math.min(4,Math.floor(seg(p,.836,.892)*5));
-    var leverHov=leverStep<0?-1:LEVER_SCAN[leverStep];
-    leverOpts.forEach(function(el,i){ el.classList.toggle('hov',i===leverHov) });
-    var onCancel=p>=.892&&p<LEVER_OUT;
-    if(cancelBtn){
-      cancelBtn.classList.toggle('on',showLever);
-      cancelBtn.classList.toggle('hov',onCancel);
+    /* The processing screen resolves on the clock as well as on scroll, so stopping
+       mid-scroll cannot leave a reader parked on a spinner — the form assembles anyway. */
+    var now=Date.now();
+    if(p>=.478&&g<.452&&r.top<=0){ if(!prepArmed) prepArmed=now }
+    else prepArmed=0;
+    var prepDone=p>=.545||(prepArmed&&now-prepArmed>1150);
+    /* while it is still reading, it drives its own frames — so stopping mid-scroll still
+       resolves into the form instead of resting on a spinner */
+    if(prepArmed&&!prepDone&&!prepPump){
+      prepPump=requestAnimationFrame(function(){ prepPump=0; frame() });
     }
-    submitBtn.classList.toggle('on',p>=.925);
-    submitBtn.classList.toggle('armed',p>=.940);
+    prep.classList.toggle('on',p>=.478&&!prepDone);
+    bp.classList.toggle('on',prepDone&&g<.452);
+    /* one class for all three groups: the stagger is a CSS transition-delay, so it plays
+       out on time rather than needing scroll to advance it */
+    bpGroups.forEach(function(el){ el.classList.toggle('vis',prepDone) });
+
+    /* — the technologies — */
+    var chipStep=-1;
+    if(p>=.600&&p<.655) chipStep=Math.min(1,Math.floor(seg(p,.600,.655)*2));
+    var CHIP_AT=[.620,.648];
+    var chipHov=chipStep<0?-1:CHIP_ADD[chipStep];
+    var nChips=CHIP_BASE.length;
+    chips.forEach(function(el,i){
+      var add=CHIP_ADD.indexOf(i);
+      var on=CHIP_BASE.indexOf(i)>=0||(add>=0&&p>=CHIP_AT[add]);
+      if(on&&CHIP_BASE.indexOf(i)<0) nChips++;
+      el.classList.toggle('pick',on);
+      el.classList.toggle('hov',i===chipHov);
+    });
+    var chipOut=bpGroups[0]&&bpGroups[0].querySelector('.bpglbl em');
+    if(chipOut) chipOut.textContent=nChips+' selected';
+
+    /* — the expertise level — the thumb sits at the head of its own label, as in the
+         reference, so the fill and the label read as one control — */
+    var onSlider=p>=.655&&p<.720;
+    var lvl=p>=.690?3:2;
+    var lvlPct=(lvl/LVL_N)*100;
+    if(sFill) sFill.style.width='calc('+lvlPct.toFixed(2)+'% + 9px)';
+    if(sThumb) sThumb.style.left='calc('+lvlPct.toFixed(2)+'% + 9px)';
+    if(lvlOut) lvlOut.textContent=LVL_NAMES[lvl];
+
+    /* — the evaluation matrix — */
+    var mxStep=-1;
+    if(p>=.720&&p<.820) mxStep=Math.min(1,Math.floor(seg(p,.720,.820)*2));
+    var MX_AT=[.755,.800];
+    var mxHov=mxStep<0?-1:MX_ADD[mxStep];
+    var nMx=MX_BASE.length;
+    mxCells.forEach(function(el,i){
+      var add=MX_ADD.indexOf(i);
+      var on=MX_BASE.indexOf(i)>=0||(add>=0&&p>=MX_AT[add]);
+      if(on&&MX_BASE.indexOf(i)<0) nMx++;
+      el.classList.toggle('pick',on);
+      el.classList.toggle('hov',i===mxHov);
+    });
+    if(mxOut) mxOut.textContent=nMx+' of 9';
+
+    ready.classList.toggle('on',p>=.845&&g<.452);
+    submitBtn.classList.toggle('on',p>=.830);
+    submitBtn.classList.toggle('armed',p>=.845);
 
     /* the handover — the blueprint recedes, two lines land, the agent takes the role */
-    bp.classList.toggle('done',p>=.95&&g<.452);
-    fin1.classList.toggle('on',p>=.955&&g<.452);
-    fin2.classList.toggle('on',p>=.978&&g<.452);
+    bp.classList.toggle('done',p>=.900&&g<.452);
+    fin1.classList.toggle('on',p>=.912&&g<.452);
+    fin2.classList.toggle('on',p>=.940&&g<.452);
 
     /* ---------- act 3 · one role, wired to every source and channel ---------- */
     ex.classList.toggle('on',g>=.452&&g<.655);
-    hub.classList.toggle('on',g>=.462);
-    srcs.forEach(function(el,i){ el.classList.toggle('on',g>=.474+i*0.014) });
-    chans.forEach(function(el,i){ el.classList.toggle('on',g>=.545+i*0.016) });
+    hub.classList.toggle('on',g>=.466);
+    srcs.forEach(function(el){ el.classList.toggle('on',g>=.494) });
+    chans.forEach(function(el){ el.classList.toggle('on',g>=.576) });
     wires.forEach(function(w,i){
-      w.classList.toggle('lit', i<3 ? g>=.482+i*0.014 : g>=.552+(i-3)*0.016);
+      w.classList.toggle('lit', g >= (i<3 ? .522 : .550));
     });
     exTickNow();
 
     /* a packet appears only after its own line has been drawn, never before */
     exDots.forEach(function(d){
       var i=+d.getAttribute('data-w');
-      var lineAt = i<3 ? .482+i*0.014 : .552+(i-3)*0.016;
+      var lineAt = i<3 ? .522 : .550;
       d.classList.toggle('on', g>=lineAt+0.02 && g<.655);
     });
-    exDivs.forEach(function(d){ d.classList.toggle('on',g>=.474&&g<.655) });
-    reach.forEach(function(w){
-      var c=+w.getAttribute('data-r');
-      w.classList.toggle('lit',g>=.566+c*0.016);
-    });
+    exDivs.forEach(function(d){ d.classList.toggle('on',g>=.494&&g<.655) });
+    reach.forEach(function(w){ w.classList.toggle('lit',g>=.600) });
 
 
     /* ---------- act 4 · the pool narrows to one record worth reading ---------- */
+    /* .652  the panel opens with the records already in it
+       .658  the four covers land, staggered by the .05s-per-card transition delay
+       .700  the manager arrives and reads down the stack
+       .740  Open record is offered
+       .776  the press
+       .804  the deck fans — and holds for 51 thousandths, not 18 */
     ev.classList.toggle('on',g>=.652&&g<.855);
-    funs.forEach(function(el,i){ el.classList.toggle('on',g>=.668+i*0.022) });
-    evStack.classList.toggle('on',g>=.748);
-    var evPress=g>=.806&&g<.842;
-    evBtn.classList.toggle('on',g>=.778);
-    evBtn.classList.toggle('armed',g>=.796);
+    evStack.classList.toggle('on',g>=.658);
+    var evPress=g>=.776&&g<.812;
+    evBtn.classList.toggle('on',g>=.740);
+    evBtn.classList.toggle('armed',g>=.762);
     evBtn.classList.toggle('pressed',evPress);
     /* the press opens the deck */
-    evStack.classList.toggle('spread',g>=.834);
+    evStack.classList.toggle('spread',g>=.804);
 
     /* ---------- act 5 · one record read in full, then the decision ----------
        g .852 .. 1, in contiguous beats, each naming one cursor target:
@@ -667,9 +708,11 @@
        the book shuts again as the offer goes out — the record closes on the decision */
     var dcFlips=[[.930,.952],[.952,.968],[9,9],[9,9],[9,9]];
     var dcShut=ease(seg(g,.980,.992));
+    var dcCoverOpen=0;
     for(var li=0;li<dcLeaves.length;li++){
       var dlf=dcLeaves[li]; if(!dlf) continue;
       var lp=dcOpen?ease(seg(g,dcFlips[li][0],dcFlips[li][1]))*(1-dcShut):0;
+      if(li===0) dcCoverOpen=lp;
       var zw=(1-lp)*(4-li)*1.8 + lp*(li+1)*1.8 + Math.sin(Math.PI*lp)*14;
       dlf.style.transform='translateZ('+zw.toFixed(2)+'px) rotateY('+(-180*lp).toFixed(2)+'deg)';
       var turned=lp>0.5;
@@ -677,63 +720,53 @@
       if(dlf.children[1]) dlf.children[1].style.visibility=turned?'visible':'hidden';
       if(dcCurls[li]) dcCurls[li].style.opacity=(Math.sin(Math.PI*lp)*0.85).toFixed(3);
     }
-    /* the open spread reveals its left page and the gutter shadow */
-    var dcO=dcOpen?ease(seg(g,.930,.952))*(1-dcShut):0;
+    /* Nothing sits ahead of a cover, so the left page and the gutter exist only once the
+       cover has swung essentially flat — and they leave again on the way back, because
+       dcCoverOpen returns to 0 as the book shuts. */
+    var dcO=ease(seg(dcCoverOpen,0.70,0.86));
     if(dcVerso) dcVerso.style.setProperty('--vop',dcO.toFixed(3));
-    if(dcSpine) dcSpine.style.setProperty('--sop',dcO.toFixed(3));
+    if(dcSpine) dcSpine.style.setProperty('--sop',(ease(seg(dcCoverOpen,0.70,0.88))*0.9).toFixed(3));
     if(dcBook){
-      /* A closed cover occupies only the right half of the 920 box, so it needs a
-         half-page shift to sit centred; an open spread fills the box and needs none.
-         That analytic offset centres the UNROTATED box, though — the rotateY and the
-         2400px perspective project the painted result somewhere else, by an amount that
-         grows as the column narrows. So the residual is measured off the painted faces
-         and folded back in; it converges in a frame and holds. */
-      var dcS=parseFloat(getComputedStyle(dcPp).getPropertyValue('--pps'))||0.3;
-      var dcCorr=parseFloat(dcBook.style.getPropertyValue('--bxc'))||0;
-      dcBook.style.setProperty('--bx',(-230*dcS*(1-dcO)+dcCorr).toFixed(1)+'px');
-      dcBook.style.transform='rotateY('+(-15+6*dcO).toFixed(2)+'deg) rotateX(5deg)';
-      if(dcOpen){
-        /* the painted extent: the cover face when shut, the two pages when open */
-        var pl,pr;
-        if(dcO>0.5){
-          var vr=dcVerso.getBoundingClientRect();
-          var rr=dcBook.querySelector('.pg.recto.base').getBoundingClientRect();
-          pl=vr.left; pr=rr.right;
-        }else{
-          var cf=dcBook.querySelector('#dcCover .cface').getBoundingClientRect();
-          pl=cf.left; pr=cf.right;
-        }
-        if(pr>pl){
-          var ppr=dcPp.getBoundingClientRect();
-          var delta=(ppr.left+ppr.width/2)-((pl+pr)/2);
-          if(Math.abs(delta)>0.5){
-            /* corrected in THIS frame, not the next: the projection offset is linear in
-               --bx, so one measured step lands it — waiting on a following frame left the
-               composition off-centre whenever frames were throttled */
-            dcCorr+=delta;
-            dcBook.style.setProperty('--bxc',dcCorr.toFixed(1)+'px');
-            dcBook.style.setProperty('--bx',(-230*dcS*(1-dcO)+dcCorr).toFixed(1)+'px');
-          }
-        }
-      }
-    }
+      /* THE PLACEMENT IS SOLVED, NOT SEARCHED.
 
+         What was here was a closed-loop controller: it wrote --bx, measured the painted
+         page, computed the error, accumulated it into --bxc at gain 1.0, and wrote --bx
+         again — every frame, while the rotation it was measuring against changed every
+         frame. A unity-gain corrector chasing a moving target through a one-frame delay
+         oscillates, and it also ratcheted dcPad upward mid-swing, which re-ran sizeBook()
+         and stepped the scale. Worse, the correction branch re-wrote --bx with (1-dcO)
+         while the line above wrote it with (1-dcCen) — two different positions for the
+         same frame, flip-flopping as the error crossed the half-pixel threshold. Those
+         are the glitches.
+
+         None of it was necessary. The geometry is fully known: the book is a 920x640 box
+         whose centre sits at the panel centre plus --bx (a layout offset, hence unscaled,
+         hence the *dcS). A shut cover occupies book-space x 460..920, centre 690 — that
+         is 230 units right of the box centre, so the box shifts 230 units left to read
+         centred. An open spread occupies 0..920, centre 460, and needs no shift. The
+         perspective projection displaces this by well under a pixel at these scales, and
+         a static sub-pixel offset is invisible where an oscillation is not. */
+      var dcS=parseFloat(getComputedStyle(dcPp).getPropertyValue('--pps'))||0.3;
+      var dcCen=dcCoverOpen;
+      dcBook.style.setProperty('--bx',(-230*dcS*(1-dcCen)).toFixed(2)+'px');
+      dcBook.style.transform='rotateY('+(-15+6*dcCen).toFixed(2)+'deg) rotateX(5deg)';
+    }
     /* the four actions, and the one the manager takes */
     dcActs.forEach(function(el,i){ el.classList.toggle('vis',dcOpen&&g>=.934+i*0.004) });
-    var dcShare=dcActs[2];
+    var dcShare=dcActs[1];
     var dcOnShare=g>=.968&&g<.992;
     var dcPress=g>=.976&&g<.986;
     dcActs.forEach(function(el,i){
-      el.classList.toggle('hov',i===2&&dcOnShare);
-      el.classList.toggle('armed',i===2&&g>=.972);
-      el.classList.toggle('pressed',i===2&&dcPress);
+      el.classList.toggle('hov',i===1&&dcOnShare);
+      el.classList.toggle('armed',i===1&&g>=.972);
+      el.classList.toggle('pressed',i===1&&dcPress);
     });
     if(dcSent) dcSent.classList.toggle('on',g>=.988);
     dcConf.classList.toggle('on',g>=.988);
 
     /* ---------- who is on stage, and where their hand is ---------- */
-    var curOn2 = (p>=.665&&p<.995&&g<A2) ||
-                 (g>=.762&&g<.852) || (g>=.872&&g<.992);
+    var curOn2 = (p>=.590&&p<.995&&g<A2) ||
+                 (g>=.700&&g<.852) || (g>=.872&&g<.992);
     cur.classList.toggle('on',curOn2);
     cur.classList.toggle('away',!curOn2);
     setVisible(curOn2);
@@ -741,15 +774,12 @@
 
     if(g<A2){
       /* one target per beat, in the order the beats run */
-      if(hover>=0) park(questions[hover],0,4);
-      else if(p>=.760&&p<.788) park(tabs[1],0,2);
-      else if(p>=.788&&p<LEVER_IN) park(tabs[2],0,2);
-      else if(p>=LEVER_IN&&p<.836) park(addTab,0,2);
-      else if(leverHov>=0) park(leverOpts[leverHov],0,3);
-      else if(onCancel) park(cancelBtn,2,2);
+      if(chipHov>=0) park(chips[chipHov],0,2);
+      else if(onSlider) park(sThumb,0,1);
+      else if(mxHov>=0) park(mxCells[mxHov],0,3);
       else park(submitBtn,2,2);
     }else if(g<.86){
-      if(g<.786) park(evStack.querySelector('.evpass'),0,10);
+      if(g<.740) park(evStack.querySelector('.evpass'),0,10);
       else park(evBtn,2,2);
     }else{
       /* one target per beat; park() skips anything not rendered */
