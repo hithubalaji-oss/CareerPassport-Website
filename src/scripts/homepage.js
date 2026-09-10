@@ -17,19 +17,15 @@ for(var dd=0;dd<8;dd++){
   dust+='<i style="left:'+(rnd()*100).toFixed(1)+'%;top:'+(18+rnd()*70).toFixed(1)+'%;width:'+ds+'px;height:'+ds+
    'px;animation-duration:'+(8+rnd()*10).toFixed(1)+'s;animation-delay:-'+(rnd()*14).toFixed(1)+'s"></i>';
 }
-/* Served from public/ at the site root, so both resolve the same on every route. The
-   `window.__resources` indirection was an authoring-environment hook and does not exist
-   here; the relative paths it fell back to only happened to work because the crowd is
-   homepage-only. Same-origin matters for the hero: it is chroma-keyed on a canvas, and a
-   cross-origin source would taint it and make getImageData throw.
-
-   PERF: the full crowd plate is 2528x1696 and decodes to 16.4 MB of RAM whatever size it
-   is drawn at. On a 390px phone it is displayed roughly 6x smaller, so that resolution is
-   pure memory cost. The 1280px copy is still finer than a DPR-3 phone can resolve and
-   decodes to 4.2 MB. Desktop keeps the full plate. */
-var MOB = innerWidth < 1025;
-var CROWD_SRC = MOB ? '/uploads/Crowd-6ce23065-1280.webp' : '/uploads/Crowd-6ce23065.webp';
-var LIFT_SRC  = '/assets/hero-lift.mp4';
+var RES=(window.__resources||{});
+/* D3: root-absolute, not relative. The design file must keep these relative or the Claude
+   Design canvas preview breaks (it serves the project from a sub-path), so the rewrite
+   happens here instead. The shipped site defines no window.__resources, so the literals
+   below are what actually load, and they have to resolve identically from every route. */
+var CROWD_SRC = innerWidth<1025
+    ? (RES.crowdPlate1280||'/uploads/Crowd-6ce23065-1280.webp')
+    : (RES.crowdPlate||'/uploads/Crowd-6ce23065.webp');
+var LIFT_SRC=RES.heroLift||'/assets/hero-lift.mp4';
 $('#crowd').innerHTML='<div class="cbg" id="cbg"><img id="cbgImg" src="'+CROWD_SRC+'" alt=""></div>'+
   '<div class="hglow" id="hglow"></div>'+
   '<div class="heroFig" id="hero"><div class="hbloom"></div>'+
@@ -460,6 +456,42 @@ function drawLines(g){
 
 /* ---------- the passport answers the cursor ---------- */
 var tx=0,ty=0,cx=0,cy=0;
+
+/* ---- items 1 + 2 · the geometry cache: measure once, derive per frame ----
+   .fold is height:calc(var(--h) * 1vh) and nothing writes a fold style at runtime, so a
+   fold box in DOCUMENT space changes only when the viewport does; its box in VIEWPORT
+   space is that minus scrollY, with no layout involved. .crowd is inset:0 inside such a
+   fold, so the same holds for it, and the loop writes only its opacity and a custom
+   property — never its geometry.
+   Reading these inside frame() AFTER a style write forced a synchronous full-page layout.
+   Reading them here does not, because nothing has been written yet. */
+var geo={folds:[], vw:0, vh:0};
+function remeasure(){
+  geo.vw=innerWidth; geo.vh=innerHeight;
+  var y=scrollY||window.pageYOffset||0;
+  geo.folds=$$("main .fold").map(function(f){
+    var r=f.getBoundingClientRect();
+    return {top:r.top+y, height:r.height};
+  });
+}
+function geoOk(){
+  return geo.folds.length>0 && geo.vw===innerWidth && geo.vh===innerHeight
+         && geo.folds[0].height>0;
+}
+function foldTop(i){
+  if(!geoOk()) remeasure();
+  var g=geo.folds[i];
+  return g ? g.top-(scrollY||window.pageYOffset||0) : 0;
+}
+function foldH(i){
+  if(!geoOk()) remeasure();
+  var g=geo.folds[i]; return g ? g.height : 0;
+}
+remeasure();
+addEventListener("resize",remeasure,{passive:true});
+addEventListener("orientationchange",remeasure,{passive:true});
+addEventListener("load",remeasure);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(remeasure);
 addEventListener('pointermove',function(e){
   /* pointer lean is a mouse affordance: on a touch device it has no input to follow, and
      a single tap would leave the book leaning at a fixed angle for the rest of the visit */
@@ -475,89 +507,31 @@ addEventListener('pointermove',function(e){
    and any transition straddling that boundary visibly locks mid-motion. */
 var FLIPS=[[2.08,2.24],[2.28,2.44],[9,9],[9,9],[9,9]];
 
-/* ---- fold geometry, derived rather than measured -------------------------------------
-   `.fold` is `height:calc(var(--h) * 1vh)` and nothing writes a fold's style at runtime,
-   so a fold's box in DOCUMENT space is fixed until the viewport itself changes. Its box in
-   VIEWPORT space is then just that, minus the scroll position — no layout involved.
-
-   This matters more than the call count suggests. The driver interleaves reads and writes,
-   so a getBoundingClientRect() that follows a style write cannot be answered from the
-   cached layout: the browser must re-run layout for the whole 11,000px page, synchronously,
-   before it can return. Profiling a full scroll at 4x CPU throttle put 809ms in
-   getBoundingClientRect alone, and while the main thread sits in there the compositor
-   receives no new tiles — which is precisely what a phone shows as half-drawn text and
-   blank bands. Four such forced layouts were happening per frame; deriving the fold boxes
-   removes two of them outright and six reads with them. */
-var foldBox=[], foldGen=-1, viewGen=0, foldVH=-1;
-function invalidateFolds(){ viewGen++; }
-addEventListener('resize',invalidateFolds,{passive:true});
-addEventListener('orientationchange',invalidateFolds,{passive:true});
-addEventListener('load',invalidateFolds);
-if(document.fonts&&document.fonts.ready) document.fonts.ready.then(invalidateFolds);
-
-/* A cache of this shape fails DANGEROUSLY rather than merely staling, which is why it is
-   self-healing rather than event-driven alone. If it is ever populated at a moment when the
-   folds measure zero — before the stylesheet applies, while a fold is display:none, in a
-   background tab — it caches zeros and keeps serving them until something happens to fire
-   one of the invalidation events above. Zeros are not a slightly-wrong answer here: with
-   top and height both 0, sp = (vh - 0)/(vh + 0) = 1, so dock collapses to 0 and the crowd,
-   the progress bar and the callouts switch off for the whole scroll. That is a far worse
-   outcome than the forced layout this cache exists to avoid, and because it turns on load
-   timing it is exactly the kind of fault that passes one test and fails another.
-   (Caught in review by Claude Design, which hit it in its own implementation.)
-
-   So the cache is rejected, not trusted, whenever it is empty, contains a zero height, or
-   was stamped against a different viewport height. Steady state is unchanged: one
-   measurement per resize, none per frame. */
-function foldsCacheStale(){
-  if(foldGen!==viewGen || foldVH!==innerHeight) return true;
-  if(!foldBox.length) return folds.length>0;
-  for(var k=0;k<foldBox.length;k++) if(!(foldBox[k].height>0)) return true;
-  return false;
-}
-
-/* viewport-space {top,height} for every fold, the only two fields any caller reads */
-function foldRects(sy){
-  if(foldsCacheStale()){
-    foldBox.length=0;
-    for(var k=0;k<folds.length;k++){
-      var b=folds[k].getBoundingClientRect();
-      foldBox.push({top:b.top+sy,height:b.height,id:folds[k].id});
-    }
-    foldGen=viewGen; foldVH=innerHeight;
-  }
-  var out=[];
-  for(var j=0;j<foldBox.length;j++) out.push({top:foldBox[j].top-sy,height:foldBox[j].height});
-  return out;
-}
-
-/* index of a fold by id, so inserting a fold upstream cannot silently shift these */
-var _fi={}, _fiGen=-1;
-function foldIndex(id){
-  if(_fiGen!==viewGen||!(id in _fi)){
-    if(_fiGen!==viewGen){ _fi={}; _fiGen=viewGen; }
-    _fi[id]=-1;
-    for(var k=0;k<folds.length;k++) if(folds[k].id===id){ _fi[id]=k; break; }
-  }
-  return _fi[id];
-}
-
 function frame(){
 try{
   /* ---- READ (batched) ---- */
   var vh=innerHeight, vw=innerWidth, mob=vw<1025, phone=vw<600;
+  /* ---- the crowd plate's box, read here and nowhere else ----
+     This used to be measured down in the composition lock, AFTER the loop had written
+     cbg's scale, translate and width. A read that follows a style write cannot be answered
+     from cached layout: the browser must re-run layout for the whole 11,000px page,
+     synchronously, before it can return a number. It was one of four such sites, and
+     together they accounted for every millisecond of main-thread blocking during a scroll —
+     which is what made glyphs draw halfway and background textures blank out.
+     Taken here, before anything has been written, the same two reads are free. The trade is
+     a one-frame lag: these rects describe the layout committed last frame rather than this
+     frame's pending writes. Against a zoom that moves 0.19 across an entire fold that is
+     sub-pixel at 60fps, and it is the same trade the fold-rect cache makes. */
+  var pr=cbg.getBoundingClientRect(), cr=crowd.getBoundingClientRect();
+  /* the flow-node geometry, same reasoning: it used to be read after the loop had written
+     the tally property and swapped flow.className, both of which invalidate layout */
+  var _nod=flow.querySelector('.fbot'), _tiles=flow.querySelector('.ftiles');
+  var nr0=_nod?_nod.getBoundingClientRect():null;
+  var bkr0=cover.getBoundingClientRect();
+  var tlr0=_tiles?_tiles.getBoundingClientRect():null;
   var g=0,i,r;
-  /* PERF: every fold rect this frame needs, measured once into fr[].
-     The folds were being measured three times over — once here for g, once for apprOf,
-     and #f5 twice more by id — 12 rect reads where 5 do. Nothing between those reads
-     writes a style, so they could only ever return the same numbers. Layout reads are
-     the expensive half of this loop: each one that follows a style write forces the
-     browser to re-run layout synchronously, and while it does that the compositor gets
-     no new tiles, which is what shows up on a phone as half-drawn text and blank bands. */
-  var sy=window.scrollY||window.pageYOffset||0;
-  var fr=foldRects(sy);
-  for(i=0;i<fr.length;i++){
-    r=fr[i];
+  for(i=0;i<folds.length;i++){
+    r=folds[i].getBoundingClientRect();
     g+=clamp(-r.top/Math.max(1,r.height-vh),0,1);
   }
 
@@ -584,21 +558,27 @@ try{
   }
   /* fold 5's approach, measured linearly from its own rect — the clock the 4-to-5
      handover and the spine reveal both read, so they cannot drift apart */
-  /* #f5 is one of the folds, so its rect is already in fr[] — no second query, no second
-     read. Resolved by id rather than by a hard index, so inserting a fold upstream cannot
-     silently point this at the wrong one. */
-  var h5=0, p5=0, r5=fr[foldIndex('f5')];
-  if(r5){
+  var h5=0;
+  (function(){
+    var f5=document.getElementById('f5');
+    if(!f5) return;
+    var r5={top:foldTop(4), height:foldH(4)};   /* cached */
     h5=clamp((vh-r5.top)/(vh*1.10),0,1);
-    /* the fold's full run, for anything that needs more than the handover's 1.10vh */
-    p5=clamp((vh-r5.top)/(vh+r5.height),0,1);
-  }
+  })();
   window.__h5=h5;
+  /* the fold's full run, for anything that needs more than the handover's 1.10vh */
+  var p5=0;
+  (function(){
+    var f5=document.getElementById('f5');
+    if(!f5) return;
+    var r5={top:foldTop(4), height:foldH(4)};   /* cached */
+    p5=clamp((vh-r5.top)/(vh+r5.height),0,1);
+  })();
   window.__p5=p5;
   var apprOf=[];
   if(mob){
-    for(i=0;i<fr.length;i++){
-      var fr2=fr[i];
+    for(i=0;i<folds.length;i++){
+      var fr2=folds[i].getBoundingClientRect();
       apprOf[i]=ease(clamp(((vh-fr2.top)/(vh*0.80)-0.42)/0.58,0,1));
     }
     var orr=outroEl?outroEl.getBoundingClientRect():null;
@@ -699,7 +679,7 @@ try{
   /* ONE choreography: assemble (0.42-1.0) -> descend (1.0-2.05) -> release (2.05-2.42) */
   /* scene progress runs continuously from fold 2 entering the viewport to the end of its pin,
      so there is no dead stretch while fold 1's pin releases */
-  var r2 = folds[1].getBoundingClientRect();
+  var r2 = {top:foldTop(1), height:foldH(1)};   /* cached — see remeasure() */
   var sp = clamp((vh - r2.top)/(vh + r2.height),0,1);
   var asm = ease(seg(sp,0.02,0.56));
   var cam = ease(seg(sp,0.56,0.93));
@@ -746,39 +726,51 @@ try{
      width, so the walk-on and camera moves stay in proportion too. LIFT and HDROP are
      optical nudges, so they stay in px. */
   var REF_W=1800, HERO_W=0.292, FEET=0.94, LIFT=160, HDROP=75;
-  var pr=cbg.getBoundingClientRect(), cr=crowd.getBoundingClientRect();
-  var pw=pr.width||REF_W, ph=pr.height||pw*0.86, k=pw/REF_W;
-  var cbgOld=pw*-0.205-LIFT, cbgNew=cbgOld;
+  /* ---- the plate's box is DERIVED, never measured ----
+     This block used to write cbg's scale and width and then read cbg's rect back to
+     recover the rendered width — a read that cannot be answered from cached layout, so the
+     browser re-ran layout for the whole 11,000px page synchronously, mid-frame. It was one
+     of four such sites and together they accounted for every millisecond of main-thread
+     blocking during a scroll.
+     Nothing here needs measuring. .cbg is left:0/right:0 inside .crowd, so its layout width
+     is the cached crowd width on desktop and the width we write ourselves on mobile; its
+     img is width:100%/height:auto, so its layout height is that width times the image's
+     natural aspect; and the rendered box is the layout box times the scale we are about to
+     write. Every term is already in hand. */
   var cbgEl=document.getElementById('cbg'), cbgImg=document.getElementById('cbgImg');
+  var S=zoom+breathe*dock;                       /* the scale written just above */
+  var asp=(cbgImg&&cbgImg.naturalWidth) ? cbgImg.naturalHeight/cbgImg.naturalWidth : 0.694;
+  var cbgNew, rTop;
   if(innerWidth<1025 && cbgEl){
     var hdrH=parseFloat(getComputedStyle(document.documentElement)
                .getPropertyValue('--hdr'))||78;
-    var asp=(cbgImg&&cbgImg.naturalWidth) ? cbgImg.naturalHeight/cbgImg.naturalWidth : 0.694;
-    var csc=parseFloat(getComputedStyle(cbgEl).scale)||1;
-    if(!(csc>0.2&&csc<4)) csc=1;
     /* the region the art may occupy: under the header, above the midline */
-    var rTop=hdrH+8, rBot=innerHeight*0.50, rH=Math.max(120,rBot-rTop);
+    rTop=hdrH+8;
+    var rH=Math.max(120,innerHeight*0.50-rTop);
     /* 145 is the docked zone top the fold clock writes; zoneH is the driver's own value */
-    cbgNew = rTop - 145 - (window.__zH||innerHeight*0.22)/2;
-    var w=Math.min(innerWidth, rH/(asp*csc));
-    cbgEl.style.width=w.toFixed(0)+'px';
-    cbgEl.style.left=((innerWidth-w)/2).toFixed(0)+'px';
-    cbgEl.style.right='auto';
-    /* .cbg's centre lands at crowdTop + crowdH/2 + cbgTop, so the offset is solved from
-       the measured box rather than assumed from a percentage */
+    cbgNew=rTop-145-(window.__zH||innerHeight*0.22)/2;
     /* the cap is the whole mechanism: a plate that cannot be taller than the band cannot
-       overrun it, so no offset needs solving and nothing reads a rect the loop writes */
-  } else if(cbgEl){
-    cbgEl.style.width=''; cbgEl.style.left=''; cbgEl.style.right='';
+       overrun it, so no offset needs solving */
+    /* the scale here is the value written just above, not one read back —
+       getComputedStyle(cbgEl).scale was a forced style recalc in its own right */
+    var layoutW=Math.min(innerWidth, rH/(asp*S));
+    cbgEl.style.width=layoutW.toFixed(0)+'px';
+    cbgEl.style.left=((innerWidth-layoutW)/2).toFixed(0)+'px';
+    cbgEl.style.right='auto';
+  } else {
+    if(cbgEl){ cbgEl.style.width=''; cbgEl.style.left=''; cbgEl.style.right=''; }
   }
+  var pw=pr.width||REF_W, ph=pr.height||pw*0.86, k=pw/REF_W;
+  if(innerWidth>=1025) cbgNew=pw*-0.205-LIFT;
+  var relLeft=pr.left-cr.left, relTop=pr.top-cr.top;
   crowd.style.setProperty('--cbgTop',cbgNew.toFixed(1)+'px');
   hero.style.setProperty('--hw',(pw*HERO_W).toFixed(1)+'px');
   hero.style.setProperty('--hbot',(cr.bottom-(pr.top+ph*FEET)-HDROP).toFixed(1)+'px');
   hero.style.translate='-50% '+(((1-asm)*54+cam*96-out*36+bob+100)*k).toFixed(2)+'px';
   /* the callout layer becomes the plate's box exactly, so its percentage coordinates are
      percentages of the crowd image at any screen size */
-  claimsEl.style.left=(pr.left-cr.left).toFixed(1)+'px';
-  claimsEl.style.top=(pr.top-cr.top).toFixed(1)+'px';
+  claimsEl.style.left=relLeft.toFixed(1)+'px';
+  claimsEl.style.top=relTop.toFixed(1)+'px';
   claimsEl.style.width=pw.toFixed(1)+'px';
   claimsEl.style.height=ph.toFixed(1)+'px';
   claimsEl.style.setProperty('--rise',(ph*0.0584).toFixed(1)+'px');
@@ -834,7 +826,7 @@ try{
   /* the duck runs on fold 4's own approach progress, not the global fold counter:
      g freezes at 3.0 while fold 3 unpins and fold 4 pins, and any ramp crossing that
      boundary rushes then stalls. This advances continuously. */
-  var r4 = fr[foldIndex('f4')] || f4el.getBoundingClientRect();
+  var r4 = {top:foldTop(3), height:foldH(3)};   /* cached */
   var d4 = clamp((vh - r4.top)/(vh + r4.height),0,1);
   /* the passport's work is done after fold 4 — it slides out to the right and fades
      just before fold 5 arrives, and stays gone through fold 6 */
@@ -1003,13 +995,15 @@ try{
     /* the line hangs from the node (top:100% in CSS), so only its length is computed: the
        drop to the cover, run into the cover's middle. The passport paints above this
        layer, so the overshoot is hidden and the tilt of the cover cannot leave a gap. */
-    var nr=nod.getBoundingClientRect(), bkr=cover.getBoundingClientRect();
+    var nr=nr0||nod.getBoundingClientRect(), bkr=bkr0;
     /* equal spacing: the gap above the Companion sets the gap below it. Solved rather than
        tuned, and damped so the passport's hover keeps breathing around the target instead
        of fighting it. Only runs once the duck has settled, so the ramp is not chased. */
-    var tlr=flow.querySelector('.ftiles').getBoundingClientRect();
+    /* both from the top-of-frame batch; null on the frame that builds them, which the
+       damped solver below skips rather than chasing a stale number */
+    var tlr=tlr0;
     var effS=(parseFloat(zone.style.scale)||1)*s;
-    if(duck>0.85&&effS>0.02&&tlr.height>4){
+    if(tlr&&nr0&&duck>0.85&&effS>0.02&&tlr.height>4){
       var want=nr.bottom+(nr.top-tlr.bottom);
       /* the bound is wide because duckY is expressed in the book's own 920x640 space,
          which the wrap scales down by an order of magnitude at fold 4 — the solved value
@@ -1040,14 +1034,7 @@ var cwReady=false;
 function drawCrowdFrame(){}
 
 /* ---------- pre-baked, chroma-keyed hero frames (no live seeking = no jank) ---------- */
-/* PERF: every baked frame is retained as a full canvas, so HV_N x (w x h x 4) bytes stay
-   resident for the life of the page. At the authored 40 frames of 515x955 that is 75 MB.
-   Together with the crowd plate and the fixed composited layers a phone is asked for well
-   over 100 MB of graphics memory, and when it runs short the compositor discards
-   rasterised tiles — which is why text, gradients and animations blank out across the
-   WHOLE page, not just here. Phones bake half as many frames at half the width:
-   20 x 258x478 = 9.4 MB, and the hero is drawn small enough there not to miss it. */
-var hvReady=false, hvTainted=false, hvDur=0, hvFrames=[], HV_N=MOB?20:40, HV_SX=180, HV_SY=125, HV_SW=515, HV_SH=955;
+var hvReady=false, hvTainted=false, hvDur=0, hvFrames=[], HV_N=(innerWidth<1025?20:40), HV_SX=180, HV_SY=125, HV_SW=515, HV_SH=955;
 function keyGreen(cx,w,h){
   var d=cx.getImageData(0,0,w,h), p=d.data;
   for(var i=0;i<p.length;i+=4){
@@ -1088,7 +1075,8 @@ function bakeHeroFrames(){
 }
 heroVideo.addEventListener('loadedmetadata',function(){
   hvDur=heroVideo.duration||5;
-  var cw=MOB?258:515; heroCv.width=cw; heroCv.height=Math.round(cw*HV_SH/HV_SW);
+  /* half the linear resolution on a phone — a quarter of the retained bytes */
+  var cw=(innerWidth<1025?258:515); heroCv.width=cw; heroCv.height=Math.round(cw*HV_SH/HV_SW);
   bakeHeroFrames();
 });
 function drawHeroFrame(liftP,outP,ms){

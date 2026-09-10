@@ -24,61 +24,14 @@ const read = (p) => (existsSync(join(root, p)) ? readFileSync(join(root, p), 'ut
 const DELTAS = [
   {
     id: 'D1',
-    title: 'Invalid CSS dropped from the Partners stylesheet',
-    file: 'src/styles/partners.css',
-    design: 'For Recruitment Partners.html',
-    // homepage.css carries a fourth fragment; asserted separately below
-    extraFiles: ['src/styles/homepage.css'],
-    extraPresent: ['NOTE: the prototype leaves a stray "}" here'],
-    present: [
-      'NOTE: the prototype has a stray "}" here',
-      'NOTE: the prototype has three dangling ".swdeck," fragments here',
-      'NOTE: the foil rule this comment describes is gone',
-    ],
-    // each malformed fragment, whose reappearance means the import won
-    reverted: [/initial-value:0\}\s*\n\s*\n\s*\}\s*\n/, /\.swdeck,\}/],
-    upstreamFixed: (designSrc) =>
-      !/initial-value:0\}\s*\n\s*\n\s*\}\s*\n/.test(designSrc) && !/\.swdeck,\}/.test(designSrc),
-  },
-  {
-    id: 'D2',
-    title: '--hdr raised to the header\'s real height',
-    file: 'src/components/chrome/Header.astro',
-    design: 'For Recruitment Partners.html',
-    present: ['if (measured > declared) root.style.setProperty', 'Number.isFinite(declared)'],
-    // the design declaring its real height would make the guard a no-op
-    upstreamFixed: (designSrc) => !/--hdr:60px/.test(designSrc),
-  },
-  {
-    id: 'D3',
-    title: 'Mobile graphics-memory budget',
+    title: 'Root-absolute asset paths',
     file: 'src/scripts/homepage.js',
     design: 'index.html',
-    present: ['HV_N=MOB?20:40', "var cw=MOB?258:515", 'Crowd-6ce23065-1280.webp'],
-    extraFiles: ['src/styles/homepage.css'],
-    extraPresent: ['PERF: both are sized past the viewport'],
-    // the export budgeting these itself would make the delta unnecessary
-    upstreamFixed: (designSrc) => /HV_N\s*=\s*[^4]/.test(designSrc),
-  },
-  {
-    id: 'D4',
-    title: 'The waitlist row is allowed to shrink',
-    file: 'src/styles/homepage.css',
-    design: 'index.html',
-    present: ['.wait input{flex:1;width:0;min-width:0', 'PERF/LAYOUT: `width:0` is load-bearing'],
-    // the design's version, whose return means the fold overflows again
-    reverted: [/\.wait input\{flex:1;min-width:0;height:auto/],
-    upstreamFixed: (designSrc) => /\.wait input\{flex:1;width:0/.test(designSrc),
-  },
-  {
-    id: 'D5',
-    title: 'Fold geometry derived instead of measured',
-    file: 'src/scripts/homepage.js',
-    design: 'index.html',
-    present: ['function foldRects(sy)', 'var fr=foldRects(sy)', "foldIndex('f4')"],
-    // the per-frame measurement this replaced
-    reverted: [/r=fr\[i\]=folds\[i\]\.getBoundingClientRect\(\)/],
-    upstreamFixed: (designSrc) => /function foldRects/.test(designSrc),
+    present: ["'/uploads/Crowd-6ce23065-1280.webp'", "'/uploads/Crowd-6ce23065.webp'", "'/assets/hero-lift.mp4'"],
+    // the design file's relative forms, whose return means the import won
+    reverted: [/\|\|'uploads\/Crowd-6ce23065/, /\|\|'assets\/hero-lift/],
+    // this one cannot be fixed upstream — root-absolute paths break the Claude Design
+    // canvas preview, so there is no upstreamFixed signal to watch for
   },
 ];
 

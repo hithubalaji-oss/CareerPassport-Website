@@ -89,26 +89,15 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 .crest i{width:171px;height:171px;border-radius:50%;border:1px solid rgba(216,184,119,.45);display:grid;place-items:center}
 .crest i b{position:relative;display:grid;place-items:center;
   width:72px;height:93px;border-radius:4px 15px 15px 4px;background:rgba(216,184,119,.85)}
-/* the seal legend rides the 21px band between the two rings and turns slowly, so the
-   crest reads as a stamp rather than a static badge */
+/* the seal legend rides the 21px band between the two rings. It is deliberately STATIC:
+   the legend used to turn on a 44s cringspin loop and that rotation was removed on request
+   for both viewports, so there is no animation here to reduce-motion away. */
 .cring{position:absolute;inset:0;width:100%;height:100%}
 .cring text{font-family:var(--mono);font-size:8.5px;font-weight:500;letter-spacing:.18em;
   dominant-baseline:central;fill:rgba(216,184,119,.66)}
 /* the separator carries the seal's accent, brighter than the legend it divides. No tracking:
    it is a single centred glyph, so trailing spacing would only push it off its anchor. */
 .cring text.cdia{font-size:5.6px;letter-spacing:normal;fill:rgba(216,184,119,.9)}
-/* NOTE: the prototype leaves a stray "}" here, and it is a deletion scar with real
-   consequences. On 8 Sep .cring carried `animation:cringspin 44s linear infinite` with a
-   matching `@keyframes cringspin{to{rotate:360deg}}`; the 10 Sep export dropped both and
-   left the closing brace behind. So the seal legend no longer turns, even though the
-   comment above still describes it turning and the reduced-motion rule below still tries
-   to switch off an animation that no longer exists.
-
-   Only the orphan brace is removed here — that much is unambiguous and it is what breaks
-   the build. The animation is NOT restored, because removing it could be a deliberate
-   call (a slow infinite rotation is a fair thing to drop for mobile). Restoring it is one
-   line in the design file, or say the word and it goes back. */
-@media (prefers-reduced-motion:reduce){.cring{animation:none}}
 /* The artwork is black on transparent, so multiply blends its ridges into the gold as if
    they were printed on the chip — the chip's own colour still shows through. */
 .cfp{width:51px;height:51px;object-fit:contain;
@@ -652,7 +641,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 .every p.hi{color:var(--ink)}
 .wait{display:flex;align-items:center;gap:8px;width:min(100%,520px);height:62px;padding:0 7px 0 22px;border-radius:100px;
   background:var(--panel-raised);border:1px solid var(--hairline)}
-.wait input{flex:1;min-width:0;height:44px;border:0;background:transparent;font-size:17px;color:var(--tx)}
+.wait input{flex:1;width:0;min-width:0;height:44px;border:0;background:transparent;font-size:17px;color:var(--tx)}
 .wait button{flex-shrink:0;height:48px;padding:0 24px;border:0;border-radius:100px;background:var(--emerald);color:var(--emerald-deep);
   font-size:14.5px;font-weight:600;letter-spacing:.09em;transition:background .16s var(--ease),color .16s var(--ease)}
 .wait.done input{color:var(--emerald)}
@@ -704,15 +693,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   html,body{overflow-x:clip}
   /* the textures hold still on a phone (the driver no longer writes them — see frame()),
      and are told so, so the compositor does not keep a layer warm for them */
-  .paper,.rose{will-change:auto;translate:none;rotate:none;scale:none;
-    /* PERF: both are sized past the viewport only so the desktop driver can translate and
-       rotate them without exposing an edge — .paper at inset:-25% is 150% of the viewport
-       each way, .rose at inset:-40% is 180%. On a phone they never move (the rule above
-       says so), so that overscan is a composited layer several times larger than it needs
-       to be, and their repeating 1px gradients are among the most expensive things on the
-       page to rasterise. Pulling them back to the viewport is invisible here and cuts the
-       layer area to roughly a third. */
-    inset:0} 
+  .paper,.rose{will-change:auto;translate:none;rotate:none;scale:none}
   .mesh{inset:-6% -12% auto -12%;height:62svh;
     background:
       radial-gradient(46% 40% at 50% 30%,rgba(221,188,107,.20),transparent 70%),
@@ -750,8 +731,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   #outro{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
     padding-block:calc(var(--hdr) + 24px) clamp(28px,5vh,56px)}
   /* 2 · the copy centres in the height the art leaves, so it cannot bottom-anchor */
-  /* and a guard, so a future un-shrinkable child cannot repeat the blowout above */
-  .ocopy{min-width:0;flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;
+  .ocopy{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;
     align-items:center;text-align:center;gap:14px}
   /* 6 · and its type joins the ladder */
   .ocopy h2{font-size:var(--m-head);line-height:var(--m-head-lh);
@@ -927,15 +907,6 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   .field button{width:auto;flex-shrink:0;height:46px;padding:0 16px;border-radius:100px;
     font-size:var(--m-body);letter-spacing:.02em}
   .wait{padding:0 5px 0 6px;border:1px solid var(--hairline);border-radius:100px;background:var(--panel)}
-  /* PERF/LAYOUT: `width:0` is load-bearing, not tidiness. `min-width:0` alone lets the input
-     shrink once a width is being handed to it, but it does NOT change what the input
-     contributes when the browser asks .wait how narrow it can get: an <input> reports its
-     default 20-character intrinsic width, ~155px. Add the button's un-shrinkable 177px and
-     .wait answers 351px. Because #outro centres its children rather than stretching them,
-     .ocopy is then sized to that 351px answer instead of the 320px available — and every
-     one of its children, the heading, the lede and the fine print, is stretched to match and
-     clipped by the viewport. One un-shrinkable input pushed four blocks of text off-screen.
-     `width:0` drops the contribution to 0 and .wait min-content falls 351 -> 144. */
   .wait input{flex:1;width:0;min-width:0;height:auto;padding:0 10px;border:0;background:transparent;font-size:15px}
   .wait button{width:auto;flex-shrink:0;height:46px;padding:0 18px;border-radius:100px;
     font-size:var(--m-body);letter-spacing:.02em}
@@ -1352,3 +1323,5 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   .bt b{width:22px;justify-items:start}
   .bt p{display:block;max-width:none;margin-top:3px}
 }
+/* ---- mobile graphics-memory budget: the textures shed their overscan ---------------- */
+@media (max-width:1024px){ .paper,.rose{inset:0} }
