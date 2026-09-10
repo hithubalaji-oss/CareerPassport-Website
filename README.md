@@ -9,7 +9,6 @@ this folder to the repository root (or drop the folder into Netlify) and the sit
 index.html                        homepage           (must stay named index.html)
 For Companies.html
 For Recruitment Partners.html
-_redirects                        clean URLs for Netlify — see below
 cp-shared.css                     shared layout (linked by Partners)
 cp-header.css                     the header + footer chrome, all three pages
 cp-page.js                        the fold/scroll engine (Partners)
@@ -18,6 +17,8 @@ image-slot.js                     drag-and-drop image placeholders
 assets/fingerprint.png            passport chip
 assets/hero-lift.mp4              homepage hero video
 uploads/Crowd-6ce23065.png        homepage crowd scene
+                                  (the shipped site serves WebP copies of the two
+                                   images from public/ — see Assets, below)
 _ds/careerpassport-design-system-.../tokens.bundle.css   design tokens
 ```
 
@@ -34,22 +35,21 @@ later, drop the `.woff2` files in `assets/fonts/` and replace the `@import` at t
 
 ## Clean URLs
 
-`_redirects` is Netlify's format and maps:
-
-```
-/for-companies             → /For%20Companies.html
-/for-recruitment-partners  → /For%20Recruitment%20Partners.html
-```
-
-The pages link to each other by filename, so they work with or without it. On a host that
-is not Netlify (GitHub Pages, S3, nginx) `_redirects` is ignored and the filename URLs
-still work — translate it to that host's own rewrite syntax if you want the short paths.
+The bundle used to carry a `_redirects` file mapping `/for-companies` to
+`/For%20Companies.html`. That is Netlify's format and this site deploys on Vercel, which
+ignores it — the short paths come from `cleanUrls` in `vercel.json` and from the route
+names in `src/pages/`, neither of which needs it. It has been removed rather than left to
+look load-bearing. The prototypes link to each other by filename and work either way; on a
+host that wants rewrites, translate from `vercel.json`.
 
 ## Not included, deliberately
 
-`Claim Field.html` and the three `For Companies v1/v2/v3` variants are frozen explorations,
-not live pages. Nine unused files in `site/assets/` (older crowd and hero plates) are also
-left out. They remain in the project if you need them.
+`Claim Field.html` and the three `For Companies v1/v2/v3` variants were frozen
+explorations, not live pages, and nine older crowd and hero plates in `assets/` were used
+by none of the three. Both groups have been deleted from this repository — no live page,
+artboard wrapper or `src/` file referenced any of them. **The originals still live in the
+Claude Design project**, so re-exporting brings back anything still on its canvas; delete
+the artboards there too if you want them gone for good.
 
 ## Image placeholders
 
@@ -175,9 +175,17 @@ re-verify against the new prototypes → push.
    The `window.__resources` indirection was an authoring-environment hook and is gone.
    Both stay same-origin, which the hero needs: it is chroma-keyed on a canvas, and a
    cross-origin source would taint it and make `getImageData` throw.
-4. **Only referenced assets ship.** The current pages use `hero-lift.mp4` and
-   `Crowd-6ce23065.png`; the superseded plates listed under *Assets* stay in `site/` and are
-   not served.
+4. **Only referenced assets ship, and the images ship as WebP.** The pages use
+   `hero-lift.mp4` plus two images, and `public/` carries WebP copies of both: the crowd
+   plate at 4.90 -> 0.92 MB and its 1280px mobile companion at 2.62 -> 0.23 MB (quality 90,
+   alpha encoded losslessly — measured error on visible pixels is RMSE 2.0 of 255), and
+   `fingerprint.webp` losslessly at 36 -> 15 KB. All three have a real alpha channel, which
+   is why WebP and not JPEG. The PNGs at the repository root stay as the design source; only
+   `public/` is served.
+
+   `index.html` preloads the plate the driver will actually pick, using the same 1025px
+   boundary — before this, every phone downloaded the desktop plate from the preload *and*
+   the mobile plate from the driver.
 5. **An empty `.image-slots.state.json` is served.** `image-slot.js` fetches its sidecar on
    load; without the file every page load logged a 404. The prototypes 404 here too.
 

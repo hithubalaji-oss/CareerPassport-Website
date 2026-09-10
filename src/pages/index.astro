@@ -26,8 +26,14 @@ import '../styles/homepage.css';
 >
   <Fragment slot="head">
     {/* Both are injected by script, so the browser cannot see them in the markup.
-        Preloading gets the fetches started during parse. */}
-    <link rel="preload" as="image" href="/uploads/Crowd-6ce23065.png" />
+        Preloading gets the fetches started during parse.
+
+        The crowd plate ships in two sizes and homepage.js picks between them on the same
+        1025px boundary. The preload has to agree with that choice or the browser fetches
+        one plate here and the driver fetches the other — so both carry the matching media
+        query, and a phone downloads 0.23 MB instead of 0.23 + 0.92. */}
+    <link rel="preload" as="image" href="/uploads/Crowd-6ce23065-1280.webp" media="(max-width: 1024px)" />
+    <link rel="preload" as="image" href="/uploads/Crowd-6ce23065.webp" media="(min-width: 1025px)" />
     <link rel="preload" as="video" href="/assets/hero-lift.mp4" type="video/mp4" />
   </Fragment>
 

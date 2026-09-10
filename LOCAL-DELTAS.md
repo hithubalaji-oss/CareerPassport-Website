@@ -116,7 +116,7 @@ implementation matches the prototype pixel for pixel.
 
 | | |
 |---|---|
-| **Files** | `src/scripts/homepage.js`, `src/styles/homepage.css`, `public/uploads/Crowd-6ce23065-1280.png` |
+| **Files** | `src/scripts/homepage.js`, `src/styles/homepage.css`, `public/uploads/Crowd-6ce23065-1280.webp` |
 | **Source** | `index.html` |
 | **Status** | Active — belongs in Claude Design; see *How to retire* |
 
@@ -143,6 +143,9 @@ exactly what a desktop does.
    hero is drawn small on a phone, so the resolution is not missed.
 2. **Right-sized crowd plate** — a 1280px copy ships alongside the original: 16.4 MB to
    4.2 MB decoded. Still finer than a DPR-3 phone resolves. Desktop keeps the full plate.
+   Both now ship as WebP, which cuts the *download* (0.23 MB against 0.92) but not the
+   decoded figures above — those follow from the pixel dimensions and are the same in any
+   format. The saving that mattered here is the resize, not the re-encode.
 3. **`.paper` / `.rose` pulled back to `inset:0`** — their overscan exists only so the
    desktop driver can translate and rotate them without exposing an edge, and the sheet
    already stops animating them on mobile. Invisible there; cuts the layer area to about a

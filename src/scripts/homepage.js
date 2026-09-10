@@ -28,7 +28,7 @@ for(var dd=0;dd<8;dd++){
    pure memory cost. The 1280px copy is still finer than a DPR-3 phone can resolve and
    decodes to 4.2 MB. Desktop keeps the full plate. */
 var MOB = innerWidth < 1025;
-var CROWD_SRC = MOB ? '/uploads/Crowd-6ce23065-1280.png' : '/uploads/Crowd-6ce23065.png';
+var CROWD_SRC = MOB ? '/uploads/Crowd-6ce23065-1280.webp' : '/uploads/Crowd-6ce23065.webp';
 var LIFT_SRC  = '/assets/hero-lift.mp4';
 $('#crowd').innerHTML='<div class="cbg" id="cbg"><img id="cbgImg" src="'+CROWD_SRC+'" alt=""></div>'+
   '<div class="hglow" id="hglow"></div>'+
