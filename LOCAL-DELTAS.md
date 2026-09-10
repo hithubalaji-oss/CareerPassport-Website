@@ -132,6 +132,65 @@ and without it the alpha is silently dropped.
 
 ---
 
+## D3 — Per-frame animation writes direct properties, not custom properties
+
+| | |
+|---|---|
+| **File** | `src/scripts/homepage.js` |
+| **Source** | `index.html` animates via `style.setProperty('--x', …)` |
+| **Status** | Active — belongs upstream; it is a mechanical change with a visible payoff |
+
+**What was wrong.** The driver animated eleven values per frame by writing CSS **custom
+properties**. A custom property inherits, so Chrome must re-resolve style for the element it
+is set on **and every descendant** — it cannot know which of them reads it. Measured over one
+scroll at 412x915 / DPR 3.5 (a Samsung S23 Ultra in Chrome, the device this was reported on):
+
+| writes | x descendants | = element style resolutions | property | on |
+|---|---|---|---|---|
+| 478 | 424 | **203,150** | `--stageOp` | `#stage` |
+| 478 | 259 | **124,280** | `--s` | `#bookwrap` |
+| 478 | 81 | 39,196 | `--tally` | `#cover` |
+| 2,868 | 6 | 20,076 | `--o` | `.st` |
+| 478 | 26 | 12,906 | `--cbgTop` | `#crowd` |
+| | | **415,564 total** | | |
+
+`--stageOp` is read by exactly one rule — `.stage{opacity:var(--stageOp,1)}`, the element's
+own opacity. It was re-resolving style for 424 elements, 478 times, to set one opacity.
+
+**Why this was the thing that mattered.** Style recalculation measured **372 ms** per scroll
+against 44 ms of layout and 85 ms of script. It was four times the script cost and eight
+times layout — and every previous round of work here targeted script or layout. That is why
+nothing a reader could see ever changed.
+
+**The fix.** Every one of these is now the element's **own** property, set on the element that
+reads it: `--stageOp` -> `stage.style.opacity`, `--s` -> `wrap.style.scale`, `--o` ->
+`el.style.opacity`, `--clo`, `--vo`, `--vop`, `--sop` likewise; `--hw`/`--hbot` ->
+`hero.style.width`/`bottom`; and the two consumed by a descendant move **down** to that
+descendant — `--cbgTop` -> `cbg.style.marginTop`, `--tally` -> `.ctally`'s own opacity.
+`--rise` was written 478 times per scroll and is read by no rule in any stylesheet; dropped.
+
+Opacity and scale are compositor properties, so those writes no longer touch style at all.
+
+**Measured, median of four runs:** style recalculation **372 ms -> 118 ms**. The recalc *count*
+is unchanged (1,015 vs 1,020) — each one now touches a fraction of the elements, which is
+exactly the mechanism.
+
+**It also fixed a visible bug.** The passport's seal legend was rendering as garbled
+overlapping fragments instead of "SEAL OF TRUST / EVIDENCE OF YOUR CLAIMS". Invalidating
+`#bookwrap`'s 259-element subtree hundreds of times per scroll was corrupting the SVG
+`textPath` layout. With the subtree left alone it renders correctly. Verified by screenshot,
+against a same-build control run to separate it from the time-based breathing animation.
+
+**How to re-apply.** Replace each `setProperty('--x', v)` in the frame loop with the
+equivalent direct property on the element that consumes it. The full mapping is above; no
+stylesheet changes are needed, because an inline property beats the `var()` rule it replaces
+and no media query overrides any of them (checked).
+
+**Retire this entry** by making the same change in the design file. Nothing about it is
+implementation-specific — the design prototype pays exactly the same cost in a browser.
+
+---
+
 ## Retired
 
 Everything below was fixed in Claude Design and re-derived cleanly on 10 Sep. Kept as a

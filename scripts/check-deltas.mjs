@@ -43,6 +43,16 @@ const DELTAS = [
     reverted: [/\n    try\{ keyGreen\(cx,cv\.width,cv\.height\); \}\n    catch/],
     upstreamFixed: (designSrc) => !/function keyGreen/.test(designSrc),
   },
+  {
+    id: 'D3',
+    title: 'Per-frame animation writes direct properties, not custom properties',
+    file: 'src/scripts/homepage.js',
+    design: 'index.html',
+    present: ["stage.style.opacity = '1'", 'wrap.style.scale =', 'tallyEl.style.opacity', 'cbgEl.style.marginTop'],
+    // the custom-property writes, whose return re-invalidates whole subtrees every frame
+    reverted: [/setProperty\('--stageOp'/, /setProperty\('--s'/, /setProperty\('--cbgTop'/],
+    upstreamFixed: (designSrc) => !/setProperty\('--stageOp'/.test(designSrc),
+  },
 ];
 
 const hit = (src, needle) =>

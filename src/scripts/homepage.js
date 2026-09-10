@@ -303,7 +303,7 @@ var stage=$('#stage'),zone=$('.zone'),book=$('#book'),wrap=$('#bookwrap'),cover=
     outroEl=$('.outro'),    btEls=$$('.bt'), stEls=$$('.st'), verifying=$('#verifying'),
 
     crowd=$('#crowd'),hero=$('#hero'),hand=$('#hand'),claimsEl=$('#claims'),
-    cbg=$('#cbg'),
+    cbg=$('#cbg'), tallyEl=$('.ctally'),
     hpalm=$('#hpalm'), heroVideo=$('#heroVideo'), heroCv=$('#heroCv'), heroCx=heroCv.getContext('2d'),
     mesh=$('#f1 .mesh'), paper=$('#paper'), rose=$('#rose'),
     orbSrc=$('#orbSrc'),flow=$('#flow'),flowBuilt=0,duckAdj=0,f4el=$('#f4');
@@ -710,7 +710,7 @@ try{
   var dock = ease(clamp(seg(sp,0.04,0.54) - seg(sp,0.64,1.00),0,1));
   crowd.style.opacity=dock.toFixed(3);
   /* the callouts arrive after the crowd has formed, and clear before it leaves */
-  claimsEl.style.setProperty('--clo', (ease(clamp((asm-0.42)/0.5,0,1))*(1-ease(clamp(out*1.5,0,1)))).toFixed(3));
+  claimsEl.style.opacity = (ease(clamp((asm-0.42)/0.5,0,1))*(1-ease(clamp(out*1.5,0,1)))).toFixed(3);
 
   if(mesh) mesh.style.opacity=(1-asm).toFixed(3);
   if(!mob) zone.style.left=(44-12*dock).toFixed(2)+'%';
@@ -780,9 +780,17 @@ try{
   var pw=pr.width||REF_W, ph=pr.height||pw*0.86, k=pw/REF_W;
   if(innerWidth>=1025) cbgNew=pw*-0.205-LIFT;
   var relLeft=pr.left-cr.left, relTop=pr.top-cr.top;
-  crowd.style.setProperty('--cbgTop',cbgNew.toFixed(1)+'px');
-  hero.style.setProperty('--hw',(pw*HERO_W).toFixed(1)+'px');
-  hero.style.setProperty('--hbot',(cr.bottom-(pr.top+ph*FEET)-HDROP).toFixed(1)+'px');
+  /* PERF: written on .cbg itself, not as --cbgTop on #crowd.
+     A custom property inherits, so Chrome must re-resolve style for the element it is set
+     on AND every descendant — it cannot know which of them reads it. Measured over one
+     scroll at 412x915 / DPR 3.5, the driver's custom properties cost 415,564 element style
+     resolutions, 360ms of style recalculation: four times the script time and eight times
+     layout. #stage alone has 424 descendants and was re-resolving all of them 478 times for
+     an opacity only #stage itself uses. Every one of these is now the element's own
+     property, set on the element that reads it. */
+  if(cbgEl) cbgEl.style.marginTop = cbgNew.toFixed(1)+'px';
+  hero.style.width = (pw*HERO_W).toFixed(1)+'px';
+  hero.style.bottom = (cr.bottom-(pr.top+ph*FEET)-HDROP).toFixed(1)+'px';
   hero.style.translate='-50% '+(((1-asm)*54+cam*96-out*36+bob+100)*k).toFixed(2)+'px';
   /* the callout layer becomes the plate's box exactly, so its percentage coordinates are
      percentages of the crowd image at any screen size */
@@ -790,7 +798,7 @@ try{
   claimsEl.style.top=relTop.toFixed(1)+'px';
   claimsEl.style.width=pw.toFixed(1)+'px';
   claimsEl.style.height=ph.toFixed(1)+'px';
-  claimsEl.style.setProperty('--rise',(ph*0.0584).toFixed(1)+'px');
+  /* PERF: --rise was written every frame and is read by no rule in any stylesheet. Dropped. */
   hero.style.scale=((0.88+0.12*asm)*(1+cam*0.16)).toFixed(4);
   hero.style.rotate=sway.toFixed(3)+'deg';
 
@@ -927,7 +935,7 @@ try{
   ry += cx*9*lean; rx -= cy*6*lean;
   ry = ry*(1-fly) + (-13+cx*5)*fly; rx = rx*(1-fly) + (4-cy*3)*fly;
 
-  wrap.style.setProperty('--s',(mob ? s*(1-0.20*flyNow) : s));
+  wrap.style.scale = (mob ? s*(1-0.20*flyNow) : s);
   var exitTX = mob ? 0 : exitP*520, exitOp = 1-exitP;
   /* upward exit: past the top edge, in book-local units (the wrap is scaled by --s, so
      the on-screen distance is this figure times that scale — hence the generous value) */
@@ -959,10 +967,10 @@ try{
     (dockTY*(1-fly)+exY+seatY).toFixed(1)+'px';
   wrap.style.rotate=(dockRot*(1-fly)+(fly>0.001?(-11*(1-fly)+over*3.4):0)).toFixed(2)+'deg';
   book.style.transform='translateX('+shift.toFixed(1)+'px) translateY('+(duckY*(mob?0:1)).toFixed(1)+'px) rotateY('+ry.toFixed(2)+'deg) rotateX('+rx.toFixed(2)+'deg)';
-  verso.style.setProperty('--vop',ease(seg(open,0.70,0.86)).toFixed(3));
-  cover.style.setProperty('--tally',win(g,2.92,6.10,0.10).toFixed(3));
-  spine.style.setProperty('--sop',(ease(seg(open,0.7,0.88))*0.9).toFixed(3));
-  stage.style.setProperty('--stageOp','1');
+  verso.style.opacity = ease(seg(open,0.70,0.86)).toFixed(3);
+  if(tallyEl) tallyEl.style.opacity = win(g,2.92,6.10,0.10).toFixed(3);
+  spine.style.opacity = (ease(seg(open,0.7,0.88))*0.9).toFixed(3);
+  stage.style.opacity = '1';
 
   /* ---- the leaves turn: one per fold hand-over ---- */
   for(i=0;i<leaves.length;i++){
@@ -985,10 +993,10 @@ try{
   for(i=0;i<btEls.length;i++) btEls[i].classList.toggle('on', g>=BT[i][0] && g<BT[i][1]);
   /* the record is checked first — the line pulses three times — then the stamps land */
   var vp=seg(g,2.50,2.76);
-  verifying.style.setProperty('--vo', vp>0&&vp<1 ? Math.pow(Math.sin(Math.PI*vp*3),2).toFixed(3) : '0');
+  verifying.style.opacity = vp>0&&vp<1 ? Math.pow(Math.sin(Math.PI*vp*3),2).toFixed(3) : '0';
   /* stamps fill in only once the check has finished */
   var fill=ease(seg(g,2.80,2.90))*5;
-  for(i=0;i<stEls.length;i++) stEls[i].style.setProperty('--o', i<5 ? clamp(fill-i,0,1).toFixed(2) : clamp(fill-4.6,0,1).toFixed(2));
+  for(i=0;i<stEls.length;i++) stEls[i].style.opacity = i<5 ? clamp(fill-i,0,1).toFixed(2) : clamp(fill-4.6,0,1).toFixed(2);
 
   /* fold 4: the flow chart builds a layer per beat, and the passport steps back to make room */
   var f4 = duck;
