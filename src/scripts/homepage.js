@@ -488,22 +488,43 @@ var FLIPS=[[2.08,2.24],[2.28,2.44],[9,9],[9,9],[9,9]];
    receives no new tiles — which is precisely what a phone shows as half-drawn text and
    blank bands. Four such forced layouts were happening per frame; deriving the fold boxes
    removes two of them outright and six reads with them. */
-var foldBox=[], foldGen=-1, viewGen=0;
+var foldBox=[], foldGen=-1, viewGen=0, foldVH=-1;
 function invalidateFolds(){ viewGen++; }
 addEventListener('resize',invalidateFolds,{passive:true});
 addEventListener('orientationchange',invalidateFolds,{passive:true});
 addEventListener('load',invalidateFolds);
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(invalidateFolds);
 
+/* A cache of this shape fails DANGEROUSLY rather than merely staling, which is why it is
+   self-healing rather than event-driven alone. If it is ever populated at a moment when the
+   folds measure zero — before the stylesheet applies, while a fold is display:none, in a
+   background tab — it caches zeros and keeps serving them until something happens to fire
+   one of the invalidation events above. Zeros are not a slightly-wrong answer here: with
+   top and height both 0, sp = (vh - 0)/(vh + 0) = 1, so dock collapses to 0 and the crowd,
+   the progress bar and the callouts switch off for the whole scroll. That is a far worse
+   outcome than the forced layout this cache exists to avoid, and because it turns on load
+   timing it is exactly the kind of fault that passes one test and fails another.
+   (Caught in review by Claude Design, which hit it in its own implementation.)
+
+   So the cache is rejected, not trusted, whenever it is empty, contains a zero height, or
+   was stamped against a different viewport height. Steady state is unchanged: one
+   measurement per resize, none per frame. */
+function foldsCacheStale(){
+  if(foldGen!==viewGen || foldVH!==innerHeight) return true;
+  if(!foldBox.length) return folds.length>0;
+  for(var k=0;k<foldBox.length;k++) if(!(foldBox[k].height>0)) return true;
+  return false;
+}
+
 /* viewport-space {top,height} for every fold, the only two fields any caller reads */
 function foldRects(sy){
-  if(foldGen!==viewGen){
+  if(foldsCacheStale()){
     foldBox.length=0;
     for(var k=0;k<folds.length;k++){
       var b=folds[k].getBoundingClientRect();
       foldBox.push({top:b.top+sy,height:b.height,id:folds[k].id});
     }
-    foldGen=viewGen;
+    foldGen=viewGen; foldVH=innerHeight;
   }
   var out=[];
   for(var j=0;j<foldBox.length;j++) out.push({top:foldBox[j].top-sy,height:foldBox[j].height});

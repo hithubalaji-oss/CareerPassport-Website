@@ -23,7 +23,16 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, basename } from 'node:path';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = root; // the 8 Sep export lands at the repository root, not in a site/ folder
+
+/* Where the export lands has moved before and is about to move again: the 8 Sep export
+   dropped its pages at the repository root, while Claude Design now reports authoring them
+   in site/. Rather than track that by hand, resolve it — whichever folder actually holds
+   index.html (or Homepage.html) is the export. */
+const SITE = ['site', '.']
+  .map((d) => join(root, d))
+  .find((d) => ['index.html', 'Homepage.html'].some((f) => existsSync(join(d, f)))) ?? root;
+
+if (SITE !== root) console.log(`Export folder: site/\n`);
 
 /* Each live page, with the names it is known to travel under. Add an alias here if
    Claude Design renames one again; the resolver takes the first that exists. */
