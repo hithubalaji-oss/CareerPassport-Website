@@ -2,18 +2,14 @@
 /**
  * THE ONE PASSPORT — the central device.
  *
- * Not six sections that each show a passport: one object, in one continuous scroll, moving
- * through six states. It docks into the hero figure's hand, opens to reveal an Experience
- * Visa and collected stamps, flows through the verification chart, and finally flies into
- * the glowing ring of the closing frame. Empty identity -> lived experience -> evidence ->
- * accumulated identity.
+ * One object, in one continuous scroll, moving through six states: it docks into the hero
+ * figure's hand, opens to reveal an Experience Visa and collected stamps, flows through the
+ * verification chart, and finally flies into the glowing ring of the closing frame.
  *
  * Every position is a pure function of the global scroll progress computed in homepage.js.
- * Nothing here runs on its own timer.
  */
 ---
 
-<!-- ============ THE ONE PASSPORT ============ -->
 <div class="stage" id="stage">
   <div class="zone">
 
@@ -37,7 +33,7 @@
 <p class="pgh" style="margin-top:6px">Every entry stays where you put it. Nothing here can be edited by anyone else</p><div class="pgid"><span class="hnd">/your-handle</span><i></i><span>CP · 4417</span></div></div></div>
         <div class="leaf" id="leaf3" style="z-index:30"><div class="lf"><span class="pglbl">PAGE 06 / A CURATED JOURNEY</span>
 <div style="display:flex;flex-direction:column;gap:10px"><div class="jrow"><b>1</b><span>Revisit the failure timeline you kept at the time</span></div><div class="jrow"><b>2</b><span>Explain the call you made under load</span></div><div class="jrow"><b>3</b><span>Show the fix, and how you proved it held</span></div></div>
-<p style="margin-top:14px;font-size:14px;color:var(--mute)">Small. Curated. Built around what you already lived</p><div class="pgid"><span class="hnd">/your-handle</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 07 / EVIDENCE CREATED</span>
+<p class="pgn" style="margin-top:14px;color:var(--mute)">Small. Curated. Built around what you already lived</p><div class="pgid"><span class="hnd">/your-handle</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 07 / EVIDENCE CREATED</span>
 <div class="chips"><span class="chip">failure-timeline.md</span><span class="chip">decision-note.pdf</span><span class="chip">idempotency-patch.diff</span><span class="chip">load-test.csv</span></div>
 <p class="pgh" style="margin-top:16px">An artifact of what you can actually do — not a claim that you can</p><div class="pgid"><span class="hnd">/your-handle</span><i></i><span>CP · 4417</span></div></div></div>
         <div class="leaf" id="leaf2" style="z-index:40"><div class="lf"><span class="pglbl">PAGE 04 / COLLECTED STAMPS</span>
@@ -90,3 +86,4 @@
   </div>
 </div>
 
+<!-- ============ FOLDS ============ -->

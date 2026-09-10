@@ -1,18 +1,11 @@
 ---
 /**
  * The five folds. Heights are set in vh through `--h`, and each fold's own pin progress
- * feeds the global `g`:
- *
- *   p_i = clamp(-rect.top / (rect.height - vh), 0, 1)
- *   g   = sum of p_i          // 0 -> 5
- *
- * Folds above the viewport contribute exactly 1, so the sum IS fold index plus progress
- * within that fold. `data-keystop` marks each as a stop for the shared keyboard nav in
- * cp-keys.js.
+ * feeds the global `g`, so the sum IS fold index plus progress within that fold.
+ * `data-keystop` marks each as a stop for the shared keyboard nav in cp-keys.js.
  */
 ---
 
-<!-- ============ FOLDS ============ -->
 <main data-keystop>
 <section class="fold" id="f1" data-screen-label="01" style="--h:130">
   <div class="pin"><div class="mesh" aria-hidden="true"></div><div class="col">
@@ -23,7 +16,7 @@
       <span class="fsheen" aria-hidden="true"></span>
       <div class="fbox" id="fbox"><span class="pre" id="fpre">careerpassport.ai/</span>
         <input id="handle" type="text" placeholder="your-handle" aria-label="Choose your handle" maxlength="22" autocomplete="off"></div>
-      <button id="reserve" disabled>RESERVE →</button>
+      <button id="reserve">RESERVE</button>
     </div>
     <div class="metarow">
       <span class="avail" id="avail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>AVAILABLE</span>

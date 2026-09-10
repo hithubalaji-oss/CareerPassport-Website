@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Marketing site for CareerPassport \u2014 a verified-career-record product.",
+  "description": "Marketing site for CareerPassport — a verified-career-record product.",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",

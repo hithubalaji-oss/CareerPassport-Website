@@ -2,13 +2,9 @@
 /**
  * 02 — The process, pinned. Five acts advanced by scroll across a sticky stage.
  *
- * The prep screen now resolves on the clock as well as on scroll — `prepDone` is
- * `p>=.545 || (prepArmed && now-prepArmed>1150)` — so stopping mid-scroll cannot leave a
- * reader parked on a spinner. That supersedes the local delta that used to halve this
- * dwell; see the Retired section of LOCAL-DELTAS.md.
- *
- * Panes in the pinned stage cannot scroll, so everything tightens explicitly at the
- * breakpoints rather than overflowing.
+ * The prep screen resolves on the clock as well as on scroll, so stopping mid-scroll cannot
+ * leave a reader parked on a spinner. Panes in the pinned stage cannot scroll, so everything
+ * tightens explicitly at the breakpoints rather than overflowing.
  */
 ---
 

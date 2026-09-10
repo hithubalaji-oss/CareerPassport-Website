@@ -39,12 +39,14 @@ there and delete the entry.
 | **Source** | `For Recruitment Partners.html` |
 | **Status** | Active — worth fixing in Claude Design, which would retire this entry |
 
-**What.** Three separate pieces of malformed CSS are removed from the extracted sheet:
+**What.** Four separate pieces of malformed CSS are removed from the extracted sheets — three
+in `partners.css`, one in `homepage.css`:
 
 1. An orphan `}` after the `@property` block, before `.net{`.
 2. Three dangling `.swdeck,` fragments — a selector list ending in a comma with no
    declaration block, one inside each of three `@media` blocks.
 3. An orphan `}` where a `.foil` rule used to be, right after the comment describing it.
+4. `homepage.css` — an orphan `}` after `.cring text.cdia`, new in the 10 Sep export.
 
 All three are deletion scars: a rule was removed and part of its syntax left behind. None
 of the classes involved (`.swdeck`, the foil) appears anywhere in the markup, so dropping
@@ -56,9 +58,19 @@ worse: the parser keeps consuming tokens looking for a `{`, so the rules that fo
 swallowed into the prelude and silently lost. That is a real bug in the design file, not a
 tooling difference.
 
-**How to re-apply.** After extracting `partners.css`, delete: the lone `}` between
-`@property --r{...}` and `.net{`; the three `.swdeck,` lines; and the lone `}` after the
-"the foil" comment. Nothing else changes.
+**The fourth one cost a feature.** On 8 Sep `.cring` carried
+`animation:cringspin 44s linear infinite` with a matching
+`@keyframes cringspin{to{rotate:360deg}}`. The 10 Sep export dropped both and left the
+closing brace behind, so **the passport seal legend no longer turns** — while the comment
+above it still describes it turning and the `prefers-reduced-motion` rule below still tries
+to switch off an animation that no longer exists. Only the brace is removed here; the
+animation is deliberately NOT restored, because dropping a slow infinite rotation is a
+plausible call for mobile. Restoring it is one line in the design file.
+
+**How to re-apply.** After extracting, delete: in `partners.css`, the lone `}` between
+`@property --r{...}` and `.net{`, the three `.swdeck,` lines, and the lone `}` after the
+"the foil" comment; in `homepage.css`, the lone `}` after `.cring text.cdia`. Nothing else
+changes.
 
 **Retire this entry** by fixing all three in the design file. The handoff's own CSS audits
 catch this class of bug: *classes used in markup with no rule anywhere*, and *classes whose
@@ -78,21 +90,24 @@ only rules sit inside `@media` blocks*.
 that is **larger** than the value the page declared. It never lowers it, and writes nothing
 at all on a page that declares no value.
 
-**Why.** The Partners page declares `--hdr:60px` while its header actually measures 69px at
-the design width. `--hdr` feeds `scroll-margin-top` on `.artsec` and the hero's top padding,
+**Why.** The Partners page declares `--hdr:60px` while the header actually measures more at
+every width, and the gap widens on small screens — 69px at 1440, **76px at 768 and 390**, so
+the declared value is 16px short exactly where it matters most. `--hdr` feeds `scroll-margin-top` on `.artsec` and the hero's top padding,
 so a declared value smaller than the real header leaves roughly 9px of an anchored section
 sitting underneath it. For Companies declares 83px against the same 69px header — larger,
 so deliberately roomier spacing, and the guard leaves it alone.
 
-This is the one delta that changes rendering rather than just letting the build succeed: the
-Partners page sits ~4px lower than the prototype, and that difference is the correction.
+This is the one delta that changes rendering rather than just letting the build succeed. The
+Partners page sits 9px lower than the prototype at 1440 and 1024, and **16px lower at 768 and
+390** — that offset is the correction, and it is the only difference between the build and the
+prototype at any width.
 
 **How to re-apply.** It lives in `Header.astro` and survives a re-derivation, since the
 chrome is a component rather than sliced markup. Verify it is still guarded both ways: only
 raises, and no-ops when `--hdr` is undeclared.
 
-**Retire this entry** by declaring the real height in the design file — `--hdr:69px`, or
-better, whatever the header actually measures. Then the observer never fires and the
+**Retire this entry** by declaring the real height in the design file, per breakpoint —
+69px at desktop, 76px at the mobile breakpoints. Then the observer never fires and the
 implementation matches the prototype pixel for pixel.
 
 ---

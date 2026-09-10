@@ -27,6 +27,9 @@ const DELTAS = [
     title: 'Invalid CSS dropped from the Partners stylesheet',
     file: 'src/styles/partners.css',
     design: 'For Recruitment Partners.html',
+    // homepage.css carries a fourth fragment; asserted separately below
+    extraFiles: ['src/styles/homepage.css'],
+    extraPresent: ['NOTE: the prototype leaves a stray "}" here'],
     present: [
       'NOTE: the prototype has a stray "}" here',
       'NOTE: the prototype has three dangling ".swdeck," fragments here',
@@ -66,6 +69,11 @@ for (const d of DELTAS) {
   }
 
   const absent = d.present.filter((m) => !hit(src, m));
+  for (const [i, extra] of (d.extraFiles ?? []).entries()) {
+    const es = read(extra);
+    const marker = d.extraPresent[i];
+    if (es === null || !hit(es, marker)) absent.push(`${marker}  (in ${extra})`);
+  }
   const returned = (d.reverted ?? []).filter((m) => hit(src, m));
 
   if (absent.length || returned.length) {

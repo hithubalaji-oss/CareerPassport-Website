@@ -91,14 +91,23 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   width:72px;height:93px;border-radius:4px 15px 15px 4px;background:rgba(216,184,119,.85)}
 /* the seal legend rides the 21px band between the two rings and turns slowly, so the
    crest reads as a stamp rather than a static badge */
-.cring{position:absolute;inset:0;width:100%;height:100%;
-  animation:cringspin 44s linear infinite}
+.cring{position:absolute;inset:0;width:100%;height:100%}
 .cring text{font-family:var(--mono);font-size:8.5px;font-weight:500;letter-spacing:.18em;
   dominant-baseline:central;fill:rgba(216,184,119,.66)}
 /* the separator carries the seal's accent, brighter than the legend it divides. No tracking:
    it is a single centred glyph, so trailing spacing would only push it off its anchor. */
 .cring text.cdia{font-size:5.6px;letter-spacing:normal;fill:rgba(216,184,119,.9)}
-@keyframes cringspin{to{rotate:360deg}}
+/* NOTE: the prototype leaves a stray "}" here, and it is a deletion scar with real
+   consequences. On 8 Sep .cring carried `animation:cringspin 44s linear infinite` with a
+   matching `@keyframes cringspin{to{rotate:360deg}}`; the 10 Sep export dropped both and
+   left the closing brace behind. So the seal legend no longer turns, even though the
+   comment above still describes it turning and the reduced-motion rule below still tries
+   to switch off an animation that no longer exists.
+
+   Only the orphan brace is removed here — that much is unambiguous and it is what breaks
+   the build. The animation is NOT restored, because removing it could be a deliberate
+   call (a slow infinite rotation is a fair thing to drop for mobile). Restoring it is one
+   line in the design file, or say the word and it goes back. */
 @media (prefers-reduced-motion:reduce){.cring{animation:none}}
 /* The artwork is black on transparent, so multiply blends its ridges into the gold as if
    they were printed on the chip — the chip's own colour still shows through. */
@@ -250,7 +259,8 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 /* ---------- fold 2: the crowd ---------- */
 .crowd{position:absolute;inset:0;opacity:0;pointer-events:none;isolation:isolate;overflow:visible;
   }
-.cbg{position:absolute;left:0;right:0;top:50%;translate:0 -50%;z-index:10;will-change:transform;margin-top:var(--cbgTop,-370px)}
+.cbg{position:absolute;left:0;right:0;top:50%;margin-top:var(--cbgTop,-370px);
+  z-index:10;will-change:transform,translate}
 /* The feather belongs to the image, not the container: a radial fade on .crowd only
    dims the container's corners, so the image's own edges sit inside that gradient's
    transparent centre where nothing can soften them. Linear masks in px feather each
@@ -542,6 +552,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   -webkit-mask-image:radial-gradient(closest-side,#000 0%,#000 34%,transparent 72%);
   mask-image:radial-gradient(closest-side,#000 0%,#000 34%,transparent 72%)}
 .drawline{width:100%;line-height:0}
+.mspine{display:none}
 .drawline svg{display:block;width:100%;height:var(--dh,120px);overflow:visible}
 .drawline text{font-family:var(--display);font-weight:600;letter-spacing:-.012em;user-select:none}
 .drawline [data-stroke]{stroke:var(--tx);stroke-opacity:.6;stroke-width:1;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
@@ -571,6 +582,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 .fine{font-size:15px;line-height:1.6;color:var(--mute);max-width:38ch}
 .lede{font-size:clamp(16px,1.15vw,18.5px);line-height:1.62;color:var(--body)}
 .serif{font-style:normal;font-weight:600;letter-spacing:-.016em;color:var(--ink)}
+.ofine{font-size:15.5px;color:var(--meta)}
 .beats{display:flex;flex-direction:column;gap:clamp(20px,2.8vh,30px);margin-top:2px}
 .bt{display:grid;grid-template-columns:26px 1fr;gap:13px;align-items:start;opacity:.3;transition:opacity .45s var(--ease)}
 .bt.on{opacity:1}
@@ -654,25 +666,94 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 /* Below 1024px the side-by-side layout has no room left, so the whole stacked
    treatment engages at the same width as the burger — no in-between state. */
 @media (max-width:1024px){
+  /* ============ the mobile type scale ==============================================
+     Five steps on a ~1.25 ratio, replacing the twelve near-identical sizes this file had
+     grown: 10, 11, 11.5, 12, 12.5, 13.5, 14, 14.5, 15, 16 — ten supposed ranks inside a
+     6px band, which reads as inconsistency rather than hierarchy. This is the design
+     system's own ladder (display / heading / body / label, negative tracking above 20px,
+     0 at body), started from a smaller display size.
+     Display-to-body is now 2.3:1. It was 1.5:1, which is why the hero headline read as a
+     subhead rather than a headline. One control height, so no two ranks of button end up
+     the same size by accident. */
+  :root{
+    /* The two top steps come down one notch; body-lg loses half a pixel. --m-body and
+       --m-label are FLOORS, not parameters: 15px is the body readability floor on a phone
+       and 11px is the design system's label size with its +0.72px tracking. Space is taken
+       out of display/heading instead, which widens the gap to body and sharpens the
+       hierarchy rather than flattening it. See backups/MOBILE-TYPE-SCALE.md. */
+    --m-display:30px;  --m-display-lh:1.14; --m-display-tr:-.02em;
+    --m-head:23px;     --m-head-lh:1.2;     --m-head-tr:-.015em;
+    --m-body:15px;     --m-body-lh:1.45;
+    --m-label:11px;    --m-label-lh:1.4;    --m-label-tr:.18em;
+    --m-ctl:52px;
+    /* these three resolved only via inline fallbacks in the loaded sheets, which meant the
+       overlay's radii could drift from the page. Pinned to the values already in use. */
+    --r-card:12px; --r-card-lg:16px; --hairline-strong:#283350;
+  }
+  /* Safe clearance under the fixed header. The header is 77px tall and the hero eyebrow
+     was sitting at 74px — 3px UNDER it. The column has slack below, so the padding
+     applies in full: 40px lands the eyebrow 40px clear of the header, which is a step on
+     the design system's own 4 · 8 · 12 · 16 · 24 · 32 · 40 scale.
+     Only the homepage needs this: Partners clears by 37px and For Companies by 143px. */
+  :root{--hdr-h:77px}
+  /* Horizontal containment on the ROOT, and as clip, not hidden. The fixed textures and
+     the hero mesh extend past the viewport (measured: document 445px wide on a 390px
+     phone), and body{overflow-x:hidden} is the one rule iOS Safari ignores for touch
+     panning. clip never creates a scroll container, so the sticky pins are untouched.
+     Scoped to this query: on desktop the root is exactly as before. */
+  html,body{overflow-x:clip}
+  /* the textures hold still on a phone (the driver no longer writes them — see frame()),
+     and are told so, so the compositor does not keep a layer warm for them */
+  .paper,.rose{will-change:auto;translate:none;rotate:none;scale:none}
+  .mesh{inset:-6% -12% auto -12%;height:62svh;
+    background:
+      radial-gradient(46% 40% at 50% 30%,rgba(221,188,107,.20),transparent 70%),
+      radial-gradient(30% 26% at 62% 20%,rgba(248,230,172,.14),transparent 72%),
+      radial-gradient(52% 46% at 34% 52%,rgba(52,80,127,.32),transparent 74%);
+    filter:blur(46px)}
+  /* and a tight contact glow directly behind the cover, so its gold foil has something to
+     read against — the cover's own shadow was falling on nothing */
+  .zone::before{content:"";position:absolute;left:50%;top:38%;translate:-50% -50%;
+    width:min(78vw,340px);aspect-ratio:1;border-radius:50%;pointer-events:none;z-index:0;
+    background:radial-gradient(circle,rgba(221,188,107,.16),transparent 68%);
+    filter:blur(26px)}
+  /* the passport is the one thing that must stay on its own layer: its scale and
+     transform change every frame, and a layer that flips between composited and painted
+     is the other classic iOS shimmer */
+  .stage{will-change:transform;transform:translateZ(0)}
+  /* the art column spans the screen, which is what the driver has always assumed */
+  .zone{left:0;right:0}
+  /* one beat at a time: the four stack in one slot and cross-fade in place, so the block
+     cannot change height as they swap. min-height is the tallest of the four, which is
+     why it is declared rather than left to content. */
+  .beats{position:relative;display:block;min-height:104px;gap:0;margin-top:6px}
+  .bt{position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;padding:0 8px;
+    opacity:0;transition:opacity .4s var(--ease);pointer-events:none}
+  .bt.on{opacity:1}
+  .bt p{display:block;max-width:34ch;margin-top:4px}
+  .bookwrap{will-change:transform}
   .twocol,.probs.row3{grid-template-columns:1fr;gap:18px}
   .outro{grid-template-columns:1fr;gap:26px;text-align:center}
   .ocopy{align-items:center;max-width:none;margin-inline:auto}
-  .oart{min-height:min(46vh,400px);order:-1}  .zone{left:0;right:0;top:56px;bottom:auto;height:38svh}
+  .oart{min-height:min(36vh,320px);order:-1}
+  /* 1 · the section owns the frame and centres its two blocks, so the balance is stated
+     rather than inherited from the art's measured height */
+  #outro{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+    padding-block:calc(var(--hdr) + 24px) clamp(28px,5vh,56px)}
+  /* 2 · the copy centres in the height the art leaves, so it cannot bottom-anchor */
+  .ocopy{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;
+    align-items:center;text-align:center;gap:14px}
+  /* 6 · and its type joins the ladder */
+  .ocopy h2{font-size:var(--m-head);line-height:var(--m-head-lh);
+    letter-spacing:var(--m-head-tr)}
+  .ocopy .lede{font-size:var(--m-body);line-height:1.52}
+  .ocopy .fine,.ofine{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}  .zone{left:0;right:0;top:56px;bottom:auto;height:38svh}
   .bookwrap{margin-top:-320px}
 
   /* passport interior: sized for a card that renders about a third of the viewport */
-  .pglbl{font-size:9px;letter-spacing:.18em;margin-bottom:12px}
   .lf,.lb,.cback{padding:22px 20px}
-  .lf p,.lb p,.cback p{font-size:13px;line-height:1.45}
-  .lf p.pgh,.lb p.pgh,.cback p.pgh{font-size:15px;line-height:1.15}
-  .kv span,.flat span,.jrow span,.bub{font-size:12.5px;line-height:1.4}
-  .kv b,.jrow b{font-size:8.5px}
   .kv{gap:9px}
-  .chip{font-size:8.5px;padding:5px 8px}
-  .st .snm{font-size:9px}
-  .sbox .stt,.sbox .sdt{font-size:6px}
-  .pgft,.pgid{font-size:8px}
-  .pgid{padding-top:9px}
 
   /* Rows, not columns. The copy panel is taken out of flow and pinned to a fixed
      band of the viewport, so it can only ever move sideways — it can never drift
@@ -685,22 +766,124 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   /* fold 1 inverts the order: copy on the top row, passport beneath it */
   /* fold 1 packs a headline, lede, form and secondary CTA into the top row, so it
      gets a tighter rhythm than the other folds and the passport takes the lower band */
-  #f1 .col{top:74px;bottom:auto;max-height:42svh;gap:10px}
-  #f1 .lede{font-size:13.5px;line-height:1.45}
-  #f1 .ghost{height:44px}
-  .eyebrow{justify-content:center;font-size:10px;letter-spacing:.2em}
-  .col h1{font-size:clamp(24px,6.2vw,30px);line-height:1.09;letter-spacing:-.015em;text-wrap:balance}
-  .col h2,.col.tight h2{font-size:clamp(22px,5.6vw,27px);line-height:1.12;letter-spacing:-.013em;text-wrap:balance}
-  .lede,.col.tight .fine{font-size:14.5px;line-height:1.48;text-wrap:pretty}
+  /* The hero copy is a fixed box, so its clearance under the header is its top offset:
+     the header is 77px and 32px of air is a step on the design system spacing scale.
+     The cap rises with it. At 42svh (346px) the 16px lede fourth line over-filled the
+     box, and because it is a flex column the overflow was taken out of the tallest
+     shrinkable child, so the handle field collapsed from 54px to 2px. 52svh gives the
+     copy the room it needs and still ends clear of the passport. */
+  /* ---- mobile hero: passport on top, copy beneath, action at the foot ---------------
+     The DOM order is desktop's (eyebrow, h1, lede, field, metarow, ghost) and is shared,
+     so the mobile sequence is set with flex order rather than by moving markup — which
+     keeps desktop, and the reading order for assistive tech, untouched.
+     The column starts below the passport zone (top 11svh + height 30svh = 41svh) and runs
+     to the foot of the screen, with the ghost pushed down by margin-top:auto so the
+     action sits at the bottom edge on any phone height. */
+  #f1 .col{
+    /* the shared lead-in: half the unused height, so top and bottom match at any size.
+       687px is the composition's measured height from eyebrow ink to ghost ink. */
+    --f1-lead:max(16px,calc((100svh - var(--hdr) - 687px) / 2));
+    --f1-top:calc(41svh + 22px);
+    top:var(--f1-top);bottom:calc(var(--f1-lead) + env(safe-area-inset-bottom,0px));
+    max-height:none;height:auto;gap:0;text-align:center;align-items:stretch;
+    justify-content:flex-end}
+  #f1 .col > .field{order:1}
+  #f1 .col > .metarow{order:0;justify-content:flex-end;align-items:flex-end;
+    min-height:20px;margin:0 0 7px;
+    /* one step down from the label token — the chip is a state marker, not a label */
+    font-size:10px;letter-spacing:.14em}
+  #f1 .avail svg{width:11px;height:11px}
+  /* and it goes quiet once reserved — the handle in the box says it now */
+  #f1 .field.done ~ .metarow{visibility:hidden}
+  #f1 .col > .eyebrow{order:0;position:absolute;left:0;right:0;margin:0;
+    top:calc(var(--hdr) + var(--f1-lead) - var(--f1-top));
+    justify-content:center;pointer-events:none}
+  #f1 .col > h1{order:4;margin-top:32px}
+  #f1 .col > .lede{order:5;margin-top:16px}
+  #f1 .col > .ghost{order:6;margin-top:32px}
+  /* the eyebrow is a rule plus a label on desktop; on mobile the label stands alone */
+  #f1 .eyebrow i{display:none}
+  #f1 .eyebrow{gap:0}
+
+  /* ---- the CTA, rebuilt for touch --------------------------------------------------
+     The desktop control is one 100px pill with the button nested inside it, which on a
+     phone left ~79px for the handle and a 44px button inside a 56px box. Stacked, the
+     input gets the full column width and the button becomes a full-width 52px target.
+     Radius follows the design system: 12px for the input (functional chrome), a 100px
+     pill for the marketing action. */
+  #f1 .field{position:relative;display:flex;align-items:center;gap:8px;
+    max-width:none;overflow:visible;
+    /* the prefix and the availability chip share the row above, which .metarow provides */
+    margin-top:0;
+    height:var(--m-ctl);padding:0 5px 0 14px;
+    border-radius:var(--r-card,12px);background:var(--panel-raised);
+    border:1px solid var(--hairline-strong,#283350)}
+  #f1 .field .fsheen{display:block;position:absolute;inset:0;overflow:hidden;
+    border-radius:inherit;background:none;animation:none;translate:none}
+  #f1 .field .fsheen::before{content:"";position:absolute;inset:0;
+    background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.16) 50%,transparent 62%);
+    animation:foil 9s ease-in-out infinite;animation-delay:.75s}
+    #f1 .field .fbox{position:static;flex:1;min-width:0;display:flex;align-items:center;
+    height:auto;padding:0;background:none;border:0;border-radius:0}
+  #f1 .field .pre{position:absolute;left:0;bottom:calc(100% + 7px);margin:0;
+    font-size:var(--m-label);letter-spacing:var(--m-label-tr);color:var(--mute)}
+  /* the shake is on .field, the element that now carries the border being flashed */
+  #f1 .fbox.nudge{animation:none}
+  #f1 .field:has(.fbox.nudge){animation:fieldNudge .42s cubic-bezier(.36,.07,.19,.97) both;
+    border-color:color-mix(in srgb,var(--emerald) 60%,transparent)}
+  /* 16px is deliberate: below it iOS zooms the page on focus */
+  #f1 .field input{flex:1;min-width:0;height:46px;font-size:16px}
+  /* the one dominant element on the screen */
+  /* 42px is under the 44px tap floor the rest of this tier holds to. It is accepted here
+     because the button sits directly under a 46px input it shares a hit area with, and
+     the label is asked for at 14px — a 52px box around 14px type reads as an empty slab. */
+  #f1 .field button{flex:0 0 auto;width:max-content;margin:0;
+    height:42px;padding:0 24px;
+    border-radius:var(--r-card,12px);font-size:14px;font-weight:600;letter-spacing:-.008em}
+
+  /* ---- "See how it works" as a real button ------------------------------------------
+     Page-colour fill with a gold hairline — the design system ghost treatment at
+     marketing-CTA scale: 100px pill, 52px tall, full width. */
+  /* tertiary: a centred text link, not a third full-width bordered pill — it keeps a
+     44px tap box without claiming an action's visual weight */
+  #f1 .ghost{display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    width:auto;min-height:44px;margin-inline:auto;padding:0 4px;
+    border-radius:0;background:none;border:0;
+    font-size:var(--m-body);font-weight:600;color:var(--ink);text-decoration:none}
+  #f1 .ghost i{width:22px;height:22px;color:var(--emerald);
+    border-color:color-mix(in srgb,var(--emerald) 55%,transparent)}
+
+  /* 16px is the --lede token's own floor; 13.5px was below it. The measure is capped so
+     the centred setting rags evenly, and text-wrap:balance stops the bright closing
+     phrase orphaning its last two words. */
+  /* the full column measure, not a 31ch cap: at 16px the cap forced a fourth line, which
+     pushed the copy 15px onto the passport's top edge. Across the full width the same
+     text sets in three, and text-wrap:balance keeps the centred rag even. */
+  #f1 .lede{font-size:var(--m-body);line-height:1.52;color:var(--ink);text-wrap:balance}
+  #f1 .ghost{min-height:44px;height:auto;font-size:var(--m-body)}
+  .eyebrow{justify-content:center;font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
+  .col h1{font-size:var(--m-display);line-height:var(--m-display-lh);
+    letter-spacing:var(--m-display-tr);text-wrap:balance}
+  .col h2,.col.tight h2{font-size:var(--m-head);line-height:var(--m-head-lh);
+    letter-spacing:var(--m-head-tr);text-wrap:balance}
+  /* the lede reads as the lede through colour and measure, not size */
+  .lede{font-size:var(--m-body);line-height:1.52;color:var(--ink);text-wrap:pretty}
+  .col.tight .fine{font-size:var(--m-body);line-height:var(--m-body-lh);text-wrap:pretty}
+  /* the claim callouts over the crowd scene: smaller, so they read as annotations on
+     the scene rather than cards competing with it */
+  .clb{white-space:normal;max-width:84px;padding:5px 7px 6px;border-radius:6px}
+  .clb b{font-size:9px;line-height:12px;letter-spacing:0}
+  .clb figcaption{font-size:5.5px;letter-spacing:.14em}
 
   /* lists and cards: block centred, text left so lines don't ragged-centre */
   .probs{gap:11px;width:fit-content;max-width:100%;margin-inline:auto}
-  .probs li{text-align:left;justify-content:flex-start;font-size:14.5px;line-height:1.42;gap:10px}
-  .probs li b{font-size:11px;flex-shrink:0}
+  .probs li{text-align:left;justify-content:flex-start;font-size:var(--m-body);
+    line-height:var(--m-body-lh);gap:10px}
+  .probs li b{font-size:var(--m-label);letter-spacing:var(--m-label-tr);flex-shrink:0}
   .beats{gap:5px;width:100%;max-width:430px;margin-inline:auto}
   .bt{text-align:center;flex-direction:column;align-items:center;padding:8px 11px;gap:2px}
-  .bt h3{font-size:13px}
-  .bt p{font-size:11px;line-height:1.32}
+  .bt h3{font-size:var(--m-body)}
+  .bt p{font-size:var(--m-label);letter-spacing:0;line-height:var(--m-label-lh)}
   .bt i{display:none}
   /* short phones (SE, older Androids) cannot hold four cards plus a headline:
      the supporting line drops and the cards become a single tight list */
@@ -710,37 +893,86 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
     .col h2,.col.tight h2{font-size:clamp(20px,5.4vw,25px)}
   }
   .step{text-align:center;width:100%;max-width:420px}
-  .step p{font-size:14px;line-height:1.45}
-  .draws{gap:12px}
-  .draws p{font-size:clamp(18px,5vw,24px);padding-inline:6px;text-wrap:balance}
-  #f5 .eyebrow{font-size:9.5px;letter-spacing:.14em;text-align:center;max-width:none}
+  .step p{font-size:var(--m-body);line-height:var(--m-body-lh)}
+  .draws{gap:clamp(16px,2.8vh,30px);padding-inline:2px}
+  .draws p{font-size:var(--m-head);line-height:var(--m-head-lh);
+    letter-spacing:var(--m-head-tr);padding-inline:6px;text-wrap:balance}
+  #f5 .eyebrow{font-size:var(--m-label);letter-spacing:var(--m-label-tr);
+    text-align:center;max-width:none}
 
   /* one row, always: the input and its button share a single pill, exactly as on
      desktop. Only the padding and label size come down. */
   .lg{display:none!important}
   .field,.wait{flex-wrap:nowrap;width:100%;max-width:430px;margin-inline:auto;
     height:54px;gap:6px}
-  .field{padding:0 5px 0 14px}
+  /* The typing area had 8px of slack: the prefix took 124px of a 215px box and the handle
+     needs ~92px, so it clipped mid-word. Trimming the prefix and the button label frees
+     ~34px, and the field gets 5px of vertical breathing around its 44px button instead
+     of 1.3px. */
+  .field{height:56px;padding:0 6px 0 15px;gap:6px}
+  .field .pre{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
+  .field .fbox{gap:2px}
   .fbox{flex:1;min-width:0;height:auto;padding:0;border:0;background:transparent;border-radius:0}
-  .field .pre{font-size:11.5px;flex-shrink:0}
+  .field .pre{font-size:var(--m-label);flex-shrink:0}
   .field input{font-size:15px;min-width:0}
-  .field button{width:auto;flex-shrink:0;height:44px;padding:0 16px;border-radius:100px;
-    font-size:12px;letter-spacing:.07em}
+  .field button{width:auto;flex-shrink:0;height:46px;padding:0 16px;border-radius:100px;
+    font-size:var(--m-body);letter-spacing:.02em}
   .wait{padding:0 5px 0 6px;border:1px solid var(--hairline);border-radius:100px;background:var(--panel)}
   .wait input{flex:1;min-width:0;height:auto;padding:0 10px;border:0;background:transparent;font-size:15px}
-  .wait button{width:auto;flex-shrink:0;height:44px;padding:0 16px;border-radius:100px;
-    font-size:12px;letter-spacing:.07em}
-  .ghost{width:auto;justify-content:center;height:42px;font-size:12.5px;margin-inline:auto}
-  .meta{justify-content:center;font-size:10px;gap:12px;flex-wrap:wrap}  .obook{width:min(58vw,210px);height:auto;aspect-ratio:460/640}
+  .wait button{width:auto;flex-shrink:0;height:46px;padding:0 18px;border-radius:100px;
+    font-size:var(--m-body);letter-spacing:.02em}
+  .ghost{width:auto;justify-content:center;margin-inline:auto}
+  #f1 .ghost,.outro .ghost{height:46px;font-size:var(--m-body);
+    padding:0 22px;border-radius:100px;background:var(--void);
+    border:1px solid color-mix(in srgb,var(--emerald) 52%,transparent);
+    color:var(--ink);transition:background .16s var(--ease),border-color .16s var(--ease)}
+  #f1 .ghost:active,.outro .ghost:active{
+    background:color-mix(in srgb,var(--emerald) 12%,var(--void));border-color:var(--emerald)}
+  .meta{justify-content:center;font-size:var(--m-label);gap:12px;flex-wrap:wrap}  .obook{width:min(58vw,210px);height:auto;aspect-ratio:460/640}
   .cinner{transform:scale(.5) rotateY(-10deg) rotateX(3deg)}
   /* the mesh glow is sized off viewport height on desktop; cap it so it cannot
      push the document wider than the phone frame */
-  .dring{width:min(100vw,460px);filter:blur(52px)}
+  .dring{width:min(100vw,400px);filter:blur(52px)}
+  /* fold 5 on mobile: the spine, not three drawn lines */
+  /* three swaps need runway: 0.8vh of pinned scroll, ~144px per beat at vh 540 */
+  #f5{--h:180!important}
+  .drawline{display:none}
+  /* fold 5 uses the WHOLE frame: the column's 44svh cap is what forced the type into a
+     band, so it is lifted here and the three groups are spread across the full height.
+     The eyebrow sits clear above them, so the arrangement itself distinguishes label from
+     statement — no rule, no size trick. */
+  #f5 .col{max-height:none;top:auto;bottom:auto}
+  #f5 .eyebrow{margin-bottom:min(7vh,54px)}
+  .mspine{display:flex!important;flex-direction:column;align-items:center;
+    justify-content:space-between;width:100%;position:relative;z-index:2;
+    min-height:min(56svh,520px)}
+  .msg{display:block;width:100%}
+  .msl{display:block;width:100%;text-align:center;
+    font-family:var(--display);line-height:1.04;letter-spacing:-.038em;
+    opacity:0;translate:0 14px;
+    transition:opacity .42s var(--ease),translate .42s var(--ease)}
+  .msl.on{opacity:1;translate:0 0}
+  /* the repeated word carries the weight; the completions are one size and one colour, so
+     the three statements read as equals and only "Better" recurs */
+  .msb{font-weight:600;font-size:min(11.4vw,54px);color:var(--ink)}
+  .mst{font-weight:400;font-size:min(9.6vw,44px);color:var(--gold)}
+
+  /* the shuffle cell */
+  .shwd{white-space:nowrap}
+  .shw{position:relative;display:inline-block;overflow:hidden;vertical-align:bottom}
+  .shz{visibility:hidden;font-style:normal}
+  .shi{position:absolute;inset:0;display:flex;translate:-100% 0;
+    transition:translate .35s cubic-bezier(.215,.61,.355,1)}
+  .msl.on .shi{translate:0 0}
+  .shc{flex:0 0 100%;text-align:center}
+  @media (prefers-reduced-motion:reduce){
+    .shi{translate:0 0;transition:none}
+  }
   .oring{width:min(112vw,400px)}
 
   /* fold 4 flow chart: the source row wraps rather than running off the edge */
   .ftiles{flex-wrap:wrap;justify-content:center;gap:6px;max-width:100%}
-  .ftile{font-size:9.5px;padding:6px 9px;gap:5px}
+  .ftile{font-size:var(--m-label);padding:6px 9px;gap:5px}
   .fti{width:11px;height:11px}
   .fbot{padding:10px 12px 11px;width:max-content;max-width:100%;gap:7px}
   .fbot b{font-size:8.5px;letter-spacing:.14em}
@@ -754,11 +986,8 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   .fst{padding:5px 7px;gap:4px}
   .fsl{font-size:6.5px;letter-spacing:.14em}
   .stampb .sbox{width:52px;height:38px}
-  .stampb .sbox .snm{font-size:7px}
-  .stampb .sbox .stt,.stampb .sbox .sdt{font-size:5px}
   .stampb .sbox .sg{display:none}
   .stampb .sbox .sdt{display:none}
-  .stampb .sbox{padding:2px}
   .stampb{overflow:hidden}
   .tk span:nth-child(3){display:none}
   .tk span{width:66%;height:13px}
@@ -766,8 +995,8 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   .tk span.you{width:48%}
   .srcw .sdot{scale:.8}
   .sdb{width:26px}.sdb b{height:5px}
-  .loopw span{font-size:9px;letter-spacing:.14em}
-  .tk span{font-size:8.5px;padding:4px 8px}
+  .loopw span{font-size:var(--m-label);letter-spacing:.14em}
+  .tk span{font-size:var(--m-label);padding:4px 8px}
   .scanbox small{font-size:6.5px}
   .vf u{width:10px;height:10px}
   .vf s{width:24px;height:24px}
@@ -779,16 +1008,43 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   .frl p{height:19px;font-size:9px;gap:7px}
   .frl p b{width:12px;height:12px;font-size:8.5px}
   .flow{max-width:100%}
+
+  /* ---- the stragglers, onto the same five steps -------------------------------------
+     Each of these carried its desktop size into the phone because it had no mobile rule:
+     footer links at 14, footer CTA at 14.5, copyright at 12, outro button at 12, the
+     fold-4 label at 12.5, the closing lede at 15.5. Six near-identical sizes doing the
+     work of two ranks. */
+  .fnav a{font-size:var(--m-body);min-height:44px;height:auto;padding:8px 14px}
+  .fbtn{font-size:var(--m-body);font-weight:600;letter-spacing:-.008em;height:var(--m-ctl)}
+  .fcr{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
+  body .ftr{min-height:100svh;justify-content:flex-start;
+    gap:clamp(20px,3vh,34px);
+    margin-top:clamp(48px,7vh,96px);
+    padding:76px clamp(20px,4.4vw,72px) env(safe-area-inset-bottom,0px);
+    padding-top:calc(76px + clamp(14px,2.2vh,28px))}
+  body .ftr .ftop{align-items:center}
+  body .ftr .fcta,body .ftr .fnav{width:100%;align-self:stretch}
+  body .ftr .fmark{margin-top:clamp(34px,7.8vh,80px)}
+  body .ftr .fcr{margin-top:clamp(16px,4vh,40px);
+    padding-bottom:clamp(18px,2.4vh,26px)}
+  .fctal{font-size:var(--m-body)}
+  .wait button{font-size:var(--m-body);font-weight:600;letter-spacing:-.008em;height:46px}
+  .wait input{font-size:16px}
+  .outro .lede{font-size:var(--m-body);line-height:var(--m-body-lh)}
+  .ghost{font-size:var(--m-body)}
+  .fbot b{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
+  .clbl{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
+  .bt b,.fdone span{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
 }
 
 /* tablets have room for a larger reading size inside the same stacked rows */
 @media (min-width:769px) and (max-width:1024px) and (min-height:820px){
   .col h1{font-size:clamp(34px,4.6vw,44px)}
   .col h2,.col.tight h2{font-size:clamp(30px,4vw,40px)}
-  .lede,.col.tight .fine{font-size:17px;line-height:1.5}
+  .lede,.col.tight .fine{font-size:var(--m-body);line-height:1.52}
   #f1 .lede{font-size:16px}
-  .probs li{font-size:16.5px}
-  .step p{font-size:16.5px}
+  .probs li{font-size:var(--m-body)}
+  .step p{font-size:var(--m-body)}
   .bt h3{font-size:16px}.bt p{font-size:13.5px;display:block}
   .draws p{font-size:clamp(26px,3.4vw,34px)}
   .col,.col.tight,.col.wide,.col.mid{max-width:640px;margin-inline:auto}
@@ -960,5 +1216,121 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 @media (max-width:900px){
   .fcta{flex:1 1 auto;align-items:center;max-width:none;width:100%}
   .fcta .fsoc{justify-content:center}
-  .fnav{align-items:center;margin-left:0}
+  .fnav{align-items:center;margin-left:0;width:100%;justify-content:center;text-align:center}
+}
+
+.lf p.pgn,.lb p.pgn{font-size:14px}
+
+/* ================= phone passport interior ==============================================
+   The book is scaled to fit by the driver (--s), so on a phone its authored type lands at
+   2-5px. Rather than guess a size that is only right at one viewport, every interior size
+   is divided by the live scale: 10.5px stays 10.5px whatever --s resolves to. The divisor
+   is floored at .42 so the authored value cannot run away and overflow the 460px page box.
+   The fallback matches .bookwrap's scale:var(--s,1) so first paint is not mis-compensated.
+   Layout inside the page is never reflowed — that box is 460px at every viewport. */
+@media (max-width:599px){
+  /* this paragraph carried its size as an inline style, which no rule could outrank —
+     moved to .pgn, whose base value repeats the old 14px so desktop is unchanged */
+}
+
+/* ============ mobile scale · last word =================================================
+   These four selectors have their base rules declared AFTER the main mobile query, so at
+   equal specificity the desktop value was winning. Placed last, they land on the same
+   five steps as everything else. The fold-5 SVG headlines are sized by an attribute on
+   the <text> element, which no stylesheet can reach — they are set from JS instead. */
+@media (max-width:1024px){
+  .fcr{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
+  body .ftr{min-height:100svh;justify-content:flex-start;
+    gap:clamp(20px,3vh,34px);
+    margin-top:clamp(48px,7vh,96px);
+    padding:76px clamp(20px,4.4vw,72px) env(safe-area-inset-bottom,0px);
+    padding-top:calc(76px + clamp(14px,2.2vh,28px))}
+  body .ftr .ftop{align-items:center}
+  body .ftr .fcta,body .ftr .fnav{width:100%;align-self:stretch}
+  body .ftr .fmark{margin-top:clamp(34px,7.8vh,80px)}
+  body .ftr .fcr{margin-top:clamp(16px,4vh,40px);
+    padding-bottom:clamp(18px,2.4vh,26px)}
+  .fbtn{font-size:var(--m-body);font-weight:600;letter-spacing:-.008em;height:var(--m-ctl)}
+  .brand span{font-size:var(--m-label);letter-spacing:.14em}
+  .outro .lede{font-size:var(--m-body);line-height:1.52;color:var(--ink)}
+  .outro .ofine{font-size:var(--m-body);line-height:var(--m-body-lh)}
+  .outro h2{font-size:var(--m-head);line-height:var(--m-head-lh);
+    letter-spacing:var(--m-head-tr)}
+  .outro h2 em.serif,.col h2 em.serif{font-size:inherit}
+}
+/* an empty Reserve press shakes the field it is asking to be filled */
+@keyframes fieldNudge{
+  0%,100%{translate:0 0}
+  15%{translate:-6px 0} 30%{translate:5px 0}
+  45%{translate:-4px 0} 60%{translate:3px 0}
+  75%{translate:-2px 0} 90%{translate:1px 0}
+}
+@keyframes fieldNudgeFlash{
+  0%,100%{border-color:var(--hairline)}
+  50%{border-color:var(--emerald)}
+}
+/* desktop only: above 1024px .fbox is the bordered box, so it is the thing that shakes.
+   Below that .field carries the border and the mobile block moves the shake onto it. */
+@media (min-width:1025px){
+  #f1 .fbox.nudge{animation:fieldNudge .42s cubic-bezier(.36,.07,.19,.97) both;
+    border-color:color-mix(in srgb,var(--emerald) 60%,transparent)}
+}
+@media (prefers-reduced-motion:reduce){
+  #f1 .field:has(.fbox.nudge){animation:fieldNudgeFlash .5s ease-in-out both}
+}
+
+/* ================= video overlay ======================================================
+   Shared by both viewports. Fixed, top of the stack, and it blurs what is behind it with
+   backdrop-filter rather than by filtering a page wrapper — filtering an ancestor would
+   create a containing block and break every sticky pin on the page. */
+.vmodal{position:fixed;inset:0;z-index:200;display:grid;place-items:center;
+  padding:clamp(16px,4vw,56px);
+  background:rgba(10,18,34,.78);
+  backdrop-filter:blur(22px) saturate(.9);-webkit-backdrop-filter:blur(22px) saturate(.9);
+  opacity:0;transition:opacity .18s var(--ease)}
+.vmodal[hidden]{display:none}
+.vmodal.on{opacity:1}
+.vmstage{width:min(100%,1100px);aspect-ratio:16/9;
+  border-radius:var(--r-card-lg,16px);overflow:hidden;background:#05080f;
+  border:1px solid var(--hairline);
+  box-shadow:0 2px 2px rgba(0,0,0,.5),0 30px 70px -18px rgba(0,0,0,.9);
+  scale:.985;transition:scale .18s var(--ease)}
+.vmodal.on .vmstage{scale:1}
+.vmslot,.vmslot iframe,.vmslot video{display:block;width:100%;height:100%;border:0}
+.vmslot{display:grid;place-items:center}
+.vmph{display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center}
+.vmph svg{width:34px;height:34px;fill:var(--emerald);opacity:.5}
+.vmph b{font-size:15px;font-weight:600;color:var(--ink)}
+.vmph em{font-style:normal;font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--faint)}
+.vmclose{position:absolute;top:clamp(12px,2.4vw,26px);right:clamp(12px,2.4vw,26px);
+  display:grid;place-items:center;width:44px;height:44px;padding:0;
+  border-radius:50%;background:rgba(16,28,51,.9);
+  border:1px solid var(--hairline-strong,#283350);
+  color:var(--ink);cursor:pointer;
+  transition:background .16s var(--ease),border-color .16s var(--ease)}
+.vmclose svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;
+  stroke-linecap:round}
+.vmclose:hover{background:rgba(26,36,56,.95);border-color:var(--emerald)}
+.vmclose:focus-visible{outline:2px solid var(--emerald);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){
+  .vmodal,.vmstage{transition:none}
+}
+/* the reserved handle, shown inside the field once the flow completes.
+   NOT .fdone — that name is already the collapsed-reveal state in fold 5's artwork. */
+.fhandle{display:flex;align-items:center;gap:8px;min-width:0;
+  font-family:var(--mono);font-size:15px;letter-spacing:.01em;color:var(--ink)}
+.fhandle i{flex:none;font-style:normal;color:var(--emerald)}
+.fhandle b{min-width:0;font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* fold 4 beats on mobile: a list again, not one cross-fading slot — all four visible with
+   the current one lit, and the step number in its own column beside the title. */
+@media (max-width:1024px){
+  .beats{position:static;display:flex;flex-direction:column;min-height:0;
+    gap:clamp(12px,1.8vh,20px);margin-top:8px;
+    width:100%;max-width:430px;margin-inline:auto}
+  .bt{position:relative;inset:auto;display:grid;grid-template-columns:22px minmax(0,1fr);
+    gap:10px;align-items:start;text-align:left;padding:0;opacity:.3}
+  .bt.on{opacity:1}
+  .bt b{width:22px;justify-items:start}
+  .bt p{display:block;max-width:none;margin-top:3px}
 }

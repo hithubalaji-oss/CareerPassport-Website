@@ -5,11 +5,10 @@
    its initial value inside a pseudo-element, which silenced the foil rule */
 @property --r{syntax:"<number>";inherits:true;initial-value:0}
 
-/* NOTE: the prototype has a stray "}" here, introduced alongside the @property block in
-   the latest design pass. It closes nothing. Browsers skip an orphan brace and carry on,
-   which is why the design file still renders, but it is invalid CSS and PostCSS rejects
-   the sheet outright. Dropped here — it changes nothing visually. Worth deleting in
-   For Recruitment Partners.html so the source is valid too. */
+/* NOTE: the prototype has a stray "}" here, introduced alongside the @property block. It
+   closes nothing. Browsers skip an orphan brace and carry on, which is why the design file
+   still renders, but it is invalid CSS and PostCSS rejects the sheet outright. Dropped
+   here — no visual change. Worth deleting in For Recruitment Partners.html. */
 
 .net{position:relative;flex:1;min-height:0}
 .net svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
@@ -128,6 +127,26 @@
   .new>b{font-size:7px}.nr{padding:4px 0}.nr b{font-size:6.5px}.nr span{font-size:9.5px;line-height:1.25}
   .ways{gap:8px}.way b{font-size:13.5px}.way p{font-size:11.5px;line-height:1.35}
   .nlbl{font-size:6px}
+
+  /* ---- the footer, identical on all three pages ------------------------------------
+     One screen at the final scroll: everything from the eyebrow to the copyright inside
+     the frame. The top padding is keyed to the HEADER rather than a bare clamp — the
+     header is fixed at 76px with no background colour, only a backdrop-filter, so copy
+     under it renders blurred through the frosted band rather than being hidden.
+     max() with a literal floor because --hdr is written from JS and is defined in no
+     stylesheet. The surplus height collects in one auto margin above the wordmark and the
+     copyright follows on a fixed step, so the wordmark and the © read as one closing
+     block instead of the space being split equally between them. */
+  body .ftr{min-height:100svh;justify-content:flex-start;
+    gap:clamp(20px,3vh,34px);
+    margin-top:clamp(48px,7vh,96px);
+    padding:76px clamp(20px,4.4vw,72px) env(safe-area-inset-bottom,0px);
+    padding-top:calc(76px + clamp(14px,2.2vh,28px))}
+  body .ftr .ftop{align-items:center}
+  body .ftr .fcta,body .ftr .fnav{width:100%;align-self:stretch}
+  body .ftr .fmark{margin-top:clamp(34px,7.8vh,80px)}
+  body .ftr .fcr{margin-top:clamp(16px,4vh,40px);
+    padding-bottom:clamp(18px,2.4vh,26px)}
 }@media (max-width:900px){ }
 
 /* ---------- footer: one compact row, so the closing fold and the footer land in the
@@ -538,11 +557,9 @@
 
 /* NOTE: the prototype has three dangling ".swdeck," fragments here — a selector list
    ending in a comma with no declaration block, one in each of three @media blocks. The
-   class appears nowhere in the markup and has no other rules, so this is a component that
-   was removed with its selector remnants left behind. Dropped: nothing references it.
-   Unlike an orphan brace, browsers do not recover from this cleanly — a prelude with no
-   "{" swallows tokens until it finds one, so the following rules are at risk. Worth
-   deleting in For Recruitment Partners.html. */
+   class appears nowhere in the markup and has no other rules. Dropped. Unlike an orphan
+   brace, browsers do not recover from this cleanly: a prelude with no "{" swallows tokens
+   until it finds one, so the following rules are at risk. */
 
 /* ---------- the hero network -----------------------------------------------------------
    The hub is the passport; the inner ring is what the partner already owns; the outer ring
@@ -1380,8 +1397,8 @@
   font-size:clamp(38px,5.5vw,86px);font-weight:600;letter-spacing:-.055em;line-height:.94;
   color:var(--ink);text-wrap:balance}
 /* NOTE: the foil rule this comment describes is gone from the prototype, and only its
-   closing "}" was left behind — the same deletion scar as the stray brace above. The
-   class appears nowhere in the markup. Orphan brace dropped; no visual change. */
+   closing "}" was left behind — the same deletion scar as the stray brace above. The class
+   appears nowhere in the markup. Orphan brace dropped; no visual change. */
 .hero .lede{max-width:52ch;margin-inline:auto;z-index:2}
 .hero .ctas{z-index:2}
 /* one mesh: navy body, a tile-highlight bloom low left, gold and champagne high right */

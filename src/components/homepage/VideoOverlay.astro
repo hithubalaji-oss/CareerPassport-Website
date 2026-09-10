@@ -1,0 +1,27 @@
+---
+/**
+ * The "see how it works" video overlay — new in the 10 Sep pass, and shared by the mobile
+ * and desktop entry points.
+ *
+ * It ships EMPTY on purpose: `VIDEO_URL` in video-overlay.js is a blank string, so the
+ * dialog shows its placeholder panel rather than a broken embed. Paste a real URL there and
+ * a YouTube/Vimeo link mounts as an iframe while anything else mounts as <video controls>.
+ */
+---
+
+<!-- ============ video overlay · shared by mobile and desktop ============ -->
+<div class="vmodal" id="vmodal" role="dialog" aria-modal="true"
+     aria-label="How CareerPassport works" hidden>
+  <button class="vmclose" id="vmclose" type="button" aria-label="Close video">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+  <div class="vmstage" id="vmstage">
+    <div class="vmslot" id="vmslot">
+      <span class="vmph">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="6 3 21 12 6 21"/></svg>
+        <b>Video placeholder</b>
+        <em>Set VIDEO_URL in the overlay script</em>
+      </span>
+    </div>
+  </div>
+</div>
