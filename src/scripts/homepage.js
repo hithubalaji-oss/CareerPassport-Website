@@ -475,13 +475,68 @@ addEventListener('pointermove',function(e){
    and any transition straddling that boundary visibly locks mid-motion. */
 var FLIPS=[[2.08,2.24],[2.28,2.44],[9,9],[9,9],[9,9]];
 
+/* ---- fold geometry, derived rather than measured -------------------------------------
+   `.fold` is `height:calc(var(--h) * 1vh)` and nothing writes a fold's style at runtime,
+   so a fold's box in DOCUMENT space is fixed until the viewport itself changes. Its box in
+   VIEWPORT space is then just that, minus the scroll position — no layout involved.
+
+   This matters more than the call count suggests. The driver interleaves reads and writes,
+   so a getBoundingClientRect() that follows a style write cannot be answered from the
+   cached layout: the browser must re-run layout for the whole 11,000px page, synchronously,
+   before it can return. Profiling a full scroll at 4x CPU throttle put 809ms in
+   getBoundingClientRect alone, and while the main thread sits in there the compositor
+   receives no new tiles — which is precisely what a phone shows as half-drawn text and
+   blank bands. Four such forced layouts were happening per frame; deriving the fold boxes
+   removes two of them outright and six reads with them. */
+var foldBox=[], foldGen=-1, viewGen=0;
+function invalidateFolds(){ viewGen++; }
+addEventListener('resize',invalidateFolds,{passive:true});
+addEventListener('orientationchange',invalidateFolds,{passive:true});
+addEventListener('load',invalidateFolds);
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(invalidateFolds);
+
+/* viewport-space {top,height} for every fold, the only two fields any caller reads */
+function foldRects(sy){
+  if(foldGen!==viewGen){
+    foldBox.length=0;
+    for(var k=0;k<folds.length;k++){
+      var b=folds[k].getBoundingClientRect();
+      foldBox.push({top:b.top+sy,height:b.height,id:folds[k].id});
+    }
+    foldGen=viewGen;
+  }
+  var out=[];
+  for(var j=0;j<foldBox.length;j++) out.push({top:foldBox[j].top-sy,height:foldBox[j].height});
+  return out;
+}
+
+/* index of a fold by id, so inserting a fold upstream cannot silently shift these */
+var _fi={}, _fiGen=-1;
+function foldIndex(id){
+  if(_fiGen!==viewGen||!(id in _fi)){
+    if(_fiGen!==viewGen){ _fi={}; _fiGen=viewGen; }
+    _fi[id]=-1;
+    for(var k=0;k<folds.length;k++) if(folds[k].id===id){ _fi[id]=k; break; }
+  }
+  return _fi[id];
+}
+
 function frame(){
 try{
   /* ---- READ (batched) ---- */
   var vh=innerHeight, vw=innerWidth, mob=vw<1025, phone=vw<600;
   var g=0,i,r;
-  for(i=0;i<folds.length;i++){
-    r=folds[i].getBoundingClientRect();
+  /* PERF: every fold rect this frame needs, measured once into fr[].
+     The folds were being measured three times over — once here for g, once for apprOf,
+     and #f5 twice more by id — 12 rect reads where 5 do. Nothing between those reads
+     writes a style, so they could only ever return the same numbers. Layout reads are
+     the expensive half of this loop: each one that follows a style write forces the
+     browser to re-run layout synchronously, and while it does that the compositor gets
+     no new tiles, which is what shows up on a phone as half-drawn text and blank bands. */
+  var sy=window.scrollY||window.pageYOffset||0;
+  var fr=foldRects(sy);
+  for(i=0;i<fr.length;i++){
+    r=fr[i];
     g+=clamp(-r.top/Math.max(1,r.height-vh),0,1);
   }
 
@@ -508,27 +563,21 @@ try{
   }
   /* fold 5's approach, measured linearly from its own rect — the clock the 4-to-5
      handover and the spine reveal both read, so they cannot drift apart */
-  var h5=0;
-  (function(){
-    var f5=document.getElementById('f5');
-    if(!f5) return;
-    var r5=f5.getBoundingClientRect();
+  /* #f5 is one of the folds, so its rect is already in fr[] — no second query, no second
+     read. Resolved by id rather than by a hard index, so inserting a fold upstream cannot
+     silently point this at the wrong one. */
+  var h5=0, p5=0, r5=fr[foldIndex('f5')];
+  if(r5){
     h5=clamp((vh-r5.top)/(vh*1.10),0,1);
-  })();
-  window.__h5=h5;
-  /* the fold's full run, for anything that needs more than the handover's 1.10vh */
-  var p5=0;
-  (function(){
-    var f5=document.getElementById('f5');
-    if(!f5) return;
-    var r5=f5.getBoundingClientRect();
+    /* the fold's full run, for anything that needs more than the handover's 1.10vh */
     p5=clamp((vh-r5.top)/(vh+r5.height),0,1);
-  })();
+  }
+  window.__h5=h5;
   window.__p5=p5;
   var apprOf=[];
   if(mob){
-    for(i=0;i<folds.length;i++){
-      var fr2=folds[i].getBoundingClientRect();
+    for(i=0;i<fr.length;i++){
+      var fr2=fr[i];
       apprOf[i]=ease(clamp(((vh-fr2.top)/(vh*0.80)-0.42)/0.58,0,1));
     }
     var orr=outroEl?outroEl.getBoundingClientRect():null;
@@ -764,7 +813,7 @@ try{
   /* the duck runs on fold 4's own approach progress, not the global fold counter:
      g freezes at 3.0 while fold 3 unpins and fold 4 pins, and any ramp crossing that
      boundary rushes then stalls. This advances continuously. */
-  var r4 = f4el.getBoundingClientRect();
+  var r4 = fr[foldIndex('f4')] || f4el.getBoundingClientRect();
   var d4 = clamp((vh - r4.top)/(vh + r4.height),0,1);
   /* the passport's work is done after fold 4 — it slides out to the right and fades
      just before fold 5 arrives, and stays gone through fold 6 */

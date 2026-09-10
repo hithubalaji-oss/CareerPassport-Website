@@ -60,6 +60,26 @@ const DELTAS = [
     // the export budgeting these itself would make the delta unnecessary
     upstreamFixed: (designSrc) => /HV_N\s*=\s*[^4]/.test(designSrc),
   },
+  {
+    id: 'D4',
+    title: 'The waitlist row is allowed to shrink',
+    file: 'src/styles/homepage.css',
+    design: 'index.html',
+    present: ['.wait input{flex:1;width:0;min-width:0', 'PERF/LAYOUT: `width:0` is load-bearing'],
+    // the design's version, whose return means the fold overflows again
+    reverted: [/\.wait input\{flex:1;min-width:0;height:auto/],
+    upstreamFixed: (designSrc) => /\.wait input\{flex:1;width:0/.test(designSrc),
+  },
+  {
+    id: 'D5',
+    title: 'Fold geometry derived instead of measured',
+    file: 'src/scripts/homepage.js',
+    design: 'index.html',
+    present: ['function foldRects(sy)', 'var fr=foldRects(sy)', "foldIndex('f4')"],
+    // the per-frame measurement this replaced
+    reverted: [/r=fr\[i\]=folds\[i\]\.getBoundingClientRect\(\)/],
+    upstreamFixed: (designSrc) => /function foldRects/.test(designSrc),
+  },
 ];
 
 const hit = (src, needle) =>

@@ -168,6 +168,91 @@ every device. The handoff recommended exactly that (*Known gaps*, item 7).
 
 ---
 
+## D4 — The waitlist row is allowed to shrink
+
+| | |
+|---|---|
+| **Files** | `src/styles/homepage.css` |
+| **Source** | `index.html` carries the same `.wait input{flex:1;min-width:0}` |
+| **Status** | Active — one word in the design file retires it |
+
+**The symptom.** On a phone the whole closing fold ran off the right edge: the heading lost
+its last word, the paragraph read "A professional identity read", the JOIN THE WAITLIST
+button hung past the screen and the fine print ended on "to". Every block in the fold was
+clipped by the same amount.
+
+**The cause is one un-shrinkable input.** `.wait` is a pill holding an email field and a
+button. The field has `min-width:0`, which lets it *shrink once it is being given a width* —
+but it does not change what the field **contributes when the browser asks `.wait` how narrow
+it can be**. An `<input>` answers with its default 20-character intrinsic width, about 155px.
+Add the button's un-shrinkable 177px, the gap and the padding, and `.wait` answers **351px**.
+
+`#outro` centres its children rather than stretching them, so `.ocopy` is sized to that 351px
+answer instead of the 320px actually available at 360px wide — and every one of its children,
+the heading, the lede, the waitlist row and the fine print, is stretched to match and clipped
+by the viewport. Measured: `.ocopy` computed to `width:351.031px` at a 360px viewport *and*
+at 390px — identical, because the number never came from the viewport at all.
+
+That is also why **fold 5 was the one fold with nothing wrong with it**: it is plain centred
+text with no flex row that refuses to shrink, so nothing forces a minimum on it.
+
+**The fix.** `width:0` on the field, which drops its contribution to zero: `.wait` min-content
+falls **351px -> 144px**. Plus `min-width:0` on `.ocopy` as a guard, so a future un-shrinkable
+child cannot repeat this. Verified at 360 and 390: every block sits inside the viewport, and
+the design is unchanged — same pill, same height, the field just yields the width it was
+always supposed to.
+
+**Retire this entry** by adding `width:0` beside the existing `min-width:0` on `.wait input`
+in the design file. `min-width:0` alone looks like it already covers this and does not.
+
+---
+
+## D5 — Fold geometry derived instead of measured
+
+| | |
+|---|---|
+| **Files** | `src/scripts/homepage.js` |
+| **Source** | `index.html` measures every fold with `getBoundingClientRect()` each frame |
+| **Status** | Active — but see the honest note below before treating this as the fix |
+
+**What.** `.fold` is `height:calc(var(--h) * 1vh)` and nothing writes a fold's style at
+runtime, so a fold's box in document space only changes when the viewport does. It is now
+measured once, re-measured on resize / orientation change / load / `fonts.ready`, and its
+viewport box derived as `top - scrollY`. `#f4` and `#f5` read from the same cache instead of
+being queried and measured again.
+
+**Effect, measured at 390px / DPR 3 / 4x CPU throttle, median of five runs:** layout reads
+fall **31.9 -> 18.8 per frame**.
+
+**What it did NOT do, stated plainly:** frame time did not improve (median 49 -> 47ms, p95
+96 -> 104ms, long tasks 2001 -> 1874ms — all inside run-to-run noise). Forced reflows stayed
+at 3.4 per frame. Removing one read does not remove a forced layout: the writes have already
+invalidated layout, so whichever read comes *next* pays the same bill. This change removes
+real work and is a prerequisite for the fix below, but on its own it is not the cure.
+
+**The actual cause of the glitching, for whoever picks this up.** With the driver's `rAF`
+loop switched off (`window.__cpManual = true`) and nothing else changed:
+
+| | driver running | driver off |
+|---|---|---|
+| median frame | 50 ms | **26 ms** |
+| p95 frame | 95 ms | **36 ms** |
+| long tasks over one scroll | 2023 ms | **0 ms** |
+
+The driver is responsible for *all* of the main-thread blocking. A CPU profile puts 43% in
+`(program)` — layout, style, paint — and 20% in `getBoundingClientRect` alone. While the main
+thread is inside a forced layout the compositor gets no new tiles, which is exactly what a
+phone shows as half-drawn glyphs and blank bands.
+
+Four forced layouts happen per frame, at four known sites. Two are now gone. The remaining
+two genuinely want post-write geometry — the crowd composition lock reads the plate's box
+*after* writing its scale, and the flow node block reads after writing `--tally` — so they
+cannot simply be hoisted; the maths has to be restated in terms of the values the driver
+already wrote rather than re-measured. **That refactor is the real fix, and it belongs in
+Claude Design where the composition constants live.**
+
+---
+
 ## Retired
 
 **Halved "blueprint is being prepared" dwell** (was D1, commit `cf324ff`) — retired at the

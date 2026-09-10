@@ -750,7 +750,8 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   #outro{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
     padding-block:calc(var(--hdr) + 24px) clamp(28px,5vh,56px)}
   /* 2 · the copy centres in the height the art leaves, so it cannot bottom-anchor */
-  .ocopy{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;
+  /* and a guard, so a future un-shrinkable child cannot repeat the blowout above */
+  .ocopy{min-width:0;flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;
     align-items:center;text-align:center;gap:14px}
   /* 6 · and its type joins the ladder */
   .ocopy h2{font-size:var(--m-head);line-height:var(--m-head-lh);
@@ -926,7 +927,16 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   .field button{width:auto;flex-shrink:0;height:46px;padding:0 16px;border-radius:100px;
     font-size:var(--m-body);letter-spacing:.02em}
   .wait{padding:0 5px 0 6px;border:1px solid var(--hairline);border-radius:100px;background:var(--panel)}
-  .wait input{flex:1;min-width:0;height:auto;padding:0 10px;border:0;background:transparent;font-size:15px}
+  /* PERF/LAYOUT: `width:0` is load-bearing, not tidiness. `min-width:0` alone lets the input
+     shrink once a width is being handed to it, but it does NOT change what the input
+     contributes when the browser asks .wait how narrow it can get: an <input> reports its
+     default 20-character intrinsic width, ~155px. Add the button's un-shrinkable 177px and
+     .wait answers 351px. Because #outro centres its children rather than stretching them,
+     .ocopy is then sized to that 351px answer instead of the 320px available — and every
+     one of its children, the heading, the lede and the fine print, is stretched to match and
+     clipped by the viewport. One un-shrinkable input pushed four blocks of text off-screen.
+     `width:0` drops the contribution to 0 and .wait min-content falls 351 -> 144. */
+  .wait input{flex:1;width:0;min-width:0;height:auto;padding:0 10px;border:0;background:transparent;font-size:15px}
   .wait button{width:auto;flex-shrink:0;height:46px;padding:0 18px;border-radius:100px;
     font-size:var(--m-body);letter-spacing:.02em}
   .ghost{width:auto;justify-content:center;margin-inline:auto}
