@@ -1264,7 +1264,7 @@ img{display:block;max-width:100%}
   padding:0 7px 0 22px;border-radius:100px;background:var(--panel-raised);
   border:1px solid var(--hairline);transition:border-color .16s var(--ease)}
 .wait:focus-within{border-color:color-mix(in srgb,var(--emerald) 40%,transparent)}
-.wait input{flex:1;min-width:0;height:46px;border:0;background:transparent;font-size:16.5px;
+.wait input{flex:1;width:0;min-width:0;height:46px;border:0;background:transparent;font-size:16.5px;
   color:var(--ink)}
 .wait input::placeholder{color:var(--faint)}
 .wait button{flex-shrink:0;height:50px;padding:0 24px;border:0;border-radius:100px;
@@ -1535,6 +1535,17 @@ img{display:block;max-width:100%}
   body .ftr .fmark{margin-top:clamp(34px,7.8vh,80px)}
   body .ftr .fcr{margin-top:clamp(16px,4vh,40px);
     padding-bottom:clamp(18px,2.4vh,26px)}
+
+  /* ---- the logo strip: the placeholder must fit the slot ------------------------------
+     .lg is clamp(32px,3.2vw,44px), so on a phone it resolves to its 32px floor — but the
+     drop placeholder inside <image-slot> stacks an icon, "Logo n" and "or browse files",
+     which needs 38px. The sub-line was therefore cut off 6px from the bottom. The slot
+     is not stylable from outside (the component exports part="empty" but not the sub-line
+     within it), so the box grows to fit instead — and the strip's own padding comes down
+     by the same amount, so the strip keeps the height it has today. */
+  body .track .lg{height:46px}
+  body .track image-slot::part(empty){padding:2px;gap:2px}
+  body .strip{padding-top:8px;padding-bottom:8px}
 }
 
 /* ---- one breakpoint for the whole bar --------------------------------------

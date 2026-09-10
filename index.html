@@ -4,7 +4,8 @@
 <!-- These two are built by script (innerHTML), so the bundler cannot see them in the
      markup. Declaring them here makes it inline the bytes and hand them back on
      window.__resources at runtime. -->
-<meta name="ext-resource-dependency" content="uploads/Crowd-6ce23065.png" data-resource-id="crowdPlate" />
+<meta name="ext-resource-dependency" content="uploads/Crowd-6ce23065.webp" data-resource-id="crowdPlate" />
+<meta name="ext-resource-dependency" content="uploads/Crowd-6ce23065-1280.webp" data-resource-id="crowdPlate1280" />
 <meta name="ext-resource-dependency" content="assets/hero-lift.mp4" data-resource-id="heroLift" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -103,16 +104,15 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 .crest i{width:171px;height:171px;border-radius:50%;border:1px solid rgba(216,184,119,.45);display:grid;place-items:center}
 .crest i b{position:relative;display:grid;place-items:center;
   width:72px;height:93px;border-radius:4px 15px 15px 4px;background:rgba(216,184,119,.85)}
-/* the seal legend rides the 21px band between the two rings and turns slowly, so the
-   crest reads as a stamp rather than a static badge */
+/* the seal legend rides the 21px band between the two rings. It is deliberately STATIC:
+   the legend used to turn on a 44s cringspin loop and that rotation was removed on request
+   for both viewports, so there is no animation here to reduce-motion away. */
 .cring{position:absolute;inset:0;width:100%;height:100%}
 .cring text{font-family:var(--mono);font-size:8.5px;font-weight:500;letter-spacing:.18em;
   dominant-baseline:central;fill:rgba(216,184,119,.66)}
 /* the separator carries the seal's accent, brighter than the legend it divides. No tracking:
    it is a single centred glyph, so trailing spacing would only push it off its anchor. */
 .cring text.cdia{font-size:5.6px;letter-spacing:normal;fill:rgba(216,184,119,.9)}
-}
-@media (prefers-reduced-motion:reduce){.cring{animation:none}}
 /* The artwork is black on transparent, so multiply blends its ridges into the gold as if
    they were printed on the chip — the chip's own colour still shows through. */
 .cfp{width:51px;height:51px;object-fit:contain;
@@ -656,7 +656,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 .every p.hi{color:var(--ink)}
 .wait{display:flex;align-items:center;gap:8px;width:min(100%,520px);height:62px;padding:0 7px 0 22px;border-radius:100px;
   background:var(--panel-raised);border:1px solid var(--hairline)}
-.wait input{flex:1;min-width:0;height:44px;border:0;background:transparent;font-size:17px;color:var(--tx)}
+.wait input{flex:1;width:0;min-width:0;height:44px;border:0;background:transparent;font-size:17px;color:var(--tx)}
 .wait button{flex-shrink:0;height:48px;padding:0 24px;border:0;border-radius:100px;background:var(--emerald);color:var(--emerald-deep);
   font-size:14.5px;font-weight:600;letter-spacing:.09em;transition:background .16s var(--ease),color .16s var(--ease)}
 .wait.done input{color:var(--emerald)}
@@ -922,7 +922,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   .field button{width:auto;flex-shrink:0;height:46px;padding:0 16px;border-radius:100px;
     font-size:var(--m-body);letter-spacing:.02em}
   .wait{padding:0 5px 0 6px;border:1px solid var(--hairline);border-radius:100px;background:var(--panel)}
-  .wait input{flex:1;min-width:0;height:auto;padding:0 10px;border:0;background:transparent;font-size:15px}
+  .wait input{flex:1;width:0;min-width:0;height:auto;padding:0 10px;border:0;background:transparent;font-size:15px}
   .wait button{width:auto;flex-shrink:0;height:46px;padding:0 18px;border-radius:100px;
     font-size:var(--m-body);letter-spacing:.02em}
   .ghost{width:auto;justify-content:center;margin-inline:auto}
@@ -1338,6 +1338,8 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   .bt b{width:22px;justify-items:start}
   .bt p{display:block;max-width:none;margin-top:3px}
 }
+/* ---- mobile graphics-memory budget: the textures shed their overscan ---------------- */
+@media (max-width:1024px){ .paper,.rose{inset:0} }
 </style>
 <link rel="stylesheet" href="cp-header.css">
 
@@ -1601,7 +1603,9 @@ for(var dd=0;dd<8;dd++){
    'px;animation-duration:'+(8+rnd()*10).toFixed(1)+'s;animation-delay:-'+(rnd()*14).toFixed(1)+'s"></i>';
 }
 var RES=(window.__resources||{});
-var CROWD_SRC=RES.crowdPlate||'uploads/Crowd-6ce23065.png';
+var CROWD_SRC = innerWidth<1025
+    ? (RES.crowdPlate1280||'uploads/Crowd-6ce23065-1280.webp')
+    : (RES.crowdPlate||'uploads/Crowd-6ce23065.webp');
 var LIFT_SRC=RES.heroLift||'assets/hero-lift.mp4';
 $('#crowd').innerHTML='<div class="cbg" id="cbg"><img id="cbgImg" src="'+CROWD_SRC+'" alt=""></div>'+
   '<div class="hglow" id="hglow"></div>'+
@@ -2033,6 +2037,42 @@ function drawLines(g){
 
 /* ---------- the passport answers the cursor ---------- */
 var tx=0,ty=0,cx=0,cy=0;
+
+/* ---- items 1 + 2 · the geometry cache: measure once, derive per frame ----
+   .fold is height:calc(var(--h) * 1vh) and nothing writes a fold style at runtime, so a
+   fold box in DOCUMENT space changes only when the viewport does; its box in VIEWPORT
+   space is that minus scrollY, with no layout involved. .crowd is inset:0 inside such a
+   fold, so the same holds for it, and the loop writes only its opacity and a custom
+   property — never its geometry.
+   Reading these inside frame() AFTER a style write forced a synchronous full-page layout.
+   Reading them here does not, because nothing has been written yet. */
+var geo={folds:[], vw:0, vh:0};
+function remeasure(){
+  geo.vw=innerWidth; geo.vh=innerHeight;
+  var y=scrollY||window.pageYOffset||0;
+  geo.folds=$$("main .fold").map(function(f){
+    var r=f.getBoundingClientRect();
+    return {top:r.top+y, height:r.height};
+  });
+}
+function geoOk(){
+  return geo.folds.length>0 && geo.vw===innerWidth && geo.vh===innerHeight
+         && geo.folds[0].height>0;
+}
+function foldTop(i){
+  if(!geoOk()) remeasure();
+  var g=geo.folds[i];
+  return g ? g.top-(scrollY||window.pageYOffset||0) : 0;
+}
+function foldH(i){
+  if(!geoOk()) remeasure();
+  var g=geo.folds[i]; return g ? g.height : 0;
+}
+remeasure();
+addEventListener("resize",remeasure,{passive:true});
+addEventListener("orientationchange",remeasure,{passive:true});
+addEventListener("load",remeasure);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(remeasure);
 addEventListener('pointermove',function(e){
   /* pointer lean is a mouse affordance: on a touch device it has no input to follow, and
      a single tap would leave the book leaning at a fixed angle for the rest of the visit */
@@ -2052,6 +2092,24 @@ function frame(){
 try{
   /* ---- READ (batched) ---- */
   var vh=innerHeight, vw=innerWidth, mob=vw<1025, phone=vw<600;
+  /* ---- the crowd plate's box, read here and nowhere else ----
+     This used to be measured down in the composition lock, AFTER the loop had written
+     cbg's scale, translate and width. A read that follows a style write cannot be answered
+     from cached layout: the browser must re-run layout for the whole 11,000px page,
+     synchronously, before it can return a number. It was one of four such sites, and
+     together they accounted for every millisecond of main-thread blocking during a scroll —
+     which is what made glyphs draw halfway and background textures blank out.
+     Taken here, before anything has been written, the same two reads are free. The trade is
+     a one-frame lag: these rects describe the layout committed last frame rather than this
+     frame's pending writes. Against a zoom that moves 0.19 across an entire fold that is
+     sub-pixel at 60fps, and it is the same trade the fold-rect cache makes. */
+  var pr=cbg.getBoundingClientRect(), cr=crowd.getBoundingClientRect();
+  /* the flow-node geometry, same reasoning: it used to be read after the loop had written
+     the tally property and swapped flow.className, both of which invalidate layout */
+  var _nod=flow.querySelector('.fbot'), _tiles=flow.querySelector('.ftiles');
+  var nr0=_nod?_nod.getBoundingClientRect():null;
+  var bkr0=cover.getBoundingClientRect();
+  var tlr0=_tiles?_tiles.getBoundingClientRect():null;
   var g=0,i,r;
   for(i=0;i<folds.length;i++){
     r=folds[i].getBoundingClientRect();
@@ -2085,7 +2143,7 @@ try{
   (function(){
     var f5=document.getElementById('f5');
     if(!f5) return;
-    var r5=f5.getBoundingClientRect();
+    var r5={top:foldTop(4), height:foldH(4)};   /* cached */
     h5=clamp((vh-r5.top)/(vh*1.10),0,1);
   })();
   window.__h5=h5;
@@ -2094,7 +2152,7 @@ try{
   (function(){
     var f5=document.getElementById('f5');
     if(!f5) return;
-    var r5=f5.getBoundingClientRect();
+    var r5={top:foldTop(4), height:foldH(4)};   /* cached */
     p5=clamp((vh-r5.top)/(vh+r5.height),0,1);
   })();
   window.__p5=p5;
@@ -2202,7 +2260,7 @@ try{
   /* ONE choreography: assemble (0.42-1.0) -> descend (1.0-2.05) -> release (2.05-2.42) */
   /* scene progress runs continuously from fold 2 entering the viewport to the end of its pin,
      so there is no dead stretch while fold 1's pin releases */
-  var r2 = folds[1].getBoundingClientRect();
+  var r2 = {top:foldTop(1), height:foldH(1)};   /* cached — see remeasure() */
   var sp = clamp((vh - r2.top)/(vh + r2.height),0,1);
   var asm = ease(seg(sp,0.02,0.56));
   var cam = ease(seg(sp,0.56,0.93));
@@ -2249,39 +2307,51 @@ try{
      width, so the walk-on and camera moves stay in proportion too. LIFT and HDROP are
      optical nudges, so they stay in px. */
   var REF_W=1800, HERO_W=0.292, FEET=0.94, LIFT=160, HDROP=75;
-  var pr=cbg.getBoundingClientRect(), cr=crowd.getBoundingClientRect();
-  var pw=pr.width||REF_W, ph=pr.height||pw*0.86, k=pw/REF_W;
-  var cbgOld=pw*-0.205-LIFT, cbgNew=cbgOld;
+  /* ---- the plate's box is DERIVED, never measured ----
+     This block used to write cbg's scale and width and then read cbg's rect back to
+     recover the rendered width — a read that cannot be answered from cached layout, so the
+     browser re-ran layout for the whole 11,000px page synchronously, mid-frame. It was one
+     of four such sites and together they accounted for every millisecond of main-thread
+     blocking during a scroll.
+     Nothing here needs measuring. .cbg is left:0/right:0 inside .crowd, so its layout width
+     is the cached crowd width on desktop and the width we write ourselves on mobile; its
+     img is width:100%/height:auto, so its layout height is that width times the image's
+     natural aspect; and the rendered box is the layout box times the scale we are about to
+     write. Every term is already in hand. */
   var cbgEl=document.getElementById('cbg'), cbgImg=document.getElementById('cbgImg');
+  var S=zoom+breathe*dock;                       /* the scale written just above */
+  var asp=(cbgImg&&cbgImg.naturalWidth) ? cbgImg.naturalHeight/cbgImg.naturalWidth : 0.694;
+  var cbgNew, rTop;
   if(innerWidth<1025 && cbgEl){
     var hdrH=parseFloat(getComputedStyle(document.documentElement)
                .getPropertyValue('--hdr'))||78;
-    var asp=(cbgImg&&cbgImg.naturalWidth) ? cbgImg.naturalHeight/cbgImg.naturalWidth : 0.694;
-    var csc=parseFloat(getComputedStyle(cbgEl).scale)||1;
-    if(!(csc>0.2&&csc<4)) csc=1;
     /* the region the art may occupy: under the header, above the midline */
-    var rTop=hdrH+8, rBot=innerHeight*0.50, rH=Math.max(120,rBot-rTop);
+    rTop=hdrH+8;
+    var rH=Math.max(120,innerHeight*0.50-rTop);
     /* 145 is the docked zone top the fold clock writes; zoneH is the driver's own value */
-    cbgNew = rTop - 145 - (window.__zH||innerHeight*0.22)/2;
-    var w=Math.min(innerWidth, rH/(asp*csc));
-    cbgEl.style.width=w.toFixed(0)+'px';
-    cbgEl.style.left=((innerWidth-w)/2).toFixed(0)+'px';
-    cbgEl.style.right='auto';
-    /* .cbg's centre lands at crowdTop + crowdH/2 + cbgTop, so the offset is solved from
-       the measured box rather than assumed from a percentage */
+    cbgNew=rTop-145-(window.__zH||innerHeight*0.22)/2;
     /* the cap is the whole mechanism: a plate that cannot be taller than the band cannot
-       overrun it, so no offset needs solving and nothing reads a rect the loop writes */
-  } else if(cbgEl){
-    cbgEl.style.width=''; cbgEl.style.left=''; cbgEl.style.right='';
+       overrun it, so no offset needs solving */
+    /* the scale here is the value written just above, not one read back —
+       getComputedStyle(cbgEl).scale was a forced style recalc in its own right */
+    var layoutW=Math.min(innerWidth, rH/(asp*S));
+    cbgEl.style.width=layoutW.toFixed(0)+'px';
+    cbgEl.style.left=((innerWidth-layoutW)/2).toFixed(0)+'px';
+    cbgEl.style.right='auto';
+  } else {
+    if(cbgEl){ cbgEl.style.width=''; cbgEl.style.left=''; cbgEl.style.right=''; }
   }
+  var pw=pr.width||REF_W, ph=pr.height||pw*0.86, k=pw/REF_W;
+  if(innerWidth>=1025) cbgNew=pw*-0.205-LIFT;
+  var relLeft=pr.left-cr.left, relTop=pr.top-cr.top;
   crowd.style.setProperty('--cbgTop',cbgNew.toFixed(1)+'px');
   hero.style.setProperty('--hw',(pw*HERO_W).toFixed(1)+'px');
   hero.style.setProperty('--hbot',(cr.bottom-(pr.top+ph*FEET)-HDROP).toFixed(1)+'px');
   hero.style.translate='-50% '+(((1-asm)*54+cam*96-out*36+bob+100)*k).toFixed(2)+'px';
   /* the callout layer becomes the plate's box exactly, so its percentage coordinates are
      percentages of the crowd image at any screen size */
-  claimsEl.style.left=(pr.left-cr.left).toFixed(1)+'px';
-  claimsEl.style.top=(pr.top-cr.top).toFixed(1)+'px';
+  claimsEl.style.left=relLeft.toFixed(1)+'px';
+  claimsEl.style.top=relTop.toFixed(1)+'px';
   claimsEl.style.width=pw.toFixed(1)+'px';
   claimsEl.style.height=ph.toFixed(1)+'px';
   claimsEl.style.setProperty('--rise',(ph*0.0584).toFixed(1)+'px');
@@ -2337,7 +2407,7 @@ try{
   /* the duck runs on fold 4's own approach progress, not the global fold counter:
      g freezes at 3.0 while fold 3 unpins and fold 4 pins, and any ramp crossing that
      boundary rushes then stalls. This advances continuously. */
-  var r4 = f4el.getBoundingClientRect();
+  var r4 = {top:foldTop(3), height:foldH(3)};   /* cached */
   var d4 = clamp((vh - r4.top)/(vh + r4.height),0,1);
   /* the passport's work is done after fold 4 — it slides out to the right and fades
      just before fold 5 arrives, and stays gone through fold 6 */
@@ -2506,13 +2576,15 @@ try{
     /* the line hangs from the node (top:100% in CSS), so only its length is computed: the
        drop to the cover, run into the cover's middle. The passport paints above this
        layer, so the overshoot is hidden and the tilt of the cover cannot leave a gap. */
-    var nr=nod.getBoundingClientRect(), bkr=cover.getBoundingClientRect();
+    var nr=nr0||nod.getBoundingClientRect(), bkr=bkr0;
     /* equal spacing: the gap above the Companion sets the gap below it. Solved rather than
        tuned, and damped so the passport's hover keeps breathing around the target instead
        of fighting it. Only runs once the duck has settled, so the ramp is not chased. */
-    var tlr=flow.querySelector('.ftiles').getBoundingClientRect();
+    /* both from the top-of-frame batch; null on the frame that builds them, which the
+       damped solver below skips rather than chasing a stale number */
+    var tlr=tlr0;
     var effS=(parseFloat(zone.style.scale)||1)*s;
-    if(duck>0.85&&effS>0.02&&tlr.height>4){
+    if(tlr&&nr0&&duck>0.85&&effS>0.02&&tlr.height>4){
       var want=nr.bottom+(nr.top-tlr.bottom);
       /* the bound is wide because duckY is expressed in the book's own 920x640 space,
          which the wrap scales down by an order of magnitude at fold 4 — the solved value
@@ -2543,7 +2615,7 @@ var cwReady=false;
 function drawCrowdFrame(){}
 
 /* ---------- pre-baked, chroma-keyed hero frames (no live seeking = no jank) ---------- */
-var hvReady=false, hvTainted=false, hvDur=0, hvFrames=[], HV_N=40, HV_SX=180, HV_SY=125, HV_SW=515, HV_SH=955;
+var hvReady=false, hvTainted=false, hvDur=0, hvFrames=[], HV_N=(innerWidth<1025?20:40), HV_SX=180, HV_SY=125, HV_SW=515, HV_SH=955;
 function keyGreen(cx,w,h){
   var d=cx.getImageData(0,0,w,h), p=d.data;
   for(var i=0;i<p.length;i+=4){
@@ -2584,7 +2656,8 @@ function bakeHeroFrames(){
 }
 heroVideo.addEventListener('loadedmetadata',function(){
   hvDur=heroVideo.duration||5;
-  var cw=515; heroCv.width=cw; heroCv.height=Math.round(cw*HV_SH/HV_SW);
+  /* half the linear resolution on a phone — a quarter of the retained bytes */
+  var cw=(innerWidth<1025?258:515); heroCv.width=cw; heroCv.height=Math.round(cw*HV_SH/HV_SW);
   bakeHeroFrames();
 });
 function drawHeroFrame(liftP,outP,ms){
