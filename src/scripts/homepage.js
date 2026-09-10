@@ -26,10 +26,27 @@ var CROWD_SRC = innerWidth<1025
     ? (RES.crowdPlate1280||'/uploads/Crowd-6ce23065-1280.webp')
     : (RES.crowdPlate||'/uploads/Crowd-6ce23065.webp');
 var LIFT_SRC=RES.heroLift||'/assets/hero-lift.mp4';
+/* D2: a pre-keyed hero, so the phone never runs the chroma-key at all.
+   The green screen in hero-lift.mp4 is stripped at runtime by keyGreen(): 20 times over it
+   seeks the video, draws a frame, calls getImageData (a synchronous GPU->CPU readback, one
+   of the slowest things available on a phone), walks ~123,000 pixels in JS, and uploads the
+   result back. Measured at 4x CPU throttle: 3,230ms of wall clock and 802ms of blocked main
+   thread, in chunks up to 94ms — more than the entire rest of the page's scroll blocking,
+   and it lands in the first seconds, exactly while the reader is scrolling the hero.
+   hero-lift-alpha.webm is that same key applied once, here, by ffmpeg: identical maths
+   (green excess over max(r,b), 34/4 thresholds, the same 1.5x spill correction), already
+   cropped to the HV_SX/SY/SW/SH window. When the browser can play it AND honours its alpha,
+   the bake becomes drawImage alone. When it cannot, everything below is unchanged. */
+var LIFT_ALPHA_SRC='/assets/hero-lift-alpha.webm';
+var hvAlpha=false;
+try{
+  hvAlpha = !!(document.createElement('video')
+    .canPlayType('video/webm; codecs="vp09.00.10.08"') || '').length;
+}catch(e){ hvAlpha=false; }
 $('#crowd').innerHTML='<div class="cbg" id="cbg"><img id="cbgImg" src="'+CROWD_SRC+'" alt=""></div>'+
   '<div class="hglow" id="hglow"></div>'+
   '<div class="heroFig" id="hero"><div class="hbloom"></div>'+
-    '<video id="heroVideo" src="'+LIFT_SRC+'" muted playsinline preload="auto" style="position:absolute;width:2px;height:2px;opacity:0;pointer-events:none;left:-9999px"></video>'+
+    '<video id="heroVideo" src="'+(hvAlpha?LIFT_ALPHA_SRC:LIFT_SRC)+'" muted playsinline preload="auto" style="position:absolute;width:2px;height:2px;opacity:0;pointer-events:none;left:-9999px"></video>'+
     '<canvas class="heroCv" id="heroCv"></canvas><span class="hand" id="hand"></span>'+
     '<div class="hbloom f" id="hpalm"></div></div>'+
   '<div class="dust">'+dust+'</div><div class="claims" id="claims"></div><div class="vig"></div>';
@@ -1056,12 +1073,33 @@ function bakeHeroFrames(){
     heroVideo.removeEventListener('seeked',onSeeked);
     var cv=document.createElement('canvas'); cv.width=heroCv.width; cv.height=heroCv.height;
     var cx=cv.getContext('2d');
-    cx.drawImage(heroVideo,HV_SX,HV_SY,HV_SW,HV_SH,0,0,cv.width,cv.height);
-    /* A cross-origin or file:// video taints the canvas, so getImageData throws and the
-       un-keyed green frame would stay on screen. In that case drop the hero layer
-       entirely — the crowd plate already carries a lit figure. */
-    try{ keyGreen(cx,cv.width,cv.height); }
-    catch(e){ hvTainted=true; hero.style.display='none'; hvReady=false; return; }
+    if(hvAlpha){
+      /* already keyed and already cropped — the whole frame, no readback, no pixel loop */
+      cx.drawImage(heroVideo,0,0,cv.width,cv.height);
+      /* Prove the alpha actually survived, once, on the first frame. Some browsers decode
+         VP9 in WebM but ignore its alpha side-channel, which would paint the figure on a
+         black block instead of failing outright. Sampling 4 corner pixels is cheap; a fully
+         opaque corner means no alpha, so fall back to the green-screen source and re-bake. */
+      if(!hvFrames.length){
+        var ok=false;
+        try{
+          var probe=cx.getImageData(0,0,2,2).data;
+          ok = probe[3]<250 || probe[7]<250 || probe[11]<250 || probe[15]<250;
+        }catch(e){ ok=false; }
+        if(!ok){
+          hvAlpha=false; hvFrames.length=0; hvReady=false;
+          heroVideo.src=LIFT_SRC;          /* loadedmetadata fires again and re-bakes */
+          return;
+        }
+      }
+    } else {
+      cx.drawImage(heroVideo,HV_SX,HV_SY,HV_SW,HV_SH,0,0,cv.width,cv.height);
+      /* A cross-origin or file:// video taints the canvas, so getImageData throws and the
+         un-keyed green frame would stay on screen. In that case drop the hero layer
+         entirely — the crowd plate already carries a lit figure. */
+      try{ keyGreen(cx,cv.width,cv.height); }
+      catch(e){ hvTainted=true; hero.style.display='none'; hvReady=false; return; }
+    }
     hvFrames.push(cv);
     i++; step();
   }
@@ -1075,6 +1113,7 @@ function bakeHeroFrames(){
 }
 heroVideo.addEventListener('loadedmetadata',function(){
   hvDur=heroVideo.duration||5;
+  hvFrames.length=0; hvReady=false;   /* a source swap re-bakes from scratch */
   /* half the linear resolution on a phone — a quarter of the retained bytes */
   var cw=(innerWidth<1025?258:515); heroCv.width=cw; heroCv.height=Math.round(cw*HV_SH/HV_SW);
   bakeHeroFrames();

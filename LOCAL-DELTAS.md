@@ -63,6 +63,75 @@ gains a way to declare a deploy-time base. Neither is likely; this one is perman
 
 ---
 
+## D2 — A pre-keyed hero, so the phone never runs the chroma-key
+
+| | |
+|---|---|
+| **Files** | `src/scripts/homepage.js`, `public/assets/hero-lift-alpha.webm` |
+| **Source** | `index.html` keys the green screen at runtime |
+| **Status** | Active — the design's own handoff asked for this (*Known gaps*, item 7) |
+
+**The blind spot this closes.** Every performance measurement taken in this repository before
+now excluded the single most expensive thing the page does, because headless Chromium cannot
+decode H.264 — so `bakeHeroFrames()` never ran in any test here. It runs on every real phone.
+Re-encoding the source to VP9 purely so the test browser could execute that path, at 4x CPU
+throttle:
+
+| | |
+|---|---|
+| wall clock to bake 20 frames | 3,230 ms |
+| **main thread blocked** | **802–1,369 ms** |
+| worst single freeze | 94–117 ms |
+
+For scale, the entire rest of the page's scroll blocking measured 719 ms. This one operation
+was the larger half of the problem, it lands in the first seconds of a visit, and it had never
+appeared in a single measurement.
+
+**What it was doing.** Twenty times over: seek the video, draw a frame, call `getImageData`
+(a synchronous GPU→CPU readback, among the slowest operations available on a phone), walk
+~123,000 pixels in JavaScript to strip the green screen, upload the result back.
+
+**What replaced it.** `hero-lift-alpha.webm` is that same key applied **once, at build time**,
+by ffmpeg — a literal port of `keyGreen()`: green excess over `max(r,b)`, the same 34 and 4
+thresholds, the same `1.5x` spill correction, pre-cropped to the `HV_SX/SY/SW/SH` window.
+The bake then reduces to `drawImage` alone.
+
+**Measured, same conditions:** `getImageData` 20 calls / 169 ms → **1 call / 0 ms** (the
+verification probe below), main thread blocked at load **1,369 ms → 51 ms**. Verified visually:
+the figure composites into the crowd with no green fringe and no black block.
+
+**It fails safe, twice.**
+
+1. `canPlayType('video/webm; codecs="vp09.00.10.08"')` gates the swap, so a browser that
+   cannot play VP9 keeps the original `.mp4` and the original bake. Both files ship; a visitor
+   fetches exactly one.
+2. Some browsers decode VP9 in WebM but ignore its alpha side-channel, which would paint the
+   figure on a black block rather than failing outright. So the first baked frame samples four
+   corner pixels; a fully opaque corner means no alpha, and the driver swaps `src` back to the
+   `.mp4` and re-bakes. Costs one `getImageData` of 4 pixels, once.
+
+**How to re-apply.** After extracting the driver: add `LIFT_ALPHA_SRC` and the `hvAlpha`
+capability check beside `LIFT_SRC`; point the injected `<video>` at it when `hvAlpha`; branch
+`onSeeked` so the alpha path draws the full frame and skips `keyGreen`, keeping the corner
+probe; and clear `hvFrames` in the `loadedmetadata` handler so a source swap re-bakes cleanly.
+
+**Retire this entry** by making the pre-keyed video the design's own hero source, which is what
+the handoff recommended in the first place. Then `keyGreen`, `bakeHeroFrames` and the twenty
+retained canvases can all be deleted outright, on every device.
+
+**Regenerating the asset**, if the hero footage ever changes:
+
+```bash
+KEY="format=rgba,geq=r='r(X,Y)':g='if(gt(g(X,Y)-max(r(X,Y),b(X,Y)),4),max(0,g(X,Y)-(g(X,Y)-max(r(X,Y),b(X,Y)))*1.5),g(X,Y))':b='b(X,Y)':a='if(gt(g(X,Y)-max(r(X,Y),b(X,Y)),34),0,if(gt(g(X,Y)-max(r(X,Y),b(X,Y)),4),255*(1-(g(X,Y)-max(r(X,Y),b(X,Y))-4)/30),255))'"
+ffmpeg -i hero-lift.mp4 -vf "crop=515:955:180:125,${KEY},scale=515:-2,format=yuva420p" \
+  -c:v libvpx-vp9 -pix_fmt yuva420p -b:v 700k -auto-alt-ref 0 -an hero-lift-alpha.webm
+```
+
+`-auto-alt-ref 0` is required: VP9 alt-ref frames and the alpha side-channel are incompatible,
+and without it the alpha is silently dropped.
+
+---
+
 ## Retired
 
 Everything below was fixed in Claude Design and re-derived cleanly on 10 Sep. Kept as a

@@ -33,6 +33,16 @@ const DELTAS = [
     // this one cannot be fixed upstream — root-absolute paths break the Claude Design
     // canvas preview, so there is no upstreamFixed signal to watch for
   },
+  {
+    id: 'D2',
+    title: 'Pre-keyed hero video (no runtime chroma-key)',
+    file: 'src/scripts/homepage.js',
+    design: 'index.html',
+    present: ["var LIFT_ALPHA_SRC='/assets/hero-lift-alpha.webm'", 'if(hvAlpha){', 'hvFrames.length=0; hvReady=false;'],
+    // the unguarded key, whose return means every phone runs the pixel loop again
+    reverted: [/\n    try\{ keyGreen\(cx,cv\.width,cv\.height\); \}\n    catch/],
+    upstreamFixed: (designSrc) => !/function keyGreen/.test(designSrc),
+  },
 ];
 
 const hit = (src, needle) =>
