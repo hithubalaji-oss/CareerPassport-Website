@@ -1,4 +1,5 @@
 <title>CareerPassport Homepage</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#0a0c0b"/><rect x="120" y="96" width="160" height="208" rx="8" fill="url(#g)"/><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b3564"/><stop offset="1" stop-color="#091530"/></linearGradient></defs><circle cx="200" cy="176" r="30" fill="none" stroke="#d8b877" stroke-width="1.5"/><rect x="190" y="166" width="20" height="24" rx="4" fill="#d8b877"/><rect x="150" y="238" width="100" height="7" rx="3.5" fill="#d8b877" opacity=".85"/><rect x="166" y="256" width="68" height="5" rx="2.5" fill="#e9d6aa" opacity=".5"/></svg></template>
 <!-- These two are built by script (innerHTML), so the bundler cannot see them in the
      markup. Declaring them here makes it inline the bytes and hand them back on
@@ -104,14 +105,13 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   width:72px;height:93px;border-radius:4px 15px 15px 4px;background:rgba(216,184,119,.85)}
 /* the seal legend rides the 21px band between the two rings and turns slowly, so the
    crest reads as a stamp rather than a static badge */
-.cring{position:absolute;inset:0;width:100%;height:100%;
-  animation:cringspin 44s linear infinite}
+.cring{position:absolute;inset:0;width:100%;height:100%}
 .cring text{font-family:var(--mono);font-size:8.5px;font-weight:500;letter-spacing:.18em;
   dominant-baseline:central;fill:rgba(216,184,119,.66)}
 /* the separator carries the seal's accent, brighter than the legend it divides. No tracking:
    it is a single centred glyph, so trailing spacing would only push it off its anchor. */
 .cring text.cdia{font-size:5.6px;letter-spacing:normal;fill:rgba(216,184,119,.9)}
-@keyframes cringspin{to{rotate:360deg}}
+}
 @media (prefers-reduced-motion:reduce){.cring{animation:none}}
 /* The artwork is black on transparent, so multiply blends its ridges into the gold as if
    they were printed on the chip — the chip's own colour still shows through. */
@@ -263,7 +263,8 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 /* ---------- fold 2: the crowd ---------- */
 .crowd{position:absolute;inset:0;opacity:0;pointer-events:none;isolation:isolate;overflow:visible;
   }
-.cbg{position:absolute;left:0;right:0;top:50%;translate:0 -50%;z-index:10;will-change:transform;margin-top:var(--cbgTop,-370px)}
+.cbg{position:absolute;left:0;right:0;top:50%;margin-top:var(--cbgTop,-370px);
+  z-index:10;will-change:transform,translate}
 /* The feather belongs to the image, not the container: a radial fade on .crowd only
    dims the container's corners, so the image's own edges sit inside that gradient's
    transparent centre where nothing can soften them. Linear masks in px feather each
@@ -555,6 +556,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   -webkit-mask-image:radial-gradient(closest-side,#000 0%,#000 34%,transparent 72%);
   mask-image:radial-gradient(closest-side,#000 0%,#000 34%,transparent 72%)}
 .drawline{width:100%;line-height:0}
+.mspine{display:none}
 .drawline svg{display:block;width:100%;height:var(--dh,120px);overflow:visible}
 .drawline text{font-family:var(--display);font-weight:600;letter-spacing:-.012em;user-select:none}
 .drawline [data-stroke]{stroke:var(--tx);stroke-opacity:.6;stroke-width:1;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
@@ -584,6 +586,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 .fine{font-size:15px;line-height:1.6;color:var(--mute);max-width:38ch}
 .lede{font-size:clamp(16px,1.15vw,18.5px);line-height:1.62;color:var(--body)}
 .serif{font-style:normal;font-weight:600;letter-spacing:-.016em;color:var(--ink)}
+.ofine{font-size:15.5px;color:var(--meta)}
 .beats{display:flex;flex-direction:column;gap:clamp(20px,2.8vh,30px);margin-top:2px}
 .bt{display:grid;grid-template-columns:26px 1fr;gap:13px;align-items:start;opacity:.3;transition:opacity .45s var(--ease)}
 .bt.on{opacity:1}
@@ -667,25 +670,94 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 /* Below 1024px the side-by-side layout has no room left, so the whole stacked
    treatment engages at the same width as the burger — no in-between state. */
 @media (max-width:1024px){
+  /* ============ the mobile type scale ==============================================
+     Five steps on a ~1.25 ratio, replacing the twelve near-identical sizes this file had
+     grown: 10, 11, 11.5, 12, 12.5, 13.5, 14, 14.5, 15, 16 — ten supposed ranks inside a
+     6px band, which reads as inconsistency rather than hierarchy. This is the design
+     system's own ladder (display / heading / body / label, negative tracking above 20px,
+     0 at body), started from a smaller display size.
+     Display-to-body is now 2.3:1. It was 1.5:1, which is why the hero headline read as a
+     subhead rather than a headline. One control height, so no two ranks of button end up
+     the same size by accident. */
+  :root{
+    /* The two top steps come down one notch; body-lg loses half a pixel. --m-body and
+       --m-label are FLOORS, not parameters: 15px is the body readability floor on a phone
+       and 11px is the design system's label size with its +0.72px tracking. Space is taken
+       out of display/heading instead, which widens the gap to body and sharpens the
+       hierarchy rather than flattening it. See backups/MOBILE-TYPE-SCALE.md. */
+    --m-display:30px;  --m-display-lh:1.14; --m-display-tr:-.02em;
+    --m-head:23px;     --m-head-lh:1.2;     --m-head-tr:-.015em;
+    --m-body:15px;     --m-body-lh:1.45;
+    --m-label:11px;    --m-label-lh:1.4;    --m-label-tr:.18em;
+    --m-ctl:52px;
+    /* these three resolved only via inline fallbacks in the loaded sheets, which meant the
+       overlay's radii could drift from the page. Pinned to the values already in use. */
+    --r-card:12px; --r-card-lg:16px; --hairline-strong:#283350;
+  }
+  /* Safe clearance under the fixed header. The header is 77px tall and the hero eyebrow
+     was sitting at 74px — 3px UNDER it. The column has slack below, so the padding
+     applies in full: 40px lands the eyebrow 40px clear of the header, which is a step on
+     the design system's own 4 · 8 · 12 · 16 · 24 · 32 · 40 scale.
+     Only the homepage needs this: Partners clears by 37px and For Companies by 143px. */
+  :root{--hdr-h:77px}
+  /* Horizontal containment on the ROOT, and as clip, not hidden. The fixed textures and
+     the hero mesh extend past the viewport (measured: document 445px wide on a 390px
+     phone), and body{overflow-x:hidden} is the one rule iOS Safari ignores for touch
+     panning. clip never creates a scroll container, so the sticky pins are untouched.
+     Scoped to this query: on desktop the root is exactly as before. */
+  html,body{overflow-x:clip}
+  /* the textures hold still on a phone (the driver no longer writes them — see frame()),
+     and are told so, so the compositor does not keep a layer warm for them */
+  .paper,.rose{will-change:auto;translate:none;rotate:none;scale:none}
+  .mesh{inset:-6% -12% auto -12%;height:62svh;
+    background:
+      radial-gradient(46% 40% at 50% 30%,rgba(221,188,107,.20),transparent 70%),
+      radial-gradient(30% 26% at 62% 20%,rgba(248,230,172,.14),transparent 72%),
+      radial-gradient(52% 46% at 34% 52%,rgba(52,80,127,.32),transparent 74%);
+    filter:blur(46px)}
+  /* and a tight contact glow directly behind the cover, so its gold foil has something to
+     read against — the cover's own shadow was falling on nothing */
+  .zone::before{content:"";position:absolute;left:50%;top:38%;translate:-50% -50%;
+    width:min(78vw,340px);aspect-ratio:1;border-radius:50%;pointer-events:none;z-index:0;
+    background:radial-gradient(circle,rgba(221,188,107,.16),transparent 68%);
+    filter:blur(26px)}
+  /* the passport is the one thing that must stay on its own layer: its scale and
+     transform change every frame, and a layer that flips between composited and painted
+     is the other classic iOS shimmer */
+  .stage{will-change:transform;transform:translateZ(0)}
+  /* the art column spans the screen, which is what the driver has always assumed */
+  .zone{left:0;right:0}
+  /* one beat at a time: the four stack in one slot and cross-fade in place, so the block
+     cannot change height as they swap. min-height is the tallest of the four, which is
+     why it is declared rather than left to content. */
+  .beats{position:relative;display:block;min-height:104px;gap:0;margin-top:6px}
+  .bt{position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;padding:0 8px;
+    opacity:0;transition:opacity .4s var(--ease);pointer-events:none}
+  .bt.on{opacity:1}
+  .bt p{display:block;max-width:34ch;margin-top:4px}
+  .bookwrap{will-change:transform}
   .twocol,.probs.row3{grid-template-columns:1fr;gap:18px}
   .outro{grid-template-columns:1fr;gap:26px;text-align:center}
   .ocopy{align-items:center;max-width:none;margin-inline:auto}
-  .oart{min-height:min(46vh,400px);order:-1}  .zone{left:0;right:0;top:56px;bottom:auto;height:38svh}
+  .oart{min-height:min(36vh,320px);order:-1}
+  /* 1 · the section owns the frame and centres its two blocks, so the balance is stated
+     rather than inherited from the art's measured height */
+  #outro{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+    padding-block:calc(var(--hdr) + 24px) clamp(28px,5vh,56px)}
+  /* 2 · the copy centres in the height the art leaves, so it cannot bottom-anchor */
+  .ocopy{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;
+    align-items:center;text-align:center;gap:14px}
+  /* 6 · and its type joins the ladder */
+  .ocopy h2{font-size:var(--m-head);line-height:var(--m-head-lh);
+    letter-spacing:var(--m-head-tr)}
+  .ocopy .lede{font-size:var(--m-body);line-height:1.52}
+  .ocopy .fine,.ofine{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}  .zone{left:0;right:0;top:56px;bottom:auto;height:38svh}
   .bookwrap{margin-top:-320px}
 
   /* passport interior: sized for a card that renders about a third of the viewport */
-  .pglbl{font-size:9px;letter-spacing:.18em;margin-bottom:12px}
   .lf,.lb,.cback{padding:22px 20px}
-  .lf p,.lb p,.cback p{font-size:13px;line-height:1.45}
-  .lf p.pgh,.lb p.pgh,.cback p.pgh{font-size:15px;line-height:1.15}
-  .kv span,.flat span,.jrow span,.bub{font-size:12.5px;line-height:1.4}
-  .kv b,.jrow b{font-size:8.5px}
   .kv{gap:9px}
-  .chip{font-size:8.5px;padding:5px 8px}
-  .st .snm{font-size:9px}
-  .sbox .stt,.sbox .sdt{font-size:6px}
-  .pgft,.pgid{font-size:8px}
-  .pgid{padding-top:9px}
 
   /* Rows, not columns. The copy panel is taken out of flow and pinned to a fixed
      band of the viewport, so it can only ever move sideways — it can never drift
@@ -698,22 +770,124 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   /* fold 1 inverts the order: copy on the top row, passport beneath it */
   /* fold 1 packs a headline, lede, form and secondary CTA into the top row, so it
      gets a tighter rhythm than the other folds and the passport takes the lower band */
-  #f1 .col{top:74px;bottom:auto;max-height:42svh;gap:10px}
-  #f1 .lede{font-size:13.5px;line-height:1.45}
-  #f1 .ghost{height:44px}
-  .eyebrow{justify-content:center;font-size:10px;letter-spacing:.2em}
-  .col h1{font-size:clamp(24px,6.2vw,30px);line-height:1.09;letter-spacing:-.015em;text-wrap:balance}
-  .col h2,.col.tight h2{font-size:clamp(22px,5.6vw,27px);line-height:1.12;letter-spacing:-.013em;text-wrap:balance}
-  .lede,.col.tight .fine{font-size:14.5px;line-height:1.48;text-wrap:pretty}
+  /* The hero copy is a fixed box, so its clearance under the header is its top offset:
+     the header is 77px and 32px of air is a step on the design system spacing scale.
+     The cap rises with it. At 42svh (346px) the 16px lede fourth line over-filled the
+     box, and because it is a flex column the overflow was taken out of the tallest
+     shrinkable child, so the handle field collapsed from 54px to 2px. 52svh gives the
+     copy the room it needs and still ends clear of the passport. */
+  /* ---- mobile hero: passport on top, copy beneath, action at the foot ---------------
+     The DOM order is desktop's (eyebrow, h1, lede, field, metarow, ghost) and is shared,
+     so the mobile sequence is set with flex order rather than by moving markup — which
+     keeps desktop, and the reading order for assistive tech, untouched.
+     The column starts below the passport zone (top 11svh + height 30svh = 41svh) and runs
+     to the foot of the screen, with the ghost pushed down by margin-top:auto so the
+     action sits at the bottom edge on any phone height. */
+  #f1 .col{
+    /* the shared lead-in: half the unused height, so top and bottom match at any size.
+       687px is the composition's measured height from eyebrow ink to ghost ink. */
+    --f1-lead:max(16px,calc((100svh - var(--hdr) - 687px) / 2));
+    --f1-top:calc(41svh + 22px);
+    top:var(--f1-top);bottom:calc(var(--f1-lead) + env(safe-area-inset-bottom,0px));
+    max-height:none;height:auto;gap:0;text-align:center;align-items:stretch;
+    justify-content:flex-end}
+  #f1 .col > .field{order:1}
+  #f1 .col > .metarow{order:0;justify-content:flex-end;align-items:flex-end;
+    min-height:20px;margin:0 0 7px;
+    /* one step down from the label token — the chip is a state marker, not a label */
+    font-size:10px;letter-spacing:.14em}
+  #f1 .avail svg{width:11px;height:11px}
+  /* and it goes quiet once reserved — the handle in the box says it now */
+  #f1 .field.done ~ .metarow{visibility:hidden}
+  #f1 .col > .eyebrow{order:0;position:absolute;left:0;right:0;margin:0;
+    top:calc(var(--hdr) + var(--f1-lead) - var(--f1-top));
+    justify-content:center;pointer-events:none}
+  #f1 .col > h1{order:4;margin-top:32px}
+  #f1 .col > .lede{order:5;margin-top:16px}
+  #f1 .col > .ghost{order:6;margin-top:32px}
+  /* the eyebrow is a rule plus a label on desktop; on mobile the label stands alone */
+  #f1 .eyebrow i{display:none}
+  #f1 .eyebrow{gap:0}
+
+  /* ---- the CTA, rebuilt for touch --------------------------------------------------
+     The desktop control is one 100px pill with the button nested inside it, which on a
+     phone left ~79px for the handle and a 44px button inside a 56px box. Stacked, the
+     input gets the full column width and the button becomes a full-width 52px target.
+     Radius follows the design system: 12px for the input (functional chrome), a 100px
+     pill for the marketing action. */
+  #f1 .field{position:relative;display:flex;align-items:center;gap:8px;
+    max-width:none;overflow:visible;
+    /* the prefix and the availability chip share the row above, which .metarow provides */
+    margin-top:0;
+    height:var(--m-ctl);padding:0 5px 0 14px;
+    border-radius:var(--r-card,12px);background:var(--panel-raised);
+    border:1px solid var(--hairline-strong,#283350)}
+  #f1 .field .fsheen{display:block;position:absolute;inset:0;overflow:hidden;
+    border-radius:inherit;background:none;animation:none;translate:none}
+  #f1 .field .fsheen::before{content:"";position:absolute;inset:0;
+    background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.16) 50%,transparent 62%);
+    animation:foil 9s ease-in-out infinite;animation-delay:.75s}
+    #f1 .field .fbox{position:static;flex:1;min-width:0;display:flex;align-items:center;
+    height:auto;padding:0;background:none;border:0;border-radius:0}
+  #f1 .field .pre{position:absolute;left:0;bottom:calc(100% + 7px);margin:0;
+    font-size:var(--m-label);letter-spacing:var(--m-label-tr);color:var(--mute)}
+  /* the shake is on .field, the element that now carries the border being flashed */
+  #f1 .fbox.nudge{animation:none}
+  #f1 .field:has(.fbox.nudge){animation:fieldNudge .42s cubic-bezier(.36,.07,.19,.97) both;
+    border-color:color-mix(in srgb,var(--emerald) 60%,transparent)}
+  /* 16px is deliberate: below it iOS zooms the page on focus */
+  #f1 .field input{flex:1;min-width:0;height:46px;font-size:16px}
+  /* the one dominant element on the screen */
+  /* 42px is under the 44px tap floor the rest of this tier holds to. It is accepted here
+     because the button sits directly under a 46px input it shares a hit area with, and
+     the label is asked for at 14px — a 52px box around 14px type reads as an empty slab. */
+  #f1 .field button{flex:0 0 auto;width:max-content;margin:0;
+    height:42px;padding:0 24px;
+    border-radius:var(--r-card,12px);font-size:14px;font-weight:600;letter-spacing:-.008em}
+
+  /* ---- "See how it works" as a real button ------------------------------------------
+     Page-colour fill with a gold hairline — the design system ghost treatment at
+     marketing-CTA scale: 100px pill, 52px tall, full width. */
+  /* tertiary: a centred text link, not a third full-width bordered pill — it keeps a
+     44px tap box without claiming an action's visual weight */
+  #f1 .ghost{display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    width:auto;min-height:44px;margin-inline:auto;padding:0 4px;
+    border-radius:0;background:none;border:0;
+    font-size:var(--m-body);font-weight:600;color:var(--ink);text-decoration:none}
+  #f1 .ghost i{width:22px;height:22px;color:var(--emerald);
+    border-color:color-mix(in srgb,var(--emerald) 55%,transparent)}
+
+  /* 16px is the --lede token's own floor; 13.5px was below it. The measure is capped so
+     the centred setting rags evenly, and text-wrap:balance stops the bright closing
+     phrase orphaning its last two words. */
+  /* the full column measure, not a 31ch cap: at 16px the cap forced a fourth line, which
+     pushed the copy 15px onto the passport's top edge. Across the full width the same
+     text sets in three, and text-wrap:balance keeps the centred rag even. */
+  #f1 .lede{font-size:var(--m-body);line-height:1.52;color:var(--ink);text-wrap:balance}
+  #f1 .ghost{min-height:44px;height:auto;font-size:var(--m-body)}
+  .eyebrow{justify-content:center;font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
+  .col h1{font-size:var(--m-display);line-height:var(--m-display-lh);
+    letter-spacing:var(--m-display-tr);text-wrap:balance}
+  .col h2,.col.tight h2{font-size:var(--m-head);line-height:var(--m-head-lh);
+    letter-spacing:var(--m-head-tr);text-wrap:balance}
+  /* the lede reads as the lede through colour and measure, not size */
+  .lede{font-size:var(--m-body);line-height:1.52;color:var(--ink);text-wrap:pretty}
+  .col.tight .fine{font-size:var(--m-body);line-height:var(--m-body-lh);text-wrap:pretty}
+  /* the claim callouts over the crowd scene: smaller, so they read as annotations on
+     the scene rather than cards competing with it */
+  .clb{white-space:normal;max-width:84px;padding:5px 7px 6px;border-radius:6px}
+  .clb b{font-size:9px;line-height:12px;letter-spacing:0}
+  .clb figcaption{font-size:5.5px;letter-spacing:.14em}
 
   /* lists and cards: block centred, text left so lines don't ragged-centre */
   .probs{gap:11px;width:fit-content;max-width:100%;margin-inline:auto}
-  .probs li{text-align:left;justify-content:flex-start;font-size:14.5px;line-height:1.42;gap:10px}
-  .probs li b{font-size:11px;flex-shrink:0}
+  .probs li{text-align:left;justify-content:flex-start;font-size:var(--m-body);
+    line-height:var(--m-body-lh);gap:10px}
+  .probs li b{font-size:var(--m-label);letter-spacing:var(--m-label-tr);flex-shrink:0}
   .beats{gap:5px;width:100%;max-width:430px;margin-inline:auto}
   .bt{text-align:center;flex-direction:column;align-items:center;padding:8px 11px;gap:2px}
-  .bt h3{font-size:13px}
-  .bt p{font-size:11px;line-height:1.32}
+  .bt h3{font-size:var(--m-body)}
+  .bt p{font-size:var(--m-label);letter-spacing:0;line-height:var(--m-label-lh)}
   .bt i{display:none}
   /* short phones (SE, older Androids) cannot hold four cards plus a headline:
      the supporting line drops and the cards become a single tight list */
@@ -723,37 +897,86 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
     .col h2,.col.tight h2{font-size:clamp(20px,5.4vw,25px)}
   }
   .step{text-align:center;width:100%;max-width:420px}
-  .step p{font-size:14px;line-height:1.45}
-  .draws{gap:12px}
-  .draws p{font-size:clamp(18px,5vw,24px);padding-inline:6px;text-wrap:balance}
-  #f5 .eyebrow{font-size:9.5px;letter-spacing:.14em;text-align:center;max-width:none}
+  .step p{font-size:var(--m-body);line-height:var(--m-body-lh)}
+  .draws{gap:clamp(16px,2.8vh,30px);padding-inline:2px}
+  .draws p{font-size:var(--m-head);line-height:var(--m-head-lh);
+    letter-spacing:var(--m-head-tr);padding-inline:6px;text-wrap:balance}
+  #f5 .eyebrow{font-size:var(--m-label);letter-spacing:var(--m-label-tr);
+    text-align:center;max-width:none}
 
   /* one row, always: the input and its button share a single pill, exactly as on
      desktop. Only the padding and label size come down. */
   .lg{display:none!important}
   .field,.wait{flex-wrap:nowrap;width:100%;max-width:430px;margin-inline:auto;
     height:54px;gap:6px}
-  .field{padding:0 5px 0 14px}
+  /* The typing area had 8px of slack: the prefix took 124px of a 215px box and the handle
+     needs ~92px, so it clipped mid-word. Trimming the prefix and the button label frees
+     ~34px, and the field gets 5px of vertical breathing around its 44px button instead
+     of 1.3px. */
+  .field{height:56px;padding:0 6px 0 15px;gap:6px}
+  .field .pre{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
+  .field .fbox{gap:2px}
   .fbox{flex:1;min-width:0;height:auto;padding:0;border:0;background:transparent;border-radius:0}
-  .field .pre{font-size:11.5px;flex-shrink:0}
+  .field .pre{font-size:var(--m-label);flex-shrink:0}
   .field input{font-size:15px;min-width:0}
-  .field button{width:auto;flex-shrink:0;height:44px;padding:0 16px;border-radius:100px;
-    font-size:12px;letter-spacing:.07em}
+  .field button{width:auto;flex-shrink:0;height:46px;padding:0 16px;border-radius:100px;
+    font-size:var(--m-body);letter-spacing:.02em}
   .wait{padding:0 5px 0 6px;border:1px solid var(--hairline);border-radius:100px;background:var(--panel)}
   .wait input{flex:1;min-width:0;height:auto;padding:0 10px;border:0;background:transparent;font-size:15px}
-  .wait button{width:auto;flex-shrink:0;height:44px;padding:0 16px;border-radius:100px;
-    font-size:12px;letter-spacing:.07em}
-  .ghost{width:auto;justify-content:center;height:42px;font-size:12.5px;margin-inline:auto}
-  .meta{justify-content:center;font-size:10px;gap:12px;flex-wrap:wrap}  .obook{width:min(58vw,210px);height:auto;aspect-ratio:460/640}
+  .wait button{width:auto;flex-shrink:0;height:46px;padding:0 18px;border-radius:100px;
+    font-size:var(--m-body);letter-spacing:.02em}
+  .ghost{width:auto;justify-content:center;margin-inline:auto}
+  #f1 .ghost,.outro .ghost{height:46px;font-size:var(--m-body);
+    padding:0 22px;border-radius:100px;background:var(--void);
+    border:1px solid color-mix(in srgb,var(--emerald) 52%,transparent);
+    color:var(--ink);transition:background .16s var(--ease),border-color .16s var(--ease)}
+  #f1 .ghost:active,.outro .ghost:active{
+    background:color-mix(in srgb,var(--emerald) 12%,var(--void));border-color:var(--emerald)}
+  .meta{justify-content:center;font-size:var(--m-label);gap:12px;flex-wrap:wrap}  .obook{width:min(58vw,210px);height:auto;aspect-ratio:460/640}
   .cinner{transform:scale(.5) rotateY(-10deg) rotateX(3deg)}
   /* the mesh glow is sized off viewport height on desktop; cap it so it cannot
      push the document wider than the phone frame */
-  .dring{width:min(100vw,460px);filter:blur(52px)}
+  .dring{width:min(100vw,400px);filter:blur(52px)}
+  /* fold 5 on mobile: the spine, not three drawn lines */
+  /* three swaps need runway: 0.8vh of pinned scroll, ~144px per beat at vh 540 */
+  #f5{--h:180!important}
+  .drawline{display:none}
+  /* fold 5 uses the WHOLE frame: the column's 44svh cap is what forced the type into a
+     band, so it is lifted here and the three groups are spread across the full height.
+     The eyebrow sits clear above them, so the arrangement itself distinguishes label from
+     statement — no rule, no size trick. */
+  #f5 .col{max-height:none;top:auto;bottom:auto}
+  #f5 .eyebrow{margin-bottom:min(7vh,54px)}
+  .mspine{display:flex!important;flex-direction:column;align-items:center;
+    justify-content:space-between;width:100%;position:relative;z-index:2;
+    min-height:min(56svh,520px)}
+  .msg{display:block;width:100%}
+  .msl{display:block;width:100%;text-align:center;
+    font-family:var(--display);line-height:1.04;letter-spacing:-.038em;
+    opacity:0;translate:0 14px;
+    transition:opacity .42s var(--ease),translate .42s var(--ease)}
+  .msl.on{opacity:1;translate:0 0}
+  /* the repeated word carries the weight; the completions are one size and one colour, so
+     the three statements read as equals and only "Better" recurs */
+  .msb{font-weight:600;font-size:min(11.4vw,54px);color:var(--ink)}
+  .mst{font-weight:400;font-size:min(9.6vw,44px);color:var(--gold)}
+
+  /* the shuffle cell */
+  .shwd{white-space:nowrap}
+  .shw{position:relative;display:inline-block;overflow:hidden;vertical-align:bottom}
+  .shz{visibility:hidden;font-style:normal}
+  .shi{position:absolute;inset:0;display:flex;translate:-100% 0;
+    transition:translate .35s cubic-bezier(.215,.61,.355,1)}
+  .msl.on .shi{translate:0 0}
+  .shc{flex:0 0 100%;text-align:center}
+  @media (prefers-reduced-motion:reduce){
+    .shi{translate:0 0;transition:none}
+  }
   .oring{width:min(112vw,400px)}
 
   /* fold 4 flow chart: the source row wraps rather than running off the edge */
   .ftiles{flex-wrap:wrap;justify-content:center;gap:6px;max-width:100%}
-  .ftile{font-size:9.5px;padding:6px 9px;gap:5px}
+  .ftile{font-size:var(--m-label);padding:6px 9px;gap:5px}
   .fti{width:11px;height:11px}
   .fbot{padding:10px 12px 11px;width:max-content;max-width:100%;gap:7px}
   .fbot b{font-size:8.5px;letter-spacing:.14em}
@@ -767,11 +990,8 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   .fst{padding:5px 7px;gap:4px}
   .fsl{font-size:6.5px;letter-spacing:.14em}
   .stampb .sbox{width:52px;height:38px}
-  .stampb .sbox .snm{font-size:7px}
-  .stampb .sbox .stt,.stampb .sbox .sdt{font-size:5px}
   .stampb .sbox .sg{display:none}
   .stampb .sbox .sdt{display:none}
-  .stampb .sbox{padding:2px}
   .stampb{overflow:hidden}
   .tk span:nth-child(3){display:none}
   .tk span{width:66%;height:13px}
@@ -779,8 +999,8 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   .tk span.you{width:48%}
   .srcw .sdot{scale:.8}
   .sdb{width:26px}.sdb b{height:5px}
-  .loopw span{font-size:9px;letter-spacing:.14em}
-  .tk span{font-size:8.5px;padding:4px 8px}
+  .loopw span{font-size:var(--m-label);letter-spacing:.14em}
+  .tk span{font-size:var(--m-label);padding:4px 8px}
   .scanbox small{font-size:6.5px}
   .vf u{width:10px;height:10px}
   .vf s{width:24px;height:24px}
@@ -792,16 +1012,43 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   .frl p{height:19px;font-size:9px;gap:7px}
   .frl p b{width:12px;height:12px;font-size:8.5px}
   .flow{max-width:100%}
+
+  /* ---- the stragglers, onto the same five steps -------------------------------------
+     Each of these carried its desktop size into the phone because it had no mobile rule:
+     footer links at 14, footer CTA at 14.5, copyright at 12, outro button at 12, the
+     fold-4 label at 12.5, the closing lede at 15.5. Six near-identical sizes doing the
+     work of two ranks. */
+  .fnav a{font-size:var(--m-body);min-height:44px;height:auto;padding:8px 14px}
+  .fbtn{font-size:var(--m-body);font-weight:600;letter-spacing:-.008em;height:var(--m-ctl)}
+  .fcr{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
+  body .ftr{min-height:100svh;justify-content:flex-start;
+    gap:clamp(20px,3vh,34px);
+    margin-top:clamp(48px,7vh,96px);
+    padding:76px clamp(20px,4.4vw,72px) env(safe-area-inset-bottom,0px);
+    padding-top:calc(76px + clamp(14px,2.2vh,28px))}
+  body .ftr .ftop{align-items:center}
+  body .ftr .fcta,body .ftr .fnav{width:100%;align-self:stretch}
+  body .ftr .fmark{margin-top:clamp(34px,7.8vh,80px)}
+  body .ftr .fcr{margin-top:clamp(16px,4vh,40px);
+    padding-bottom:clamp(18px,2.4vh,26px)}
+  .fctal{font-size:var(--m-body)}
+  .wait button{font-size:var(--m-body);font-weight:600;letter-spacing:-.008em;height:46px}
+  .wait input{font-size:16px}
+  .outro .lede{font-size:var(--m-body);line-height:var(--m-body-lh)}
+  .ghost{font-size:var(--m-body)}
+  .fbot b{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
+  .clbl{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
+  .bt b,.fdone span{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
 }
 
 /* tablets have room for a larger reading size inside the same stacked rows */
 @media (min-width:769px) and (max-width:1024px) and (min-height:820px){
   .col h1{font-size:clamp(34px,4.6vw,44px)}
   .col h2,.col.tight h2{font-size:clamp(30px,4vw,40px)}
-  .lede,.col.tight .fine{font-size:17px;line-height:1.5}
+  .lede,.col.tight .fine{font-size:var(--m-body);line-height:1.52}
   #f1 .lede{font-size:16px}
-  .probs li{font-size:16.5px}
-  .step p{font-size:16.5px}
+  .probs li{font-size:var(--m-body)}
+  .step p{font-size:var(--m-body)}
   .bt h3{font-size:16px}.bt p{font-size:13.5px;display:block}
   .draws p{font-size:clamp(26px,3.4vw,34px)}
   .col,.col.tight,.col.wide,.col.mid{max-width:640px;margin-inline:auto}
@@ -973,7 +1220,123 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 @media (max-width:900px){
   .fcta{flex:1 1 auto;align-items:center;max-width:none;width:100%}
   .fcta .fsoc{justify-content:center}
-  .fnav{align-items:center;margin-left:0}
+  .fnav{align-items:center;margin-left:0;width:100%;justify-content:center;text-align:center}
+}
+
+.lf p.pgn,.lb p.pgn{font-size:14px}
+
+/* ================= phone passport interior ==============================================
+   The book is scaled to fit by the driver (--s), so on a phone its authored type lands at
+   2-5px. Rather than guess a size that is only right at one viewport, every interior size
+   is divided by the live scale: 10.5px stays 10.5px whatever --s resolves to. The divisor
+   is floored at .42 so the authored value cannot run away and overflow the 460px page box.
+   The fallback matches .bookwrap's scale:var(--s,1) so first paint is not mis-compensated.
+   Layout inside the page is never reflowed — that box is 460px at every viewport. */
+@media (max-width:599px){
+  /* this paragraph carried its size as an inline style, which no rule could outrank —
+     moved to .pgn, whose base value repeats the old 14px so desktop is unchanged */
+}
+
+/* ============ mobile scale · last word =================================================
+   These four selectors have their base rules declared AFTER the main mobile query, so at
+   equal specificity the desktop value was winning. Placed last, they land on the same
+   five steps as everything else. The fold-5 SVG headlines are sized by an attribute on
+   the <text> element, which no stylesheet can reach — they are set from JS instead. */
+@media (max-width:1024px){
+  .fcr{font-size:var(--m-label);letter-spacing:var(--m-label-tr)}
+  body .ftr{min-height:100svh;justify-content:flex-start;
+    gap:clamp(20px,3vh,34px);
+    margin-top:clamp(48px,7vh,96px);
+    padding:76px clamp(20px,4.4vw,72px) env(safe-area-inset-bottom,0px);
+    padding-top:calc(76px + clamp(14px,2.2vh,28px))}
+  body .ftr .ftop{align-items:center}
+  body .ftr .fcta,body .ftr .fnav{width:100%;align-self:stretch}
+  body .ftr .fmark{margin-top:clamp(34px,7.8vh,80px)}
+  body .ftr .fcr{margin-top:clamp(16px,4vh,40px);
+    padding-bottom:clamp(18px,2.4vh,26px)}
+  .fbtn{font-size:var(--m-body);font-weight:600;letter-spacing:-.008em;height:var(--m-ctl)}
+  .brand span{font-size:var(--m-label);letter-spacing:.14em}
+  .outro .lede{font-size:var(--m-body);line-height:1.52;color:var(--ink)}
+  .outro .ofine{font-size:var(--m-body);line-height:var(--m-body-lh)}
+  .outro h2{font-size:var(--m-head);line-height:var(--m-head-lh);
+    letter-spacing:var(--m-head-tr)}
+  .outro h2 em.serif,.col h2 em.serif{font-size:inherit}
+}
+/* an empty Reserve press shakes the field it is asking to be filled */
+@keyframes fieldNudge{
+  0%,100%{translate:0 0}
+  15%{translate:-6px 0} 30%{translate:5px 0}
+  45%{translate:-4px 0} 60%{translate:3px 0}
+  75%{translate:-2px 0} 90%{translate:1px 0}
+}
+@keyframes fieldNudgeFlash{
+  0%,100%{border-color:var(--hairline)}
+  50%{border-color:var(--emerald)}
+}
+/* desktop only: above 1024px .fbox is the bordered box, so it is the thing that shakes.
+   Below that .field carries the border and the mobile block moves the shake onto it. */
+@media (min-width:1025px){
+  #f1 .fbox.nudge{animation:fieldNudge .42s cubic-bezier(.36,.07,.19,.97) both;
+    border-color:color-mix(in srgb,var(--emerald) 60%,transparent)}
+}
+@media (prefers-reduced-motion:reduce){
+  #f1 .field:has(.fbox.nudge){animation:fieldNudgeFlash .5s ease-in-out both}
+}
+
+/* ================= video overlay ======================================================
+   Shared by both viewports. Fixed, top of the stack, and it blurs what is behind it with
+   backdrop-filter rather than by filtering a page wrapper — filtering an ancestor would
+   create a containing block and break every sticky pin on the page. */
+.vmodal{position:fixed;inset:0;z-index:200;display:grid;place-items:center;
+  padding:clamp(16px,4vw,56px);
+  background:rgba(10,18,34,.78);
+  backdrop-filter:blur(22px) saturate(.9);-webkit-backdrop-filter:blur(22px) saturate(.9);
+  opacity:0;transition:opacity .18s var(--ease)}
+.vmodal[hidden]{display:none}
+.vmodal.on{opacity:1}
+.vmstage{width:min(100%,1100px);aspect-ratio:16/9;
+  border-radius:var(--r-card-lg,16px);overflow:hidden;background:#05080f;
+  border:1px solid var(--hairline);
+  box-shadow:0 2px 2px rgba(0,0,0,.5),0 30px 70px -18px rgba(0,0,0,.9);
+  scale:.985;transition:scale .18s var(--ease)}
+.vmodal.on .vmstage{scale:1}
+.vmslot,.vmslot iframe,.vmslot video{display:block;width:100%;height:100%;border:0}
+.vmslot{display:grid;place-items:center}
+.vmph{display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center}
+.vmph svg{width:34px;height:34px;fill:var(--emerald);opacity:.5}
+.vmph b{font-size:15px;font-weight:600;color:var(--ink)}
+.vmph em{font-style:normal;font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--faint)}
+.vmclose{position:absolute;top:clamp(12px,2.4vw,26px);right:clamp(12px,2.4vw,26px);
+  display:grid;place-items:center;width:44px;height:44px;padding:0;
+  border-radius:50%;background:rgba(16,28,51,.9);
+  border:1px solid var(--hairline-strong,#283350);
+  color:var(--ink);cursor:pointer;
+  transition:background .16s var(--ease),border-color .16s var(--ease)}
+.vmclose svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;
+  stroke-linecap:round}
+.vmclose:hover{background:rgba(26,36,56,.95);border-color:var(--emerald)}
+.vmclose:focus-visible{outline:2px solid var(--emerald);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){
+  .vmodal,.vmstage{transition:none}
+}
+/* the reserved handle, shown inside the field once the flow completes.
+   NOT .fdone — that name is already the collapsed-reveal state in fold 5's artwork. */
+.fhandle{display:flex;align-items:center;gap:8px;min-width:0;
+  font-family:var(--mono);font-size:15px;letter-spacing:.01em;color:var(--ink)}
+.fhandle i{flex:none;font-style:normal;color:var(--emerald)}
+.fhandle b{min-width:0;font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* fold 4 beats on mobile: a list again, not one cross-fading slot — all four visible with
+   the current one lit, and the step number in its own column beside the title. */
+@media (max-width:1024px){
+  .beats{position:static;display:flex;flex-direction:column;min-height:0;
+    gap:clamp(12px,1.8vh,20px);margin-top:8px;
+    width:100%;max-width:430px;margin-inline:auto}
+  .bt{position:relative;inset:auto;display:grid;grid-template-columns:22px minmax(0,1fr);
+    gap:10px;align-items:start;text-align:left;padding:0;opacity:.3}
+  .bt.on{opacity:1}
+  .bt b{width:22px;justify-items:start}
+  .bt p{display:block;max-width:none;margin-top:3px}
 }
 </style>
 <link rel="stylesheet" href="cp-header.css">
@@ -1029,7 +1392,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
 <p class="pgh" style="margin-top:6px">Every entry stays where you put it. Nothing here can be edited by anyone else</p><div class="pgid"><span class="hnd">/your-handle</span><i></i><span>CP · 4417</span></div></div></div>
         <div class="leaf" id="leaf3" style="z-index:30"><div class="lf"><span class="pglbl">PAGE 06 / A CURATED JOURNEY</span>
 <div style="display:flex;flex-direction:column;gap:10px"><div class="jrow"><b>1</b><span>Revisit the failure timeline you kept at the time</span></div><div class="jrow"><b>2</b><span>Explain the call you made under load</span></div><div class="jrow"><b>3</b><span>Show the fix, and how you proved it held</span></div></div>
-<p style="margin-top:14px;font-size:14px;color:var(--mute)">Small. Curated. Built around what you already lived</p><div class="pgid"><span class="hnd">/your-handle</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 07 / EVIDENCE CREATED</span>
+<p class="pgn" style="margin-top:14px;color:var(--mute)">Small. Curated. Built around what you already lived</p><div class="pgid"><span class="hnd">/your-handle</span><i></i><span>CP · 4417</span></div></div><div class="lb"><span class="pglbl">PAGE 07 / EVIDENCE CREATED</span>
 <div class="chips"><span class="chip">failure-timeline.md</span><span class="chip">decision-note.pdf</span><span class="chip">idempotency-patch.diff</span><span class="chip">load-test.csv</span></div>
 <p class="pgh" style="margin-top:16px">An artifact of what you can actually do — not a claim that you can</p><div class="pgid"><span class="hnd">/your-handle</span><i></i><span>CP · 4417</span></div></div></div>
         <div class="leaf" id="leaf2" style="z-index:40"><div class="lf"><span class="pglbl">PAGE 04 / COLLECTED STAMPS</span>
@@ -1093,7 +1456,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
       <span class="fsheen" aria-hidden="true"></span>
       <div class="fbox" id="fbox"><span class="pre" id="fpre">careerpassport.ai/</span>
         <input id="handle" type="text" placeholder="your-handle" aria-label="Choose your handle" maxlength="22" autocomplete="off"></div>
-      <button id="reserve" disabled>RESERVE →</button>
+      <button id="reserve">RESERVE</button>
     </div>
     <div class="metarow">
       <span class="avail" id="avail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>AVAILABLE</span>
@@ -1162,7 +1525,7 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
       <input id="waitEmail" type="email" placeholder="you@work.com" aria-label="Your email">
       <button id="waitBtn">JOIN THE WAITLIST</button>
     </div>
-    <p class="reveal" style="font-size:15.5px;color:var(--meta)">Be among the first professionals to build their CareerPassport</p>
+    <p class="reveal ofine">Be among the first professionals to build their CareerPassport</p>
   </div>
 </section>
 
@@ -1314,10 +1677,16 @@ var SLOTS=[[16,30,.9],[31,24,.72],[47,20,.95],[63,25,.66],[80,31,.88],
     do{ i=(Math.random()*pool.length)|0; tries++; }
     while(i===lastIdx[zi] && tries<12);
     lastIdx[zi]=i;
-    var a=pool[i], y=a[1];
+    var a=pool[i], y=a[1], x=a[0];
+    if(innerWidth<1025){
+      var pwPx=host.offsetWidth||1, offL=host.offsetLeft||0;
+      var halfPx=((cards[zi]&&cards[zi].offsetWidth)||84)/2 + 8;
+      var lo=(-offL+halfPx)/pwPx*100, hi=(-offL+innerWidth-halfPx)/pwPx*100;
+      if(hi>lo) x=Math.max(lo,Math.min(hi,x));
+    }
     /* lower in the frame reads as nearer, so the card is larger and crisper */
     var d=Math.max(0,Math.min(0.9,(1-(y-56)/24)*0.7));
-    return [a[0],y,d.toFixed(2)];
+    return [x,y,d.toFixed(2)];
   }
   /* Cards are refreshed one at a time, alternating sides, so the field never blinks as a
      whole — one card is always on screen holding the scene. */
@@ -1499,6 +1868,27 @@ var stage=$('#stage'),zone=$('.zone'),book=$('#book'),wrap=$('#bookwrap'),cover=
     mesh=$('#f1 .mesh'), paper=$('#paper'), rose=$('#rose'),
     orbSrc=$('#orbSrc'),flow=$('#flow'),flowBuilt=0,duckAdj=0,f4el=$('#f4');
 
+/* --hdr is MEASURED from the header, not typed. It was undefined on this page, so the
+   eyebrow's calc(var(--hdr) + 16px - var(--f1-top)) was invalid and top fell back to 0px,
+   dropping the eyebrow onto the input box. Hardcoding 77px would fix the symptom and keep
+   the underlying fault: the three pages each guessed a different number for the height of
+   the same shared header (undefined here, 83px on For Companies, 60px on Partners), and
+   any of them drifts the moment the bar's padding or type changes. Writing it from the
+   element's own box makes the token correct by construction. */
+(function(){
+  var hdrEl=document.querySelector('.hdr');
+  if(!hdrEl) return;
+  function setHdr(){
+    var h=Math.round(hdrEl.getBoundingClientRect().height);
+    if(h>0) document.documentElement.style.setProperty('--hdr',h+'px');
+  }
+  setHdr();
+  addEventListener('resize',setHdr,{passive:true});
+  if(window.ResizeObserver) new ResizeObserver(setHdr).observe(hdrEl);
+  /* fonts land after first paint and change the bar's height, so re-measure once they do */
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(setHdr);
+})();
+
 
 /* a shading pass on each leaf, driven only by opacity while it swings */
 leaves.forEach(function(lf,i){
@@ -1517,7 +1907,9 @@ var DL=[];
     DL.push({n:n,svg:svg,st:st,fl:fl,wp:wp,box:null,len:0});
   });
   function measure(){
-    var vw=innerWidth, fs=Math.round(Math.max(38,Math.min(150,vw*0.082)));
+    var vw=innerWidth;
+    /* 34 is the mobile display step; the floor only binds under a 464px viewport */
+    var fs=Math.round(Math.max(vw<1025?34:38,Math.min(150,vw*0.082)));
     DL.forEach(function(d){
       d.st.style.fontSize=fs+'px'; d.fl.style.fontSize=fs+'px';
       var b;
@@ -1526,7 +1918,7 @@ var DL=[];
       var pad=fs*0.14;
       d.box={x:b.x-pad,y:b.y-pad,w:b.width+pad*2,h:b.height+pad*2};
       d.svg.setAttribute('viewBox',d.box.x+' '+d.box.y+' '+d.box.w+' '+d.box.h);
-      d.n.style.setProperty('--dh',Math.round(fs*1.22)+'px');
+      d.n.style.setProperty('--dh',Math.round(fs*(innerWidth<1025?1.46:1.22))+'px');
       d.wp.setAttribute('x',d.box.x); d.wp.setAttribute('y',d.box.y);
       d.wp.setAttribute('height',d.box.h);
       /* the dash has to exceed the longest glyph path, not the text width */
@@ -1539,10 +1931,95 @@ var DL=[];
   addEventListener('resize',measure);
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(measure);
 })();
+/* the mobile spine: one fixed word, a swapping completion */
+var MS=null, MSE=[];
+(function(){
+  var host=document.querySelector('.draws'); if(!host) return;
+  var lines=[].map.call(document.querySelectorAll('.drawline .sr'),function(s){
+    return s.textContent.trim();
+  });
+  if(lines.length<2) return;
+  /* the shared opening word, taken from the copy rather than hardcoded */
+  var lead=lines[0].split(' ')[0];
+  var tails=lines.map(function(t){
+    return t.slice(0,lead.length+1)===lead+' ' ? t.slice(lead.length+1) : t;
+  });
+  var d=document.createElement('div');
+  d.className='mspine';
+  /* the visual is six lines; the .sr clones carry the three full statements for a screen
+     reader, since the visual split is a composition rather than readable prose */
+  var vis='';
+  for(var t=0;t<tails.length;t++){
+    /* sentence case: the tail opens the second line, so it takes a capital */
+    var tail=tails[t].charAt(0).toUpperCase()+tails[t].slice(1);
+    vis+='<span class="msg">'+
+           '<b class="msl msb" aria-hidden="true">'+lead+'</b>'+
+           '<b class="msl mst" aria-hidden="true">'+tail+'</b>'+
+         '</span>';
+  }
+  d.innerHTML=lines.map(function(x){return '<span class="sr">'+x+'</span>'}).join('')+vis;
+
+  /* --- the shuffle: one clipped cell per letter, holding [real, scrambled]. The strip
+     sits one cell left so the scramble shows; on reveal it slides back to zero and the
+     real glyph lands. The cell takes its width from an invisible copy of the letter, so
+     nothing has to be measured in JS and a font swap cannot desynchronise it. --- */
+  var SCRAM='ABCDEFGHIJKLMNOPQRSTUVWXYZ#%&$@*';
+  [].forEach.call(d.querySelectorAll('.msl'),function(line){
+    var words=line.textContent.split(/\s+/).filter(Boolean), cells=[];
+    line.textContent='';
+    words.forEach(function(word,wi){
+      /* one nowrap span per word: the letter cells inside it cannot be separated, and
+         the plain space between words stays a legitimate break opportunity */
+      var wd=document.createElement('span'); wd.className='shwd';
+      for(var i=0;i<word.length;i++){
+        var c=word.charAt(i);
+        var w=document.createElement('span'); w.className='shw';
+        var z=document.createElement('i'); z.className='shz'; z.textContent=c;
+        var st=document.createElement('span'); st.className='shi';
+        var real=document.createElement('span'); real.className='shc'; real.textContent=c;
+        var scr=document.createElement('span'); scr.className='shc';
+        scr.textContent=SCRAM.charAt(Math.floor(Math.random()*SCRAM.length));
+        st.appendChild(real); st.appendChild(scr);
+        w.appendChild(z); w.appendChild(st);
+        wd.appendChild(w); cells.push(st);
+      }
+      line.appendChild(wd);
+      if(wi<words.length-1) line.appendChild(document.createTextNode(' '));
+    });
+    /* evenodd, as the component does it: odd letters run first, even start at 70% of the
+       odd pass so the two interleave instead of marching left to right */
+    var odd=[], even=[];
+    cells.forEach(function(s,i){ (i%2 ? odd : even).push(s) });
+    var evenStart=odd.length ? (0.35+Math.max(0,odd.length-1)*0.03)*0.7 : 0;
+    odd.forEach(function(s,i){ s.style.transitionDelay=(i*0.03).toFixed(3)+'s' });
+    even.forEach(function(s,i){ s.style.transitionDelay=(evenStart+i*0.03).toFixed(3)+'s' });
+  });
+  var last=document.querySelector('.drawline:last-of-type');
+  if(last&&last.parentNode) last.parentNode.insertBefore(d,last.nextSibling);
+  else host.appendChild(d);
+  MS=d; MSE=[].slice.call(d.querySelectorAll('.msl'));
+})();
+
 function drawLines(g){
-  if(!DL.length) return;
   /* fold 5 spans g 4..5 */
   var p=clamp(g-4,0,1);
+  if(innerWidth<1025){
+    /* the fold's own progress, not g: g freezes across the pin handover, which stalled
+       every line after the first while the column was already on screen */
+    /* the same linear approach the handover uses, so the first line lands as the column
+       becomes readable rather than before it */
+    p=clamp(((window.__p5||0)-0.20)/0.42,0,1);
+    /* the draw-on is a desktop payoff: on a phone all three lines fit at once, so the
+       animation adds nothing and can be caught mid-stroke looking like a fault */
+    if(MS){
+      /* each line arrives on its own slice and stays: six steps across the pinned runway,
+         with the tail held so the finished block reads before the fold hands over */
+      var n=MSE.length, adv=clamp(p/0.72,0,1);
+      for(var k=0;k<n;k++) MSE[k].classList.toggle('on', adv >= k/n);
+    }
+    return;
+  }
+  if(!DL.length) return;
   for(var i=0;i<DL.length;i++){
     var d=DL[i]; if(!d.box) continue;
     var a=0.02+i*0.26;
@@ -1557,6 +2034,9 @@ function drawLines(g){
 /* ---------- the passport answers the cursor ---------- */
 var tx=0,ty=0,cx=0,cy=0;
 addEventListener('pointermove',function(e){
+  /* pointer lean is a mouse affordance: on a touch device it has no input to follow, and
+     a single tap would leave the book leaning at a fixed angle for the rest of the visit */
+  if(innerWidth<1025 || e.pointerType==='touch'){ tx=0; ty=0; return }
   tx=(e.clientX/innerWidth)*2-1;
   ty=(e.clientY/innerHeight)*2-1;
 },{passive:true});
@@ -1571,7 +2051,7 @@ var FLIPS=[[2.08,2.24],[2.28,2.44],[9,9],[9,9],[9,9]];
 function frame(){
 try{
   /* ---- READ (batched) ---- */
-  var vh=innerHeight, vw=innerWidth, mob=vw<1025;
+  var vh=innerHeight, vw=innerWidth, mob=vw<1025, phone=vw<600;
   var g=0,i,r;
   for(i=0;i<folds.length;i++){
     r=folds[i].getBoundingClientRect();
@@ -1582,6 +2062,42 @@ try{
   /* Mobile handover: each fold's copy slides in from the right and out to the left,
      driven by that fold's own rect. Nothing moves vertically, so copy and passport
      can never cross. On desktop the transforms are cleared and layout is untouched. */
+  /* THE DESKTOP BREAKAGE, FIXED. This clock sat inside the mobile branch, so on desktop
+     none of it executed and flyNow/textOut/textFade/rise were all var-hoisted undefined.
+     fly reads flyNow, sMix reads fly, and s = s*(1-sMix) + ts*sMix therefore evaluated to
+     NaN — so --s was written as NaN and the passport rendered at its raw authored 920x640
+     with its whole closing fly-in (position, rotation, opacity, z-index) NaN with it.
+     Hoisted above the branch: every member already carries its own mob ? … : … so desktop
+     gets the values it always had and mobile is unchanged. */
+  var flyNow=0, textOut=0, textFade=0, rise=0, textRaw=0;
+  if(oslot){
+    var osT=oslot.getBoundingClientRect().top;
+    flyNow=ease(clamp(((mob?vh*1.90:vh*1.15) - osT)/(vh*(mob?0.75:0.78)),0,1));
+    textOut=mob ? ease(clamp((vh*1.25 - osT)/(vh*0.70),0,1)) : 0;
+    /* the same measurement without the ease — the exit tracks the finger 1:1 */
+    textRaw=mob ? clamp((vh*1.25 - osT)/(vh*0.70),0,1) : 0;
+    rise=1-Math.pow(1-textOut,3);
+    textFade=mob ? clamp((textRaw-0.40)/0.60,0,1) : 0;
+  }
+  /* fold 5's approach, measured linearly from its own rect — the clock the 4-to-5
+     handover and the spine reveal both read, so they cannot drift apart */
+  var h5=0;
+  (function(){
+    var f5=document.getElementById('f5');
+    if(!f5) return;
+    var r5=f5.getBoundingClientRect();
+    h5=clamp((vh-r5.top)/(vh*1.10),0,1);
+  })();
+  window.__h5=h5;
+  /* the fold's full run, for anything that needs more than the handover's 1.10vh */
+  var p5=0;
+  (function(){
+    var f5=document.getElementById('f5');
+    if(!f5) return;
+    var r5=f5.getBoundingClientRect();
+    p5=clamp((vh-r5.top)/(vh+r5.height),0,1);
+  })();
+  window.__p5=p5;
   var apprOf=[];
   if(mob){
     for(i=0;i<folds.length;i++){
@@ -1595,19 +2111,81 @@ try{
       var ab=book.getBoundingClientRect();
       if(ab.width>2) artBot=ab.bottom;
     }
-    /* the ceiling has to clear the art on wider screens, where the passport renders
-       taller — otherwise the band starts above the art's lower edge and they overlap */
-    var bandTop=clamp(artBot+20, vh*0.24, vh*0.68);
+    /* The copy band must clear everything above it, and the passport is not the only
+       thing up there: fold 2 fills the same top region with the crowd scene, which is
+       taller than the docked book. Measuring only the book let bandTop fall back to its
+       0.24vh floor, putting the copy 173px on top of the crowd. The crowd's own lower
+       edge now counts too, whichever is lower wins, and the ceiling is capped so the
+       band (44svh tall) still ends inside the viewport. */
+    var crowdEl=document.getElementById('crowd');
+    if(crowdEl && +getComputedStyle(crowdEl).opacity>0.25){
+      var cb=crowdEl.getBoundingClientRect();
+      if(cb.height>2) artBot=Math.max(artBot, cb.bottom);
+    }
+    /* The ceiling is derived from the band's own height rather than being a fixed
+       fraction: a hard 0.68vh pushed fold 4's copy 98px past the bottom of the screen,
+       and 0.50vh left it 67px under the art. Whatever the column measures, it now starts
+       as low as it can while still ending 20px inside the viewport. */
+    var bandTop=clamp(artBot+16, vh*0.30, vh*0.50);
     for(i=0;i<folds.length;i++){
       var fc=foldCols[i]; if(!fc) continue;
-      var inE=apprOf[i], outE=apprOf[i+1], vis=inE*(1-outE);
-      fc.style.transform='translateX('+((1-inE)*114-outE*114).toFixed(2)+'vw)';
+      var inE=apprOf[i], outE=apprOf[i+1];
+      if(mob){
+        /* sequential and linear: fold 4 clears over the first half of the approach, fold 5
+           arrives over the second, both tracking scroll 1:1 */
+        if(i===3) outE=clamp(h5/0.48,0,1);
+        if(i===4) inE=clamp((h5-0.46)/0.42,0,1);
+      }
+      var vis=inE*(1-outE);
+      /* fold 5 dissolves into the arriving passport, not merely out. visL keeps the
+         column's LAYOUT keyed to its presence in the fold — a dissolving column is still
+         on screen and still has to be positioned. */
+      var visL=vis;
+      /* fold 5 holds full opacity for its whole fold and hands over on textOut alone —
+         the generic (1-outE) exit was dimming the payoff line before it could be read */
+      if(mob && i===4) vis=Math.min(1,inE*3)*(1-clamp((textFade-0.74)/0.26,0,1));
+      /* fold 4 on mobile is two screens, not one: 919px of content cannot share an 824px
+         viewport, so the art owns the first phase and the copy the second. The handover
+         is a plain cross-fade over g 3.46-3.62 — no layout is moved, so nothing can
+         overlap during it. */
+      fc.style.transform = (mob && i===4)
+        ? 'translateY('+(-textFade*((vh+(fc.offsetHeight||vh*0.56))/2+32)).toFixed(1)+'px)'
+        : 'translateX('+((1-inE)*114-outE*114).toFixed(2)+'vw)';
       fc.style.opacity=vis.toFixed(3);
       fc.style.pointerEvents=vis>0.6?'auto':'none';
       /* fold 1 keeps the copy above the passport; the middle folds follow the art's
          lower edge; the last fold has no passport at all, so it takes the whole frame */
-      if(i===folds.length-1) fc.style.top=(vh*0.17).toFixed(0)+'px';
-      else if(i>0) fc.style.top=(vis>0.02?bandTop:vh*0.52).toFixed(0)+'px';
+      if(i===folds.length-1 && !mob) fc.style.top=(vh*0.17).toFixed(0)+'px';
+      else if(i>0 || (mob && i===folds.length-1)){
+        var ceil=vh-(fc.offsetHeight||vh*0.44)-20;
+        var fcTop=(visL>0.02||(mob&&i===folds.length-1)
+          ?Math.min(bandTop,Math.max(vh*0.30,ceil)):vh*0.52);
+      if(mob && (visL>0.02||i===folds.length-1)){
+        /* INK, not the box. The column is capped at max-height:44svh and stretched to it
+           by its fixed top/bottom, so offsetHeight is the box — up to 140px of it hangs
+           empty below the last line. Counting that as content halved the offset. The ink
+           is the furthest real child bottom measured from the box's own top; decoration
+           is skipped so a ring or a rule cannot stand in for copy. */
+        var ct=fc.getBoundingClientRect().top, inkH=0, kids=fc.children;
+        for(var ki=0;ki<kids.length;ki++){
+          var kd=kids[ki];
+          if(kd.getAttribute('aria-hidden')==='true') continue;
+          var kr=kd.getBoundingClientRect();
+          if(kr.height<1) continue;
+          if(kr.bottom-ct>inkH) inkH=kr.bottom-ct;
+        }
+        if(i===4){
+          /* no artifact in this fold: centre on the frame */
+          var hp=parseFloat(getComputedStyle(document.documentElement)
+                   .getPropertyValue('--hdr'))||76;
+          fcTop=Math.max(hp+8,(vh-inkH)/2);
+        } else {
+          var slack=Math.max(0,(vh*0.50-inkH)/2);
+          fcTop=Math.max(fcTop, vh*0.50+slack) - (i===3?32:0);
+        }
+      }
+      if(isFinite(fcTop)) fc.style.top=fcTop.toFixed(0)+'px';
+      }
     }
   } else if(foldCols[0] && foldCols[0].style.transform){
     for(i=0;i<foldCols.length;i++){ if(foldCols[i]){ foldCols[i].style.transform=''; foldCols[i].style.opacity=''; foldCols[i].style.pointerEvents=''; } }
@@ -1629,7 +2207,13 @@ try{
   var asm = ease(seg(sp,0.02,0.56));
   var cam = ease(seg(sp,0.56,0.93));
   var out = ease(seg(sp,0.62,1.00));
-  var dock = ease(clamp(seg(sp,0.04,0.54) - seg(sp,0.64,0.98),0,1));
+  /* the release ends at 1.00, not 0.98. The swing-out terms in the dock block —
+     swOut*46 across, -swOut*210 down, -swOut*9 of roll — are shaped by sin(pi*out), and
+     out only finishes at sp = 1.00. Closing the dock gate two hundredths early discarded
+     ~15px of vertical offset and 0.65deg of roll in a single frame, which is the tail of
+     the fold 2 -> 3 jerk that survived ramping the constants. Now dock and swOut reach
+     zero together and the block switches off with nothing left in it. */
+  var dock = ease(clamp(seg(sp,0.04,0.54) - seg(sp,0.64,1.00),0,1));
   crowd.style.opacity=dock.toFixed(3);
   /* the callouts arrive after the crowd has formed, and clear before it leaves */
   claimsEl.style.setProperty('--clo', (ease(clamp((asm-0.42)/0.5,0,1))*(1-ease(clamp(out*1.5,0,1)))).toFixed(3));
@@ -1667,7 +2251,30 @@ try{
   var REF_W=1800, HERO_W=0.292, FEET=0.94, LIFT=160, HDROP=75;
   var pr=cbg.getBoundingClientRect(), cr=crowd.getBoundingClientRect();
   var pw=pr.width||REF_W, ph=pr.height||pw*0.86, k=pw/REF_W;
-  crowd.style.setProperty('--cbgTop',(pw*-0.205-LIFT).toFixed(1)+'px');
+  var cbgOld=pw*-0.205-LIFT, cbgNew=cbgOld;
+  var cbgEl=document.getElementById('cbg'), cbgImg=document.getElementById('cbgImg');
+  if(innerWidth<1025 && cbgEl){
+    var hdrH=parseFloat(getComputedStyle(document.documentElement)
+               .getPropertyValue('--hdr'))||78;
+    var asp=(cbgImg&&cbgImg.naturalWidth) ? cbgImg.naturalHeight/cbgImg.naturalWidth : 0.694;
+    var csc=parseFloat(getComputedStyle(cbgEl).scale)||1;
+    if(!(csc>0.2&&csc<4)) csc=1;
+    /* the region the art may occupy: under the header, above the midline */
+    var rTop=hdrH+8, rBot=innerHeight*0.50, rH=Math.max(120,rBot-rTop);
+    /* 145 is the docked zone top the fold clock writes; zoneH is the driver's own value */
+    cbgNew = rTop - 145 - (window.__zH||innerHeight*0.22)/2;
+    var w=Math.min(innerWidth, rH/(asp*csc));
+    cbgEl.style.width=w.toFixed(0)+'px';
+    cbgEl.style.left=((innerWidth-w)/2).toFixed(0)+'px';
+    cbgEl.style.right='auto';
+    /* .cbg's centre lands at crowdTop + crowdH/2 + cbgTop, so the offset is solved from
+       the measured box rather than assumed from a percentage */
+    /* the cap is the whole mechanism: a plate that cannot be taller than the band cannot
+       overrun it, so no offset needs solving and nothing reads a rect the loop writes */
+  } else if(cbgEl){
+    cbgEl.style.width=''; cbgEl.style.left=''; cbgEl.style.right='';
+  }
+  crowd.style.setProperty('--cbgTop',cbgNew.toFixed(1)+'px');
   hero.style.setProperty('--hw',(pw*HERO_W).toFixed(1)+'px');
   hero.style.setProperty('--hbot',(cr.bottom-(pr.top+ph*FEET)-HDROP).toFixed(1)+'px');
   hero.style.translate='-50% '+(((1-asm)*54+cam*96-out*36+bob+100)*k).toFixed(2)+'px';
@@ -1684,17 +2291,29 @@ try{
   var zoneW = mob ? vw : vw*0.56;
   var zoneH = vh;
   if(mob){
-    zoneH = vh*(0.32 + 0.12*ease(seg(g,1.70,2.35)) + 0.18*dock);
-    zone.style.height = zoneH.toFixed(1)+'px';
+    /* 0.46vh at its tallest, not 0.62: the crowd scene and fold 2's copy share this screen
+     and at the old height they overlapped by 134px */
+  zoneH = vh*(0.22 + 0.05*(1-ease(seg(g,0.55,1.0))) + 0.15*ease(seg(g,1.70,2.35)) + 0.04*dock);
+    window.__zH = zoneH;
+  zone.style.height = zoneH.toFixed(1)+'px';
     /* row order: fold 1 = copy top / passport bottom, fold 2+ = passport top / copy bottom */
     /* the passport waits for fold 1's copy to be most of the way out before it rises
        into the top row, so the two never share the same band of the screen */
     var rowT = apprOf.length>1 ? ease(clamp((apprOf[1]-0.20)/0.62,0,1)) : 1;
-    zone.style.top = ((1-rowT)*(vh*0.53) + rowT*56).toFixed(1)+'px';
+    /* mobile hero: the passport sits at the top and the copy runs beneath it, so the zone
+     starts just under the header instead of at mid-height. It then rises the last few px
+     to 56 as the crowd scene takes over, which is what carries the book to the hand. */
+  /* the hero term tracks the same lead as the copy band: header + lead + the eyebrow's
+     own 20px line and its 11px gap, so the three move together at any viewport height */
+  var hdrPx = parseFloat(getComputedStyle(document.documentElement)
+                .getPropertyValue('--hdr')) || 78;
+  var lead = mob ? Math.max(16,(vh - hdrPx - 687)/2) : 0;
+  zone.style.top = ((1-rowT)*(hdrPx + lead + 31) + rowT*145).toFixed(1)+'px';
     /* a flat-topped dip: the passport is essentially absent for the whole crossing,
        not just its midpoint, so it never slides through either band of copy */
     var dipT=clamp(rowT,0,1);
-    zone.style.opacity = (1-0.98*Math.pow(Math.sin(Math.PI*dipT),0.32)).toFixed(3);
+    zone.style.opacity = mob ? '1'
+      : (1-0.98*Math.pow(Math.sin(Math.PI*dipT),0.32)).toFixed(3);
   }
   else if(zone.style.height){ zone.style.height=''; zone.style.top=''; zone.style.opacity=''; }
   /* the two-page spread drives both the frame width and the horizontal shift, so it gets
@@ -1706,7 +2325,7 @@ try{
   var spreadW = ease(seg(g,2.02,2.34)) * (1 - ease(seg(g,2.90,2.99)));
   var contentW = 460 + 460*spreadW;
   var shift = -230*(1-spread);
-  var s = Math.min(zoneW*0.83/contentW, zoneH*0.84/640, 0.95);
+  var s = Math.min(zoneW*(mob?1.02:0.83)/contentW, zoneH*(mob?0.96:0.84)/640, 0.95);
   /* the spread's easing curve can lag the cover's actual angle, so on a phone the
      scale is hard-capped against the full two-page width whenever the book is open —
      the spread then physically cannot run past either edge */
@@ -1725,9 +2344,14 @@ try{
   var exitP = ease(seg(d4,0.80,0.99));
   var duck = ease(seg(d4,0.10,0.42)) * (1-ease(seg(d4,0.60,0.88)));
   var hover = Math.sin(ms*0.42)*0.006*duck;
-  /* the whole fold-4 group — sources, Companion and passport — shifts and grows together */
-  zone.style.translate=(-50*duck).toFixed(1)+'px '+(50*duck).toFixed(1)+'px';
-  zone.style.scale=(1+0.10*duck).toFixed(4);
+  /* the whole fold-4 group — sources, Companion and passport — shifts and grows together.
+     The LATERAL component is desktop-only: -50px was authored to compose the group inside
+     a right-hand zone at left:44%, and the mobile zone now spans the full width and is
+     centred, so the shift has nothing left to correct for and simply drags everything
+     49px off-centre (measured: .flow at -43..334 against a 390px screen). The vertical
+     duck and the 1.10 scale still apply on both — only the sideways nudge is dropped. */
+  zone.style.translate=(mob?0:(-50*duck)).toFixed(1)+'px '+(mob?(-0.055*vh*duck):(50*duck)).toFixed(1)+'px';
+  zone.style.scale=(mob?(1-0.10*duck):(1+0.10*duck)).toFixed(4);
   s *= (1 - 0.78*duck + hover);
   /* duckAdj is solved from the measured layer gaps at the end of this frame */
   var duckY = (470+duckAdj)*duck + Math.sin(ms*0.34+1.1)*9*duck;
@@ -1747,10 +2371,21 @@ try{
     var swOut = Math.sin(Math.PI*clamp(out,0,1));
     var lift  = ease(clamp(out,0,1));
     s = s*(1-dE) + dockS*dE*(1+0.16*swOut);
+  var seatHold = mob ? ease(seg(d4,0.10,0.42)) : 0;
+  if(seatHold>0.001) s = s*(1-seatHold) + Math.min(s, dockS*1.15)*seatHold;
     var hr=hand.getBoundingClientRect(), zr=zone.getBoundingClientRect();
-    var rawY = ((hr.top+hr.height/2-(zr.top+zr.height/2)-318*s-5)*dE) + swIn*70 - swOut*210;
-    dockTX = (hr.left+hr.width/2-(zr.left+zr.width/2)+150*s)*dE + swIn*46 + swOut*46 + lift*18*(1-lift) + 30;
-    dockTY = rawY - 10;
+    /* the two optical nudges ride dE like everything else in here. They used to be bare
+       constants — +30 across and -10 down — inside a block gated on `dock > 0.001`, so
+       dockTX/dockTY were exactly 0 outside the gate and 30/-10 the frame it opened. That
+       is a 30px sideways and 10px vertical teleport at BOTH ends of the dock: once as the
+       passport reaches for the hand (fold 1 handing over to fold 2) and once as it leaves
+       (fold 2 to fold 3) — the two jerks reported. Multiplied by dE they fade in and out
+       with the dock instead, and since dE = 1 at full dock the docked pose is unchanged. */
+    var rawY = ((hr.top+hr.height/2-(zr.top+zr.height/2)-318*s-5)*dE) + swIn*70
+    + (mob ? swOut*60 : -swOut*210);
+    dockTX = (hr.left+hr.width/2-(zr.left+zr.width/2)+150*s)*dE + swIn*46
+    + (mob ? swOut*26 : swOut*46) + lift*18*(1-lift) + 30*dE;
+    dockTY = rawY - 10*dE;
     dockRot = swIn*2 - swOut*9;
     ry += swIn*68 - swOut*22;
   } else if(wrap.style.translate){ wrap.style.translate=''; wrap.style.rotate=''; }
@@ -1758,21 +2393,25 @@ try{
      CSS percentage, not by the canvas content, so this block needs no change. */
   /* the closed passport flies from the stage into its slot in the last fold */
   var os = oslot.getBoundingClientRect();
-  var fly = ease(clamp((vh*1.15 - os.top)/(vh*0.78),0,1));
+  var fly = flyNow;
   /* the fold-4 exit slide and the outro fly-in are always computed, then cross-faded
      continuously on `fly` — switching between them at a threshold snapped opacity 0->1
      and teleported the position in one frame. */
   var zr2 = zone.getBoundingClientRect();
   /* the resting pose is tilted, so its projected box is ~4.5% larger than the flat card */
   var ts = (oslot.offsetWidth/460)*0.957;
-  s = s*(1-fly) + ts*fly;
+  var sMix = mob ? Math.min(1,fly*4) : fly;
+  s = s*(1-sMix) + ts*sMix;
   /* it enters from the left, gliding into the closing frame */
   var bx = (os.left+os.width/2)-(zr2.left+zr2.width/2);
   var by = (os.top+os.height/2)-(zr2.top+zr2.height/2);
   /* it swings in from beyond the left edge, overshoots a touch, then settles */
-  var over=Math.sin(Math.PI*clamp(fly,0,1));
-  var ftx = bx - (1-fly)*(zr2.width+os.width) + over*54;
-  var fty = by - (1-fly)*120 - over*38;
+  var over=mob?0:Math.sin(Math.PI*clamp(fly,0,1));
+  /* on mobile it arrives where the text was: the ring's centre, which is the zone's own
+     centre, so the only travel is the slot's own rise */
+  var ftx = mob ? bx : (bx - (1-fly)*(zr2.width+os.width) + over*54);
+  var fty = mob ? (by + (1-rise)*(vh*1.05)/Math.max(0.06,s))
+                : (by - (1-fly)*120 - over*38);
   if(fly>0.001){
     oart.style.setProperty('--bookH',oslot.offsetHeight+'px');
     /* keep the vanishing point on the passport, otherwise the off-axis landing shears it */
@@ -1782,8 +2421,11 @@ try{
   ry += cx*9*lean; rx -= cy*6*lean;
   ry = ry*(1-fly) + (-13+cx*5)*fly; rx = rx*(1-fly) + (4-cy*3)*fly;
 
-  wrap.style.setProperty('--s',s);
-  var exitTX = exitP*520, exitOp = 1-exitP;
+  wrap.style.setProperty('--s',(mob ? s*(1-0.20*flyNow) : s));
+  var exitTX = mob ? 0 : exitP*520, exitOp = 1-exitP;
+  /* upward exit: past the top edge, in book-local units (the wrap is scaled by --s, so
+     the on-screen distance is this figure times that scale — hence the generous value) */
+  var exitTY = mob ? -exitP*(vh*1.15)/Math.max(0.06,s) : 0;
   /* position never blends between the exit (off-screen right) and fly-in (off-screen left)
      targets — that produced a visible sweep across the whole frame. Once the fly-in starts,
      position snaps straight to its own off-left trajectory; only opacity fades in gradually,
@@ -1793,10 +2435,24 @@ try{
   /* on a phone the last fold owns the whole frame, so the passport is fully out of the
      way there rather than sliding across the copy on its way off screen */
   if(mob && apprOf.length) wrapOp *= (1 - apprOf[folds.length-1]*(1-w));
+  /* the arrival has started but the statement is still being read: the book is somewhere
+     mid-frame on a moving baseline, so it is simply not painted until the rise begins */
+  if(mob && flyNow>0.004 && textOut<0.001) wrapOp=0;
   wrap.style.opacity=wrapOp.toFixed(3);
-  wrap.style.translate=(dockTX*(1-fly)+(fly>0.001?ftx:exitTX)).toFixed(1)+'px '+(dockTY*(1-fly)+(fly>0.001?fty:0)).toFixed(1)+'px';
+  /* .stage sits at z-index 4 and .col at 6, so without this the rising book passes behind
+     the outgoing text; on mobile it takes the front while it is arriving */
+  if(mob) stage.style.zIndex = (flyNow>0.004 && textOut>0.001 && textFade<0.999 ? 7 : '');
+  /* fold 4 only, and only while the flow owns the frame. duck, not f4 — f4 is an alias
+     declared further down, so var-hoisting leaves it undefined here and the whole
+     translate collapses to "NaNpx NaNpx", which the browser discards along with the dock. */
+  var seatX = (mob && fly<0.001) ? duck*122 : 0;
+  var seatY = (mob && fly<0.001) ? duck*72 : 0;
+  var exX = mob ? (ftx*fly + exitTX*(1-fly)) : (fly>0.001?ftx:exitTX);
+  var exY = mob ? (fty*fly + exitTY*(1-fly)) : (fly>0.001?fty:0);
+  wrap.style.translate=(dockTX*(1-fly)+exX+seatX).toFixed(1)+'px '+
+    (dockTY*(1-fly)+exY+seatY).toFixed(1)+'px';
   wrap.style.rotate=(dockRot*(1-fly)+(fly>0.001?(-11*(1-fly)+over*3.4):0)).toFixed(2)+'deg';
-  book.style.transform='translateX('+shift.toFixed(1)+'px) translateY('+duckY.toFixed(1)+'px) rotateY('+ry.toFixed(2)+'deg) rotateX('+rx.toFixed(2)+'deg)';
+  book.style.transform='translateX('+shift.toFixed(1)+'px) translateY('+(duckY*(mob?0:1)).toFixed(1)+'px) rotateY('+ry.toFixed(2)+'deg) rotateX('+rx.toFixed(2)+'deg)';
   verso.style.setProperty('--vop',ease(seg(open,0.70,0.86)).toFixed(3));
   cover.style.setProperty('--tally',win(g,2.92,6.10,0.10).toFixed(3));
   spine.style.setProperty('--sop',(ease(seg(open,0.7,0.88))*0.9).toFixed(3));
@@ -1867,9 +2523,11 @@ try{
     if(len>10){ fline.style.height=len.toFixed(1)+'px'; fline.style.opacity=''; }
     else { fline.style.height='0px'; fline.style.opacity='0'; }
   }
-  paper.style.translate='0 '+(-g*22).toFixed(1)+'px';
-  rose.style.rotate=(g*4.5).toFixed(2)+'deg';
-  rose.style.scale=(1+g*0.03).toFixed(4);
+  if(!mob){
+    paper.style.translate='0 '+(-g*22).toFixed(1)+'px';
+    rose.style.rotate=(g*4.5).toFixed(2)+'deg';
+    rose.style.scale=(1+g*0.03).toFixed(4);
+  }
   prog.style.setProperty('--pw',(g/folds.length*100).toFixed(2)+'%');
   drawLines(g);
   if(!window.__cpManual) requestAnimationFrame(frame);
@@ -1955,6 +2613,7 @@ function drawHeroFrame(liftP,outP,ms){
 })();
 
 /* ---------- handle entry writes onto the cover ---------- */
+var reservedHandle='';
 var input=$('#handle'),field=$('#field'),chnd=$('#chnd'),chh=$('#chh'),avail=$('#avail'),pgH=$('#pgHandle');
 /* The cover's handle line is rebuilt character by character, and only characters that
    were not there a keystroke ago get .nu — so appending one letter flashes one letter
@@ -1981,16 +2640,26 @@ input.addEventListener('input',function(){
   chnd.classList.toggle('on',!!v);
   pgids.forEach(function(n){n.textContent='/'+(v||'your-handle')});
   field.classList.toggle('on',!!v);
-  if(reserveMode==='handle') reserve.disabled=!v;
+  /* the button stays enabled; an empty press shakes the field instead */
+  if(reserveMode==='handle') fbox.classList.remove('nudge');
   avail.classList.toggle('on',!!v);
 });
 var fbox=$('#fbox'),fpre=$('#fpre'),reserve=$('#reserve'),reserveMode='handle';
 reserve.addEventListener('click',function(){
   if(reserveMode==='handle'){
-    if(!input.value) return;
+    if(!input.value){
+      /* restart the animation even on a repeated press: removing the class, forcing a
+         reflow and re-adding is the only way to replay it from frame zero */
+      fbox.classList.remove('nudge');
+      void fbox.offsetWidth;
+      fbox.classList.add('nudge');
+      input.focus();
+      return;
+    }
     reserveMode='email';
     field.classList.add('mode-email');
     fpre.textContent='email:'; fpre.classList.add('email');
+    reservedHandle=input.value;   /* kept before the field is repurposed for the email */
     input.type='email'; input.placeholder='you@work.com'; input.value=''; input.setAttribute('aria-label','Your email');
     reserve.textContent='JOIN THE WAITLIST';
     reserve.disabled=false;
@@ -2001,7 +2670,8 @@ reserve.addEventListener('click',function(){
     if(!input.value || !input.checkValidity()){ input.focus(); input.reportValidity&&input.reportValidity(); return; }
     reserveMode='done';
     field.classList.add('done');
-    fbox.innerHTML='<span class="pre" style="color:var(--emerald)">✓ you\'re on the list</span>';
+    fbox.innerHTML='<span class="fhandle"><i>✓</i><b></b></span>';
+    fbox.querySelector('.fhandle b').textContent=reservedHandle||'reserved';
     reserve.textContent='RESERVED';
   }
 });
@@ -2062,4 +2732,83 @@ $$('#mnav a').forEach(function(a){a.addEventListener('click',function(){
   };
 })();
 </script>
+<script>
+</script>
 <script src="cp-keys.js"></script>
+
+<!-- ============ video overlay · shared by mobile and desktop ============ -->
+<div class="vmodal" id="vmodal" role="dialog" aria-modal="true"
+     aria-label="How CareerPassport works" hidden>
+  <button class="vmclose" id="vmclose" type="button" aria-label="Close video">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+  <div class="vmstage" id="vmstage">
+    <div class="vmslot" id="vmslot">
+      <span class="vmph">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="6 3 21 12 6 21"/></svg>
+        <b>Video placeholder</b>
+        <em>Set VIDEO_URL in the overlay script</em>
+      </span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---- the video overlay -------------------------------------------------------------
+   Paste the real URL here. A youtube.com / youtu.be / vimeo.com link is mounted as an
+   iframe; anything else is treated as a file and mounted as a <video controls>. Left
+   empty, the overlay shows its placeholder panel. */
+(function(){
+  var VIDEO_URL = '';
+
+  var m=document.getElementById('vmodal'), slot=document.getElementById('vmslot'),
+      close=document.getElementById('vmclose');
+  if(!m||!slot||!close) return;
+  var opener=null, mounted=false;
+
+  function embed(){
+    if(mounted||!VIDEO_URL) return;
+    var u=VIDEO_URL, el;
+    if(/youtube\.com|youtu\.be|vimeo\.com/.test(u)){
+      el=document.createElement('iframe');
+      el.src=u+(u.indexOf('?')<0?'?':'&')+'autoplay=1&rel=0';
+      el.allow='accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture';
+      el.allowFullscreen=true;
+      el.title='How CareerPassport works';
+    } else {
+      el=document.createElement('video');
+      el.src=u; el.controls=true; el.autoplay=true; el.playsInline=true;
+    }
+    slot.innerHTML=''; slot.appendChild(el); mounted=true;
+  }
+
+  function open(e){
+    if(e){ e.preventDefault(); opener=e.currentTarget }
+    embed();
+    m.hidden=false;
+    /* a frame between unhide and .on, or the opacity transition has nothing to run from */
+    requestAnimationFrame(function(){ m.classList.add('on') });
+    document.documentElement.style.overflow='hidden';
+    close.focus();
+  }
+
+  function shut(){
+    m.classList.remove('on');
+    document.documentElement.style.overflow='';
+    /* stop playback rather than leaving audio running behind a hidden overlay */
+    var v=slot.querySelector('video'); if(v) v.pause();
+    var f=slot.querySelector('iframe'); if(f) f.src=f.src;
+    setTimeout(function(){ m.hidden=true }, 200);
+    if(opener&&opener.focus) opener.focus();
+  }
+
+  [].forEach.call(document.querySelectorAll('a.ghost,[data-video]'),function(a){
+    a.addEventListener('click',open);
+  });
+  close.addEventListener('click',shut);
+  m.addEventListener('click',function(e){ if(e.target===m) shut() });
+  addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&!m.hidden) shut();
+  });
+})();
+</script>

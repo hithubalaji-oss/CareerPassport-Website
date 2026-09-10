@@ -93,3 +93,40 @@
   .hdr .nav{display:none}
   .hdr .burger{display:flex}
 }
+
+/* The frosted bar runs on phones too, matching desktop. It was made solid earlier because
+   a blurred fixed bar over per-frame transforms re-rasterises on every scroll tick on iOS
+   — the flicker. That is addressed differently now: the bar is promoted to its own
+   compositor layer and isolated, so the blur is rasterised once and reused instead of
+   being recomputed against a changing backdrop. */
+@media (max-width:900px){
+  .hdr{
+    /* no fill and no rule on a phone: the bar is the frosted blur alone, so the page
+       reads continuously under it. The blur still needs its own layer and a hard paint
+       boundary or every scroll frame re-rasters the whole bar. */
+    background:none;
+    border-bottom:0;
+    backdrop-filter:blur(16px) saturate(1.4);
+    -webkit-backdrop-filter:blur(16px) saturate(1.4);
+    will-change:backdrop-filter;
+    transform:translateZ(0);
+    contain:paint;
+  }
+  .mnav{
+    background:linear-gradient(180deg,rgba(10,18,34,.94),rgba(10,18,34,.88));
+    backdrop-filter:blur(18px) saturate(1.4);
+    -webkit-backdrop-filter:blur(18px) saturate(1.4);
+    transform:translateZ(0);
+  }
+}
+/* the one device class where a blurred fixed bar is still a bad trade */
+@media (max-width:900px) and (prefers-reduced-transparency:reduce){
+  .hdr,.mnav{background:var(--void);backdrop-filter:none;-webkit-backdrop-filter:none}
+}
+
+/* mobile wordmark step. This file is linked after each page's inline <style>, so at equal
+   specificity its 13.5px was beating the pages' mobile scale — the step belongs here. */
+@media (max-width:1024px){
+  /* .hdr .brand span is 0,2,1 and outranks a bare .brand span, even in a query */
+  .hdr .brand span{font-size:11px;letter-spacing:.14em}
+}

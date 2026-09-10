@@ -1,3 +1,5 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>CareerPassport — For Recruitment Partners</title>
 <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#0a0c0b"/><rect x="70" y="118" width="180" height="164" rx="14" fill="none" stroke="#d8b877" stroke-opacity=".5" stroke-dasharray="6 5"/><circle cx="110" cy="158" r="7" fill="#d8b877"/><circle cx="168" cy="142" r="5" fill="#e9d6aa" opacity=".8"/><circle cx="212" cy="182" r="6" fill="#d8b877" opacity=".7"/><circle cx="132" cy="212" r="5" fill="#e9d6aa" opacity=".6"/><circle cx="196" cy="246" r="7" fill="#d8b877" opacity=".85"/><path d="M110 158L168 142M168 142L212 182M110 158L132 212M132 212L196 246M212 182L196 246" stroke="#d8b877" stroke-opacity=".35"/><circle cx="316" cy="200" r="26" fill="none" stroke="#7ba4ff" stroke-opacity=".5"/><path d="M250 200h40" stroke="#7ba4ff" stroke-opacity=".5" stroke-dasharray="4 4"/></svg></template>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -133,6 +135,26 @@
   .new>b{font-size:7px}.nr{padding:4px 0}.nr b{font-size:6.5px}.nr span{font-size:9.5px;line-height:1.25}
   .ways{gap:8px}.way b{font-size:13.5px}.way p{font-size:11.5px;line-height:1.35}
   .nlbl{font-size:6px}
+
+  /* ---- the footer, identical on all three pages ------------------------------------
+     One screen at the final scroll: everything from the eyebrow to the copyright inside
+     the frame. The top padding is keyed to the HEADER rather than a bare clamp — the
+     header is fixed at 76px with no background colour, only a backdrop-filter, so copy
+     under it renders blurred through the frosted band rather than being hidden.
+     max() with a literal floor because --hdr is written from JS and is defined in no
+     stylesheet. The surplus height collects in one auto margin above the wordmark and the
+     copyright follows on a fixed step, so the wordmark and the © read as one closing
+     block instead of the space being split equally between them. */
+  body .ftr{min-height:100svh;justify-content:flex-start;
+    gap:clamp(20px,3vh,34px);
+    margin-top:clamp(48px,7vh,96px);
+    padding:76px clamp(20px,4.4vw,72px) env(safe-area-inset-bottom,0px);
+    padding-top:calc(76px + clamp(14px,2.2vh,28px))}
+  body .ftr .ftop{align-items:center}
+  body .ftr .fcta,body .ftr .fnav{width:100%;align-self:stretch}
+  body .ftr .fmark{margin-top:clamp(34px,7.8vh,80px)}
+  body .ftr .fcr{margin-top:clamp(16px,4vh,40px);
+    padding-bottom:clamp(18px,2.4vh,26px)}
 }@media (max-width:900px){ }
 
 /* ---------- footer: one compact row, so the closing fold and the footer land in the

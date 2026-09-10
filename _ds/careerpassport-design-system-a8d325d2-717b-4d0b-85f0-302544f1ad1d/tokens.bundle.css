@@ -12,6 +12,14 @@
    No local binaries were provided; served from Google Fonts. */
 
 :root{
+/* the floating elevation, used by the product-frame components that get copied between
+   pages. It sits in this bundle because it is the only stylesheet all three pages link:
+   defined in For Companies' own :root it resolved on that page alone, so the Partners
+   closing visual carried the var() reference without a value and both frames rendered
+   flat. A box-shadow value cannot reach the pinned-scroll behaviour. */
+--sh-float:0 2px 2px rgba(0,0,0,.5),0 12px 28px -6px rgba(0,0,0,.55),
+  inset 0 0 0 1px rgba(255,255,255,.03);
+
 --font-display:"Poppins",Helvetica,Arial,sans-serif;
 --font-sans:"Inter",Helvetica,Arial,sans-serif;
 --font-eyebrow:"Inter",Helvetica,Arial,sans-serif;
