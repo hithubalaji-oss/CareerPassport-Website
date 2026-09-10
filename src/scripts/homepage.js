@@ -1050,7 +1050,10 @@ try{
 }catch(e){ if(!window.__cpErrLogged){window.__cpErrLogged=1;console.error('frame:',e);} if(!window.__cpManual) setTimeout(function(){requestAnimationFrame(frame)},250); }
 }
 window.__cpFrame=function(y){ if(y!=null) scrollTo(0,y); window.__cpManual=1; try{frame()}finally{window.__cpManual=0} };
-requestAnimationFrame(frame);
+/* D4: the loop's own guard covers every iteration but not this first kick, so on a phone the
+   driver would still run one frame and write inline styles that outrank the mobile stylesheet.
+   mobile-passport.js sets __cpManual before this file parses. */
+if(!window.__cpManual) requestAnimationFrame(frame);
 
 /* ---------- pre-baked crowd video (the hall's own formation, no chroma-key needed) ---------- */
 var cwReady=false;

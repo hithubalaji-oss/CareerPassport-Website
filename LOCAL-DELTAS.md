@@ -191,6 +191,40 @@ implementation-specific — the design prototype pays exactly the same cost in a
 
 ---
 
+## D3b — The driver's startup frame is guarded
+
+| | |
+|---|---|
+| **File** | `src/scripts/homepage.js` — one line |
+| **Source** | `index.html` kicks the loop off unconditionally |
+| **Status** | Active, and deliberately tiny |
+
+**What.** `requestAnimationFrame(frame)` at the end of the driver becomes
+`if(!window.__cpManual) requestAnimationFrame(frame);`.
+
+**Why.** The mobile rebuild replaces the scroll-driven animation with six CSS states below
+1025px, and switches the desktop driver off by setting `window.__cpManual` during head
+parsing. The driver's own loop already checks that flag on every iteration — but not on the
+initial kick. Left unguarded it runs exactly one frame on a phone, and that one frame writes
+inline `translate` / `scale` / `opacity` onto `.bookwrap` and `.zone`, which outrank the
+mobile stylesheet and pin the passport in one place for the whole visit. Measured: it was
+the reason the first build of the mobile layer appeared to do nothing at all.
+
+**Everything else the rebuild needs is additive** and carries no delta:
+`src/styles/mobile-passport.css`, `src/scripts/mobile-passport.js`, and the imports plus the
+head script in `src/pages/index.astro`. The re-derivation only rewrites `homepage.css` and
+`homepage.js` from `index.html`'s own blocks; it never touches a file that does not exist in
+the design, and it never touches `index.astro`. So a design export cannot revert the mobile
+behaviour — only this one line.
+
+**How to re-apply.** Add the guard to the final `requestAnimationFrame(frame);` in the
+extracted driver. Nothing else.
+
+**Retire this entry** by making the same guard in the design file, which costs desktop
+nothing — `__cpManual` is undefined there, so the driver starts exactly as it does today.
+
+---
+
 ## Retired
 
 Everything below was fixed in Claude Design and re-derived cleanly on 10 Sep. Kept as a

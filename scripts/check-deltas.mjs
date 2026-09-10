@@ -53,6 +53,30 @@ const DELTAS = [
     reverted: [/setProperty\('--stageOp'/, /setProperty\('--s'/, /setProperty\('--cbgTop'/],
     upstreamFixed: (designSrc) => !/setProperty\('--stageOp'/.test(designSrc),
   },
+  {
+    id: 'D3b',
+    title: "The driver's startup frame is guarded",
+    file: 'src/scripts/homepage.js',
+    design: 'index.html',
+    present: ['if(!window.__cpManual) requestAnimationFrame(frame);'],
+    // the design's unguarded kick, whose return lets one frame pin the passport on mobile
+    reverted: [/\n(?!.*__cpManual)requestAnimationFrame\(frame\);/],
+    /* the design already guards the loop's own recursion, so a bare test for the guarded
+       line matches that and reports a false retirement. The kick is guarded upstream only
+       when the phrase appears TWICE: once in the recursion, once at the kickoff. */
+    upstreamFixed: (d) =>
+      (d.match(/if\(!window\.__cpManual\) requestAnimationFrame\(frame\);/g) || []).length >= 2,
+  },
+  {
+    id: 'D3c',
+    title: 'Mobile passport state machine is wired into the page',
+    file: 'src/pages/index.astro',
+    design: 'index.html',
+    present: ['mobile-passport.css', 'mobile-passport.js', "window.matchMedia('(max-width: 1024px)').matches) window.__cpManual"],
+    extraFiles: ['src/styles/mobile-passport.css'],
+    extraPresent: ['THE SIX STATES'],
+    // additive: nothing in the design can revert it, so there is no upstreamFixed signal
+  },
 ];
 
 const hit = (src, needle) =>

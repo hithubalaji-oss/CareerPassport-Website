@@ -18,6 +18,10 @@ import VideoOverlay from '../components/homepage/VideoOverlay.astro';
 
 import '../styles/cp-header.css';
 import '../styles/homepage.css';
+/* Additive, and last, so its mobile rules win at equal specificity. Nothing in it applies
+   above 1024px — the desktop driver is untouched. See the file header for why it is separate
+   from homepage.css rather than inside it. */
+import '../styles/mobile-passport.css';
 ---
 
 <Base
@@ -35,6 +39,14 @@ import '../styles/homepage.css';
     <link rel="preload" as="image" href="/uploads/Crowd-6ce23065-1280.webp" media="(max-width: 1024px)" />
     <link rel="preload" as="image" href="/uploads/Crowd-6ce23065.webp" media="(min-width: 1025px)" />
     <link rel="preload" as="video" href="/assets/hero-lift.mp4" type="video/mp4" />
+    {/* MUST be is:inline and MUST be in the head. Astro bundles and reorders <script src>
+        tags, and it put mobile-passport.js AFTER the driver — so the driver started, wrote
+        inline styles onto .bookwrap and .zone, and those outranked the mobile stylesheet.
+        Setting the flag during head parsing is the only placement that is ordered before
+        every body script, whatever the bundler decides to do with them. */}
+    <script is:inline>
+      if (window.matchMedia('(max-width: 1024px)').matches) window.__cpManual = 1;
+    </script>
   </Fragment>
 
   <Ground />
@@ -45,6 +57,9 @@ import '../styles/homepage.css';
   <Footer cta="Your passport, waiting" />
   <VideoOverlay />
 
+  {/* BEFORE homepage.js: it sets window.__cpManual while the driver is still parsing, so on
+      a phone the driver never starts. Above 1024px it returns immediately and changes nothing. */}
+  <script src="../scripts/mobile-passport.js"></script>
   <script src="../scripts/homepage.js"></script>
   <script src="../scripts/homepage-extra.js"></script>
   <script src="../scripts/cp-keys.js"></script>

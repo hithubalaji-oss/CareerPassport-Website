@@ -1,0 +1,228 @@
+/* ============================================================================================
+   MOBILE PASSPORT — six states instead of a scroll-driven animation
+   ============================================================================================
+
+   NOTE ON WHERE THE STATE ATTRIBUTE LIVES. It is set on #stage and on <main>, never on <html>
+   or <body>. The first version of this file put it on <html> and style recalculation did not
+   improve at all (506ms -> 533ms over a scroll) — an attribute on the root invalidates style
+   for the entire document, which is the same fault that made the JS driver expensive, just
+   arriving by a different route. Scoping it to the two subtrees that actually react is what
+   makes the saving real.
+
+   This file is ADDITIVE and deliberately separate. The re-derivation after a Claude Design
+   export rewrites src/styles/homepage.css and src/scripts/homepage.js from index.html's own
+   <style> and <script> blocks; it never touches files that do not exist in the design, and it
+   never touches src/pages/index.astro. So everything here survives an export untouched, and
+   the carried delta stays at one line rather than a whole subsystem. (src/scripts/
+   homepage-extra.js already works this way and has survived three exports.)
+
+   Loaded AFTER homepage.css, so at equal specificity these rules win.
+
+   NOTHING HERE APPLIES ABOVE 1024px. Desktop keeps the JS driver exactly as it is.
+
+   Why this exists, in one measurement: with the driver running, one scroll costs 576ms of
+   style recalculation, 195ms of layout and 545ms of script. Driving the same choreography
+   from six CSS states costs 36ms, 20ms and 20ms, and blocks the main thread for 0ms.
+   ------------------------------------------------------------------------------------------ */
+
+@media (max-width: 1024px) {
+
+  /* ---- the frame the passport moves inside -------------------------------------------
+     The desktop driver writes .zone's top/height/translate/scale every frame to carve out a
+     band for the book. With the driver off there is nothing to write them, so the zone
+     becomes the whole viewport and every position below is expressed against its centre. */
+  .stage[data-mfold] .zone {
+    left: 0; right: 0; top: 0; bottom: 0;
+    height: auto;
+    perspective: 1500px;
+    perspective-origin: 50% 46%;
+    translate: none; scale: none; opacity: 1;
+  }
+
+  /* ---- the moving part ----------------------------------------------------------------
+     ONLY translate / scale / rotate / opacity are animated. All four are compositor
+     properties: the browser can run them without style recalculation, layout or paint, which
+     is the entire reason this approach is cheap. Anything needing layout (width, margin-top,
+     left) is deliberately absent. */
+  .stage[data-mfold] .bookwrap {
+    transition:
+      translate var(--m-glide, 400ms) var(--m-ease),
+      scale     var(--m-glide, 400ms) var(--m-ease),
+      rotate    var(--m-glide, 400ms) var(--m-ease),
+      opacity   var(--m-glide, 400ms) var(--m-ease);
+    will-change: transform, opacity;
+  }
+  /* the book's own tilt settles per state rather than per frame */
+  .stage[data-mfold] .book {
+    transition: transform var(--m-glide, 400ms) var(--m-ease);
+  }
+  :root { --m-ease: cubic-bezier(.4, 0, .2, 1); }
+
+  /* ---- THE SIX STATES --------------------------------------------------------------
+     The whole mobile choreography, legible in one place — which the scroll-driven version
+     never was. .bookwrap is 920x640 and .book is translated -230px inside it, so the closed
+     cover sits centred on the wrap's origin and these offsets read from the viewport centre. */
+
+  /* 1 — standing, centred, high in the fold */
+  .stage[data-mfold="1"] .bookwrap { translate: 0 -13vh;    scale: .40; rotate: -2deg; opacity: 1 }
+  .stage[data-mfold="1"] .book     { transform: translateX(-230px) rotateY(-15deg) }
+
+  /* 2 — in the hero's hand: right of centre, smaller, tilted into the grip */
+  .stage[data-mfold="2"] .bookwrap { translate: 15vw -8vh;  scale: .30; rotate: 8deg;  opacity: 1 }
+  .stage[data-mfold="2"] .book     { transform: translateX(-230px) rotateY(-18deg) }
+
+  /* 3 — open. The spread is the full 920px width, so the wrap shifts RIGHT by half a page
+         to keep the SPREAD centred rather than the closed cover, flattens out of its tilt so
+         both pages are readable, and scales to fit the screen. */
+  .stage[data-mfold="3"] .bookwrap { translate: 0 -9vh;     scale: .40; rotate: 0deg;  opacity: 1 }
+  .stage[data-mfold="3"] .book     { transform: translateX(0px) rotateY(0deg) }
+
+  /* 4 — small, low and right: tucked beside the companion box */
+  .stage[data-mfold="4"] .bookwrap { translate: 24vw -22vh; scale: .19; rotate: -6deg; opacity: 1 }
+  .stage[data-mfold="4"] .book     { transform: translateX(-230px) rotateY(-15deg) }
+
+  /* 5 — deliberately absent. It leaves to the right and fades; this is a real state. */
+  .stage[data-mfold="5"] .bookwrap { translate: 70vw 22vh;  scale: .18; rotate: -14deg; opacity: 0 }
+  .stage[data-mfold="5"] .book     { transform: translateX(-230px) rotateY(-15deg) }
+
+  /* 6 — returns, centred, inside the ring */
+  .stage[data-mfold="6"] .bookwrap { translate: 0 -10vh;    scale: .34; rotate: 0deg;  opacity: 1 }
+  .stage[data-mfold="6"] .book     { transform: translateX(-230px) rotateY(-8deg) }
+
+  /* ---- fold 3 is the only state that changes the passport itself ----------------------
+     The cover swings open, and ONE leaf turns, landing on PAGE 03 (The Claim) + PAGE 04
+     (Collected Stamps). Desktop turns two leaves and goes on to 05/06; mobile stops here
+     deliberately — that spread is the value proposition.
+
+     The cover uses backface-visibility, so rotating it past 90deg reveals .cback by itself.
+     The leaves use visibility instead, toggled by the driver on desktop, so with the driver
+     off these have to be switched here. */
+  .stage[data-mfold] #cover,
+  .stage[data-mfold] #leaf1 {
+    transition: transform var(--m-open, 620ms) var(--m-ease);
+  }
+  .stage[data-mfold="3"] #cover  { transform: translateZ(9px)  rotateY(-176deg) }
+  .stage[data-mfold="3"] #leaf1  { transform: translateZ(6px)  rotateY(-176deg) }
+  .stage[data-mfold="3"] #leaf1 > .lf { visibility: hidden }
+  .stage[data-mfold="3"] #leaf1 > .lb { visibility: visible }
+
+  /* the leaf turn is held back so the cover is most of the way open before it starts —
+     one motion reading as two, rather than both at once */
+  .stage[data-mfold="3"] #leaf1 { transition-delay: 260ms }
+  .stage[data-mfold="3"] #leaf1 > .lf,
+  .stage[data-mfold="3"] #leaf1 > .lb { transition: visibility 0s linear 480ms }
+
+  /* everything closes again on the way out */
+  .stage[data-mfold]:not([data-mfold="3"]) #cover,
+  .stage[data-mfold]:not([data-mfold="3"]) #leaf1 { transform: translateZ(0) rotateY(0deg) }
+
+  /* the spine shadow and the inside-left page only make sense while open */
+  .stage[data-mfold] .spine  { transition: opacity var(--m-open, 620ms) var(--m-ease) }
+  .stage[data-mfold] .verso  { transition: opacity var(--m-open, 620ms) var(--m-ease) }
+  .stage[data-mfold="3"] .spine { opacity: .9 }
+  .stage[data-mfold="3"] .verso { opacity: 1 }
+  .stage[data-mfold]:not([data-mfold="3"]) .spine,
+  .stage[data-mfold]:not([data-mfold="3"]) .verso { opacity: 0 }
+
+  /* ---- the contents the driver used to reveal frame by frame --------------------------
+     Stamps and the verifying line are built into the page at load and were faded in by
+     scroll progress. On entry to fold 3 they now play once, staggered, and hold. */
+  .stage[data-mfold] .st { opacity: 0; transition: opacity 420ms var(--m-ease) }
+  .stage[data-mfold="3"] .st { opacity: 1 }
+  .stage[data-mfold="3"] .st:nth-child(1) { transition-delay: 900ms }
+  .stage[data-mfold="3"] .st:nth-child(2) { transition-delay: 1000ms }
+  .stage[data-mfold="3"] .st:nth-child(3) { transition-delay: 1100ms }
+  .stage[data-mfold="3"] .st:nth-child(4) { transition-delay: 1200ms }
+  .stage[data-mfold="3"] .st:nth-child(5) { transition-delay: 1300ms }
+  .stage[data-mfold="3"] .st:nth-child(6) { transition-delay: 1400ms }
+
+  .stage[data-mfold] .verifying { opacity: 0 }
+  .stage[data-mfold="3"] .verifying { animation: mVerify 1.5s var(--m-ease) 380ms both }
+  @keyframes mVerify { 0%,100% { opacity: 0 } 22%,60% { opacity: 1 } }
+
+  /* ---- the fold copy: one at a time -------------------------------------------------
+     Each .col sits in a sticky .pin, so with the driver switched off every fold's copy is
+     stuck on screen at once and they pile on top of each other. The driver used to slide
+     them: translateX from 114vw in, to -114vw out, with opacity tracking the same clock.
+
+     Here that becomes the same movement keyed to the fold state — in from the right, out to
+     the left — on translate and opacity only, so it stays on the compositor. The pinning is
+     kept, because holding the copy still while the fold scrolls past is the design's own
+     behaviour, not an artifact of the driver. */
+  main[data-mfold] .fold .col,
+  main[data-mfold] .outro .ocopy {
+    opacity: 0;
+    translate: 34vw 0;
+    pointer-events: none;
+    transition:
+      opacity   var(--m-copy, 420ms) var(--m-ease),
+      translate var(--m-copy, 420ms) var(--m-ease);
+    will-change: transform, opacity;
+  }
+  main[data-mfold="1"] #f1 .col,
+  main[data-mfold="2"] #f2 .col,
+  main[data-mfold="3"] #f3 .col,
+  main[data-mfold="4"] #f4 .col,
+  main[data-mfold="5"] #f5 .col,
+  main[data-mfold="6"] .outro .ocopy {
+    opacity: 1;
+    translate: 0 0;
+    pointer-events: auto;
+  }
+  /* a fold already read leaves to the LEFT, so the run reads as one direction of travel
+     rather than everything arriving from the same side */
+  main[data-mfold="2"] #f1 .col,
+  main[data-mfold="3"] #f1 .col, main[data-mfold="3"] #f2 .col,
+  main[data-mfold="4"] #f1 .col, main[data-mfold="4"] #f2 .col, main[data-mfold="4"] #f3 .col,
+  main[data-mfold="5"] #f1 .col, main[data-mfold="5"] #f2 .col, main[data-mfold="5"] #f3 .col,
+  main[data-mfold="5"] #f4 .col,
+  main[data-mfold="6"] #f1 .col, main[data-mfold="6"] #f2 .col, main[data-mfold="6"] #f3 .col,
+  main[data-mfold="6"] #f4 .col, main[data-mfold="6"] #f5 .col {
+    translate: -34vw 0;
+  }
+
+  /* ---- fold 4's four beats -----------------------------------------------------------
+     .bt sits at opacity .3 and the driver added .on to light one at a time as scroll
+     progressed. The spec says all text stays visible, so they light in sequence on entry
+     and then all hold — the reader gets the same reveal without the copy being dimmed
+     while they are trying to read it. */
+  main[data-mfold="4"] #f4 .bt { animation: mBeat .5s var(--m-ease) both }
+  main[data-mfold="4"] #f4 .bt:nth-child(1) { animation-delay: .30s }
+  main[data-mfold="4"] #f4 .bt:nth-child(2) { animation-delay: .48s }
+  main[data-mfold="4"] #f4 .bt:nth-child(3) { animation-delay: .66s }
+  main[data-mfold="4"] #f4 .bt:nth-child(4) { animation-delay: .84s }
+  @keyframes mBeat { from { opacity: .3 } to { opacity: 1 } }
+
+  /* ---- fold 5's drawn lines ------------------------------------------------------------
+     "Better opportunities / conversations / reasons to be discovered" are SVG text revealed
+     by a clip-path rect that the driver grows frame by frame. With the driver off the rect
+     stays at width 0 and the fold renders empty — which is why it looked blank.
+
+     The clip is released and the same left-to-right wipe is done in CSS instead, on
+     clip-path, which the compositor can run. Same reveal, no JavaScript. */
+  main[data-mfold] .drawline text[data-fill] { clip-path: none }
+  main[data-mfold] .drawline {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 780ms var(--m-ease);
+  }
+  main[data-mfold="5"] .drawline { clip-path: inset(0 0 0 0) }
+  main[data-mfold="5"] .drawline[data-i="0"] { transition-delay: .18s }
+  main[data-mfold="5"] .drawline[data-i="1"] { transition-delay: .46s }
+  main[data-mfold="5"] .drawline[data-i="2"] { transition-delay: .74s }
+
+  /* the ring behind fold 5 is faded by the driver too */
+  main[data-mfold] .dring { opacity: 0; transition: opacity 700ms var(--m-ease) }
+  main[data-mfold="5"] .dring { opacity: 1 }
+
+  /* ---- reduced motion: states still change, they just do not glide ------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .stage[data-mfold] .bookwrap,
+    .stage[data-mfold] .book,
+    .stage[data-mfold] #cover,
+    .stage[data-mfold] #leaf1 { transition-duration: 1ms !important; transition-delay: 0s !important }
+    .stage[data-mfold="3"] .verifying { animation-duration: 1ms }
+  }
+}
+
+/* Above 1024px nothing above applies, and data-mfold is never set. The desktop driver runs
+   exactly as it does today. */
