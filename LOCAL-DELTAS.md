@@ -112,6 +112,59 @@ implementation matches the prototype pixel for pixel.
 
 ---
 
+## D3 — Mobile graphics-memory budget
+
+| | |
+|---|---|
+| **Files** | `src/scripts/homepage.js`, `src/styles/homepage.css`, `public/uploads/Crowd-6ce23065-1280.png` |
+| **Source** | `index.html` |
+| **Status** | Active — belongs in Claude Design; see *How to retire* |
+
+**The symptom.** On a phone the homepage does not merely stutter: text, gradients, CSS
+animations and whole background regions blank out or draw half-finished. That breadth is the
+tell. A slow asset degrades that asset; when *everything* fails to paint, the compositor is
+discarding rasterised tiles because it has run out of graphics memory.
+
+**The measurement.** As authored, one page asks a phone for roughly 115 MB:
+
+| | |
+|---|---|
+| 40 baked hero frames @ 515x955, retained as canvases | 75 MB |
+| Crowd plate 2528x1696, decoded | 16.4 MB |
+| Fixed composited layers (`.paper` 150% of viewport, `.rose` 180%, `.stage`) | 23.8 MB |
+
+The hero frames dominate. `bakeHeroFrames()` pushes a full canvas per frame into `hvFrames`
+and they stay resident for the life of the page — the size is a constant, so a phone pays
+exactly what a desktop does.
+
+**What changed, all scoped to `innerWidth < 1025`:**
+
+1. **Hero bake budget** — 20 frames at 258px instead of 40 at 515px: 75 MB to 9.4 MB. The
+   hero is drawn small on a phone, so the resolution is not missed.
+2. **Right-sized crowd plate** — a 1280px copy ships alongside the original: 16.4 MB to
+   4.2 MB decoded. Still finer than a DPR-3 phone resolves. Desktop keeps the full plate.
+3. **`.paper` / `.rose` pulled back to `inset:0`** — their overscan exists only so the
+   desktop driver can translate and rotate them without exposing an edge, and the sheet
+   already stops animating them on mobile. Invisible there; cuts the layer area to about a
+   third.
+
+Asset paths are also restored to root-absolute. The 10 Sep export reverted them to the
+authoring-environment `window.__resources` fallback, whose relative paths only happened to
+work because the crowd is homepage-only.
+
+**Measured, 4x CPU throttle at DPR 3:** decoded image memory 17.4 -> 5.2 MB, long tasks
+11 (640 ms) -> 6 (344 ms), median frame 31 -> 27 ms, worst frame 83 -> 67 ms. The hero-bake
+saving is **not** in those numbers — headless Chromium cannot decode the H.264 source, so
+the bake never runs here. On a real phone it does, and it is the largest of the three.
+
+**How to retire.** Port all three into Claude Design, where they belong: the bake budget and
+crowd source as viewport-conditional values, the `inset:0` into the existing mobile block
+that already neutralises `.paper` / `.rose`. Better still, ship a pre-keyed hero video with
+an alpha channel — then `bakeHeroFrames` and its 40 retained canvases disappear entirely, on
+every device. The handoff recommended exactly that (*Known gaps*, item 7).
+
+---
+
 ## Retired
 
 **Halved "blueprint is being prepared" dwell** (was D1, commit `cf324ff`) — retired at the

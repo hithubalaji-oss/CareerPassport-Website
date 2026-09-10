@@ -17,9 +17,19 @@ for(var dd=0;dd<8;dd++){
   dust+='<i style="left:'+(rnd()*100).toFixed(1)+'%;top:'+(18+rnd()*70).toFixed(1)+'%;width:'+ds+'px;height:'+ds+
    'px;animation-duration:'+(8+rnd()*10).toFixed(1)+'s;animation-delay:-'+(rnd()*14).toFixed(1)+'s"></i>';
 }
-var RES=(window.__resources||{});
-var CROWD_SRC=RES.crowdPlate||'uploads/Crowd-6ce23065.png';
-var LIFT_SRC=RES.heroLift||'assets/hero-lift.mp4';
+/* Served from public/ at the site root, so both resolve the same on every route. The
+   `window.__resources` indirection was an authoring-environment hook and does not exist
+   here; the relative paths it fell back to only happened to work because the crowd is
+   homepage-only. Same-origin matters for the hero: it is chroma-keyed on a canvas, and a
+   cross-origin source would taint it and make getImageData throw.
+
+   PERF: the full crowd plate is 2528x1696 and decodes to 16.4 MB of RAM whatever size it
+   is drawn at. On a 390px phone it is displayed roughly 6x smaller, so that resolution is
+   pure memory cost. The 1280px copy is still finer than a DPR-3 phone can resolve and
+   decodes to 4.2 MB. Desktop keeps the full plate. */
+var MOB = innerWidth < 1025;
+var CROWD_SRC = MOB ? '/uploads/Crowd-6ce23065-1280.png' : '/uploads/Crowd-6ce23065.png';
+var LIFT_SRC  = '/assets/hero-lift.mp4';
 $('#crowd').innerHTML='<div class="cbg" id="cbg"><img id="cbgImg" src="'+CROWD_SRC+'" alt=""></div>'+
   '<div class="hglow" id="hglow"></div>'+
   '<div class="heroFig" id="hero"><div class="hbloom"></div>'+
@@ -960,7 +970,14 @@ var cwReady=false;
 function drawCrowdFrame(){}
 
 /* ---------- pre-baked, chroma-keyed hero frames (no live seeking = no jank) ---------- */
-var hvReady=false, hvTainted=false, hvDur=0, hvFrames=[], HV_N=40, HV_SX=180, HV_SY=125, HV_SW=515, HV_SH=955;
+/* PERF: every baked frame is retained as a full canvas, so HV_N x (w x h x 4) bytes stay
+   resident for the life of the page. At the authored 40 frames of 515x955 that is 75 MB.
+   Together with the crowd plate and the fixed composited layers a phone is asked for well
+   over 100 MB of graphics memory, and when it runs short the compositor discards
+   rasterised tiles — which is why text, gradients and animations blank out across the
+   WHOLE page, not just here. Phones bake half as many frames at half the width:
+   20 x 258x478 = 9.4 MB, and the hero is drawn small enough there not to miss it. */
+var hvReady=false, hvTainted=false, hvDur=0, hvFrames=[], HV_N=MOB?20:40, HV_SX=180, HV_SY=125, HV_SW=515, HV_SH=955;
 function keyGreen(cx,w,h){
   var d=cx.getImageData(0,0,w,h), p=d.data;
   for(var i=0;i<p.length;i+=4){
@@ -1001,7 +1018,7 @@ function bakeHeroFrames(){
 }
 heroVideo.addEventListener('loadedmetadata',function(){
   hvDur=heroVideo.duration||5;
-  var cw=515; heroCv.width=cw; heroCv.height=Math.round(cw*HV_SH/HV_SW);
+  var cw=MOB?258:515; heroCv.width=cw; heroCv.height=Math.round(cw*HV_SH/HV_SW);
   bakeHeroFrames();
 });
 function drawHeroFrame(liftP,outP,ms){

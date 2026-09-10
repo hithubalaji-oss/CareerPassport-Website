@@ -49,6 +49,17 @@ const DELTAS = [
     // the design declaring its real height would make the guard a no-op
     upstreamFixed: (designSrc) => !/--hdr:60px/.test(designSrc),
   },
+  {
+    id: 'D3',
+    title: 'Mobile graphics-memory budget',
+    file: 'src/scripts/homepage.js',
+    design: 'index.html',
+    present: ['HV_N=MOB?20:40', "var cw=MOB?258:515", 'Crowd-6ce23065-1280.png'],
+    extraFiles: ['src/styles/homepage.css'],
+    extraPresent: ['PERF: both are sized past the viewport'],
+    // the export budgeting these itself would make the delta unnecessary
+    upstreamFixed: (designSrc) => /HV_N\s*=\s*[^4]/.test(designSrc),
+  },
 ];
 
 const hit = (src, needle) =>

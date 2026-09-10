@@ -704,7 +704,15 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   html,body{overflow-x:clip}
   /* the textures hold still on a phone (the driver no longer writes them — see frame()),
      and are told so, so the compositor does not keep a layer warm for them */
-  .paper,.rose{will-change:auto;translate:none;rotate:none;scale:none}
+  .paper,.rose{will-change:auto;translate:none;rotate:none;scale:none;
+    /* PERF: both are sized past the viewport only so the desktop driver can translate and
+       rotate them without exposing an edge — .paper at inset:-25% is 150% of the viewport
+       each way, .rose at inset:-40% is 180%. On a phone they never move (the rule above
+       says so), so that overscan is a composited layer several times larger than it needs
+       to be, and their repeating 1px gradients are among the most expensive things on the
+       page to rasterise. Pulling them back to the viewport is invisible here and cuts the
+       layer area to roughly a third. */
+    inset:0} 
   .mesh{inset:-6% -12% auto -12%;height:62svh;
     background:
       radial-gradient(46% 40% at 50% 30%,rgba(221,188,107,.20),transparent 70%),
