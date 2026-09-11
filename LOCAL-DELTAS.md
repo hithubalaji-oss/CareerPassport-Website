@@ -464,6 +464,90 @@ Document heights byte-identical on all three pages at 1440x900 and 1280x800.
 
 ---
 
+## D9 — For Companies: the cursor's origin, the frozen book scale, the comparison grid
+
+**Files:** three changes in `src/scripts/companies.js`, plus `Comparison.astro`, `Header.astro`,
+`mobile-pages.css` and `mobile-pages.js`
+
+### The cursor was pointing 212px above whatever it was clicking
+
+`park()` resolved a target into coordinates measured against `#aiStage` and wrote them to
+`.hmcur`, which is `position:absolute` — so the browser resolves them against its **offset
+parent**, and that is `.aiwrap`.
+
+On desktop the two share a top-left corner (both at 100,208 at 1440x900), because the wrap is a
+two-column grid whose visual column starts at its origin. The error is 0,0 and nothing has ever
+looked wrong. On a phone `.aitextcol` takes `order:-1`, the copy stacks above the panel, and the
+wrap begins 212px higher than the stage — so every target was drawn 212px above the thing it
+pointed at. Measured at 390x844 before: cursor tip y=581, submit centre y=792. After: 309,793
+against 307,792.
+
+```js
+var origin=cur.offsetParent||stage;     /* not stage */
+var s=origin.getBoundingClientRect();
+cur.classList.toggle('left',tx>origin.offsetWidth*0.55);
+function offstage(){ var o=cur.offsetParent||stage; return {x:o.offsetWidth+150, …}; }
+```
+
+**One desktop-visible consequence was checked and is nil.** The `.left` flip threshold now uses
+the wrap's width (1240) rather than the stage's (629), so `.left` stops toggling on desktop —
+and the ONLY rule in any stylesheet that consumes `.hmcur.left` is inside
+`@media (max-width:1024px)`. The class is inert there, so the change cannot render.
+
+### The passport shrank to 58% of itself while it was opening
+
+`.dcsent.on` is `flex:0 0 42%` in a flex row with `.dcpp`, so the moment the invite lands the
+passport's pane goes from 312px to 181px — and `sizeBook` re-fits the book to it. Measured:
+`--pps` stepping 0.314 to 0.182 **mid-animation**, which is the visible size step this project
+already learned about once on the homepage.
+
+Fixed twice over, because it is the kind of thing that comes back: the confirmation is an
+overlay on mobile so it takes neither width nor height from the pane, and `window.__cpBookFreeze`
+holds the scale for the act. `--pps` is now constant through act 4 at every size.
+
+### The act rested on its own aftermath
+
+Act 1's clock is `p = g/.43` and its last fifth is what happens AFTER the blueprint — recede at
+p=.900, "trip finalised" .912, "launched" .940. Played to g=.452 the act ended at p=1.05, so a
+reader who came to watch the blueprint being drafted was left with an empty panel and the form
+ghosted at 28% behind a confirmation. `ACT[0]` now ends at `.385` — p=.895, just past the press.
+
+### The panel moved 47px between acts
+
+The act copy is 190 / 218 / 190 / 263px tall for the four acts, and the panel sits under it.
+`.aitextcol{min-height:268px}` reserves the tallest, so the panel's top is constant at 368px and
+Decide no longer runs 23px past the fold and cuts off its own buttons.
+
+### The comparison is a grid
+
+Three columns, seven bands, every cell two or three words, built by the same generator. 723px
+against 1654px. The desktop table is untouched: four columns, 24 cells, full sentences, verified
+at 1440x900.
+
+### Also here
+
+`#exTicker` is an ID rule — `font-size:12px; white-space:nowrap; overflow:visible`, with a
+comment saying it must never crop — so the class-level fix did nothing and it had to be matched
+at the same specificity. The cursor's label moved above the pointer, since every target it gets
+on a phone is a button at the bottom of the panel. The drawer dropped "Get started" and
+"Evidence, not CVs" and swapped its two button styles. And `--hdr` is 76px on mobile, the bar's
+real height, rather than the desktop 83px it was inheriting.
+
+### What desktop was checked against
+
+Behaviour, against `origin/main` at 1440x900 — identical on every reading:
+
+```
+hero 420svh · demo 1750svh · __cpSVH unset · __cpAutoG undefined · cursor hooks undefined
+--hdr 83px · hero padding-top 0px · .aitextcol min-height auto · --pps 0.5710
+flapbg flex · actdots flex · #exTicker 12px · table 4col/24cells · .cmp block / .cmpm none
+```
+
+Document heights byte-identical on all three pages at 1440x900 and 1280x800, and the pixel diff
+sits inside the band the control (baseline against itself) establishes.
+
+---
+
 ## Retired
 
 Everything below was fixed in Claude Design and re-derived cleanly on 10 Sep. Kept as a

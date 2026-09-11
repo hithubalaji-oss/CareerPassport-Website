@@ -302,12 +302,186 @@
      It was 529px of a 640px viewport and 558 of 844 — two thirds of the screen, with the next
      section's heading pushing into the fold. A hero that does not reach the bottom of the
      first screen reads as a page that has already started scrolling. */
-  .hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
-        padding-block:calc(var(--bar-h,76px) + clamp(16px,3vh,32px)) 0}
-  .hero .hcopy{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;
-               gap:clamp(14px,2.4vh,22px)}
+  /* Scoped away from For Companies. `.hero` is the section class on BOTH pages and this file
+     is loaded by both, so the rule below was padding For Companies' pinned hero by 101px as
+     well — on top of the 98px `.herotop` already carries. Between them the eyebrow landed
+     360px down an 844px screen and the composer was pushed off the bottom edge.
+
+     For Companies' hero is a pinned fold and is handled on its own terms further down; the
+     one structural thing that tells them apart is that pin. */
+  .hero:not(:has(.heropin)){
+    min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+    padding-block:calc(76px + clamp(16px,3vh,32px)) 0}
+  .hero:not(:has(.heropin)) .hcopy{flex:1 1 auto;display:flex;flex-direction:column;
+               justify-content:center;gap:clamp(14px,2.4vh,22px)}
   /* the logo strip is the hero's floor, not another block below it */
-  .hero .strip{margin-top:auto;padding-bottom:clamp(14px,2.6vh,26px)}
+  .hero:not(:has(.heropin)) .strip{margin-top:auto;padding-bottom:clamp(14px,2.6vh,26px)}
+
+  /* ============================================================================================
+     4 · FOR COMPANIES — THE FRAME AND THE FOLD-2 SURFACES
+     ============================================================================================ */
+
+  /* ---- the header's real height ----------------------------------------------------------
+     `companies.css` declares `--hdr:83px`, which is the desktop bar. The bar on a phone is
+     76px, and --hdr feeds the hero's top padding, every section's scroll-margin and the
+     document's scroll-padding — so anchor jumps overshot and the hero carried 7px of padding
+     for a header that was not there. Partners already declares 76px below 900px; this brings
+     For Companies into line. */
+  :root{ --hdr:76px }
+
+  /* ---- the hero owns its screen ----------------------------------------------------------
+     `.herotop` is `min-height:50%` with the copy centred in it, on top of a padding-top of
+     `--hdr + clamp(8px,1.6vh,20px)`. On an 844px phone that reserved 422px for a 290px block,
+     so the eyebrow landed 370px down the screen — a third of the fold empty before the first
+     word — and the composer below it was pushed off the bottom edge.
+
+     The top band now sizes to its content and the composer takes the rest, centred, with the
+     bottom padding keyed to the browser chrome rather than a flat 72px. */
+  .herotop{
+    min-height:0;
+    flex:0 0 auto;
+    padding-top:calc(76px + clamp(14px,2.6vh,30px));
+    padding-bottom:0;
+  }
+  .herobot{ padding-bottom:calc(100lvh - 100svh + clamp(16px,3vh,34px)) }
+  .hero .ctas{ flex-wrap:wrap }
+
+  /* ---- the departure board does not run on a phone ---------------------------------------
+     `.flapbg` is a grid of animated split-flap tiles behind the whole of fold 2 — a large,
+     permanently-animating layer that on a phone is a faint texture behind a panel that covers
+     most of it. It is real work every frame for something you cannot read, next to four acts
+     that each want the compositor. The fold keeps the page's own background instead, which is
+     what every other fold uses and what makes the page read as continuous. */
+  .flapbg{ display:none }
+  .aidemopin{ background:transparent;border-block:0 }
+
+  /* ---- the four-dot progress marker ------------------------------------------------------
+     It told you which of the four acts you were in when they were a timed carousel you could
+     not control. They are four scroll folds now: the scrollbar is the progress indicator, and
+     a second one in the corner of the panel is noise. */
+  .actdots{ display:none }
+
+  /* ---- Execute arrives whole ---------------------------------------------------------------
+     The graph draws itself in sequence — sources, then wires, then hub, then channels — which
+     is worth watching at desktop size where the whole thing is 600px wide and the beats are
+     legible. At phone size it reads as the diagram being slow to load. The act has its own
+     movement already: the packets running the wires never stop.
+
+     Forced rather than re-timed, because the sequence is class-gated by the driver frame and
+     would otherwise be re-applied on every tick. */
+  .aiex .exnode,
+  .aiex .exdiv,
+  .aiex .exhub{ opacity:1 !important;scale:1 !important }
+  .aiex .exwires .wire{
+    opacity:1 !important;
+    stroke:color-mix(in srgb,var(--emerald) 82%,transparent) !important;
+  }
+  .aiex .exwires .exdotg{ opacity:.95 !important }
+
+  /* ---- the ticker fits the panel ---------------------------------------------------------
+     "Agent matched 504 profiles against the blueprint" ran past the panel's right edge, and it
+     took two goes to fix because the rule that does it is an ID: `#exTicker{font-size:12px;
+     white-space:nowrap; overflow:visible}` with a comment saying it must never crop. At 600px
+     of desktop panel that is right. At 350px it is the line running off the edge.
+
+     Matched at the same specificity rather than with !important, so it is a considered override
+     and not a fight. The line is a status readout, so it takes the label step and ellipses. */
+  #exTicker{
+    font-size:8.5px;letter-spacing:.06em;gap:6px;padding-top:8px;
+    min-width:0;overflow:hidden;
+  }
+  #exTicker span{ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0 }
+  #exTicker b{ flex-shrink:0 }
+
+  /* ---- the cursor's label sits above the pointer, not below ------------------------------
+     Every target the cursor is given on a phone is a button at the bottom of the panel — the
+     submit, "See candidate", the invite — so a label hanging BELOW the tip lands outside the
+     panel every time. Above it, it reads against the panel it belongs to. */
+  .hmlbl{ top:auto;bottom:14px }
+
+  /* ---- the panel holds still between acts -------------------------------------------------
+     The act's copy is one to three lines of title over two to four of description, and it
+     changes with the act — measured 190px, 218px, 190px and 263px for the four. The panel sits
+     below it, so its top moved 47px every time you scrolled from one act to the next, and the
+     Decide panel — sitting lowest — ran 23px past the bottom of the fold and cut off its own
+     action buttons.
+
+     Reserving the tallest of the four makes the panel's position constant, which is the point:
+     four folds that each place their panel somewhere different read as the layout settling
+     rather than as four views of one thing. */
+  .aitextcol{ min-height:268px;justify-content:flex-start }
+
+  /* ---- the sent-confirmation stops stealing the passport's box ---------------------------
+     `.dcsent.on` is `flex:0 0 42%` in a flex row with `.dcpp`, so the moment the invite lands
+     the passport's pane drops from 312px to 181px — and sizeBook re-fits the book to it, so
+     the passport shrinks to 58% of itself WHILE IT IS OPENING. That is the glitch in this act.
+
+     As an overlay it takes no width and no height from the pane, so the measurement that feeds
+     --pps never changes. The scale is frozen for the act as well; between them the passport
+     holds one size from the moment the act begins. */
+  .dcstage{ position:relative }
+  .dcsent{
+    position:absolute;left:0;right:0;bottom:0;
+    flex:0 0 auto;width:auto;
+    display:flex;flex-direction:row;align-items:center;gap:9px;
+    padding:8px 10px;
+    background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--void) 82%,transparent) 34%);
+  }
+  .dcsent.on{ flex:0 0 auto;width:auto;padding-left:10px }
+  .dcsent b{ font-size:11px }
+  .dcsentmeta{ font-size:8px;letter-spacing:.1em }
+
+  /* ---- the differences, as a grid --------------------------------------------------------
+     Three columns, seven bands: the headers, then one band per capability. Every cell is two
+     or three words, so a row can be taken in at a glance instead of read. CareerPassport's
+     column carries the tick and the emerald wash the desktop table gives it, so which column
+     is the answer is legible without reading anything. */
+  .cmpgrid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    border:1px solid var(--hairline);
+    border-radius:12px;
+    overflow:hidden;
+    background:var(--panel);
+  }
+  .cmphd{
+    padding:10px 8px;
+    font-family:var(--font-mono);font-size:8.5px;font-weight:500;
+    letter-spacing:.1em;text-transform:uppercase;line-height:1.25;
+    color:var(--faint);text-align:center;
+    border-bottom:1px solid var(--hairline);
+  }
+  .cmphd.us{
+    color:var(--gold-ink,#d8b877);
+    background:color-mix(in srgb,var(--emerald) 8%,transparent);
+  }
+  /* the capability's name, spanning the three columns it labels */
+  .cmpband{
+    grid-column:1 / -1;
+    padding:9px 10px 7px;
+    font-size:11.5px;font-weight:600;letter-spacing:-.01em;
+    color:var(--ink);
+    background:var(--panel-raised);
+    border-top:1px solid var(--hairline);
+  }
+  .cmpc{
+    display:flex;align-items:flex-start;justify-content:center;gap:4px;
+    padding:9px 7px 11px;
+    font-size:10.5px;line-height:1.3;letter-spacing:-.005em;
+    color:var(--mute);text-align:center;text-wrap:balance;
+  }
+  .cmpc + .cmpc{ border-left:1px solid var(--hairline-soft) }
+  .cmpc.us{
+    color:var(--ink);font-weight:500;
+    background:color-mix(in srgb,var(--emerald) 6%,transparent);
+  }
+  .cmpc.us svg{
+    width:9px;height:9px;flex-shrink:0;margin-top:2px;
+    fill:none;stroke:var(--emerald);stroke-width:3;
+    stroke-linecap:round;stroke-linejoin:round;
+  }
+  /* the stacked-card rules this replaces */
+  .cmpb{ display:none }
 
   /* ---- the logo strips bleed on purpose, but they must not create a scrollbar -----------
      Both pages duplicate their strip to loop it seamlessly, so the track is ~1876px wide inside

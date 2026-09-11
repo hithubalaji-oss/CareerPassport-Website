@@ -285,7 +285,17 @@
   var dcFitPane=false;
   window.__cpBookPane=function(on){ dcFitPane=!!on; sizeBook(); };
 
+  /* D9 · The scale can be frozen for the duration of an act. A book whose scale changes
+     mid-animation is a visible size step — the classic one — and act 4 causes exactly that:
+     the sent-confirmation opens beside the passport and takes 42% of the row, so the pane goes
+     from 312px to 181px at 390x844 and --pps steps 0.314 to 0.182. The passport shrinks to 58%
+     of itself while it is opening, which is the glitch. The mobile layer sizes it once as the
+     act begins and then holds it. */
+  var dcFrozen=false;
+  window.__cpBookFreeze=function(on){ dcFrozen=!!on; if(!dcFrozen) sizeBook(); };
+
   function sizeBook(){
+    if(dcFrozen) return;
     if(!dcPp||!dcStage) return;
     var r=(dcFitPane?dcPp:dcStage).getBoundingClientRect();
     if(!r.width||!r.height) return;
@@ -523,19 +533,38 @@
   /* a pointer moved by a person: it accelerates, overshoots a little, settles, and never
      travels in a perfectly straight line. Entry and exit are journeys from off-stage right. */
   var tx=0, ty=0, cx=0, cy=0, vx=0, vy=0, seeded=false, tilt=0, tclock=0, wasOn=false;
-  function offstage(){ return {x:stage.offsetWidth+150, y:stage.offsetHeight*0.42} }
+  /* D9 · same origin as park(), or the entrance flies in from a different coordinate space */
+  function offstage(){
+    var o=cur.offsetParent||stage;
+    return {x:o.offsetWidth+150, y:o.offsetHeight*0.42};
+  }
+  /* D9 · The cursor is `position:absolute`, so the coordinates written to it are resolved
+     against its OFFSET PARENT — and that is `.aiwrap`, not `#aiStage`. This function was
+     measuring against `#aiStage`.
+
+     On desktop the two share a top-left corner, because the wrap is a two-column grid and the
+     visual column starts at its origin: the error is 0,0 and nothing was ever visibly wrong.
+     On a phone `.aitextcol` takes `order:-1` and the copy stacks above the panel, so the wrap
+     begins 212px higher than the stage — and every target the cursor was given was therefore
+     drawn 212px above the thing it was pointing at. Measured at 390x844: cursor tip at y=581,
+     submit button centre at y=792.
+
+     Reading the offset parent is correct in both layouts rather than a phone special case, and
+     is provably a no-op on desktop where the delta is zero. */
   function park(el,ox,oy){
     if(!el) return;
+    var origin=cur.offsetParent||stage;
     var r=el.getBoundingClientRect();
     /* A display:none target reports an all-zero rect, which used to send the cursor to the
        panel's top-left corner and back — the random flight. An unrendered target is simply
        ignored, so the cursor holds its last real position instead. */
     if(!r.width||!r.height) return;
-    var s=stage.getBoundingClientRect();
+    var s=origin.getBoundingClientRect();
     tx=r.left-s.left+r.width*0.5+(ox||0);
     ty=r.top-s.top+r.height*0.5+(oy||0);
     if(!seeded){ var o=offstage(); cx=o.x; cy=o.y; seeded=true }
-    cur.classList.toggle('left',tx>stage.offsetWidth*0.55);
+    /* the flip is decided against the same box the position is resolved in */
+    cur.classList.toggle('left',tx>origin.offsetWidth*0.55);
   }
   function setVisible(on){
     if(on===wasOn) return;
@@ -868,14 +897,30 @@
       cur.cells.push(cp.getAttribute('data-m') || cp.textContent);
     }
   });
-  out.innerHTML=rows.map(function(r){
-    var others=r.cells.slice(1,3).map(function(c,i){
-      return '<div class="mo"><em>'+(cols[i+1]||'').toUpperCase()+'</em><p>'+c+'</p></div>';
-    }).join('');
-    return '<div class="cmpb"><b>'+r.label+'</b>'+
-      '<div class="mus"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'+
-      '<div><em>CAREERPASSPORT</em><p>'+r.cells[0]+'</p></div></div>'+others+'</div>';
-  }).join('');
+  /* D9 · A GRID, not a stack of cards. Six capabilities x four columns of full sentences was
+     eighteen paragraphs read one after another — it had stopped being a comparison and become
+     a page of prose you scroll past. Three columns now, each cell two or three words, so the
+     contrast is something you SEE across a row rather than something you read down a column.
+
+     The capability's name is a band spanning the three columns rather than a fourth column of
+     its own: at 320px a four-column table gives each cell about 70px, which no phrase survives.
+     So the section reads as three columns and seven bands — the headers, then one per
+     capability. Desktop still builds and hides this, exactly as before, and its own table is
+     untouched. */
+  out.innerHTML=
+    '<div class="cmpgrid">'+
+      cols.map(function(c,i){
+        return '<div class="cmphd'+(i===0?' us':'')+'">'+c+'</div>';
+      }).join('')+
+      rows.map(function(r){
+        return '<div class="cmpband">'+r.label+'</div>'+
+          r.cells.slice(0,3).map(function(c,i){
+            return '<div class="cmpc'+(i===0?' us':'')+'">'+
+              (i===0?'<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>':'')+
+              '<span>'+c+'</span></div>';
+          }).join('');
+      }).join('')+
+    '</div>';
 })();
 
 /* ---- the companies strip: user-filled slots, duplicated for a seamless loop ---- */

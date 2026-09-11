@@ -142,7 +142,14 @@
   function buildActs() {
     G0 = window.__cpDemoG0 || 0.2055;
     var E = 0.0008;
-    ACT = [[G0, 0.452 - E], [0.452, 0.652 - E], [0.652, 0.852 - E], [0.852, 1]];
+    /* Act 1 stops at .385, not at .452. Its clock is `p = g / .43`, and the last fifth of that
+       range is the AFTERMATH: the blueprint recedes at p=.900, "trip finalised" at .912,
+       "hiring journey launched" at .940. Played to .452 the act ends at p=1.05 — so a reader
+       who arrived to watch the blueprint being drafted was left looking at a mostly empty panel
+       with the form ghosted out behind a confirmation, which is what made this fold read as
+       broken. .385 is p=.895: just past the press, with the blueprint still on screen. The
+       launch beat is not lost, it is what act 2 opens on. */
+    ACT = [[G0, 0.385], [0.452, 0.652 - E], [0.652, 0.852 - E], [0.852, 1]];
   }
 
   function demoFolds(sec) {
@@ -173,6 +180,14 @@
       var a = actFromScroll();
       if (a === act) return;
       act = a; t0 = Date.now();
+      /* The passport's scale is measured once as its act begins and then held — see
+         __cpBookFreeze. Unfrozen first so the measurement is taken against the pane as it is
+         now, then held for the rest of the act. */
+      if (window.__cpBookFreeze) {
+        window.__cpBookFreeze(false);
+        if (act === 3 && window.__cpBookPane) window.__cpBookPane(true);
+        if (act === 3) window.__cpBookFreeze(true);
+      }
       if (!id) id = raf(step);
     }
 
@@ -181,6 +196,7 @@
       live = false;
       if (id) { window.cancelAnimationFrame(id); id = 0; }
       window.__cpAutoG = null;
+      if (window.__cpBookFreeze) window.__cpBookFreeze(false);
       if (window.__cpDemoFrame) window.__cpDemoFrame();
     }
 
