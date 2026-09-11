@@ -275,9 +275,19 @@
      scale could change mid-animation, which is a visible size step. */
   var dcPad=1.08;
   var dcStage=dcPp?dcPp.parentElement:null;
+  /* D8 · which box the book is fitted into. sizeBook measures dcStage — the pane's PARENT —
+     and a ResizeObserver watches that same parent. In act 4 past g=.988 the pane itself
+     narrows (the sent-confirmation takes room beside it) while the parent does not, so no
+     callback fires, the scale stays at its old value and the book overflows: measured at
+     390x844, the pane went 351px wide to 220px and the book kept a 314px spread, hanging
+     95px past the panel's left edge. Fitting the pane instead of the parent is correct in
+     both cases but would re-scale the desktop book, so the mobile layer asks for it. */
+  var dcFitPane=false;
+  window.__cpBookPane=function(on){ dcFitPane=!!on; sizeBook(); };
+
   function sizeBook(){
     if(!dcPp||!dcStage) return;
-    var r=dcStage.getBoundingClientRect();
+    var r=(dcFitPane?dcPp:dcStage).getBoundingClientRect();
     if(!r.width||!r.height) return;
     dcPp.style.setProperty('--pps',
       Math.max(0.12, Math.min(r.width/(920*dcPad), r.height/700)).toFixed(4));
@@ -291,6 +301,7 @@
   if(window.ResizeObserver&&dcStage){
     dcRO=new ResizeObserver(resizeBook);
     dcRO.observe(dcStage);
+    if(dcPp) dcRO.observe(dcPp);   /* D8 · see __cpBookPane above */
   }
   /* a short burst of paper for the offer */
   if(dcConf){
@@ -783,12 +794,21 @@
     /* ---------- who is on stage, and where their hand is ---------- */
     var curOn2 = (p>=.590&&p<.995&&g<A2) ||
                  (g>=.700&&g<.852) || (g>=.872&&g<.992);
+    /* D8 · On a phone the cursor is narrowed to the few deliberate clicks — it was crossing
+       the panel to hover chips, the slider and matrix cells, which at this size reads as the
+       pointer wandering rather than as someone working. Both hooks are inert unless the
+       mobile layer publishes them, so desktop keeps the full choreography. */
+    if(window.__cpCursorOn) curOn2=!!window.__cpCursorOn(g,p);
     cur.classList.toggle('on',curOn2);
     cur.classList.toggle('away',!curOn2);
     setVisible(curOn2);
     cur.classList.toggle('click',subPress||evPress||dcPress);
 
-    if(g<A2){
+    var aim=window.__cpCursorAim;   /* D8 */
+    if(aim){
+      var t=aim(g,p,{submit:submitBtn,ev:evBtn,share:dcShare,live:dcLive[0]});
+      if(t) park(t,2,2);
+    }else if(g<A2){
       /* one target per beat, in the order the beats run */
       if(chipHov>=0) park(chips[chipHov],0,2);
       else if(onSlider) park(sThumb,0,1);

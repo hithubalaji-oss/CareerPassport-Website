@@ -383,6 +383,87 @@ The design file carries the unhooked forms, so every export reverts this. The ch
 
 ---
 
+## D8 — For Companies: the content edits, and the four-fold demo's hooks
+
+**Files:** four hooks in `src/scripts/companies.js`, markup in `Hero.astro`, `ProcessDemo.astro`,
+`Comparison.astro`, `Header.astro` and `Footer.astro`, plus `src/scripts/mobile-pages.js`
+
+### The content edits
+
+Asked for on the canvas' terms, so all of them are reverted by the next export.
+
+| | |
+|---|---|
+| The Companion pill | removed from the hero composer, **both viewports** |
+| `Accept blueprint` | now **`Design the journey`**, both viewports |
+| The evaluation matrix | nine single-title cells — Reasoning, Prioritization, Judgment, Expertise, Execution, Initiative, Communication, Collaboration, Alignment — both viewports |
+| The footer CTA | now **`Sign up`** |
+| The drawer | lists home as well as the two interior pages |
+
+**The pill could not simply be deleted.** `companies.js` called
+`pill.classList.toggle('hot',done)` unguarded, so removing the markup threw and took the whole
+hero driver — the typing, the send, the cursor — with it. The line is now guarded, which also
+means an export that brings the pill back works unchanged rather than breaking. The check
+watches for `class="aipill"` returning to `Hero.astro` through the new `deleted` list, since
+what is being asserted is an absence and `reverted` only reads the delta's own file.
+
+The matrix cells each had a `<b>` title over an `<em>` method ("Multiple choice", "Rank
+order"); at phone widths the two lines overlapped each other and the cell below. The driver
+reads cells by their `data-m` index and never touched the `<em>`, so dropping it is safe.
+
+### The four hooks
+
+The demo is four scroll folds on a phone rather than one timed carousel, the cursor is
+narrowed to three deliberate clicks, and the passport is fitted to its own pane. All of it
+lives in `mobile-pages.js`; `companies.js` gains only the way in.
+
+```js
+if(pill) pill.classList.toggle('hot',done);          /* the guard */
+window.__cpBookPane=function(on){ ... }               /* fit the pane, not its parent */
+if(window.__cpCursorOn) curOn2=!!window.__cpCursorOn(g,p);
+var aim=window.__cpCursorAim; if(aim){ ... }          /* one target per act */
+```
+
+Every one falls through to the authored behaviour when nothing is published, which is what
+keeps desktop identical — verified below.
+
+**`__cpBookPane` exists because of a real bug.** `sizeBook` fits the passport to `dcStage`, the
+pane's *parent*, and a ResizeObserver watches that same parent. Past `g=.988` the pane itself
+narrows — the sent-confirmation takes room beside it — while the parent does not, so no
+callback fires and the book keeps a scale computed for a wider box. Measured at 390x844: the
+pane went from 351px to 220px and the book held a 314px spread, hanging 95px past the panel's
+left edge. Fitting the pane is correct in both cases but would re-scale the desktop book, so
+the mobile layer asks for it. After: 0px past the panel at 360, 390 and 412.
+
+**The cursor hooks exist because the desktop choreography does not survive the scale change.**
+On desktop the pointer crosses the panel to hover a chip, then the slider, then a matrix cell,
+then the submit — a person working through a form, eleven distinct positions across the act. At
+phone scale those targets are millimetres apart and the same path reads as skittering. On a
+phone it does one thing per act: arrives, presses the one button that matters, leaves. Three
+moments in the section — Design the journey, the evidence, the invite.
+
+### The stacked comparison
+
+Three columns on a phone, not four, and each cell has a short form carried in an inert
+`data-m` attribute. Four paragraphs per capability, six times over, stopped reading as a
+comparison. CV screening is the column dropped. The desktop table is untouched and still
+carries all four columns, 24 cells and its full sentences.
+
+### What desktop was checked against
+
+Not pixels — the animated pages diff ~1.7% against themselves. Behaviour, compared to
+`origin/main` at 1440x900:
+
+```
+hero 420svh · demo 1750svh · __cpSVH unset · __cpAutoG undefined
+cursor hooks undefined · --pps 0.5710 · table 4 columns · burger none
+11 distinct cursor positions across the act   ← identical on both
+```
+
+Document heights byte-identical on all three pages at 1440x900 and 1280x800.
+
+---
+
 ## Retired
 
 Everything below was fixed in Claude Design and re-derived cleanly on 10 Sep. Kept as a

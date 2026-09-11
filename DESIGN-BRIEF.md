@@ -306,6 +306,74 @@ page at every width measured. The sheet should start at the bar's real height.
 
 ---
 
+## 6f. Content changes made in code, 11 Sep
+
+These are canvas decisions, not code workarounds — they are in code only because that is where
+they could be made today, and every export reverts them.
+
+| | |
+|---|---|
+| The **Companion pill** in the hero composer | removed, **both viewports** |
+| **`Accept blueprint`** | now **`Design the journey`**, both viewports |
+| The **evaluation matrix** | nine single-title cells, both viewports: Reasoning, Prioritization, Judgment, Expertise, Execution, Initiative, Communication, Collaboration, Alignment |
+| The **footer CTA** | now **`Sign up`** |
+
+The matrix cells each carried a `<b>` title over an `<em>` method — "Multiple choice", "Rank
+order". At phone widths the two lines overlapped each other and the cell below. Single titles
+also let the grid go three across instead of two.
+
+One caution for whoever makes the pill change on the canvas: `companies.js` reads
+`#hCompPill` and calls `.classList.toggle` on it without a guard. Removing the markup alone
+throws and takes the entire hero driver with it. The shipped code guards that line.
+
+---
+
+## 6g. Four things on For Companies that the phone layout cannot fix from CSS
+
+**`.hmcur.left` has no rule.** The driver decides which side the hiring manager's label
+belongs on — `cur.classList.toggle('left', tx > stage.offsetWidth*0.55)` — and no stylesheet
+anywhere consumes `.left`. The class has been toggling against nothing since it was written,
+so the label always hangs to the right of the cursor and runs off the frame near the right
+edge. `.aidemopin` is `overflow:hidden`, so it is cropped rather than scrolling the page — it
+simply looks broken. The flip rule is shipped for mobile; it belongs on the canvas for both.
+
+**`.exnode.src` is hidden below 820px.** `@media(max-width:820px){ .exnode.src{display:none} }`
+removes the whole DATABASE column — the 128 / 64 / 312 source boxes — so the execution act
+reads on a phone as a lone Companion pill with wires going nowhere. The channel column
+survives but its boxes are centred on 84% with `white-space:nowrap` and run past the right
+edge. Both columns fit once the nodes drop to 8px and the hub keeps only its bot mark rather
+than the COMPANION wordmark.
+
+**`sizeBook` fits the passport to the wrong box.** It measures `dcStage`, the pane's parent,
+and the ResizeObserver watches that same parent. Past `g=.988` the pane narrows while the
+parent does not, so no callback fires and the passport keeps a scale computed for a wider box.
+Measured at 390x844: pane 351px to 220px, book still 314px, hanging 95px past the panel edge.
+Fitting `dcPp` is correct at every width.
+
+**`--frame-w` is a share of the SHELL.** `min(shellw * .39, 62vh)`, so the closing CTA's 16:9
+product still resolves to 152px on a 390px phone — a stamp in a 350px block — and its 16px
+radius takes 11% of its own width. Both pages use this component.
+
+---
+
+## 6h. The demo is one carousel; on a phone it wants to be four folds
+
+The section's four acts cross-fade inside one pinned panel on a single clock. On a phone that
+means you arrive and twenty-two seconds later it has all happened, whether you were reading or
+not. It is now four scroll stops — scrolling moves you act to act, each act plays itself once
+when you arrive — which is the homepage's model: the fold comes from the scroll position, the
+animation inside it runs on its own clock.
+
+That needed four hooks in `companies.js`, registered as **D8**. If the canvas adopts the same
+structure they stop being local deltas.
+
+Related: the hiring manager's cursor crosses the panel to hover a chip, the slider, a matrix
+cell and then the submit — eleven distinct positions across the act. At phone scale those
+targets are millimetres apart and the same path reads as the pointer skittering. On a phone it
+now does one thing per act: arrives, presses the one button that matters, leaves.
+
+---
+
 ## 7. Housekeeping — artboards deleted from the repository
 
 These were removed from GitHub because no live page, artboard wrapper or shipped file referenced
@@ -343,6 +411,6 @@ npm run check:design    # the export is internally consistent
 npm run check:deltas    # each fixed item now reports "can be retired"
 ```
 
-Every item above has a matching entry in `LOCAL-DELTAS.md` (D1–D7) and a machine check that fails
+Every item above has a matching entry in `LOCAL-DELTAS.md` (D1–D8) and a machine check that fails
 if the fix is missing. As each one is fixed here, its entry gets deleted there and the design file
 becomes the single source of truth for that behaviour again.

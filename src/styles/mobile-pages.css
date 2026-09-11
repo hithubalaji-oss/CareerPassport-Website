@@ -214,6 +214,25 @@
   /* and smaller, so the flip has less to place */
   .hmlbl{font-size:11px;padding:3px 7px;letter-spacing:0}
 
+  /* ---- the send button says what it is doing --------------------------------------------
+     The hiring manager presses send and the composer's only feedback was the icon dimming.
+     On a phone, where the whole hero is the composer, that beat needs to say something: the
+     button becomes a pill that names the work it just started. It is also the handover to the
+     next fold, which opens on the blueprint being drafted — so it names that rather than a
+     generic "processing".
+
+     Driven entirely off `.sending`, which companies.js already puts on the composer at the
+     press, so this needs no markup and no driver change. */
+  .hcomp.sending .aisearch{
+    width:auto;padding:0 11px;gap:7px;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  .hcomp.sending .aisearch::after{
+    content:"Building your blueprint";
+    font-family:var(--font-mono);font-size:8.5px;font-weight:500;
+    letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;
+  }
+
   /* ---- the technology chips, on one row -------------------------------------------------
      They wrapped to three rows and took a third of the panel. Set at their natural widths one
      row is 470px inside a 250px panel, so the row cannot simply be made nowrap — it would crop
