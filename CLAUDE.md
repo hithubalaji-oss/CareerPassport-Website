@@ -129,36 +129,47 @@ And `.fine` is secondary prose separated by **colour**, not size.
 
 ---
 
-## Where things stand (11 Sep)
+## Where things stand (11 Sep, second pass)
 
-`main` = `8d3ec93`. Working tree clean, nothing unpushed. All 9 deltas pass, design export
-consistent.
-
-Mobile is **done and verified** on all three pages:
+`main` carries two passes of mobile work. Working tree clean, all 10 deltas pass, design
+export consistent.
 
 | | before | after |
 |---|---|---|
-| For Companies scroll | 26–27 screens | 7.7–8.9 |
-| Homepage scroll | — | 8.6–8.9 (1.25 screens per fold, both directions) |
+| For Companies scroll | 26–27 screens | 10.3–12 (four real folds, ~2 scrolls each) |
+| Homepage scroll | — | 8.6–8.9 |
 | Burger contrast | 1.53:1 worst | ~17:1 across 84 samples |
-| Menu sheet under the bar | 18px on every page | 0px on all 39 combinations |
+| Menu | a 58px strip, 18px under the bar | the full viewport |
 | Load event | 5338ms | 1753ms |
 
-24 mobile combinations (3 pages × 8 sizes, 320×568 → 768×1024, scrolled both ways): no page
-errors, no horizontal scroll, burger present on all.
+24 mobile combinations (3 pages x 8 sizes, 320x568 → 768x1024, both directions): no errors,
+no horizontal scroll, burger present on all.
+
+**How desktop is proven now.** Pixels alone do not work — the homepage and For Companies run
+rAF animations and diff ~1.7% against *themselves*. Compare BEHAVIOUR against `origin/main`
+at 1440x900 instead. For Companies should read, identically on both:
+
+```
+hero 420svh · demo 1750svh · __cpSVH unset · __cpAutoG undefined
+cursor hooks undefined · --pps 0.5710 · table 4 columns · burger none
+11 distinct cursor positions across the act
+```
+
+That works because every mobile override falls through to the authored value when nothing
+publishes it. Keep it that way — it is what makes "desktop untouched" true by construction
+rather than by inspection.
 
 ### Open, flagged to the user, not started
 
-1. **The `<image-slot>` placeholders are still unfilled** on both interior pages — the "Drop
-   a product screen grab" boxes. One overlaps the ring on the Partners outro. Waiting on real
-   artwork. Their ids say what belongs in each.
+1. **The `<image-slot>` placeholders are still unfilled** on both interior pages. One overlaps
+   the ring on the Partners outro. Waiting on real artwork; their ids say what belongs in each.
 2. **Two demo act layers never appear** on For Companies — `.verifying` and `.ctally`. Not on
    mobile and **not on the scroll-driven desktop path either**, so it is pre-existing and
    possibly dead states. Flagged, deliberately not changed.
-3. **`README.md` is stale.** It describes the old flat deploy bundle — `index.html` at the
-   root, `_redirects`, no build step. None of that is true since the Astro move. Worth a
-   rewrite when there is a reason to touch it.
-4. **The staged hero entrance** offered in place of a loader — never built, user has not asked.
+3. **`README.md` is stale** — it describes the pre-Astro flat deploy bundle.
+4. **The staged hero entrance** offered in place of a loader; never built.
+5. **Claude Design has been told none of this.** `DESIGN-BRIEF.md` now runs to items 1–7 and
+   every one is still outstanding — all 10 deltas are re-applied by hand after each export.
 
 ### Session mechanics
 
