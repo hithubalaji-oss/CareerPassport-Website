@@ -1,0 +1,184 @@
+/* ==============================================================================================
+   MOBILE — For Companies and For Recruitment Partners
+   ==============================================================================================
+
+   The homepage's mobile treatment was rebuilt over several passes: one type ladder instead of
+   ten sizes inside a 6px band, one gutter, copy anchored clear of the browser chrome, and the
+   art measured against the copy rather than guessed. None of that reached the two interior
+   pages, which were still carrying whatever each of them happened to be authored with. Measured
+   at 390px wide before this file existed:
+
+     For Companies   --gut 40px (double the other two pages), 42 paragraphs at 11.5px, and the
+                     comparison — the page's main body copy on a phone — set at 11.5 and 12.5px
+     Partners        ledes at 14px, list copy at 13.5px, and every marketing CTA at 12px in a
+                     44px pill
+
+   This file carries the homepage's decisions across. It is the exact counterpart of
+   mobile-passport.css and follows the same two rules, which are what make it safe:
+
+     1. EVERY rule is inside `@media (max-width:1024px)`. Nothing here can reach the desktop
+        layout, so the desktop pages stay provably as drawn.
+     2. It is not part of the design export, so a re-derivation from Claude Design rewrites
+        companies.css and partners.css from the artboards and leaves this untouched.
+
+   Loaded LAST on both pages, after the page sheet and cp-header.css, so it needs no specificity
+   games to win — matching how mobile-passport.css is loaded on the homepage.
+   ---------------------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+
+  /* ============================================================================================
+     1 · THE TYPE LADDER
+     ============================================================================================
+     The same five steps the homepage uses, on the same ~1.25 ratio: display / heading / body /
+     label, plus one control height so no two ranks of button can end up the same size by
+     accident. --m-body and --m-label are FLOORS, not parameters — 15px is the body readability
+     floor on a phone and 11px is the design system's label size with its +0.72px tracking.
+
+     These values are duplicated from homepage.css rather than shared from one file, and that is
+     deliberate: the homepage's copy lives inside a design-derived stylesheet that is rewritten
+     wholesale on every export, so it cannot be the thing another page imports. If the two ever
+     need to move together, they move here and in homepage.css:673 — which is why that line
+     number is written down.
+
+     The three height steps below it are the same ones mobile-passport.css applies: on a short
+     phone a display headline sets in two lines at 30px and three at 26px, and the third line is
+     what pushes the art off the screen. Stepping the size keeps every headline to two lines and
+     hands the height back to the page instead. */
+  :root {
+    --m-display: 30px;  --m-display-lh: 1.14;  --m-display-tr: -.02em;
+    --m-head:    23px;  --m-head-lh:    1.2;   --m-head-tr:    -.015em;
+    --m-body:    15px;  --m-body-lh:    1.45;
+    --m-label:   11px;  --m-label-lh:   1.4;   --m-label-tr:   .18em;
+    --m-ctl:     52px;
+  }
+  @media (max-height: 700px) { :root { --m-display: 28px } }
+  @media (max-height: 660px) { :root { --m-display: 26px } }
+  @media (max-height: 620px) { :root { --m-display: 24px } }
+
+  /* ---- display: the one headline that opens each page ---------------------------------- */
+  .hero h1,
+  .hero .hbig {
+    font-size: var(--m-display);
+    line-height: var(--m-display-lh);
+    letter-spacing: var(--m-display-tr);
+    text-wrap: balance;
+  }
+
+  /* ---- heading: every section title on both pages --------------------------------------
+     .oneline is authored to hold one line at desktop widths and already gives that up below
+     760px; it joins the ladder here rather than keeping a clamp of its own. */
+  .sec h2, .artsec h2, .close h2,
+  .acttitle, .oneline,
+  .slabh, .pull, .scopy h2, .stkc h2,
+  .outro .ocopy h2 {
+    font-size: var(--m-head);
+    line-height: var(--m-head-lh);
+    letter-spacing: var(--m-head-tr);
+    text-wrap: balance;
+  }
+
+  /* ---- body: the readability floor -----------------------------------------------------
+     .fine is secondary prose, not a label: it is separated by colour rather than by size, which
+     is what the homepage already does with `.col.tight .fine`. A footnote set at the 11px label
+     size on a phone is the same defect this file exists to fix. */
+  /* Scoped away from the product surfaces. Both pages carry simulated product screens — the
+     blueprint panel and the record deck on For Companies, the dashboard, the hub diagram and the
+     collaboration sheet on Partners — whose type is deliberately miniature because it is standing
+     in for a dense UI seen at a distance. Setting those at 15px would not make them readable, it
+     would break the illusion and overflow the panels they sit in. Same judgement the homepage
+     makes for the passport's interior, which keeps its own small sizes. */
+  .lede, .hline,
+  .sec p, .artsec p, .close p,
+  .sec li, .artsec li,
+  .scopy .lede, .scopy p,
+  .scopy ul.plain li, .stkc .stkbody p {
+    font-size: var(--m-body);
+    line-height: var(--m-body-lh);
+    text-wrap: pretty;
+  }
+  .lede, .hline { line-height: 1.52 }
+  /* the exclusion list itself: anything inside a mock product surface keeps its authored size */
+  .dia p, .dia li, .scr .dash p, .stage2 p, .stage2 li,
+  .aistage p, .pslide p, .dcard p,
+  .card p, .panel p, .sheet p { font-size: revert; line-height: revert }
+  .fine { font-size: var(--m-body); line-height: var(--m-body-lh); color: var(--faint) }
+
+  /* The comparison is For Companies' main body copy on a phone, and it was the smallest type on
+     the page: the "us" row at 12.5px and each of the three "others" rows at 11.5px. Its own
+     selectors are two classes deep, so they are matched here rather than relying on this file
+     being loaded last. The mono captions beside them are genuine labels and take the label step;
+     the card title is body at 600 rather than a sixth size. */
+  .cmpb > b { font-size: var(--m-body); line-height: var(--m-body-lh); font-weight: 600 }
+  .cmpb .mus p, .cmpb .mo p { font-size: var(--m-body); line-height: var(--m-body-lh) }
+  .cmpb .mus em, .cmpb .mo em { font-size: var(--m-label); line-height: var(--m-label-lh) }
+
+  /* ---- label: the eyebrow, and the mono tags that caption a row ------------------------- */
+  .eyebrow {
+    font-size: var(--m-label);
+    line-height: var(--m-label-lh);
+    letter-spacing: var(--m-label-tr);
+  }
+
+  /* ---- control: one height for every marketing CTA -------------------------------------
+     cp-shared.css steps .btn down to 44px/12px on a phone — the smallest type on either page
+     sitting in the largest target, which reads as a mistake rather than a hierarchy. The
+     homepage's --m-ctl is 52px and its controls set at body size; both follow here. The
+     uppercase tracking is left exactly as drawn. */
+  .btn, .btn.gh, .btn.sec {
+    height: var(--m-ctl);
+    padding: 0 22px;
+    font-size: 14px;
+  }
+  /* a CTA pair has to be able to wrap rather than run off the gutter on a 320px phone */
+  .hcta, .hero .row, .stkc .row, .close .row { flex-wrap: wrap }
+
+  /* ---- the card stack stacks ------------------------------------------------------------
+     Partners' three cards are a two-column grid, and below 1024px the art column is given
+     `clamp(176px,42%,236px)`. On a 390px phone that leaves the copy about 170px of measure —
+     four words a line — and it was only tolerable because the copy was set at 13.5px. On the
+     ladder it is not tolerable at all, and it was not really working before either.
+
+     So below 760px the card becomes one column: copy at full measure, the glyph beneath it as a
+     band. The card's authored min-height goes with it, since the height now follows the content
+     instead of a figure chosen for a side-by-side layout. */
+  @media (max-width: 760px) {
+    .stkc {
+      grid-template-columns: minmax(0, 1fr);
+      height: auto;
+      min-height: 0;
+      gap: 14px;
+    }
+    .stkc p, .stkc b { max-width: none }
+    .stkimg { height: clamp(120px, 20vh, 168px) }
+    .stkimg svg { width: 100%; height: 100% }
+  }
+
+  /* ============================================================================================
+     2 · THE FRAME
+     ============================================================================================
+     One gutter for all three pages. For Companies was resolving --gut to 40px on a phone,
+     because its 1199px breakpoint sets `:root{--gut:40px}` for the tablet collapse and nothing
+     steps it back down — so its copy column was 40px narrower each side than the homepage's and
+     Partners' at the same width. Measured: 40 against 20.
+
+     Declared with the same clamp the other two pages use rather than a flat 20px, so the value
+     is one thing in three places instead of a fourth literal. */
+  :root { --gut: clamp(20px, 4.4vw, 72px) }
+
+  /* the vertical rhythm comes down with the width. 13vh of an 844px phone is 110px of air above
+     AND below every section — a third of a screen spent twice per section, which is a large part
+     of why For Companies ran to 26 screens on a phone. */
+  :root { --sec: clamp(48px, 7vh, 88px) }
+
+  /* nothing sits in the gutter, and nothing sits under the home indicator */
+  .sec, .artsec, .close { padding-inline: var(--gut) }
+  .close { padding-bottom: max(var(--sec), env(safe-area-inset-bottom, 0px)) }
+
+  /* ---- the logo strips bleed on purpose, but they must not create a scrollbar -----------
+     Both pages duplicate their strip to loop it seamlessly, so the track is ~1876px wide inside
+     a 390px frame. cp-shared.css sets body{overflow-x:hidden}, which is the one rule iOS Safari
+     ignores for touch panning; `clip` on the root is what actually holds, and it never creates a
+     scroll container so the sticky pins are untouched. Same fix as homepage.css:690. */
+  html, body { overflow-x: clip }
+}
