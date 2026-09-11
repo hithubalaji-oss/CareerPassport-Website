@@ -273,6 +273,38 @@ call them internally, and neither has any effect on desktop.
 
 ---
 
+## D6 — No hero video on a phone, and the crowd plate does not go first
+
+**Files:** `src/scripts/homepage.js` (the `<video>` element and its `loadedmetadata` guard),
+`src/pages/index.astro` (two preload hints)
+
+Three changes, all about what a phone downloads before it can paint. Measured on a simulated
+mid-range phone — 1.6 Mbps, 150ms RTT, 4x CPU throttle:
+
+| | before | after |
+|---|---|---|
+| first paint | 1,480 ms | **1,110 ms** |
+| load event | 5,338 ms | **1,753 ms** |
+| transferred | 299 KB | 277 KB |
+
+1. **The hero video is not emitted at all below 1025px.** The mobile layer hides `.heroFig` —
+   there is no hero figure in the mobile composition — but a `display:none` `<video
+   preload="auto">` still downloads in full, and it was the whole of the 3.6s between
+   DOMContentLoaded and the load event. `heroVideo` is therefore null on mobile, so the
+   top-level `loadedmetadata` listener is guarded; everything else that touches it lives
+   inside the driver, which does not run there.
+2. **Its preload hint is `media="(min-width: 1025px)"`**, for the same reason.
+3. **The crowd plate's preload is `fetchpriority="low"`.** It is 227 KB of a 277 KB page — 82%
+   of everything the browser downloads — and the reader does not see it until fold 2, several
+   screens down. At default priority it competed with the stylesheet for the pipe. Low still
+   fetches it immediately, so it is warm long before fold 2; it just stops it going first.
+
+Nothing here can be reverted by an export in a way the check would miss, because the marker is
+the `window.__cpManual` guard in the emitted markup — an export restores the unconditional
+`<video>` and the check fails.
+
+---
+
 ## D5 — Eyebrows removed from every fold but two
 
 **Files:** thirteen deletions across `src/components/**`, plus one rule in

@@ -46,7 +46,14 @@ try{
 $('#crowd').innerHTML='<div class="cbg" id="cbg"><img id="cbgImg" src="'+CROWD_SRC+'" alt=""></div>'+
   '<div class="hglow" id="hglow"></div>'+
   '<div class="heroFig" id="hero"><div class="hbloom"></div>'+
-    '<video id="heroVideo" src="'+(hvAlpha?LIFT_ALPHA_SRC:LIFT_SRC)+'" muted playsinline preload="auto" style="position:absolute;width:2px;height:2px;opacity:0;pointer-events:none;left:-9999px"></video>'+
+    /* DELTA D6 — no hero video on a phone at all.
+       The mobile layer hides .heroFig outright (there is no hero figure in the mobile
+       composition), but a display:none <video preload="auto"> still downloads in full: it was
+       the largest thing on the page after the crowd plate and it pushed the load event to
+       5.3s on a throttled 4G phone for bytes that are never drawn. Omitted rather than
+       lazy-loaded, because nothing on mobile ever asks for it. */
+    (window.__cpManual ? '' :
+      '<video id="heroVideo" src="'+(hvAlpha?LIFT_ALPHA_SRC:LIFT_SRC)+'" muted playsinline preload="auto" style="position:absolute;width:2px;height:2px;opacity:0;pointer-events:none;left:-9999px"></video>')+
     '<canvas class="heroCv" id="heroCv"></canvas><span class="hand" id="hand"></span>'+
     '<div class="hbloom f" id="hpalm"></div></div>'+
   '<div class="dust">'+dust+'</div><div class="claims" id="claims"></div><div class="vig"></div>';
@@ -1134,7 +1141,8 @@ function bakeHeroFrames(){
   }
   step();
 }
-heroVideo.addEventListener('loadedmetadata',function(){
+/* null on mobile — see delta D6 above; the element is not emitted there at all */
+if(heroVideo) heroVideo.addEventListener('loadedmetadata',function(){
   hvDur=heroVideo.duration||5;
   hvFrames.length=0; hvReady=false;   /* a source swap re-bakes from scratch */
   /* half the linear resolution on a phone — a quarter of the retained bytes */

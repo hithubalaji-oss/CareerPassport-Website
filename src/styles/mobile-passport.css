@@ -332,13 +332,19 @@
      over a third of the scrolling removed, with no state cut and none shortened below the
      time its own animation takes.
      ------------------------------------------------------------------------------------------ */
-  #f1 { --h: 110 !important }
-  #f2 { --h: 145 !important }
-  #f3 { --h: 165 !important }   /* the longest: the cover opens, then a leaf turns, then six
-                                   stamps land — 1.4s of animation before there is anything
-                                   to read */
-  #f4 { --h: 145 !important }
-  #f5 { --h: 130 !important }
+  /* ONE HEIGHT FOR EVERY SECTION, and that is the point. A state changes when a section's
+     centre crosses the centre of the screen, so the scroll between two states is the average
+     of their two heights — which means unequal sections produce unequal travel. Measured on
+     the old 110/145/165/145/130 ladder: 1.44 screens from fold 1 to 2, then 1.64, 1.44, 1.31,
+     and 1.05 to the closing frame. The first four felt long and the last one arrived before
+     you had finished the one before it, which is exactly what was reported.
+
+     Equal sections make every step the same 1.25 screens — about two unhurried swipes — and
+     the page gets shorter doing it, 9.0 screens to 8.5. The outro joins the ladder for the
+     same reason. The footer stays at 100svh: it is the end of the page, nothing follows it to
+     travel to, and padding it out to match would just be blank screen under the last line. */
+  #f1, #f2, #f3, #f4, #f5 { --h: 125 !important }
+  #outro { min-height: 125svh }
 
   /* ==========================================================================================
      THE DISPLAY SIZE FOLLOWS THE VIEWPORT'S HEIGHT, not just its width
