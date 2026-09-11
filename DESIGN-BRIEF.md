@@ -374,6 +374,32 @@ now does one thing per act: arrives, presses the one button that matters, leaves
 
 ---
 
+## 6i. Three more bugs at source on For Companies
+
+**`park()` measures against the wrong box.** It resolves a cursor target against `#aiStage` and
+writes the result to `.hmcur`, which is `position:absolute` — so the browser resolves it against
+its offset parent, `.aiwrap`. On desktop the two share a top-left corner and the error is 0,0,
+which is why this has never shown. Change the layout so the copy stacks above the panel, as it
+must on a phone, and the wrap starts 212px higher than the stage — every target is then drawn
+212px above the thing it points at. Reading the offset parent is correct in both layouts.
+
+**`.dcsent.on` takes 42% of the passport's row.** It is `flex:0 0 42%` beside `.dcpp`, so when
+the invite lands the pane drops from 312px to 181px and `sizeBook` re-fits the book to it: the
+passport shrinks to 58% of itself while it is opening. An overlay, or a scale held for the act,
+or both.
+
+**`#exTicker` cannot crop.** `font-size:12px; white-space:nowrap; overflow:visible`, set on an
+ID, with a comment saying it must never crop. At 600px of desktop panel that is right; at 350px
+the line runs off the edge and there is no class-level way to say otherwise.
+
+Two more, both about the phone rather than the canvas, recorded so the same shapes are not
+re-drawn: act 1 plays a fifth of its range on what happens AFTER the blueprint, so on any clock
+that runs to the end of the act the reader is left looking at the aftermath rather than the
+thing the act is named for. And the act copy is 190-263px tall depending on the act, so anything
+placed under it moves as the act changes.
+
+---
+
 ## 7. Housekeeping — artboards deleted from the repository
 
 These were removed from GitHub because no live page, artboard wrapper or shipped file referenced
@@ -411,6 +437,6 @@ npm run check:design    # the export is internally consistent
 npm run check:deltas    # each fixed item now reports "can be retired"
 ```
 
-Every item above has a matching entry in `LOCAL-DELTAS.md` (D1–D8) and a machine check that fails
+Every item above has a matching entry in `LOCAL-DELTAS.md` (D1–D9) and a machine check that fails
 if the fix is missing. As each one is fixed here, its entry gets deleted there and the design file
 becomes the single source of truth for that behaviour again.

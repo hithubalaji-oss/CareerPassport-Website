@@ -34,7 +34,7 @@ scripts/check-design-files.mjs   npm run check:design
 
 **Re-derivation is destructive.** Every change made in code that has no counterpart on the
 canvas is silently reverted by the next export. That is what `LOCAL-DELTAS.md` and
-`scripts/check-deltas.mjs` exist for: **D1–D8**, each with a machine check. Run
+`scripts/check-deltas.mjs` exist for: **D1–D9**, each with a machine check. Run
 `npm run check:deltas` after every import; anything MISSING must be re-applied before pushing.
 `DESIGN-BRIEF.md` is the other half — what Claude Design should change on the canvas so a
 delta can be retired.
@@ -86,6 +86,17 @@ message describing a change that was never in the code.
 - `interactive-widget=resizes-visual` in the viewport meta stops Android browsers shrinking
   the layout viewport when the keyboard opens (the DuckDuckGo field-jumps-to-top bug).
 - `will-change` permanently promotes a layer and forces full-quality rasterisation. Budget it.
+- **An absolutely-positioned element is placed by its OFFSET PARENT.** Any code that computes a
+  position for one must measure against that same box. `park()` measured against `#aiStage`
+  while the cursor is placed by `.aiwrap`; the two coincide on desktop, so the bug was invisible
+  there and 212px wrong on a phone. When a coordinate looks right on one breakpoint and wild on
+  another, check the origin before anything else.
+- **A scale recomputed mid-animation is a visible size step.** Learned on the homepage, repeated
+  on For Companies: a ResizeObserver refitting the passport while its pane narrowed shrank it to
+  58% as it opened. Freeze the scale for the length of a beat, or stop the box changing.
+- **A shared class name is a shared rule.** `.hero` is the section class on BOTH interior pages
+  and `mobile-pages.css` is loaded by both, so a rule written for one padded the other by 101px.
+  Scope by something structural (`:not(:has(.heropin))`) when a rule is meant for one page.
 
 ---
 
