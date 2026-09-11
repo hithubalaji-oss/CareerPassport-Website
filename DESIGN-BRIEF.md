@@ -133,13 +133,23 @@ already cost a feature.
 
 All four are deletion scars: a rule was removed and part of its syntax left behind.
 
-**Number 4 cost the passport seal its rotation.** On 8 Sep `.cring` carried
-`animation:cringspin 44s linear infinite` with a matching `@keyframes cringspin{to{rotate:360deg}}`.
-The 10 Sep export dropped both and left the closing brace — so the seal legend no longer turns,
-while the comment above it still describes it turning and the `prefers-reduced-motion` rule below
-still tries to switch off an animation that no longer exists. **Please confirm whether stopping
-that rotation was deliberate.** If it was not, restore both lines; it is a one-line fix and the
-shipped site will pick it up automatically.
+**Number 4 is next to where the passport seal lost its rotation — and that part is settled.**
+On 8 Sep `.cring` carried `animation:cringspin 44s linear infinite` with a matching
+`@keyframes cringspin{to{rotate:360deg}}`. The 10 Sep export dropped both and left the closing
+brace behind.
+
+**Stopping the rotation was deliberate — confirmed 11 Sep. Please do not restore it.** The seal
+legend is static by design. The shipped homepage already matches, and carries a comment saying so
+in case anyone reads the missing animation as a regression later.
+
+The orphan `}` is still a syntax fix and still needs deleting. It is only adjacent to the
+rotation, not the cause of it.
+
+**One thing that does need a decision.** The homepage's seal is static; the same seal on
+`For Companies.html` and `For Recruitment Partners.html` still carries
+`animation:cringspin 44s linear infinite` (three declarations, one of them inside a media query).
+It is the same object turning on two pages and not on the third. If static is the intent, those
+three should go too; say so and the shipped site follows in the same change.
 
 ---
 
