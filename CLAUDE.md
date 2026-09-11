@@ -34,7 +34,7 @@ scripts/check-design-files.mjs   npm run check:design
 
 **Re-derivation is destructive.** Every change made in code that has no counterpart on the
 canvas is silently reverted by the next export. That is what `LOCAL-DELTAS.md` and
-`scripts/check-deltas.mjs` exist for: **D1–D7**, each with a machine check. Run
+`scripts/check-deltas.mjs` exist for: **D1–D8**, each with a machine check. Run
 `npm run check:deltas` after every import; anything MISSING must be re-applied before pushing.
 `DESIGN-BRIEF.md` is the other half — what Claude Design should change on the canvas so a
 delta can be retired.
@@ -122,8 +122,11 @@ And `.fine` is secondary prose separated by **colour**, not size.
 - **No loader.** Advised against it and the user agreed: first paint is ~1.1s, which is not
   the indeterminate wait a ChatGPT/ixigo-style loader covers, and any loader worth looking at
   costs 600–900ms. A staged entrance was offered instead and not yet built.
-- **The For Companies demo plays forward once per entry and holds** — it does not loop. It is
-  a narrative ending on the offer being sent.
+- **The For Companies demo is four scroll folds on mobile**, not a timed carousel: scrolling
+  moves you act to act and each act plays itself once on arrival. It never loops — it is a
+  narrative ending on the offer being sent. On desktop it stays one scroll-linked section.
+- **The cursor is narrowed on mobile** to three deliberate clicks (Design the journey, the
+  evidence, the invite). Desktop keeps the full eleven-position choreography.
 - **The scramble-in text** on the "Better Opportunities / Better Conversations" fold is that
   fold's animation working correctly. It reads as corrupted text in a screen recording.
 
