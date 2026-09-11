@@ -504,3 +504,60 @@
 
 /* Above 1024px nothing above applies, and data-mfold is never set. The desktop driver runs
    exactly as it does today. */
+
+/* ==============================================================================================
+   ?d=N — the on-device bisect. TEMPORARY; see src/scripts/diag.js for what each step is for,
+   and delete both together once the S23 Ultra question is settled.
+
+   Outside a ?d= URL none of this matches: [data-diag] is only ever set by that query string.
+   ============================================================================================== */
+@media (max-width: 1024px) {
+
+  /* 1 — the header is a transparent fixed bar whose entire content is a live blur of the page
+         scrolling beneath it. Its input is the backdrop, so it cannot be cached: the GPU reads
+         back 412x76 CSS px and runs a 16px blur on every frame. At DPR 3.5 that read-back is
+         1442x266 device px with a 56-device-px radius — 1.8x the area and 1.35x the radius of
+         the same bar on a DPR 2.6 phone. Resolution-dependent cost, on the axis where the two
+         phones differ, invisible to every main-thread measurement taken so far. */
+  [data-diag="1"] .hdr, [data-diag="2"] .hdr,
+  [data-diag="3"] .hdr, [data-diag="4"] .hdr {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    will-change: auto !important;
+    background: linear-gradient(180deg, rgba(10,12,11,.97), rgba(10,12,11,.86)) !important;
+  }
+
+  /* 2 — the decorative glows. A Gaussian blur costs roughly area x radius, and BOTH are in
+         device pixels, so both scale with the pixel ratio: the same rule is about 2.4x more
+         expensive on a 1440p phone than on a 1080p one. .dring is a 400px square at blur 52,
+         .zone::before 340px at 26, #f1 .mesh at 40. */
+  [data-diag="2"] .dring, [data-diag="3"] .dring, [data-diag="4"] .dring,
+  [data-diag="2"] .mesh,  [data-diag="3"] .mesh,  [data-diag="4"] .mesh,
+  [data-diag="2"] .opad,  [data-diag="3"] .opad,  [data-diag="4"] .opad,
+  [data-diag="2"] .paper, [data-diag="3"] .paper, [data-diag="4"] .paper,
+  [data-diag="2"] .rose,  [data-diag="3"] .rose,  [data-diag="4"] .rose { filter: none !important }
+  [data-diag="2"] .zone::before, [data-diag="3"] .zone::before, [data-diag="4"] .zone::before,
+  [data-diag="2"] .zone::after,  [data-diag="3"] .zone::after,  [data-diag="4"] .zone::after {
+    filter: none !important; opacity: .5 !important;
+  }
+
+  /* 3 — the passport as one flat surface instead of a 3D stack. preserve-3d gives every face
+         its own render surface; flat, the whole thing is a single layer. The cover no longer
+         opens, so this step is diagnostic only — it is not a design we would ship. */
+  [data-diag="3"] .book, [data-diag="3"] .bookwrap,
+  [data-diag="3"] .leaf { transform-style: flat !important }
+  [data-diag="3"] .leaf, [data-diag="3"] .spine, [data-diag="3"] .verso { display: none !important }
+
+  /* 4 — nothing of the passport at all. The control: if the page still flickers here, then no
+         amount of work on the passport was ever going to fix it. */
+  [data-diag="4"] .stage { display: none !important }
+
+  /* the badge, so a recording says which step it is and which build */
+  .cpdiag {
+    position: fixed; left: 8px; bottom: 8px; z-index: 999;
+    padding: 5px 9px; border-radius: 6px;
+    font-family: var(--mono, monospace); font-size: 10px; letter-spacing: .04em;
+    color: #0b0f16; background: rgba(216,184,119,.94);
+    pointer-events: none;
+  }
+}
