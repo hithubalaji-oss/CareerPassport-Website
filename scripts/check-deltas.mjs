@@ -90,6 +90,16 @@ const DELTAS = [
     present: ['window.__cpBuildOnce', 'window.__cpPlaceClaims'],
   },
   {
+    id: 'D6',
+    title: 'No hero video is emitted on mobile',
+    file: 'src/scripts/homepage.js',
+    design: 'index.html',
+    // A display:none <video preload="auto"> still downloads in full. The mobile composition
+    // has no hero figure at all, so the element is omitted rather than hidden — load event
+    // 5.34s -> 1.75s on a throttled 4G phone. The null guard on loadedmetadata goes with it.
+    present: ['window.__cpManual ?', 'if(heroVideo) heroVideo.addEventListener'],
+  },
+  {
     id: 'D5',
     title: 'Eyebrows removed from every fold but two',
     file: 'src/styles/local-overrides.css',

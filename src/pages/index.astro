@@ -39,9 +39,16 @@ import '../styles/local-overrides.css';
         1025px boundary. The preload has to agree with that choice or the browser fetches
         one plate here and the driver fetches the other — so both carry the matching media
         query, and a phone downloads 0.23 MB instead of 0.23 + 0.92. */}
-    <link rel="preload" as="image" href="/uploads/Crowd-6ce23065-1280.webp" media="(max-width: 1024px)" />
+    {/* fetchpriority=low is load-bearing on a phone. The crowd plate is 227KB of a 299KB
+        page — 76% of everything the browser downloads — and the reader does not see it until
+        fold 2, several screens down. At default priority it competes with the stylesheet and
+        the hero for a 1.6Mbps pipe and pushes first paint out. Low still fetches it straight
+        away, so it is warm long before fold 2; it just stops it going first. */}
+    <link rel="preload" as="image" fetchpriority="low" href="/uploads/Crowd-6ce23065-1280.webp" media="(max-width: 1024px)" />
     <link rel="preload" as="image" href="/uploads/Crowd-6ce23065.webp" media="(min-width: 1025px)" />
-    <link rel="preload" as="video" href="/assets/hero-lift.mp4" type="video/mp4" />
+    {/* desktop only: the mobile composition has no hero figure, so the phone must not spend
+        a 1.6Mbps pipe preloading a video it will never draw (see delta D6) */}
+    <link rel="preload" as="video" href="/assets/hero-lift.mp4" type="video/mp4" media="(min-width: 1025px)" />
     {/* MUST be is:inline and MUST be in the head. Astro bundles and reorders <script src>
         tags, and it put mobile-passport.js AFTER the driver — so the driver started, wrote
         inline styles onto .bookwrap and .zone, and those outranked the mobile stylesheet.
