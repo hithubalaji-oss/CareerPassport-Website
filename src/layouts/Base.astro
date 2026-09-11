@@ -11,6 +11,7 @@
  * render-blocking requests, and styles.css was an @import list — so the tokens were not
  * even requested until it had been fetched and parsed.
  */
+import { execSync } from 'node:child_process';
 import '../styles/ds/tokens.bundle.css';
 
 interface Props {
@@ -19,13 +20,38 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+
+/* The build id, stamped on <html> at build time — no script, no runtime cost, every page.
+   It exists because "is this phone actually looking at the new build?" cost this project two
+   round trips and most of a day: a stale production alias is indistinguishable from a fix that
+   did not work, and there is no way to tell them apart by looking at the page.
+   Vercel sets VERCEL_GIT_COMMIT_SHA; locally we ask git; if neither answers the build still
+   succeeds with a placeholder rather than failing over a label. */
+const BUILD_ID = (() => {
+  const sha = process.env.VERCEL_GIT_COMMIT_SHA;
+  if (sha) return sha.slice(0, 7);
+  try {
+    return execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+  } catch {
+    return 'local';
+  }
+})();
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-build={BUILD_ID}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* interactive-widget=resizes-visual keeps the LAYOUT viewport still when the on-screen
+        keyboard opens. Without it some Android browsers (DuckDuckGo and older Chrome among
+        them) shrink the layout viewport instead, so every svh-derived length recomputes
+        against the strip above the keyboard — and the homepage's pinned hero column, whose
+        top is `calc(41svh + 22px)`, jumped from 524px down the screen to 95px and landed on
+        top of the passport the moment the handle field was tapped. Measured: at 412x915 the
+        field sits at y=524; shrink the viewport to 420 and it is at y=95.
+        The keyboard now overlays the page and the browser scrolls the focused field into
+        view, which is the behaviour every other browser already had. */}
+    <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-visual" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
