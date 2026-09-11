@@ -138,7 +138,10 @@
        moving the instant the karaoke begins rather than waiting on the first word */
     comp.style.setProperty('--charge',fillT.toFixed(3));
     sendBtn.classList.toggle('armed',done);
-    pill.classList.toggle('hot',done);
+    /* D8 · the Companion pill was removed from the composer on request. Guarded rather
+       than deleted: a design export brings the markup back, and this line then works
+       again unchanged. Unguarded it threw and took the whole hero driver with it. */
+    if(pill) pill.classList.toggle('hot',done);
     comp.classList.toggle('armed',done);
 
     /* the press holds long enough to register even at speed */
