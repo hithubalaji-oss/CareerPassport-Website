@@ -60,10 +60,6 @@ import '../styles/mobile-passport.css';
   {/* BEFORE homepage.js: it sets window.__cpManual while the driver is still parsing, so on
       a phone the driver never starts. Above 1024px it returns immediately and changes nothing. */}
   <script src="../scripts/mobile-passport.js"></script>
-  {/* TEMPORARY — the ?d=N on-device bisect for the S23 Ultra flickering, plus the build id
-      badge. Remove this line and src/scripts/diag.js together once that is settled. Without a
-      ?d= in the URL it sets <html data-build> and does nothing else. */}
-  <script src="../scripts/diag.js"></script>
   <script src="../scripts/homepage.js"></script>
   <script src="../scripts/homepage-extra.js"></script>
   <script src="../scripts/cp-keys.js"></script>
