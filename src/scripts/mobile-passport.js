@@ -74,6 +74,32 @@
 
     var SNAP_ABOVE = 2.2;                    /* px/ms — a deliberate flick, not a read */
 
+    /* ---- hold still while someone is typing ----
+       Focusing a field makes the browser scroll it into view, and on a phone the keyboard
+       takes half the screen doing it. Either one moves the centre line this observer watches,
+       so the passport would change state — open, travel, fade — while the reader is in the
+       middle of typing their handle into fold 1. It looked like the page had lost its place.
+       The viewport meta stops the layout viewport resizing; this stops the scroll doing the
+       same thing by a different route. The state that WOULD have been applied is remembered
+       and lands on blur, so nothing is skipped, it is only deferred. */
+    var typing = false, pending = null;
+
+    /* The layout half of this is fixed by interactive-widget=resizes-visual in the viewport
+       meta, not here. Freezing fold 1's column in JS was tried and reverted: pinning it to its
+       pre-keyboard position leaves the handle field at y=527 in a 420px viewport — below the
+       keyboard, on a position:fixed element that scrolling cannot reach. The browser's own
+       reflow is ugly but leaves the field tappable, and a broken layout beats an unusable one.
+       What stays here is the half the meta cannot cover: the scroll. */
+    document.addEventListener('focusin', function (e) {
+      var t = e.target;
+      if (!t || (t.tagName !== 'INPUT' && t.tagName !== 'TEXTAREA' && !t.isContentEditable)) return;
+      typing = true;
+    });
+    document.addEventListener('focusout', function () {
+      typing = false;
+      if (pending !== null) { var n = pending; pending = null; apply(n); }
+    });
+
     /* ---- fold 4's Companion loop ----
        The chart's eight steps are stepped by the driver from scroll position, so with the
        driver off the log never advanced past step 1 and the stage never changed beat: the
@@ -92,6 +118,7 @@
 
     function apply(n) {
       if (n === current) return;
+      if (typing) { pending = n; return; }
       var fast = velocity() > SNAP_ABOVE || Math.abs(n - current) > 1;
       if (fast) {
         setVar('--m-glide', '0ms'); setVar('--m-open', '0ms'); setVar('--m-copy', '0ms');

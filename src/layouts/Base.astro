@@ -42,7 +42,16 @@ const BUILD_ID = (() => {
 <html lang="en" data-build={BUILD_ID}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* interactive-widget=resizes-visual keeps the LAYOUT viewport still when the on-screen
+        keyboard opens. Without it some Android browsers (DuckDuckGo and older Chrome among
+        them) shrink the layout viewport instead, so every svh-derived length recomputes
+        against the strip above the keyboard — and the homepage's pinned hero column, whose
+        top is `calc(41svh + 22px)`, jumped from 524px down the screen to 95px and landed on
+        top of the passport the moment the handle field was tapped. Measured: at 412x915 the
+        field sits at y=524; shrink the viewport to 420 and it is at y=95.
+        The keyboard now overlays the page and the browser scrolls the focused field into
+        view, which is the behaviour every other browser already had. */}
+    <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-visual" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
