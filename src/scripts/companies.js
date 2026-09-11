@@ -887,14 +887,30 @@
       cur.cells.push(cp.getAttribute('data-m') || cp.textContent);
     }
   });
-  out.innerHTML=rows.map(function(r){
-    var others=r.cells.slice(1,3).map(function(c,i){
-      return '<div class="mo"><em>'+(cols[i+1]||'').toUpperCase()+'</em><p>'+c+'</p></div>';
-    }).join('');
-    return '<div class="cmpb"><b>'+r.label+'</b>'+
-      '<div class="mus"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'+
-      '<div><em>CAREERPASSPORT</em><p>'+r.cells[0]+'</p></div></div>'+others+'</div>';
-  }).join('');
+  /* D9 · A GRID, not a stack of cards. Six capabilities x four columns of full sentences was
+     eighteen paragraphs read one after another — it had stopped being a comparison and become
+     a page of prose you scroll past. Three columns now, each cell two or three words, so the
+     contrast is something you SEE across a row rather than something you read down a column.
+
+     The capability's name is a band spanning the three columns rather than a fourth column of
+     its own: at 320px a four-column table gives each cell about 70px, which no phrase survives.
+     So the section reads as three columns and seven bands — the headers, then one per
+     capability. Desktop still builds and hides this, exactly as before, and its own table is
+     untouched. */
+  out.innerHTML=
+    '<div class="cmpgrid">'+
+      cols.map(function(c,i){
+        return '<div class="cmphd'+(i===0?' us':'')+'">'+c+'</div>';
+      }).join('')+
+      rows.map(function(r){
+        return '<div class="cmpband">'+r.label+'</div>'+
+          r.cells.slice(0,3).map(function(c,i){
+            return '<div class="cmpc'+(i===0?' us':'')+'">'+
+              (i===0?'<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>':'')+
+              '<span>'+c+'</span></div>';
+          }).join('');
+      }).join('')+
+    '</div>';
 })();
 
 /* ---- the companies strip: user-filled slots, duplicated for a seamless loop ---- */
