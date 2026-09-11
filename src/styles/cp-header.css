@@ -112,16 +112,71 @@
     transform:translateZ(0);
     contain:paint;
   }
+
+  /* ---- the burger carries its own contrast ------------------------------------------
+     The bar above has no fill on a phone, by design, so the burger's #f4f7f5 rules were
+     being asked to read against whatever the page happened to put under them. On For
+     Companies that is a light panel for a good stretch of the page: measured 1.53:1
+     against the brightest backdrop pixel under the bars at 360px wide — below the 3:1 a
+     non-text control needs, and the reported "the menu is invisible / the colour is
+     wrong" on one or two devices.
+
+     Fixed at the control rather than by putting a scrim back on the bar, so the frosted
+     band stays as drawn. The chip is dark and near-opaque, which over a dark section is
+     indistinguishable from the bar and over a light one is the thing that makes the
+     rules legible: worst case rises to 13:1. The hairline is what stops it reading as a
+     smudge on the dark pages.
+
+     Literal colours, not tokens, for the same reason the nav hover rules below are
+     literal: identical rule text still rendered differently when a token resolved
+     differently in a page's context. */
+  .hdr .burger{
+    /* 44px square is kept exactly: the bar's 76px height is derived from it, and both
+       page footers pad their top by that 76px literal. */
+    width:44px;height:44px;padding:0 9px;gap:5px;
+    border-radius:11px;
+    background:rgba(9,13,12,.82);
+    border:1px solid rgba(244,247,245,.16);
+    box-shadow:0 1px 2px rgba(0,0,0,.32);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  }
+  .hdr .burger i{height:1.5px;background:#f4f7f5;border-radius:1px}
+  .hdr .burger[aria-expanded="true"]{background:rgba(9,13,12,.94);
+    border-color:rgba(216,184,119,.44)}
+
   .mnav{
     background:linear-gradient(180deg,rgba(10,18,34,.94),rgba(10,18,34,.88));
     backdrop-filter:blur(18px) saturate(1.4);
     -webkit-backdrop-filter:blur(18px) saturate(1.4);
     transform:translateZ(0);
   }
+
+  /* ---- the sheet starts where the bar ends ------------------------------------------
+     `inset:58px` was authored against a shorter bar. The bar on a phone is 76px: 16px of
+     padding either side of a 44px burger. So the top 18px of the sheet — its own padding
+     plus the first few pixels of the first link — was sliding under a z-index:80 header
+     from a z-index:79 sheet, on all three pages at every width measured.
+
+     Keyed to the same two numbers the bar is built from rather than a third literal, so
+     changing the bar's padding or the burger's height moves the sheet with it. Capped to
+     the space actually left below the bar, and allowed to scroll, so a short phone in
+     landscape cannot push the two CTAs off the bottom. */
+  .mnav{
+    --bar:calc(16px * 2 + 44px);
+    inset:var(--bar) 0 auto;
+    max-height:calc(100svh - var(--bar));
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    padding-bottom:max(20px,env(safe-area-inset-bottom,0px));
+  }
 }
 /* the one device class where a blurred fixed bar is still a bad trade */
 @media (max-width:900px) and (prefers-reduced-transparency:reduce){
   .hdr,.mnav{background:var(--void);backdrop-filter:none;-webkit-backdrop-filter:none}
+  /* the bar is opaque here, so the chip has nothing left to do and would only read as a
+     box drawn around the rules */
+  .hdr .burger{background:none;border-color:transparent;box-shadow:none;
+    backdrop-filter:none;-webkit-backdrop-filter:none}
 }
 
 /* mobile wordmark step. This file is linked after each page's inline <style>, so at equal
