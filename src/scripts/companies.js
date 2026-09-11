@@ -285,7 +285,17 @@
   var dcFitPane=false;
   window.__cpBookPane=function(on){ dcFitPane=!!on; sizeBook(); };
 
+  /* D9 · The scale can be frozen for the duration of an act. A book whose scale changes
+     mid-animation is a visible size step — the classic one — and act 4 causes exactly that:
+     the sent-confirmation opens beside the passport and takes 42% of the row, so the pane goes
+     from 312px to 181px at 390x844 and --pps steps 0.314 to 0.182. The passport shrinks to 58%
+     of itself while it is opening, which is the glitch. The mobile layer sizes it once as the
+     act begins and then holds it. */
+  var dcFrozen=false;
+  window.__cpBookFreeze=function(on){ dcFrozen=!!on; if(!dcFrozen) sizeBook(); };
+
   function sizeBook(){
+    if(dcFrozen) return;
     if(!dcPp||!dcStage) return;
     var r=(dcFitPane?dcPp:dcStage).getBoundingClientRect();
     if(!r.width||!r.height) return;

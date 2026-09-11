@@ -379,11 +379,57 @@
   .aiex .exwires .exdotg{ opacity:.95 !important }
 
   /* ---- the ticker fits the panel ---------------------------------------------------------
-     "88 follow-ups sent on WhatsApp" and its siblings are set at the panel's body size and ran
-     past the right edge. It is a status line, so it takes the label step and is allowed to
-     ellipse rather than push the panel. */
-  .exticker{ font-size:9px;letter-spacing:.04em;gap:6px;padding-top:8px;min-width:0 }
-  .exticker span{ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0 }
+     "Agent matched 504 profiles against the blueprint" ran past the panel's right edge, and it
+     took two goes to fix because the rule that does it is an ID: `#exTicker{font-size:12px;
+     white-space:nowrap; overflow:visible}` with a comment saying it must never crop. At 600px
+     of desktop panel that is right. At 350px it is the line running off the edge.
+
+     Matched at the same specificity rather than with !important, so it is a considered override
+     and not a fight. The line is a status readout, so it takes the label step and ellipses. */
+  #exTicker{
+    font-size:8.5px;letter-spacing:.06em;gap:6px;padding-top:8px;
+    min-width:0;overflow:hidden;
+  }
+  #exTicker span{ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0 }
+  #exTicker b{ flex-shrink:0 }
+
+  /* ---- the cursor's label sits above the pointer, not below ------------------------------
+     Every target the cursor is given on a phone is a button at the bottom of the panel — the
+     submit, "See candidate", the invite — so a label hanging BELOW the tip lands outside the
+     panel every time. Above it, it reads against the panel it belongs to. */
+  .hmlbl{ top:auto;bottom:14px }
+
+  /* ---- the panel holds still between acts -------------------------------------------------
+     The act's copy is one to three lines of title over two to four of description, and it
+     changes with the act — measured 190px, 218px, 190px and 263px for the four. The panel sits
+     below it, so its top moved 47px every time you scrolled from one act to the next, and the
+     Decide panel — sitting lowest — ran 23px past the bottom of the fold and cut off its own
+     action buttons.
+
+     Reserving the tallest of the four makes the panel's position constant, which is the point:
+     four folds that each place their panel somewhere different read as the layout settling
+     rather than as four views of one thing. */
+  .aitextcol{ min-height:268px;justify-content:flex-start }
+
+  /* ---- the sent-confirmation stops stealing the passport's box ---------------------------
+     `.dcsent.on` is `flex:0 0 42%` in a flex row with `.dcpp`, so the moment the invite lands
+     the passport's pane drops from 312px to 181px — and sizeBook re-fits the book to it, so
+     the passport shrinks to 58% of itself WHILE IT IS OPENING. That is the glitch in this act.
+
+     As an overlay it takes no width and no height from the pane, so the measurement that feeds
+     --pps never changes. The scale is frozen for the act as well; between them the passport
+     holds one size from the moment the act begins. */
+  .dcstage{ position:relative }
+  .dcsent{
+    position:absolute;left:0;right:0;bottom:0;
+    flex:0 0 auto;width:auto;
+    display:flex;flex-direction:row;align-items:center;gap:9px;
+    padding:8px 10px;
+    background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--void) 82%,transparent) 34%);
+  }
+  .dcsent.on{ flex:0 0 auto;width:auto;padding-left:10px }
+  .dcsent b{ font-size:11px }
+  .dcsentmeta{ font-size:8px;letter-spacing:.1em }
 
   /* ---- the differences, as a grid --------------------------------------------------------
      Three columns, seven bands: the headers, then one band per capability. Every cell is two
