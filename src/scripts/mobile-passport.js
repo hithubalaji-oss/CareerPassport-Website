@@ -25,7 +25,19 @@
 
   function start() {
     var stage = document.getElementById('stage');
+    /* THE ATTRIBUTE HAS TO GO ON ALL FOUR.
+       .outro and .ftr are siblings of <main>, not children of it — so every rule written as
+       `main[data-mfold] .outro ...` matched nothing at all, and the whole closing-frame
+       behaviour (pinning the ring and the copy together, the opaque footer, the outro's exit)
+       was inert while looking perfectly correct in the stylesheet. That is why the passport
+       sat still while the ring scrolled past it.
+       Four narrow subtrees rather than one attribute on <html> or <body>, for the reason in
+       the mobile-passport.css header: a root attribute invalidates style for the whole
+       document and costs more than the driver it replaced. */
     var main = document.querySelector('main');
+    var outroEl = document.querySelector('.outro');
+    var ftrEl = document.querySelector('.ftr');
+    var hosts = [stage, main, outroEl, ftrEl].filter(Boolean);
     var folds = [].slice.call(document.querySelectorAll('.fold'));
     var outro = document.querySelector('.outro');
     var footer = document.querySelector('.ftr');
@@ -56,8 +68,9 @@
        in — it reads as the passport chasing you. */
     /* the glide durations are read by rules inside both subtrees, so they are set on both
        rather than inherited from a common ancestor — same reasoning as the attribute */
-    function setVar(k, v) { stage.style.setProperty(k, v); if (main) main.style.setProperty(k, v); }
-    function clearVar(k) { stage.style.removeProperty(k); if (main) main.style.removeProperty(k); }
+    function setVar(k, v) { for (var i = 0; i < hosts.length; i++) hosts[i].style.setProperty(k, v); }
+    function clearVar(k) { for (var i = 0; i < hosts.length; i++) hosts[i].style.removeProperty(k); }
+    function setState(n) { for (var i = 0; i < hosts.length; i++) hosts[i].setAttribute('data-mfold', n); }
 
     var SNAP_ABOVE = 2.2;                    /* px/ms — a deliberate flick, not a read */
 
@@ -93,8 +106,7 @@
       /* On the two subtrees that react, never on <html>. An attribute on the root
          invalidates style for the whole document — measured, and it wiped out the entire
          saving this file exists to produce. */
-      stage.setAttribute('data-mfold', String(n));
-      if (main) main.setAttribute('data-mfold', String(n));
+      setState(String(n));
       companionLoop(n === 4);
     }
 
@@ -126,8 +138,7 @@
 
     /* first paint: whichever section is already on screen, with no glide */
     setVar('--m-glide', '0ms'); setVar('--m-copy', '0ms');
-    stage.setAttribute('data-mfold', '1');
-    if (main) main.setAttribute('data-mfold', '1');
+    setState('1');
     requestAnimationFrame(function () {
       requestAnimationFrame(function () { clearVar('--m-glide'); clearVar('--m-copy'); });
     });

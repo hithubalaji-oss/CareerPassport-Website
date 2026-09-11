@@ -99,8 +99,10 @@
   .stage[data-mfold="5"] .bookwrap { translate: 70vw 22vh;  scale: .18; rotate: -14deg; opacity: 0 }
   .stage[data-mfold="5"] .book     { transform: translateX(-230px) rotateY(-15deg) }
 
-  /* 6 — returns, centred, inside the ring */
-  .stage[data-mfold="6"] .bookwrap { translate: 0 -10vh;    scale: .34; rotate: 0deg;  opacity: 1 }
+  /* 6 — returns, centred, inside the ring. The offset and the scale are not free: they are
+         the ring's own centre and the ring's own slot, pinned together in the fold-6 block
+         below so the two cannot drift apart while the section scrolls. */
+  .stage[data-mfold="6"] .bookwrap { translate: 0 -21vh;    scale: .34; rotate: 0deg;  opacity: 1 }
   .stage[data-mfold="6"] .book     { transform: translateX(-230px) rotateY(-8deg) }
 
   /* ---- fold 3 is the only state that changes the passport itself ----------------------
@@ -164,7 +166,7 @@
      kept, because holding the copy still while the fold scrolls past is the design's own
      behaviour, not an artifact of the driver. */
   main[data-mfold] .fold .col,
-  main[data-mfold] .outro .ocopy {
+  .outro[data-mfold] .ocopy {
     opacity: 0;
     translate: 34vw 0;
     pointer-events: none;
@@ -178,7 +180,7 @@
   main[data-mfold="3"] #f3 .col,
   main[data-mfold="4"] #f4 .col,
   main[data-mfold="5"] #f5 .col,
-  main[data-mfold="6"] .outro .ocopy {
+  .outro[data-mfold="6"] .ocopy {
     opacity: 1;
     translate: 0 0;
     pointer-events: auto;
@@ -230,8 +232,11 @@
 
   /* fold 2's crowd scene — .crowd{opacity:0} in homepage.css */
   .stage[data-mfold] .crowd { opacity: 0; transition: opacity 700ms var(--m-ease) }
-  .stage[data-mfold="2"] .crowd,
-  .stage[data-mfold="3"] .crowd { opacity: 1 }
+  /* Fold 2 ONLY. The desktop driver keeps the hall lit through the opening because the
+     passport travels out of it continuously; on mobile fold 3 is its own frame and the
+     spread is the whole subject, so the crowd behind it is just noise the reader has to
+     look past. */
+  .stage[data-mfold="2"] .crowd { opacity: 1 }
 
   /* fold 4's incoming sources — .orb{opacity:0} */
   .stage[data-mfold] .orb { opacity: 0; transition: opacity 700ms var(--m-ease) }
@@ -341,8 +346,7 @@
     opacity: 0;
     transition: opacity 700ms var(--m-ease);
   }
-  .stage[data-mfold="2"] .claims,
-  .stage[data-mfold="3"] .claims { opacity: 1 }
+  .stage[data-mfold="2"] .claims { opacity: 1 }
 
   /* Two constants inside the card were sized for the desktop plate and do not survive being
      scaled down with it.
@@ -354,7 +358,13 @@
   .stage[data-mfold] .claims { --rise: 26px }
   .stage[data-mfold] .clb {
     white-space: normal;
-    max-width: 36vw;
+    /* WIDTH, not max-width, and this is load-bearing. The driver clamps a card's lane to
+       keep it on screen using the card's own offsetWidth — but it writes the position
+       BEFORE it writes the text, so with an auto width it is always clamping against the
+       PREVIOUS claim's length. A short one followed by a long one put the card half off the
+       screen edge, which is what the clipped cards on a 390px phone were. A fixed width
+       makes the measurement true whatever the text says. */
+    width: 36vw;
     text-align: center;
     padding: 4px 8px 5px;
   }
@@ -403,32 +413,34 @@
      ring's measured slot every frame and the question never came up.
 
      With both fixed, #outro's own height is free, so it carries scroll rather than layout. */
-  main[data-mfold] .oart {
+  .outro[data-mfold] .oart {
     position: fixed; left: 0; right: 0;
-    top: calc(var(--hdr, 76px) + 4svh);
-    min-height: 0; height: min(38svh, 340px);
+    top: calc(var(--hdr, 76px) + 2svh);
+    min-height: 0; height: min(36svh, 320px);
     z-index: 5;
     opacity: 0; transition: opacity 500ms var(--m-ease);
     pointer-events: none;
   }
-  main[data-mfold="6"] .oart { opacity: 1 }
+  .outro[data-mfold="6"] .oart { opacity: 1 }
 
-  main[data-mfold] .outro .ocopy {
+  .outro[data-mfold] .ocopy {
     position: fixed; left: 0; right: 0;
-    top: auto; bottom: 6svh;
+    top: auto;
+    bottom: 6svh;
+    bottom: calc(100lvh - 100svh + 5svh);
     width: auto; margin: 0 calc(var(--gut) + var(--bleed));
     max-width: none;
     z-index: 6;
   }
   /* it has scrolled past: the footer owns the frame now */
-  main[data-mfold="7"] .outro .ocopy { opacity: 0; translate: -34vw 0; pointer-events: none }
+  .outro[data-mfold="7"] .ocopy { opacity: 0; translate: -34vw 0; pointer-events: none }
 
   /* Both halves of the outro are now fixed, so they cannot scroll out of the way by
      themselves. The footer rises over them instead — which needs it to be opaque, since the
      footer is transparent by design and sits at z-index 10 with the pinned copy at 6.
      Same colour as the page, so nothing about the footer's own look changes; it simply stops
      being a window onto the frame behind it. */
-  main[data-mfold] .ftr { background: var(--bg) }
+  .ftr[data-mfold] { background: var(--bg) }
 
   /* ==========================================================================================
      THE VERTICAL RHYTHM — closing the gap between the art and the copy
@@ -440,7 +452,25 @@
      Two changes, both to the copy's band rather than to the art: it comes off the bottom edge
      so the fold has a foot, and its cap rises so a long block grows upward into the gap
      instead of down into the edge. The art is seated lower in its own blocks above. */
-  main[data-mfold] .fold .col { bottom: 6.5svh; max-height: 52svh }
+  main[data-mfold] .fold .col {
+    /* A fixed element is positioned against the LARGE viewport — the one with the browser's
+       bars hidden — so `bottom: 6.5svh` put the last lines behind Safari's toolbar the
+       moment it was showing. That is the cropping: not overflow, the bar sitting on top of
+       content that is exactly where it was asked to be.
+
+       (100lvh - 100svh) IS the height of the browser's chrome, stated by the browser
+       itself. Adding the design gap to it lands the column's foot 5svh above the bottom of
+       the SMALL viewport — the one the reader can actually see — whether the bars are up or
+       down, on iOS and Android alike. Where there is no chrome the term is zero and this is
+       just `bottom: 5svh`.
+
+       The cap goes with it: a capped box whose content is taller overflows DOWNWARD, back
+       under the bar. Bottom-anchored and uncapped, a long block grows upward into the frame
+       instead, which is the direction with room in it. */
+    bottom: 6.5svh;
+    bottom: calc(100lvh - 100svh + 5svh);
+    max-height: none;
+  }
 
   /* ---- the leaves that are never turned --------------------------------------------------
      The passport carries six leaves so that desktop can flip through 03/04, 05/06 and on to
