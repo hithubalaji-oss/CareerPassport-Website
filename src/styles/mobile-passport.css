@@ -72,48 +72,34 @@
      cover sits centred on the wrap's origin and these offsets read from the viewport centre. */
 
   /* 1 — standing, centred, square to the reader.
-         STRAIGHT: no z-tilt and no 3D turn. The tilt is desktop's pose, where the passport is
-         an object in a scene being looked at from an angle; on a phone it is the product shot
-         at the top of the page and anything off-axis reads as a photograph taken carelessly.
+         STRAIGHT: no z-tilt and no 3D turn. Those are desktop's pose, where the passport is an
+         object in a scene being looked at from an angle; on a phone it is the product shot at
+         the top of the page, and anything off-axis reads as a photograph taken carelessly.
 
-         THE SCALE IS BY VIEWPORT HEIGHT, and it has to be. The passport sits in the band
-         between the eyebrow and the copy column, and that band is not a constant: the column's
-         top is `calc(41svh + 22px)` and the eyebrow's is driven by --f1-lead, so the gap
-         between them is 225px at 915 tall, 235 at 800, 197 at 700 and 172 at 640. A fixed
-         scale that fits the tallest phone overruns the shortest — measured at 390x700, a .40
-         cover ran to y=390 with the `careerpassport.ai/` row starting at 342: 48px straight
-         through it, which is what a phone showing its URL bar was displaying.
-         One offset serves all of them, because the band's CENTRE barely moves (-19vh to -21vh
-         across that whole range); it is only the band's HEIGHT that changes, so only the scale
-         needs steps. */
-  .stage[data-mfold="1"] .bookwrap { translate: 0 -17vh;    scale: .25; rotate: 0deg;  opacity: 1 }
+         THE OFFSET IS IN PIXELS, AND THAT IS THE MEASUREMENT, NOT A SHORTCUT. The passport
+         sits in the band between the eyebrow and the copy column. Both of those are anchored
+         near the TOP of the screen — the eyebrow under the header, the column at 41svh — so
+         the band's centre barely moves as the viewport changes height. Measured against the
+         viewport centre at seven sizes from 412x915 down to 360x600: -123, -123, -123, -120,
+         -120, -118, -113. One constant is a closer fit than any vh value, which would drift
+         from -13.4vh to -20.5vh across the same range describing the same place.
+
+         Only the band's HEIGHT changes, so only the scale is stepped. */
+  .stage[data-mfold="1"] .bookwrap { translate: 0 -120px; scale: .25; rotate: 0deg; opacity: 1 }
   .stage[data-mfold="1"] .book     { transform: translateX(-230px) rotateY(0deg) }
 
-  /* Four steps, and they are measured rather than guessed. Below about 680 the copy stops
-     fitting its own column — 687px of composition in a box that is `41svh` from the top — so
-     it overflows UPWARD past the column's top edge and eats into the band from below, which is
-     why the steps get close together at the bottom and why the passport is raised as well as
-     shrunk there. Clearance above the cover / below it, at each step's worst case:
-
-       412x915  .30   7 / 126        390x700  .21   17 / 62
-       393x852  .30  19 / 114        375x667  .21    8 / 27
-       390x800  .30  29 / 104        360x640  .17   12 / 21
-       412x730  .25  27 /  73        360x600  .13   14 /  5
-
-     Below ~600 the fold is over-full whatever the passport does; the copy alone overruns the
-     screen. That is a composition problem, not a scale one, and is not papered over here. */
-  @media (min-height: 780px) {
-    .stage[data-mfold="1"] .bookwrap { translate: 0 -14vh; scale: .30 }
-  }
-  @media (max-height: 700px) {
-    .stage[data-mfold="1"] .bookwrap { translate: 0 -21vh; scale: .21 }
-  }
-  @media (max-height: 660px) {
-    .stage[data-mfold="1"] .bookwrap { translate: 0 -22vh; scale: .17 }
-  }
-  @media (max-height: 620px) {
-    .stage[data-mfold="1"] .bookwrap { translate: 0 -22vh; scale: .13 }
-  }
+  /* Clearance above the cover / below it, after the display-size steps above gave the band
+     its height back:
+       412x915  .30  69 / 63      375x667  .25  22 / 21
+       390x760  .25  68 / 62      360x640  .21  21 / 24
+       412x730  .25  53 / 47      360x600  .17  14 / 28
+       390x700  .25  38 / 37
+     Below ~600 the fold is over-full whatever the passport does — the copy alone overruns the
+     screen from a column that starts at 41svh. That is a composition problem, not a scale one,
+     and is not papered over here. */
+  @media (min-height: 780px) { .stage[data-mfold="1"] .bookwrap { scale: .30 } }
+  @media (max-height: 660px) { .stage[data-mfold="1"] .bookwrap { scale: .21 } }
+  @media (max-height: 620px) { .stage[data-mfold="1"] .bookwrap { scale: .17 } }
 
   /* 2 — centred on the crowd plate, square to the reader.
          The hero figure is not drawn on mobile (see the fold-2 block below), so there is no
@@ -346,6 +332,31 @@
                                    to read */
   #f4 { --h: 145 !important }
   #f5 { --h: 130 !important }
+
+  /* ==========================================================================================
+     THE DISPLAY SIZE FOLLOWS THE VIEWPORT'S HEIGHT, not just its width
+     ==========================================================================================
+     --m-display is a flat 30px at every height. On a tall phone the hero headline sets in two
+     lines against a 138px-wide passport and the balance is right. On a 360x640 the passport is
+     78px wide — it has to be, the band between the eyebrow and the copy is only 142px there —
+     but the headline is still 30px and now wraps to THREE lines, 103px of type against 78px of
+     product. The type stops being the headline above the passport and becomes the whole fold.
+
+     The ladder itself is not touched: this is the same display RANK, set smaller because the
+     whole composition is smaller, exactly as the passport is. Stepping down a rank instead
+     (30 -> 23, the next value on the scale) would put the hero headline at the same size as
+     every fold's h2, which is the flattening the scale was rebuilt to fix — see the note above
+     --m-display in homepage.css.
+
+     It pays for itself twice. Below ~680 the copy column overflows upward past its own top
+     edge, so shorter type is less overflow, which lifts the `careerpassport.ai/` row back down
+     and hands the band height straight back to the passport.
+
+     Only the hero uses --m-display; every fold's copy is an h2 on --m-head, and desktop's
+     .col h1 is a clamp() that reads neither. */
+  @media (max-height: 700px) { :root { --m-display: 28px } }
+  @media (max-height: 660px) { :root { --m-display: 26px } }
+  @media (max-height: 620px) { :root { --m-display: 24px } }
 
   /* ==========================================================================================
      FOLD 2 — the hall, the claims, and one passport in front of them
