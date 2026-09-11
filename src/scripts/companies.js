@@ -523,19 +523,38 @@
   /* a pointer moved by a person: it accelerates, overshoots a little, settles, and never
      travels in a perfectly straight line. Entry and exit are journeys from off-stage right. */
   var tx=0, ty=0, cx=0, cy=0, vx=0, vy=0, seeded=false, tilt=0, tclock=0, wasOn=false;
-  function offstage(){ return {x:stage.offsetWidth+150, y:stage.offsetHeight*0.42} }
+  /* D9 · same origin as park(), or the entrance flies in from a different coordinate space */
+  function offstage(){
+    var o=cur.offsetParent||stage;
+    return {x:o.offsetWidth+150, y:o.offsetHeight*0.42};
+  }
+  /* D9 · The cursor is `position:absolute`, so the coordinates written to it are resolved
+     against its OFFSET PARENT — and that is `.aiwrap`, not `#aiStage`. This function was
+     measuring against `#aiStage`.
+
+     On desktop the two share a top-left corner, because the wrap is a two-column grid and the
+     visual column starts at its origin: the error is 0,0 and nothing was ever visibly wrong.
+     On a phone `.aitextcol` takes `order:-1` and the copy stacks above the panel, so the wrap
+     begins 212px higher than the stage — and every target the cursor was given was therefore
+     drawn 212px above the thing it was pointing at. Measured at 390x844: cursor tip at y=581,
+     submit button centre at y=792.
+
+     Reading the offset parent is correct in both layouts rather than a phone special case, and
+     is provably a no-op on desktop where the delta is zero. */
   function park(el,ox,oy){
     if(!el) return;
+    var origin=cur.offsetParent||stage;
     var r=el.getBoundingClientRect();
     /* A display:none target reports an all-zero rect, which used to send the cursor to the
        panel's top-left corner and back — the random flight. An unrendered target is simply
        ignored, so the cursor holds its last real position instead. */
     if(!r.width||!r.height) return;
-    var s=stage.getBoundingClientRect();
+    var s=origin.getBoundingClientRect();
     tx=r.left-s.left+r.width*0.5+(ox||0);
     ty=r.top-s.top+r.height*0.5+(oy||0);
     if(!seeded){ var o=offstage(); cx=o.x; cy=o.y; seeded=true }
-    cur.classList.toggle('left',tx>stage.offsetWidth*0.55);
+    /* the flip is decided against the same box the position is resolved in */
+    cur.classList.toggle('left',tx>origin.offsetWidth*0.55);
   }
   function setVisible(on){
     if(on===wasOn) return;

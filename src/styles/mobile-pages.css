@@ -302,12 +302,88 @@
      It was 529px of a 640px viewport and 558 of 844 — two thirds of the screen, with the next
      section's heading pushing into the fold. A hero that does not reach the bottom of the
      first screen reads as a page that has already started scrolling. */
-  .hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
-        padding-block:calc(var(--bar-h,76px) + clamp(16px,3vh,32px)) 0}
-  .hero .hcopy{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;
-               gap:clamp(14px,2.4vh,22px)}
+  /* Scoped away from For Companies. `.hero` is the section class on BOTH pages and this file
+     is loaded by both, so the rule below was padding For Companies' pinned hero by 101px as
+     well — on top of the 98px `.herotop` already carries. Between them the eyebrow landed
+     360px down an 844px screen and the composer was pushed off the bottom edge.
+
+     For Companies' hero is a pinned fold and is handled on its own terms further down; the
+     one structural thing that tells them apart is that pin. */
+  .hero:not(:has(.heropin)){
+    min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+    padding-block:calc(76px + clamp(16px,3vh,32px)) 0}
+  .hero:not(:has(.heropin)) .hcopy{flex:1 1 auto;display:flex;flex-direction:column;
+               justify-content:center;gap:clamp(14px,2.4vh,22px)}
   /* the logo strip is the hero's floor, not another block below it */
-  .hero .strip{margin-top:auto;padding-bottom:clamp(14px,2.6vh,26px)}
+  .hero:not(:has(.heropin)) .strip{margin-top:auto;padding-bottom:clamp(14px,2.6vh,26px)}
+
+  /* ============================================================================================
+     4 · FOR COMPANIES — THE FRAME AND THE FOLD-2 SURFACES
+     ============================================================================================ */
+
+  /* ---- the header's real height ----------------------------------------------------------
+     `companies.css` declares `--hdr:83px`, which is the desktop bar. The bar on a phone is
+     76px, and --hdr feeds the hero's top padding, every section's scroll-margin and the
+     document's scroll-padding — so anchor jumps overshot and the hero carried 7px of padding
+     for a header that was not there. Partners already declares 76px below 900px; this brings
+     For Companies into line. */
+  :root{ --hdr:76px }
+
+  /* ---- the hero owns its screen ----------------------------------------------------------
+     `.herotop` is `min-height:50%` with the copy centred in it, on top of a padding-top of
+     `--hdr + clamp(8px,1.6vh,20px)`. On an 844px phone that reserved 422px for a 290px block,
+     so the eyebrow landed 370px down the screen — a third of the fold empty before the first
+     word — and the composer below it was pushed off the bottom edge.
+
+     The top band now sizes to its content and the composer takes the rest, centred, with the
+     bottom padding keyed to the browser chrome rather than a flat 72px. */
+  .herotop{
+    min-height:0;
+    flex:0 0 auto;
+    padding-top:calc(76px + clamp(14px,2.6vh,30px));
+    padding-bottom:0;
+  }
+  .herobot{ padding-bottom:calc(100lvh - 100svh + clamp(16px,3vh,34px)) }
+  .hero .ctas{ flex-wrap:wrap }
+
+  /* ---- the departure board does not run on a phone ---------------------------------------
+     `.flapbg` is a grid of animated split-flap tiles behind the whole of fold 2 — a large,
+     permanently-animating layer that on a phone is a faint texture behind a panel that covers
+     most of it. It is real work every frame for something you cannot read, next to four acts
+     that each want the compositor. The fold keeps the page's own background instead, which is
+     what every other fold uses and what makes the page read as continuous. */
+  .flapbg{ display:none }
+  .aidemopin{ background:transparent;border-block:0 }
+
+  /* ---- the four-dot progress marker ------------------------------------------------------
+     It told you which of the four acts you were in when they were a timed carousel you could
+     not control. They are four scroll folds now: the scrollbar is the progress indicator, and
+     a second one in the corner of the panel is noise. */
+  .actdots{ display:none }
+
+  /* ---- Execute arrives whole ---------------------------------------------------------------
+     The graph draws itself in sequence — sources, then wires, then hub, then channels — which
+     is worth watching at desktop size where the whole thing is 600px wide and the beats are
+     legible. At phone size it reads as the diagram being slow to load. The act has its own
+     movement already: the packets running the wires never stop.
+
+     Forced rather than re-timed, because the sequence is class-gated by the driver frame and
+     would otherwise be re-applied on every tick. */
+  .aiex .exnode,
+  .aiex .exdiv,
+  .aiex .exhub{ opacity:1 !important;scale:1 !important }
+  .aiex .exwires .wire{
+    opacity:1 !important;
+    stroke:color-mix(in srgb,var(--emerald) 82%,transparent) !important;
+  }
+  .aiex .exwires .exdotg{ opacity:.95 !important }
+
+  /* ---- the ticker fits the panel ---------------------------------------------------------
+     "88 follow-ups sent on WhatsApp" and its siblings are set at the panel's body size and ran
+     past the right edge. It is a status line, so it takes the label step and is allowed to
+     ellipse rather than push the panel. */
+  .exticker{ font-size:9px;letter-spacing:.04em;gap:6px;padding-top:8px;min-width:0 }
+  .exticker span{ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0 }
 
   /* ---- the logo strips bleed on purpose, but they must not create a scrollbar -----------
      Both pages duplicate their strip to loop it seamlessly, so the track is ~1876px wide inside
