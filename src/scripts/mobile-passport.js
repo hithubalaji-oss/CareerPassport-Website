@@ -60,6 +60,23 @@
     function clearVar(k) { stage.style.removeProperty(k); if (main) main.style.removeProperty(k); }
 
     var SNAP_ABOVE = 2.2;                    /* px/ms — a deliberate flick, not a read */
+
+    /* ---- fold 4's Companion loop ----
+       The chart's eight steps are stepped by the driver from scroll position, so with the
+       driver off the log never advanced past step 1 and the stage never changed beat: the
+       node was there, lit (see the s4 rules in the stylesheet), and completely static.
+       On mobile the reader does not own that clock any more, so it runs on its own — but
+       only while fold 4 is on screen, so it is not a timer burning through the whole visit.
+       One text swap and one attribute per tick, eight ticks, then it loops. */
+    var loopT = 0;
+    function companionLoop(on) {
+      if (loopT) { clearInterval(loopT); loopT = 0; }
+      if (!on || typeof window.__cpStep !== 'function') return;
+      var i = 0, n = window.__cpStepCount || 8;
+      window.__cpStep(0);
+      loopT = setInterval(function () { i = (i + 1) % n; window.__cpStep(i); }, 1700);
+    }
+
     function apply(n) {
       if (n === current) return;
       var fast = velocity() > SNAP_ABOVE || Math.abs(n - current) > 1;
@@ -78,6 +95,7 @@
          saving this file exists to produce. */
       stage.setAttribute('data-mfold', String(n));
       if (main) main.setAttribute('data-mfold', String(n));
+      companionLoop(n === 4);
     }
 
     var io = new IntersectionObserver(function (entries) {

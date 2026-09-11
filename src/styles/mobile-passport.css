@@ -75,18 +75,24 @@
   .stage[data-mfold="1"] .bookwrap { translate: 0 -13vh;    scale: .40; rotate: -2deg; opacity: 1 }
   .stage[data-mfold="1"] .book     { transform: translateX(-230px) rotateY(-15deg) }
 
-  /* 2 — in the hero's hand: right of centre, smaller, tilted into the grip */
-  .stage[data-mfold="2"] .bookwrap { translate: 15vw -8vh;  scale: .30; rotate: 8deg;  opacity: 1 }
-  .stage[data-mfold="2"] .book     { transform: translateX(-230px) rotateY(-18deg) }
+  /* 2 — centred on the crowd plate, square to the reader.
+         The hero figure is not drawn on mobile (see the fold-2 block below), so there is no
+         hand to sit in and no grip to tilt into: the passport is the one lit object in front
+         of the hall, and anything other than dead centre and face-on reads as a mistake
+         rather than a pose. The y offset is the plate's own centre, not the viewport's. */
+  .stage[data-mfold="2"] .bookwrap { translate: 0 -14vh;    scale: .26; rotate: 0deg;  opacity: 1 }
+  .stage[data-mfold="2"] .book     { transform: translateX(-230px) rotateY(0deg) }
 
   /* 3 — open. The spread is the full 920px width, so the wrap shifts RIGHT by half a page
          to keep the SPREAD centred rather than the closed cover, flattens out of its tilt so
          both pages are readable, and scales to fit the screen. */
-  .stage[data-mfold="3"] .bookwrap { translate: 0 -9vh;     scale: .40; rotate: 0deg;  opacity: 1 }
+  .stage[data-mfold="3"] .bookwrap { translate: 0 -16vh;    scale: .40; rotate: 0deg;  opacity: 1 }
   .stage[data-mfold="3"] .book     { transform: translateX(0px) rotateY(0deg) }
 
-  /* 4 — small, low and right: tucked beside the companion box */
-  .stage[data-mfold="4"] .bookwrap { translate: 24vw -22vh; scale: .19; rotate: -6deg; opacity: 1 }
+  /* 4 — small, low and right: tucked beside the companion box. Smaller than it was: at
+         .19 the cover was as wide as the Companion node it is meant to be an output of,
+         so the chart read as decoration around the passport rather than flowing into it. */
+  .stage[data-mfold="4"] .bookwrap { translate: 22vw -6vh;  scale: .16;  rotate: -6deg; opacity: 1 }
   .stage[data-mfold="4"] .book     { transform: translateX(-230px) rotateY(-15deg) }
 
   /* 5 — deliberately absent. It leaves to the right and fades; this is a real state. */
@@ -269,6 +275,191 @@
   .stage[data-mfold="7"] .bookwrap { translate: 0 -34vh;  scale: .30; rotate: 0deg; opacity: 0 }
   .stage[data-mfold="7"] .book     { transform: translateX(-230px) rotateY(-8deg) }
   main[data-mfold="7"] .outro .ocopy { opacity: 1; translate: 0 0 }
+
+  /* ==========================================================================================
+     THE VERTICAL SCALE: how far you scroll to get from one state to the next
+     ==========================================================================================
+     These are inline `style="--h:250"` on each <section>, so they need !important to be
+     overridden from a stylesheet — the same trick homepage.css already uses for #f5.
+
+     Desktop needs the runway: every one of those viewport-heights is scroll that the driver
+     converts into animation, and the choreography would be over in an instant without it.
+     Nothing here is scroll-linked any more, so the runway buys nothing and costs everything:
+     the whole page was 1,110vh, thirteen and a half screens on a phone, most of it spent
+     watching a state that had already finished arriving.
+
+     What each fold still needs is only this: long enough that the centre line sits inside it
+     while the copy glides in (420ms) and the passport settles (400ms), plus a beat to read.
+     At a normal phone scroll that is comfortably under 1.5 screens. 680vh total — a little
+     over a third of the scrolling removed, with no state cut and none shortened below the
+     time its own animation takes.
+     ------------------------------------------------------------------------------------------ */
+  #f1 { --h: 110 !important }
+  #f2 { --h: 145 !important }
+  #f3 { --h: 165 !important }   /* the longest: the cover opens, then a leaf turns, then six
+                                   stamps land — 1.4s of animation before there is anything
+                                   to read */
+  #f4 { --h: 145 !important }
+  #f5 { --h: 130 !important }
+
+  /* ==========================================================================================
+     FOLD 2 — the hall, the claims, and one passport in front of them
+     ========================================================================================== */
+
+  /* The hero figure is a <canvas> that the driver paints frame by frame from the lift video.
+     With the driver off nothing is ever drawn into it, so on mobile it has been an invisible
+     319px-tall box sitting in the middle of the composition, pushing the crowd up and the
+     copy down. Removed outright rather than left transparent: it also means the hero video
+     never has to be decoded on a phone. */
+  .stage[data-mfold] .heroFig,
+  .stage[data-mfold] .hglow { display: none }
+
+  /* The plate is the fold. At its authored width it covered 412x276 — the top third of the
+     screen, with 313px of nothing between its bottom edge and the copy. Wider by a third and
+     seated lower, it becomes a backdrop the passport stands in front of rather than a picture
+     hanging above the text. The overflow is feathered by .cbg img's own mask, so widening it
+     costs no hard edge.
+     svh rather than px so the seating holds on a short phone as well as a tall one. */
+  .stage[data-mfold] .cbg {
+    left: -12%; right: -12%;
+    margin-top: -34svh;
+  }
+
+  /* The claim callouts. These were never missing from the page — they are built at load and
+     re-drawn every 2.5s whether or not anything is scrolling. What was missing is their box:
+     the driver measures the plate each frame and writes .claims' left/top/width/height so the
+     layer becomes the image exactly, which is what makes the cards' percentage coordinates
+     land on people's heads. With no driver the layer stayed 0x0 in the corner, and the cards
+     were positioned as percentages of nothing.
+     The same box, declared instead of measured: identical insets to .cbg, and the plate's own
+     aspect ratio in place of a measured height. */
+  .stage[data-mfold] .claims {
+    left: -12%; right: -12%;
+    width: auto; height: auto;
+    top: 50%; margin-top: -34svh;
+    aspect-ratio: 2528 / 1696;
+    opacity: 0;
+    transition: opacity 700ms var(--m-ease);
+  }
+  .stage[data-mfold="2"] .claims,
+  .stage[data-mfold="3"] .claims { opacity: 1 }
+
+  /* Two constants inside the card were sized for the desktop plate and do not survive being
+     scaled down with it.
+     --rise is how far above its anchor a card floats. At 90px against a 360px-tall plate the
+     cards hung a quarter of the image above the heads they belong to, in empty ceiling.
+     And the card itself is nowrap, so "Built a $200M business in 2 months" is one 250px line
+     — wider than the gap either side of the passport, so it ran off the screen edge. Wrapping
+     inside a fixed share of the viewport keeps it beside the passport instead of past it. */
+  .stage[data-mfold] .claims { --rise: 26px }
+  .stage[data-mfold] .clb {
+    white-space: normal;
+    max-width: 36vw;
+    text-align: center;
+    padding: 4px 8px 5px;
+  }
+  .stage[data-mfold] .clb b { font-size: 11.5px; line-height: 15px }
+  .stage[data-mfold] .clb figcaption { font-size: 6px }
+
+  /* ==========================================================================================
+     FOLD 4 — the flow chart
+     ==========================================================================================
+     Same shape of fault as the crowd, one level deeper. .orb was invisible, which is what was
+     reported first; underneath it the chart has its own staged reveal, driven by class s1-s4
+     on .flow, added by the driver as the fold advances. Un-staged, .ftile sits at .42, .fbot
+     at .32, and every connector path and dot at 0 — so once .orb was revealed the chart
+     appeared, but greyed out and unconnected, which is exactly "the visibility is affected".
+
+     s4 is the finished state. Mobile has no progression to stage, so it gets the finished
+     state on arrival. These are copies of homepage.css's own .flow.s4 rules, not new styling. */
+  .stage[data-mfold="4"] .flow path  { opacity: 1 }
+  .stage[data-mfold="4"] .flow .fdots { opacity: .9 }
+  .stage[data-mfold="4"] .flow .ftile {
+    opacity: 1; color: var(--emerald);
+    border-color: rgba(216,184,119,.3);
+    box-shadow: 0 0 20px rgba(216,184,119,.07);
+  }
+  .stage[data-mfold="4"] .flow .fbot {
+    opacity: 1;
+    border-color: rgba(216,184,119,.5);
+  }
+  /* the connector down to the passport is measured by the driver against the cover's moving
+     top edge; with the passport parked to one side it has nothing to point at, so it stays
+     out rather than hanging into empty space */
+  .stage[data-mfold] .fline { display: none }
+
+  /* ==========================================================================================
+     FOLD 6 — the closing frame: passport and ring, locked together
+     ==========================================================================================
+     The passport lives in #stage, which is position:fixed. The ring lives in .oart, which is
+     in normal flow. So for the ~1 screen of scrolling that state 6 lasts, the ring travelled
+     the full height of the viewport and the passport did not move at all — the passport
+     looked stationary because everything around it was moving past it.
+
+     Both halves are pinned instead. That is not a new idea on this page: every other fold's
+     copy is already position:fixed (see .col in homepage.css), for the same reason — a
+     composition that must hold still while its section scrolls through. The outro simply
+     never got the same treatment, because on desktop the driver moved the passport INTO the
+     ring's measured slot every frame and the question never came up.
+
+     With both fixed, #outro's own height is free, so it carries scroll rather than layout. */
+  main[data-mfold] .oart {
+    position: fixed; left: 0; right: 0;
+    top: calc(var(--hdr, 76px) + 4svh);
+    min-height: 0; height: min(38svh, 340px);
+    z-index: 5;
+    opacity: 0; transition: opacity 500ms var(--m-ease);
+    pointer-events: none;
+  }
+  main[data-mfold="6"] .oart { opacity: 1 }
+
+  main[data-mfold] .outro .ocopy {
+    position: fixed; left: 0; right: 0;
+    top: auto; bottom: 6svh;
+    width: auto; margin: 0 calc(var(--gut) + var(--bleed));
+    max-width: none;
+    z-index: 6;
+  }
+  /* it has scrolled past: the footer owns the frame now */
+  main[data-mfold="7"] .outro .ocopy { opacity: 0; translate: -34vw 0; pointer-events: none }
+
+  /* Both halves of the outro are now fixed, so they cannot scroll out of the way by
+     themselves. The footer rises over them instead — which needs it to be opaque, since the
+     footer is transparent by design and sits at z-index 10 with the pinned copy at 6.
+     Same colour as the page, so nothing about the footer's own look changes; it simply stops
+     being a window onto the frame behind it. */
+  main[data-mfold] .ftr { background: var(--bg) }
+
+  /* ==========================================================================================
+     THE VERTICAL RHYTHM — closing the gap between the art and the copy
+     ==========================================================================================
+     .col is pinned to bottom:3.5svh with a 44svh cap, and the art sits in the top band. On a
+     915px screen that left the copy hard against the bottom edge and a 300px hole in the
+     middle of every fold: the art finished at 40% and the copy started at 74%.
+
+     Two changes, both to the copy's band rather than to the art: it comes off the bottom edge
+     so the fold has a foot, and its cap rises so a long block grows upward into the gap
+     instead of down into the edge. The art is seated lower in its own blocks above. */
+  main[data-mfold] .fold .col { bottom: 6.5svh; max-height: 52svh }
+
+  /* ---- the leaves that are never turned --------------------------------------------------
+     The passport carries six leaves so that desktop can flip through 03/04, 05/06 and on to
+     09/10. Mobile turns exactly one (see fold 3 above) and stops on the 03/04 spread, so
+     leaves 3, 4 and 5 are never reached: they sit flat behind leaf 2's page, fully occluded,
+     for the whole visit.
+
+     They are not free while they sit there. Everything inside .book is in a preserve-3d
+     context, which gives each face its own render surface whether or not anything can see
+     it — six more 460x640 surfaces, plus their chips, headings and rules, laid out and
+     rastered to be painted underneath an opaque page.
+
+     Taken out on mobile only. Nothing that is ever visible is removed: the closed cover is
+     #cover, the page edge is .pg.recto.base, and the open spread is leaf1's back and leaf2's
+     front, all of which stay.
+     ------------------------------------------------------------------------------------- */
+  .stage[data-mfold] #leaf3,
+  .stage[data-mfold] #leaf4,
+  .stage[data-mfold] #leaf5 { display: none }
 
   /* ---- the layer budget: undo the promotions the driver needed and this does not -------
      THIS IS THE S23 FIX, and it is the whole of it.
