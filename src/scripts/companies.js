@@ -828,18 +828,28 @@
   /* head: [Compare][liftcol][us][3 others] then repeating [rowlabel][4 cells] */
   var heads=kids.filter(function(k){ return k.classList.contains('cmph') })
                 .map(function(k){ return k.querySelector('b').textContent });
-  var cols=heads.slice(1);                       /* CareerPassport + the three others */
+  /* D8 · Three columns on the stacked reading, not four. The table compares CareerPassport
+     against Your ATS, Job boards and CV screening; on a phone that is four paragraphs per
+     capability, six times over, and it stopped reading as a comparison and became a wall.
+     CV screening is the one dropped — it is the narrowest of the three and the one whose
+     answer is most often a restatement of the CV column above it. The desktop table is
+     untouched and still carries all four. */
+  var cols=heads.slice(1,4);                     /* CareerPassport + ATS + Job boards */
   var rows=[],cur=null;
   kids.forEach(function(k){
     if(k.classList.contains('cmpr')){
       cur={label:k.querySelector('b').textContent,cells:[]};
       rows.push(cur);
     } else if(k.classList.contains('cell') && cur){
-      cur.cells.push(k.querySelector('p').textContent);
+      /* D8 · the phone reading prefers the cell's short form when one is authored. The full
+         sentence is what the table wants at desktop width; at 15px in a stacked card it is
+         three lines where one will do. data-m is inert markup, so the table is unchanged. */
+      var cp=k.querySelector('p');
+      cur.cells.push(cp.getAttribute('data-m') || cp.textContent);
     }
   });
   out.innerHTML=rows.map(function(r){
-    var others=r.cells.slice(1).map(function(c,i){
+    var others=r.cells.slice(1,3).map(function(c,i){
       return '<div class="mo"><em>'+(cols[i+1]||'').toUpperCase()+'</em><p>'+c+'</p></div>';
     }).join('');
     return '<div class="cmpb"><b>'+r.label+'</b>'+
