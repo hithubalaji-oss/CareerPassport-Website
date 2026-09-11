@@ -74,8 +74,30 @@ const DELTAS = [
     design: 'index.html',
     present: ['mobile-passport.css', 'mobile-passport.js', "window.matchMedia('(max-width: 1024px)').matches) window.__cpManual"],
     extraFiles: ['src/styles/mobile-passport.css'],
-    extraPresent: ['THE SIX STATES'],
+    extraPresent: ['THE SEVEN STATES'],
     // additive: nothing in the design can revert it, so there is no upstreamFixed signal
+  },
+  {
+    id: 'D3d',
+    title: 'The driver exposes its build and claim-placement hooks to the mobile layer',
+    file: 'src/scripts/homepage.js',
+    design: 'index.html',
+    // Both exist because the mobile layer replaced the rAF loop that used to call them.
+    // __cpBuildOnce builds the fold-4 flow chart, which otherwise never exists; and
+    // __cpPlaceClaims re-places the fold-2 callout cards once the measured art band has
+    // given their layer a real box to be clamped against — at parse time it has none, and
+    // a card lands ~7,000px off screen.
+    present: ['window.__cpBuildOnce', 'window.__cpPlaceClaims'],
+  },
+  {
+    id: 'D5',
+    title: 'Eyebrows removed from every fold but two',
+    file: 'src/styles/local-overrides.css',
+    design: 'index.html',
+    present: ['#f1 .eyebrow { display: none }'],
+    // the design file still carries all fifteen; when Claude Design removes them, the
+    // markup deletions stop being re-applied by hand and this entry can go
+    reverted: [/class="eyebrow"><i><\/i>The problem/],
   },
 ];
 

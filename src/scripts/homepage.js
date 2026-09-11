@@ -145,6 +145,12 @@ var SLOTS=[[16,30,.9],[31,24,.72],[47,20,.95],[63,25,.66],[80,31,.88],
     setTimeout(apply,420);
   }
   refresh(0,true); refresh(1,true);
+  /* DELTA D3d — mobile re-places the cards once the callout layer has a real box.
+     place() clamps each card's lane using the layer's own offsetWidth/offsetLeft, and at parse
+     time on mobile that box does not exist yet: the layer is sized from the measured art band,
+     which mobile-passport.js writes on entering fold 2. Called from there, so the first
+     placement a reader can see is the correct one rather than a card 7,000px off screen. */
+  window.__cpPlaceClaims = function(){ refresh(0,true); refresh(1,true); };
   /* alternate sides: each card is replaced every 5s, but 2.5s out of phase with the
      other, so the two never change together */
   var turn=0;
