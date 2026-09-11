@@ -109,6 +109,35 @@ const DELTAS = [
     // markup deletions stop being re-applied by hand and this entry can go
     reverted: [/class="eyebrow"><i><\/i>The problem/],
   },
+  {
+    id: 'D7',
+    title: 'For Companies: the two pinned sections can be shortened and driven by a clock',
+    file: 'src/scripts/companies.js',
+    design: 'For Companies.html',
+    // four hooks: each pinned section reads a mobile length override, takes a progress
+    // override in place of its scroll position, and publishes its frame function so the
+    // mobile layer can tick it. Two lines per section; everything else lives in
+    // mobile-pages.js, which the export never touches.
+    present: [
+      "(window.__cpSVH&&window.__cpSVH.hero)||SVH",
+      "(window.__cpSVH&&window.__cpSVH.demo)||SVH_TOTAL",
+      'if(window.__cpAutoQ!=null) q=window.__cpAutoQ;',
+      'if(window.__cpAutoG!=null) g=window.__cpAutoG;',
+      'window.__cpHeroFrame=frame;',
+      'window.__cpDemoFrame=frame;',
+    ],
+    // the unhooked forms. Their return means the import won and For Companies is back to
+    // 26 screens of scroll on a phone with no way to shorten it.
+    reverted: [
+      /sec\.style\.height=SVH\+'svh'/,
+      /sec\.style\.height=SVH_TOTAL\+'svh'/,
+    ],
+    // the mobile layer itself, and the inline declaration that has to beat Astro's bundler
+    extraFiles: ['src/scripts/mobile-pages.js', 'src/pages/for-companies.astro',
+                 'src/styles/mobile-pages.css'],
+    extraPresent: ['function autoplay(', 'window.__cpSVH = { hero: 150, demo: 210 }',
+                   '--ai-h'],
+  },
 ];
 
 const hit = (src, needle) =>

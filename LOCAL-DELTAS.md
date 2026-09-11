@@ -325,6 +325,64 @@ have to be re-applied by hand until Claude Design removes them from the canvas. 
 
 ---
 
+## D7 — For Companies: the two pinned sections can be shortened and driven by a clock
+
+**Files:** four hooks in `src/scripts/companies.js`, plus `src/scripts/mobile-pages.js`,
+`src/styles/mobile-pages.css` and one inline script in `src/pages/for-companies.astro`
+
+For Companies ran to **26-27 screens** of scroll on a phone. Two sections account for 21.7 of
+them: the hero pins for `420svh` while the brief types itself, and the process demo pins for
+`1750svh` while thirteen acts play out. Both are scroll-linked, so on that page the length *is*
+the animation — shortening one loses the other. On a phone the length comes down and the clock
+changes hands, which is what the homepage's fold 4 already does with its Companion loop.
+
+Both drivers in `companies.js` are pure functions of a single progress scalar, so the delta on
+that side is only a way in — **two lines per section**:
+
+```js
+var setH=function(){ sec.style.height=((window.__cpSVH&&window.__cpSVH.hero)||SVH)+'svh' };
+if(window.__cpAutoQ!=null) q=window.__cpAutoQ;     /* hero */
+if(window.__cpAutoG!=null) g=window.__cpAutoG;     /* demo */
+window.__cpHeroFrame=frame;  window.__cpDemoFrame=frame;
+```
+
+With nothing published, every expression falls through to the authored value, which is why
+desktop is untouched: `__cpSVH` unset, `__cpAutoQ`/`__cpAutoG` undefined, both sections at
+`420svh` and `1750svh`. Verified at 1440x900 and 1280x800 on all three pages — document
+heights byte-identical to `main`, and Partners (the one page with no live animation) renders
+**0.000%** different. Everything else lives in `mobile-pages.js`, which the export never
+touches.
+
+Result, with the rest of the mobile pass: **27.0 -> 8.9 screens** at 360x640, 26.0 -> 7.9 at
+390x844, 25.8 -> 7.7 at 412x915, against the homepage's 8.6-8.7.
+
+Three things worth knowing before touching this:
+
+**`__cpSVH` is declared inline in the page, not in `mobile-pages.js`.** Astro bundles a page's
+module scripts together and orders them by its own import graph rather than by tag order.
+Verified: `companies.js` landed **first** in the bundle, so it had already sized both sections
+before `mobile-pages.js` could publish anything — the page stayed 26 screens long while every
+other part of the override worked, which is a quiet enough failure to be worth the sentence.
+An inline `is:inline` script runs where it is written. Same pattern as `window.__cpManual`.
+
+**The demo plays forward once per entry and holds.** It does not loop. The demo is a narrative
+that ends on the offer being sent; looping a twenty-second story back to its first frame reads
+as a glitch rather than as life. Scrolling away and back replays it.
+
+**The panel is measured, not guessed.** `.aibox.big` is authored
+`min(clamp(452px,63vh,572px), 100svh - hdr)`. On a 640px-high phone the 452px floor beats the
+403px that 63vh would give, and the panel plus its text column came to 687px inside 557px of
+pinned space — cropped, not shown, because `.aidemopin` is `overflow:hidden`. Measured at
+360x640 the panel's bottom edge landed 65px below the fold. `--ai-h` is the space the text
+column actually left, measured the way the homepage measures its art band. The CSS fallback is
+the authored expression with the floor removed, so the panel still fits if the script never
+runs.
+
+The design file carries the unhooked forms, so every export reverts this. The check's
+`reverted` signal watches for `sec.style.height=SVH_TOTAL+'svh'` returning.
+
+---
+
 ## Retired
 
 Everything below was fixed in Claude Design and re-derived cleanly on 10 Sep. Kept as a

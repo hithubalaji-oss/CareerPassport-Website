@@ -66,8 +66,12 @@
   var clamp=function(v,a,b){ return Math.min(b,Math.max(a,v)) };
   var seg=function(v,a,b){ return clamp((v-a)/(b-a),0,1) };
 
+  /* D7 · the pinned length is a mobile override when one is published. mobile-pages.js sets
+     window.__cpSVH before this file runs; with nothing set, the authored value applies. */
   var SVH=420;
-  var setH=function(){ sec.style.height=SVH+'svh' };
+  var setH=function(){
+    sec.style.height=((window.__cpSVH&&window.__cpSVH.hero)||SVH)+'svh';
+  };
   setH(); addEventListener('resize',setH,{passive:true});
 
   var QUERY="I need a senior product leader who has built enterprise products, worked through ambiguity and can operate across engineering, sales and customers";
@@ -106,6 +110,9 @@
     var vh=pin.getBoundingClientRect().height||innerHeight;
     var span=r.height-vh;
     var q=span>0 ? clamp(-r.top/span,0,1) : 0;
+    /* D7 · on a phone the clock is a timer rather than the scroll position — see
+       mobile-pages.js. Everything below is a pure function of q either way. */
+    if(window.__cpAutoQ!=null) q=window.__cpAutoQ;
 
     /* the brief fills in, word by word */
     var fillT=seg(q,.08,.60);
@@ -147,6 +154,7 @@
     cur.classList.toggle('click',press);
     park(sendBtn,2,2);
   };
+  window.__cpHeroFrame=frame;   /* D7 */
   frame();
   var queued=false;
   addEventListener('scroll',function(){
@@ -482,7 +490,11 @@
     var sp=sec.offsetHeight-vh;
     return Math.round(sec.offsetTop + sp*clamp((gv-G0)/(1-G0),0,1));
   };
-  var setH=function(){ sec.style.height=SVH_TOTAL+'svh' };
+  /* D7 · see the hero above */
+  window.__cpDemoG0=G0;
+  var setH=function(){
+    sec.style.height=((window.__cpSVH&&window.__cpSVH.demo)||SVH_TOTAL)+'svh';
+  };
   setH(); addEventListener('resize',setH,{passive:true});
 
   var clamp=function(v,a,b){ return Math.min(b,Math.max(a,v)) };
@@ -530,6 +542,7 @@
     var vh=pin.getBoundingClientRect().height||document.documentElement.clientHeight||innerHeight;
     var span=r.height-vh;
     var g=G0+(span>0 ? clamp(-r.top/span,0,1) : 0)*(1-G0);
+    if(window.__cpAutoG!=null) g=window.__cpAutoG;   /* D7 */
 
     /* the board drifts and reshuffles as the fold is scrolled. Its per-row transforms are
        the most expensive work in this function, so they are written only when the drift has
@@ -789,6 +802,7 @@
       else park(dcLive[0],0,4);
     }
   };
+  window.__cpDemoFrame=frame;   /* D7 */
   frame();
   var queued=false;
   var onScroll=function(){
