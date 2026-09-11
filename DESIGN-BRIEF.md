@@ -145,11 +145,18 @@ in case anyone reads the missing animation as a regression later.
 The orphan `}` is still a syntax fix and still needs deleting. It is only adjacent to the
 rotation, not the cause of it.
 
-**One thing that does need a decision.** The homepage's seal is static; the same seal on
-`For Companies.html` and `For Recruitment Partners.html` still carries
-`animation:cringspin 44s linear infinite` (three declarations, one of them inside a media query).
-It is the same object turning on two pages and not on the third. If static is the intent, those
-three should go too; say so and the shipped site follows in the same change.
+**And it applies to all three pages, at every width.** Decided 11 Sep. `For Companies.html` and
+`For Recruitment Partners.html` still carry `animation:cringspin 44s linear infinite` on
+`.cpface .cring` — three declarations between them, one inside a `prefers-reduced-motion` block —
+plus a `@keyframes cringspin` in each file. **Delete all of them, and the keyframes with them.**
+For Companies draws six seals on the page; every one of them was turning.
+
+Delete rather than override: `@media (prefers-reduced-motion:reduce){.cpface .cring{animation:none}}`
+in `For Companies.html` exists only to switch off an animation that should not be declared in the
+first place, so it goes too.
+
+The shipped site already has this (all three pages, desktop, mobile and reduced-motion, verified
+by computed style). Until the design files match, every export brings the rotation back.
 
 ---
 

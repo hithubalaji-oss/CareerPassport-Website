@@ -881,16 +881,15 @@ img{display:block;max-width:100%}
 .cpface .crest i b{position:relative;display:grid;place-items:center;
   width:30.77%;aspect-ratio:72 / 93;border-radius:4px;
   background:rgba(216,184,119,.85)}
-/* the seal legend rides the band between the two rings and turns slowly, so the crest
-   reads as a stamp rather than a static badge. The SVG carries a viewBox, so it scales
-   with the seal and needs no size of its own. */
-.cpface .cring{position:absolute;inset:0;width:100%;height:100%;
-  animation:cringspin 44s linear infinite}
+/* the seal legend rides the band between the two rings. It is deliberately STATIC, on every
+   page and at every width — confirmed 11 Sep; the homepage's seal already is. It used to turn
+   on a 44s cringspin loop; that is gone rather than switched off, so there is no animation
+   here to reduce-motion away. The SVG carries a viewBox, so it scales with the seal and needs
+   no size of its own. */
+.cpface .cring{position:absolute;inset:0;width:100%;height:100%}
 .cpface .cring text{font-family:var(--mono);font-size:8.5px;font-weight:500;
   letter-spacing:.18em;dominant-baseline:central;fill:rgba(216,184,119,.66)}
 .cpface .cring text.cdia{font-size:5.6px;letter-spacing:normal;fill:rgba(216,184,119,.9)}
-@keyframes cringspin{to{rotate:360deg}}
-@media (prefers-reduced-motion:reduce){.cpface .cring{animation:none}}
 /* the artwork is black on transparent, so multiply prints its ridges into the gold */
 .cpface .cfp{width:70.8%;aspect-ratio:1;object-fit:contain;
   mix-blend-mode:multiply;opacity:.36}

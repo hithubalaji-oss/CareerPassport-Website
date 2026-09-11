@@ -1535,7 +1535,6 @@
 
 
 
-@keyframes cringspin{to{rotate:360deg}}
 @keyframes oturn{to{rotate:360deg}}
 @keyframes palmpulse{from{opacity:.55}to{opacity:1}}
 
@@ -1650,8 +1649,7 @@
 .cpface .crest i b{position:relative;display:grid;place-items:center;
   width:30.77%;aspect-ratio:72 / 93;border-radius:4px;
   background:rgba(216,184,119,.85)}
-.cpface .cring{position:absolute;inset:0;width:100%;height:100%;
-  animation:cringspin 44s linear infinite}
+.cpface .cring{position:absolute;inset:0;width:100%;height:100%}
 .cpface .cring text{font-family:var(--mono);font-size:8.5px;font-weight:500;
   letter-spacing:.18em;dominant-baseline:central;fill:rgba(216,184,119,.66)}
 .cpface .cring text.cdia{font-size:5.6px;letter-spacing:normal;fill:rgba(216,184,119,.9)}
@@ -1715,8 +1713,7 @@
   .cpface .crest i b{position:relative;display:grid;place-items:center;
   width:30.77%;aspect-ratio:72 / 93;border-radius:4px;
   background:rgba(216,184,119,.85)}
-  .cpface .cring{position:absolute;inset:0;width:100%;height:100%;
-  animation:cringspin 44s linear infinite}
+  .cpface .cring{position:absolute;inset:0;width:100%;height:100%}
   .cpface .cring text{font-family:var(--mono);font-size:8.5px;font-weight:500;
   letter-spacing:.18em;dominant-baseline:central;fill:rgba(216,184,119,.66)}
   .cpface .cring text.cdia{font-size:5.6px;letter-spacing:normal;fill:rgba(216,184,119,.9)}
