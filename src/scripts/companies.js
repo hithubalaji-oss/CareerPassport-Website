@@ -138,7 +138,10 @@
        moving the instant the karaoke begins rather than waiting on the first word */
     comp.style.setProperty('--charge',fillT.toFixed(3));
     sendBtn.classList.toggle('armed',done);
-    pill.classList.toggle('hot',done);
+    /* D8 · the Companion pill was removed from the composer on request. Guarded rather
+       than deleted: a design export brings the markup back, and this line then works
+       again unchanged. Unguarded it threw and took the whole hero driver with it. */
+    if(pill) pill.classList.toggle('hot',done);
     comp.classList.toggle('armed',done);
 
     /* the press holds long enough to register even at speed */
@@ -272,9 +275,19 @@
      scale could change mid-animation, which is a visible size step. */
   var dcPad=1.08;
   var dcStage=dcPp?dcPp.parentElement:null;
+  /* D8 · which box the book is fitted into. sizeBook measures dcStage — the pane's PARENT —
+     and a ResizeObserver watches that same parent. In act 4 past g=.988 the pane itself
+     narrows (the sent-confirmation takes room beside it) while the parent does not, so no
+     callback fires, the scale stays at its old value and the book overflows: measured at
+     390x844, the pane went 351px wide to 220px and the book kept a 314px spread, hanging
+     95px past the panel's left edge. Fitting the pane instead of the parent is correct in
+     both cases but would re-scale the desktop book, so the mobile layer asks for it. */
+  var dcFitPane=false;
+  window.__cpBookPane=function(on){ dcFitPane=!!on; sizeBook(); };
+
   function sizeBook(){
     if(!dcPp||!dcStage) return;
-    var r=dcStage.getBoundingClientRect();
+    var r=(dcFitPane?dcPp:dcStage).getBoundingClientRect();
     if(!r.width||!r.height) return;
     dcPp.style.setProperty('--pps',
       Math.max(0.12, Math.min(r.width/(920*dcPad), r.height/700)).toFixed(4));
@@ -288,6 +301,7 @@
   if(window.ResizeObserver&&dcStage){
     dcRO=new ResizeObserver(resizeBook);
     dcRO.observe(dcStage);
+    if(dcPp) dcRO.observe(dcPp);   /* D8 · see __cpBookPane above */
   }
   /* a short burst of paper for the offer */
   if(dcConf){
@@ -780,12 +794,21 @@
     /* ---------- who is on stage, and where their hand is ---------- */
     var curOn2 = (p>=.590&&p<.995&&g<A2) ||
                  (g>=.700&&g<.852) || (g>=.872&&g<.992);
+    /* D8 · On a phone the cursor is narrowed to the few deliberate clicks — it was crossing
+       the panel to hover chips, the slider and matrix cells, which at this size reads as the
+       pointer wandering rather than as someone working. Both hooks are inert unless the
+       mobile layer publishes them, so desktop keeps the full choreography. */
+    if(window.__cpCursorOn) curOn2=!!window.__cpCursorOn(g,p);
     cur.classList.toggle('on',curOn2);
     cur.classList.toggle('away',!curOn2);
     setVisible(curOn2);
     cur.classList.toggle('click',subPress||evPress||dcPress);
 
-    if(g<A2){
+    var aim=window.__cpCursorAim;   /* D8 */
+    if(aim){
+      var t=aim(g,p,{submit:submitBtn,ev:evBtn,share:dcShare,live:dcLive[0]});
+      if(t) park(t,2,2);
+    }else if(g<A2){
       /* one target per beat, in the order the beats run */
       if(chipHov>=0) park(chips[chipHov],0,2);
       else if(onSlider) park(sThumb,0,1);
@@ -825,18 +848,28 @@
   /* head: [Compare][liftcol][us][3 others] then repeating [rowlabel][4 cells] */
   var heads=kids.filter(function(k){ return k.classList.contains('cmph') })
                 .map(function(k){ return k.querySelector('b').textContent });
-  var cols=heads.slice(1);                       /* CareerPassport + the three others */
+  /* D8 · Three columns on the stacked reading, not four. The table compares CareerPassport
+     against Your ATS, Job boards and CV screening; on a phone that is four paragraphs per
+     capability, six times over, and it stopped reading as a comparison and became a wall.
+     CV screening is the one dropped — it is the narrowest of the three and the one whose
+     answer is most often a restatement of the CV column above it. The desktop table is
+     untouched and still carries all four. */
+  var cols=heads.slice(1,4);                     /* CareerPassport + ATS + Job boards */
   var rows=[],cur=null;
   kids.forEach(function(k){
     if(k.classList.contains('cmpr')){
       cur={label:k.querySelector('b').textContent,cells:[]};
       rows.push(cur);
     } else if(k.classList.contains('cell') && cur){
-      cur.cells.push(k.querySelector('p').textContent);
+      /* D8 · the phone reading prefers the cell's short form when one is authored. The full
+         sentence is what the table wants at desktop width; at 15px in a stacked card it is
+         three lines where one will do. data-m is inert markup, so the table is unchanged. */
+      var cp=k.querySelector('p');
+      cur.cells.push(cp.getAttribute('data-m') || cp.textContent);
     }
   });
   out.innerHTML=rows.map(function(r){
-    var others=r.cells.slice(1).map(function(c,i){
+    var others=r.cells.slice(1,3).map(function(c,i){
       return '<div class="mo"><em>'+(cols[i+1]||'').toUpperCase()+'</em><p>'+c+'</p></div>';
     }).join('');
     return '<div class="cmpb"><b>'+r.label+'</b>'+

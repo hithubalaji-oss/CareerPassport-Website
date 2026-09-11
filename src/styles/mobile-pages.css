@@ -192,6 +192,123 @@
   .aibox.big { min-height: var(--ai-h, min(63svh, calc(100svh - var(--hdr) - 4px))) }
   .aidemopin { padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)) }
 
+  /* ============================================================================================
+     3 · THE DEMO PANEL'S INTERIOR
+     ============================================================================================
+     These are the simulated product screens, which keep their miniature type by design — see
+     the exclusion note above. What follows is not "make it bigger", it is making the miniature
+     UI actually fit the panel it is drawn in, which at phone widths it did not.
+     -------------------------------------------------------------------------------------- */
+
+  /* ---- the hiring manager's label could leave the frame ---------------------------------
+     The driver already decides which side the label belongs on — `cur.classList.toggle('left',
+     tx > stage.offsetWidth*0.55)` — but NOTHING IN ANY STYLESHEET CONSUMES `.left`. The class
+     has been toggling against no rule, so the label always hung to the right of the cursor and
+     ran off the frame whenever the cursor was near the right edge. `.aidemopin` and `.heropin`
+     are overflow:hidden, so it was cropped rather than scrolling the page — it just looked
+     broken. This is the missing half of that feature.
+
+     Mobile only: on desktop the panel is wide enough that the label has never run out of room,
+     and adding the flip there would change a rendering that is correct today. */
+  .hmcur.left .hmlbl{left:auto;right:12px}
+  /* and smaller, so the flip has less to place */
+  .hmlbl{font-size:11px;padding:3px 7px;letter-spacing:0}
+
+  /* ---- the send button says what it is doing --------------------------------------------
+     The hiring manager presses send and the composer's only feedback was the icon dimming.
+     On a phone, where the whole hero is the composer, that beat needs to say something: the
+     button becomes a pill that names the work it just started. It is also the handover to the
+     next fold, which opens on the blueprint being drafted — so it names that rather than a
+     generic "processing".
+
+     Driven entirely off `.sending`, which companies.js already puts on the composer at the
+     press, so this needs no markup and no driver change. */
+  .hcomp.sending .aisearch{
+    width:auto;padding:0 11px;gap:7px;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  .hcomp.sending .aisearch::after{
+    content:"Building your blueprint";
+    font-family:var(--font-mono);font-size:8.5px;font-weight:500;
+    letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;
+  }
+
+  /* ---- the technology chips, on one row -------------------------------------------------
+     They wrapped to three rows and took a third of the panel. Set at their natural widths one
+     row is 470px inside a 250px panel, so the row cannot simply be made nowrap — it would crop
+     the two chips the driver adds during the act, which are indices 4 and 5, the last two.
+
+     So the six share the row instead: each takes an equal part of it and truncates if its
+     label is longer than its share. On a 320px phone that is about 39px each — "Python" fits
+     whole, "Prompt engineering" ends in an ellipsis. Truncation is what a dense product UI
+     actually does at this size, and this panel is standing in for one.
+
+     The add control is the one thing dropped. It is an affordance, not content: it cannot be
+     used in a simulation, and its width is better spent on the six real chips. */
+  .bpchips{flex-wrap:nowrap;overflow:hidden;gap:3px}
+  .bpchip{display:block;flex:1 1 0;min-width:0;
+          height:20px;line-height:20px;padding:0 6px;
+          font-size:8px;letter-spacing:.01em;text-align:center;
+          overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bpchip.add{display:none}
+
+  /* ---- the panel's labels and the matrix ------------------------------------------------
+     Nine single-word cells go three across instead of two, which is what made them legible:
+     as two columns each cell had to hold a two-line title and they overlapped each other and
+     the row below. */
+  .bpglbl{font-size:9px;letter-spacing:.12em}
+  .bpglbl em{font-size:8.5px}
+  .bpmx{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+  .bpmxc{padding:6px 4px;gap:0;text-align:center;align-items:center}
+  .bpmxc b{font-size:8.5px;line-height:1.2;letter-spacing:-.01em}
+  .bpsub{font-size:9px;padding:0 10px;height:26px}
+  .bpnote{font-size:8px;letter-spacing:.1em}
+  .aiprep .shimmer{font-size:10px;letter-spacing:.1em}
+
+  /* ---- the execution map: all three columns, inside the frame ---------------------------
+     `companies.css:1025` hides `.exnode.src` below 820px outright, so the DATABASE column —
+     the 128 / 64 / 312 source boxes — simply was not on the page, and the act read as a lone
+     Companion pill with wires going nowhere. The CHANNEL column survived but its boxes are
+     centred on 84% with `white-space:nowrap`, so they ran past the right edge.
+
+     Both columns come back, at the size the map can actually hold: the nodes drop to 8px and
+     the hub loses its "COMPANION" wordmark and keeps only the bot mark, which is what buys the
+     width back. The column captions follow the nodes down. */
+  .exnode.src{display:flex}
+  .exnode{font-size:8px;padding:4px 6px;gap:1px;border-radius:7px;
+          max-width:30vw;white-space:normal;text-align:center;line-height:1.15}
+  .exnode b{font-size:9px}
+  .exhub{gap:0;padding:7px;font-size:0;letter-spacing:0}
+  .exhub .exbot{font-size:10px}
+  .exdiv{font-size:7px;letter-spacing:.1em}
+
+  /* ---- the closing CTA's product still ---------------------------------------------------
+     `--frame-w` is `min(shellw * .39, 62vh)`, a share of the SHELL — so on a 390px phone the
+     16:9 still resolved to 152px wide, 39% of the screen, a stamp floating inside a 350px
+     block. And its 16px radius, drawn for a frame three times wider, took 11% of its own
+     width: the corners read as a lozenge rather than a screen.
+
+     On a phone it takes the block, one step in from the frame edge, and the radius comes down
+     with it so the proportion is the one the desktop composition has. Same on both pages —
+     Partners' closing art is the same component. */
+  .cart .pgroup{width:min(92%, calc(100vw - 2 * var(--gut) - 12px))}
+  .cart .pscreen{border-radius:12px}
+  .cart .plbl{font-size:7px;right:9px;bottom:7px}
+  .cart .pchrome{left:9px;top:9px}
+  /* the passport stands in front of a wider screen now, so it comes in from the edge to match */
+  .cart .cpres .pphone{right:-2%;bottom:-5%;height:76%}
+
+  /* ---- Partners: the hero owns the first screen -----------------------------------------
+     It was 529px of a 640px viewport and 558 of 844 — two thirds of the screen, with the next
+     section's heading pushing into the fold. A hero that does not reach the bottom of the
+     first screen reads as a page that has already started scrolling. */
+  .hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+        padding-block:calc(var(--bar-h,76px) + clamp(16px,3vh,32px)) 0}
+  .hero .hcopy{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;
+               gap:clamp(14px,2.4vh,22px)}
+  /* the logo strip is the hero's floor, not another block below it */
+  .hero .strip{margin-top:auto;padding-bottom:clamp(14px,2.6vh,26px)}
+
   /* ---- the logo strips bleed on purpose, but they must not create a scrollbar -----------
      Both pages duplicate their strip to loop it seamlessly, so the track is ~1876px wide inside
      a 390px frame. cp-shared.css sets body{overflow-x:hidden}, which is the one rule iOS Safari

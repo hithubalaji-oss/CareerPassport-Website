@@ -34,7 +34,7 @@ scripts/check-design-files.mjs   npm run check:design
 
 **Re-derivation is destructive.** Every change made in code that has no counterpart on the
 canvas is silently reverted by the next export. That is what `LOCAL-DELTAS.md` and
-`scripts/check-deltas.mjs` exist for: **D1–D7**, each with a machine check. Run
+`scripts/check-deltas.mjs` exist for: **D1–D8**, each with a machine check. Run
 `npm run check:deltas` after every import; anything MISSING must be re-applied before pushing.
 `DESIGN-BRIEF.md` is the other half — what Claude Design should change on the canvas so a
 delta can be retired.
@@ -122,43 +122,57 @@ And `.fine` is secondary prose separated by **colour**, not size.
 - **No loader.** Advised against it and the user agreed: first paint is ~1.1s, which is not
   the indeterminate wait a ChatGPT/ixigo-style loader covers, and any loader worth looking at
   costs 600–900ms. A staged entrance was offered instead and not yet built.
-- **The For Companies demo plays forward once per entry and holds** — it does not loop. It is
-  a narrative ending on the offer being sent.
+- **The For Companies demo is four scroll folds on mobile**, not a timed carousel: scrolling
+  moves you act to act and each act plays itself once on arrival. It never loops — it is a
+  narrative ending on the offer being sent. On desktop it stays one scroll-linked section.
+- **The cursor is narrowed on mobile** to three deliberate clicks (Design the journey, the
+  evidence, the invite). Desktop keeps the full eleven-position choreography.
 - **The scramble-in text** on the "Better Opportunities / Better Conversations" fold is that
   fold's animation working correctly. It reads as corrupted text in a screen recording.
 
 ---
 
-## Where things stand (11 Sep)
+## Where things stand (11 Sep, second pass)
 
-`main` = `8d3ec93`. Working tree clean, nothing unpushed. All 9 deltas pass, design export
-consistent.
-
-Mobile is **done and verified** on all three pages:
+`main` carries two passes of mobile work. Working tree clean, all 10 deltas pass, design
+export consistent.
 
 | | before | after |
 |---|---|---|
-| For Companies scroll | 26–27 screens | 7.7–8.9 |
-| Homepage scroll | — | 8.6–8.9 (1.25 screens per fold, both directions) |
+| For Companies scroll | 26–27 screens | 10.3–12 (four real folds, ~2 scrolls each) |
+| Homepage scroll | — | 8.6–8.9 |
 | Burger contrast | 1.53:1 worst | ~17:1 across 84 samples |
-| Menu sheet under the bar | 18px on every page | 0px on all 39 combinations |
+| Menu | a 58px strip, 18px under the bar | the full viewport |
 | Load event | 5338ms | 1753ms |
 
-24 mobile combinations (3 pages × 8 sizes, 320×568 → 768×1024, scrolled both ways): no page
-errors, no horizontal scroll, burger present on all.
+24 mobile combinations (3 pages x 8 sizes, 320x568 → 768x1024, both directions): no errors,
+no horizontal scroll, burger present on all.
+
+**How desktop is proven now.** Pixels alone do not work — the homepage and For Companies run
+rAF animations and diff ~1.7% against *themselves*. Compare BEHAVIOUR against `origin/main`
+at 1440x900 instead. For Companies should read, identically on both:
+
+```
+hero 420svh · demo 1750svh · __cpSVH unset · __cpAutoG undefined
+cursor hooks undefined · --pps 0.5710 · table 4 columns · burger none
+11 distinct cursor positions across the act
+```
+
+That works because every mobile override falls through to the authored value when nothing
+publishes it. Keep it that way — it is what makes "desktop untouched" true by construction
+rather than by inspection.
 
 ### Open, flagged to the user, not started
 
-1. **The `<image-slot>` placeholders are still unfilled** on both interior pages — the "Drop
-   a product screen grab" boxes. One overlaps the ring on the Partners outro. Waiting on real
-   artwork. Their ids say what belongs in each.
+1. **The `<image-slot>` placeholders are still unfilled** on both interior pages. One overlaps
+   the ring on the Partners outro. Waiting on real artwork; their ids say what belongs in each.
 2. **Two demo act layers never appear** on For Companies — `.verifying` and `.ctally`. Not on
    mobile and **not on the scroll-driven desktop path either**, so it is pre-existing and
    possibly dead states. Flagged, deliberately not changed.
-3. **`README.md` is stale.** It describes the old flat deploy bundle — `index.html` at the
-   root, `_redirects`, no build step. None of that is true since the Astro move. Worth a
-   rewrite when there is a reason to touch it.
-4. **The staged hero entrance** offered in place of a loader — never built, user has not asked.
+3. **`README.md` is stale** — it describes the pre-Astro flat deploy bundle.
+4. **The staged hero entrance** offered in place of a loader; never built.
+5. **Claude Design has been told none of this.** `DESIGN-BRIEF.md` now runs to items 1–7 and
+   every one is still outstanding — all 10 deltas are re-applied by hand after each export.
 
 ### Session mechanics
 

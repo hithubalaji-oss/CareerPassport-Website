@@ -151,23 +151,130 @@
     transform:translateZ(0);
   }
 
-  /* ---- the sheet starts where the bar ends ------------------------------------------
-     `inset:58px` was authored against a shorter bar. The bar on a phone is 76px: 16px of
-     padding either side of a 44px burger. So the top 18px of the sheet — its own padding
-     plus the first few pixels of the first link — was sliding under a z-index:80 header
-     from a z-index:79 sheet, on all three pages at every width measured.
+  /* ============================================================================================
+     THE EXPANDED MENU
+     ============================================================================================
+     It was a 58px-high strip of underlined links — and `inset:58px` had been authored against
+     a shorter bar, so on a 76px bar its top 18px sat under the header on every page at every
+     width measured. Rather than move the strip down by 18px, the sheet becomes what a menu on
+     a phone should be: the whole screen, given over to the four things you can do.
 
-     Keyed to the same two numbers the bar is built from rather than a third literal, so
-     changing the bar's padding or the burger's height moves the sheet with it. Capped to
-     the space actually left below the bar, and allowed to scroll, so a short phone in
-     landscape cannot push the two CTAs off the bottom. */
+     The bar is 76px — 16px of padding either side of a 44px burger — and the sheet is keyed to
+     those two numbers rather than a third literal, so changing either moves the sheet with it.
+     The header keeps z-index 80 over the sheet's 79, so the burger stays visible and tappable
+     as the close control while the sheet is open.
+     ---------------------------------------------------------------------------------------- */
   .mnav{
     --bar:calc(16px * 2 + 44px);
-    inset:var(--bar) 0 auto;
-    max-height:calc(100svh - var(--bar));
+    inset:0;
+    display:none;
+    flex-direction:column;
+    padding:calc(var(--bar) + clamp(18px,4vh,40px)) var(--hgut)
+            max(24px,env(safe-area-inset-bottom,0px));
+    max-height:none;
     overflow-y:auto;
     overscroll-behavior:contain;
-    padding-bottom:max(20px,env(safe-area-inset-bottom,0px));
+    border-bottom:0;
+    /* the page's own light, not a flat panel: one warm pool up where the brand sits and one
+       cool one behind the actions, over the deepest surface the system has */
+    background:
+      radial-gradient(120% 62% at 82% 6%,color-mix(in srgb,var(--emerald) 13%,transparent),transparent 72%),
+      radial-gradient(90% 52% at 8% 96%,rgba(27,53,100,.5),transparent 76%),
+      var(--void);
+    backdrop-filter:none;-webkit-backdrop-filter:none;
+  }
+  .mnav.open{display:flex}
+
+  /* ---- the pages ----------------------------------------------------------------------
+     Set in the display face at heading scale, one per line, each numbered. The number is a
+     CSS counter rather than markup so the list stays a list. */
+  .mnav .mlinks{display:flex;flex-direction:column;counter-reset:mn;margin-block:auto}
+  .mnav .mlinks a{
+    counter-increment:mn;
+    position:relative;
+    display:flex;align-items:baseline;gap:14px;
+    min-height:0;padding:clamp(16px,2.6vh,26px) 0;
+    font-family:var(--font-display);
+    font-size:clamp(25px,7.4vw,38px);
+    font-weight:600;letter-spacing:-.03em;line-height:1.1;
+    color:var(--ink);text-decoration:none;
+    border-bottom:1px solid var(--hairline-soft);
+    text-wrap:balance;
+  }
+  .mnav .mlinks a:first-child{border-top:1px solid var(--hairline-soft)}
+  .mnav .mlinks a:last-child{border-bottom:1px solid var(--hairline-soft)}
+  /* the index, in the mono face the rest of the site uses for labels */
+  .mnav .mlinks a::before{
+    content:counter(mn,decimal-leading-zero);
+    flex:0 0 auto;
+    font-family:var(--font-mono);
+    font-size:11px;font-weight:500;letter-spacing:.18em;
+    color:var(--faint);
+    transform:translateY(-.35em);
+  }
+  /* the current page reads gold and keeps a rule in the gutter, the same marker the bar uses */
+  .mnav .mlinks a.here{color:#d8b877}
+  .mnav .mlinks a.here::before{color:#d8b877}
+  .mnav .mlinks a.here::after{
+    content:"";position:absolute;left:calc(-1 * var(--hgut));top:50%;translate:0 -50%;
+    width:max(10px,calc(var(--hgut) - 12px));height:2px;border-radius:2px;background:#d8b877;
+  }
+  .mnav .mlinks a:active{color:#d8b877}
+
+  /* each line arrives on its own beat once the sheet opens */
+  .mnav.open .mlinks a{animation:mnrise .46s cubic-bezier(.33,1,.68,1) both;animation-delay:var(--d,0s)}
+  .mnav.open .mfoot{animation:mnrise .5s cubic-bezier(.33,1,.68,1) .16s both}
+  .mnav .mlinks a:nth-child(1){--d:.04s}
+  .mnav .mlinks a:nth-child(2){--d:.09s}
+  .mnav .mlinks a:nth-child(3){--d:.14s}
+  .mnav .mlinks a:nth-child(4){--d:.19s}
+  @keyframes mnrise{from{opacity:0;translate:0 14px}to{opacity:1;translate:0 0}}
+
+  /* ---- the actions, held at the bottom of the screen ---------------------------------- */
+  .mnav .mfoot{padding-top:clamp(22px,4vh,40px)}
+  .mnav .mlabel{
+    display:block;margin-bottom:12px;
+    font-family:var(--font-mono);font-size:11px;font-weight:500;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--faint);
+  }
+  .mcta{display:flex;flex-direction:column;gap:10px;padding-top:0}
+  /* the design system's control height, not the 46px this had of its own */
+  /* `.hdr .nbtn` is scoped to the bar, so the sheet's pair inherited no fill at all and both
+     rendered as bare outlines — the primary action was indistinguishable from the secondary.
+     Declared here, at the design system's control height rather than the 46px this had. */
+  .mcta .nbtn{
+    flex:1 1 auto;
+    display:inline-flex;align-items:center;justify-content:center;
+    height:52px;padding:0 20px;border:0;
+    border-radius:var(--radius-pill,100px);
+    font-family:var(--sans);font-size:14px;font-weight:600;letter-spacing:.01em;
+    white-space:nowrap;text-decoration:none;
+    background:var(--emerald);color:var(--emerald-deep);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.16);
+  }
+  .mcta .nbtn.gh{
+    background:transparent;color:var(--ink);
+    border:1px solid var(--hairline);box-shadow:none;
+  }
+  .mcta .nbtn:active{scale:var(--press-scale,.985)}
+  .mnav .mfine{
+    margin-top:clamp(16px,2.6vh,24px);
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--faint);
+  }
+
+  /* a wider phone or a tablet in portrait has room for the pair side by side */
+  @media (min-width:520px){
+    .mcta{flex-direction:row}
+  }
+
+  /* the page behind the sheet does not scroll under the reader's finger. Set on <html> by
+     Header.astro, which watches the class the page drivers toggle. */
+  :root.mnav-open,:root.mnav-open body{overflow:hidden}
+
+  /* the whole sheet holds still for a reader who asked for that */
+  @media (prefers-reduced-motion:reduce){
+    .mnav.open .mlinks a,.mnav.open .mfoot{animation:none}
   }
 }
 /* the one device class where a blurred fixed bar is still a bad trade */

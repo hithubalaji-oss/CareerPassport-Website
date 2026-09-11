@@ -41,10 +41,10 @@
      here arrived after both sections had already been sized. It is declared inline in
      for-companies.astro instead, where it runs exactly where it is written.
 
-     The values there are 150 and 210 against the authored 420 and 1750. The demo keeps the
-     longer of the two because it is still the page's centrepiece and wants a beat of dwell
-     either side of the acts; at 210svh it holds for about 1.1 screens of scroll past the pin
-     engaging, which is the homepage's 1.25-screen rhythm within a rounding. */
+     The values there are 150 and 520 against the authored 420 and 1750. The demo is the
+     longer of the two because it is four folds now rather than one: 100svh for the pin plus
+     four stops of 105svh each, so every act takes about two thumb-scrolls to leave — the
+     rhythm asked for, and close to the homepage's 1.25 screens per fold. */
 
   var raf = window.requestAnimationFrame;
 
@@ -120,7 +120,113 @@
     pin.style.setProperty('--ai-h', h.toFixed(0) + 'px');
   }
 
+  /* --------------------------------------------------------------------------------------
+     THE DEMO, AS FOUR FOLDS
+     --------------------------------------------------------------------------------------
+     The section's four acts were one timed carousel: enter the section and twenty-two
+     seconds later it had all happened, whether you were reading or not. On a phone they are
+     four folds stacked one below the other instead — scrolling moves you from act to act, and
+     each act plays itself once when you arrive. Which is the homepage's model exactly: the
+     fold you are on comes from the scroll position, and the animation inside it runs on its
+     own clock.
+
+     The act boundaries are the driver's own, read off `setAct`: g < .452 is the blueprint,
+     then .652, then .852, then the rest. Each act's range is played from its start to a hair
+     under its end — landing exactly on .452 would tip setAct into the next act while the
+     scroll still says you are in this one, and the panel would flicker between two states.
+     -------------------------------------------------------------------------------------- */
+  var G0 = 0;
+  var ACT = [];
+  var DUR = [7600, 5200, 5200, 6400];   /* the blueprint has the most to do */
+
+  function buildActs() {
+    G0 = window.__cpDemoG0 || 0.2055;
+    var E = 0.0008;
+    ACT = [[G0, 0.452 - E], [0.452, 0.652 - E], [0.652, 0.852 - E], [0.852, 1]];
+  }
+
+  function demoFolds(sec) {
+    if (!sec) return;
+    var act = -1, t0 = 0, id = 0, live = false;
+
+    function actFromScroll() {
+      var r = sec.getBoundingClientRect();
+      var span = r.height - (window.innerHeight || 1);
+      var p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
+      /* four equal stops; the last one keeps the tail of the section so the final act is not
+         cut off a fraction early by rounding */
+      return Math.min(3, Math.floor(p * 4));
+    }
+
+    function step() {
+      if (!live) return;
+      var a = ACT[act] || ACT[0];
+      var t = (Date.now() - t0) / (DUR[act] || 5000);
+      if (t > 1) t = 1;
+      window.__cpAutoG = a[0] + (a[1] - a[0]) * t;
+      if (window.__cpDemoFrame) window.__cpDemoFrame();
+      id = t < 1 ? raf(step) : 0;
+    }
+
+    function sync() {
+      if (!live) return;
+      var a = actFromScroll();
+      if (a === act) return;
+      act = a; t0 = Date.now();
+      if (!id) id = raf(step);
+    }
+
+    function start() { if (live) return; live = true; act = -1; sync(); }
+    function stop() {
+      live = false;
+      if (id) { window.cancelAnimationFrame(id); id = 0; }
+      window.__cpAutoG = null;
+      if (window.__cpDemoFrame) window.__cpDemoFrame();
+    }
+
+    new IntersectionObserver(function (es) {
+      for (var i = 0; i < es.length; i++) { if (es[i].isIntersecting) start(); else stop(); }
+    }, { rootMargin: '0px' }).observe(sec);
+
+    addEventListener('scroll', sync, { passive: true });
+    addEventListener('resize', sync, { passive: true });
+  }
+
+  /* --------------------------------------------------------------------------------------
+     THE CURSOR, NARROWED TO ITS CLICKS
+     --------------------------------------------------------------------------------------
+     On desktop the hiring manager's pointer crosses the panel to hover a chip, then the
+     slider, then a matrix cell, then the submit — a person working through a form. At phone
+     scale those targets are a few millimetres apart and the same choreography reads as a
+     pointer skittering around the screen.
+
+     So on a phone it does one thing per act: it arrives, it presses the one button that
+     matters, and it leaves. Three moments in the whole section — Design the journey, the
+     evidence, the invite — and nothing in between.
+     -------------------------------------------------------------------------------------- */
+  function cursorPolicy() {
+    var A2 = 0.43;
+    /* each window is [from, to) on the driver's own clock, sized to arrive a beat before the
+       press and leave a beat after it */
+    window.__cpCursorOn = function (g, p) {
+      if (g < A2) return p >= 0.800 && p < 0.940;   /* the submit */
+      if (g < 0.852) return g >= 0.726 && g < 0.812; /* the evidence */
+      return g >= 0.958 && g < 0.996;                /* the invite */
+    };
+    window.__cpCursorAim = function (g, p, els) {
+      if (g < A2) return els.submit;
+      if (g < 0.852) return els.ev;
+      return els.share || els.live;
+    };
+  }
+
   function boot() {
+    buildActs();
+    cursorPolicy();
+
+    /* the book is fitted to its own pane rather than the pane's parent — see __cpBookPane */
+    if (window.__cpBookPane) window.__cpBookPane(true);
+
     /* ---- the hero: the brief types itself ---------------------------------------------
        Seven seconds end to end. The scroll-linked version spends 0.08-0.60 of its progress
        filling in 24 words and the rest on the send, so the same ramp gives roughly four
@@ -129,15 +235,7 @@
       function (t) { window.__cpAutoQ = t; },
       function () { if (window.__cpHeroFrame) window.__cpHeroFrame(); });
 
-    /* ---- the demo: thirteen acts ------------------------------------------------------
-       The acts are not evenly spaced in progress — the deck fan and the cover turn are a few
-       hundredths each while the blueprint being filled in is a third of the run — so a
-       constant-rate ramp gives each act about as long as its share of the original scroll.
-       Twenty-two seconds is that share at roughly the homepage's 1700ms per beat. */
-    var G0 = window.__cpDemoG0 || 0;
-    autoplay(document.getElementById('aidemo'), 22000,
-      function (t) { window.__cpAutoG = t === null ? null : G0 + t * (1 - G0); },
-      function () { if (window.__cpDemoFrame) window.__cpDemoFrame(); });
+    demoFolds(document.getElementById('aidemo'));
 
     fitPanel();
   }

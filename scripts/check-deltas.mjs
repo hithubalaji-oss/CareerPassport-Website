@@ -135,8 +135,45 @@ const DELTAS = [
     // the mobile layer itself, and the inline declaration that has to beat Astro's bundler
     extraFiles: ['src/scripts/mobile-pages.js', 'src/pages/for-companies.astro',
                  'src/styles/mobile-pages.css'],
-    extraPresent: ['function autoplay(', 'window.__cpSVH = { hero: 150, demo: 210 }',
+    extraPresent: ['function autoplay(', 'window.__cpSVH = { hero: 150, demo: 520 }',
                    '--ai-h'],
+  },
+  {
+    id: 'D8',
+    title: 'For Companies: the content edits, and the hooks the four-fold demo needs',
+    file: 'src/scripts/companies.js',
+    design: 'For Companies.html',
+    // the guard, the three driver hooks, and the stacked comparison's three columns
+    present: [
+      'if(pill) pill.classList.toggle',
+      'window.__cpBookPane=function(on)',
+      'if(window.__cpCursorOn) curOn2=',
+      'var aim=window.__cpCursorAim;',
+      "cp.getAttribute('data-m') || cp.textContent",
+      'var cols=heads.slice(1,4);',
+    ],
+    // the unhooked forms. `pill.classList` returning unguarded is the dangerous one: with
+    // the pill gone from the markup it throws and takes the whole hero driver with it.
+    reverted: [
+      /\n    pill\.classList\.toggle\('hot',done\);/,
+      /var cols=heads\.slice\(1\);/,
+    ],
+    // the pill is a DELETION: what is watched for is its return to the markup
+    deleted: [['src/components/companies/Hero.astro', 'class="aipill"']],
+    extraFiles: [
+      'src/components/companies/ProcessDemo.astro',
+      'src/components/chrome/Footer.astro',
+      'src/components/companies/Comparison.astro',
+      'src/components/chrome/Header.astro',
+      'src/scripts/mobile-pages.js',
+    ],
+    extraPresent: [
+      '>Design the journey<',
+      '>Sign up<',
+      'data-m="Your words, competencies mapped"',
+      'DRAWER_LINKS',
+      'function demoFolds(',
+    ],
   },
 ];
 
@@ -164,6 +201,13 @@ for (const d of DELTAS) {
     if (es === null || !hit(es, marker)) absent.push(`${marker}  (in ${extra})`);
   }
   const returned = (d.reverted ?? []).filter((m) => hit(src, m));
+  /* Some deltas are deletions — the eyebrows, the Companion pill — and for those the thing
+     to watch for is the markup COMING BACK, in a file other than d.file. `reverted` only
+     reads d.file, so deletions need their own list. */
+  for (const [file, marker] of d.deleted ?? []) {
+    const fs2 = read(file);
+    if (fs2 !== null && hit(fs2, marker)) returned.push(`${marker}  (back in ${file})`);
+  }
 
   if (absent.length || returned.length) {
     failed++;
