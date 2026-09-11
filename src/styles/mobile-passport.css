@@ -71,65 +71,72 @@
      never was. .bookwrap is 920x640 and .book is translated -230px inside it, so the closed
      cover sits centred on the wrap's origin and these offsets read from the viewport centre. */
 
-  /* 1 — standing, centred, square to the reader.
-         STRAIGHT: no z-tilt and no 3D turn. Those are desktop's pose, where the passport is an
-         object in a scene being looked at from an angle; on a phone it is the product shot at
-         the top of the page, and anything off-axis reads as a photograph taken carelessly.
+  /* ---- THE SEVEN STATES, as fractions of the measured band -----------------------------
+     Every position here is relative to --art-dy / --art-fit, which mobile-passport.js measures
+     at each state change: the band between the header (or fold 1's eyebrow) and wherever the
+     copy actually ended up. See the long note above `measure()` in that file.
 
-         THE OFFSET IS IN PIXELS, AND THAT IS THE MEASUREMENT, NOT A SHORTCUT. The passport
-         sits in the band between the eyebrow and the copy column. Both of those are anchored
-         near the TOP of the screen — the eyebrow under the header, the column at 41svh — so
-         the band's centre barely moves as the viewport changes height. Measured against the
-         viewport centre at seven sizes from 412x915 down to 360x600: -123, -123, -123, -120,
-         -120, -118, -113. One constant is a closer fit than any vh value, which would drift
-         from -13.4vh to -20.5vh across the same range describing the same place.
+     So these numbers say "centred in the band, filling 88% of its height" rather than "192px
+     tall, 123px above centre". The first is the same composition on every phone. The second is
+     four different compositions, which is what was shipping.
 
-         Only the band's HEIGHT changes, so only the scale is stepped. */
-  .stage[data-mfold="1"] .bookwrap { translate: 0 -120px; scale: .25; rotate: 0deg; opacity: 1 }
-  .stage[data-mfold="1"] .book     { transform: translateX(-230px) rotateY(0deg) }
+     --art-fit is "scale 1 exactly fills the band's height", so the fraction IS the fill. */
 
-  /* Clearance above the cover / below it, after the display-size steps above gave the band
-     its height back:
-       412x915  .30  69 / 63      375x667  .25  22 / 21
-       390x760  .25  68 / 62      360x640  .21  21 / 24
-       412x730  .25  53 / 47      360x600  .17  14 / 28
-       390x700  .25  38 / 37
-     Below ~600 the fold is over-full whatever the passport does — the copy alone overruns the
-     screen from a column that starts at 41svh. That is a composition problem, not a scale one,
-     and is not papered over here. */
-  @media (min-height: 780px) { .stage[data-mfold="1"] .bookwrap { scale: .30 } }
-  @media (max-height: 660px) { .stage[data-mfold="1"] .bookwrap { scale: .21 } }
-  @media (max-height: 620px) { .stage[data-mfold="1"] .bookwrap { scale: .17 } }
+  /* 1 — standing, centred, square to the reader. Straight: no z-tilt, no 3D turn. Those are
+         desktop's pose, where the passport is an object in a scene seen from an angle; here it
+         is the product shot at the top of the page. */
+  .stage[data-mfold="1"] .bookwrap {
+    translate: 0 var(--art-dy, -120px);
+    scale: calc(var(--art-fit, .3) * .88);
+    rotate: 0deg; opacity: 1;
+  }
+  .stage[data-mfold="1"] .book { transform: translateX(-230px) rotateY(0deg) }
 
-  /* 2 — centred on the crowd plate, square to the reader.
-         The hero figure is not drawn on mobile (see the fold-2 block below), so there is no
-         hand to sit in and no grip to tilt into: the passport is the one lit object in front
-         of the hall, and anything other than dead centre and face-on reads as a mistake
-         rather than a pose. The y offset is the plate's own centre, not the viewport's. */
-  .stage[data-mfold="2"] .bookwrap { translate: 0 -14vh;    scale: .26; rotate: 0deg;  opacity: 1 }
-  .stage[data-mfold="2"] .book     { transform: translateX(-230px) rotateY(0deg) }
+  /* 2 — centred on the crowd plate, square to the reader. The plate fills the same band (see
+         .cbg below), so the passport and the hall are composed against one another rather than
+         each being placed against the viewport. */
+  .stage[data-mfold="2"] .bookwrap {
+    translate: 0 var(--art-dy, -120px);
+    scale: calc(var(--plate-fit, .3) * .62);
+    rotate: 0deg; opacity: 1;
+  }
+  .stage[data-mfold="2"] .book { transform: translateX(-230px) rotateY(0deg) }
 
-  /* 3 — open. The spread is the full 920px width, so the wrap shifts RIGHT by half a page
-         to keep the SPREAD centred rather than the closed cover, flattens out of its tilt so
-         both pages are readable, and scales to fit the screen. */
-  .stage[data-mfold="3"] .bookwrap { translate: 0 -16vh;    scale: .40; rotate: 0deg;  opacity: 1 }
-  .stage[data-mfold="3"] .book     { transform: translateX(0px) rotateY(0deg) }
+  /* 3 — open. The spread is 920 wide against 640 tall, so on a phone the WIDTH runs out first:
+         it takes whichever of the two fits, which is what keeps it inside the gutter instead of
+         running off the left edge as it did at 360 wide. */
+  .stage[data-mfold="3"] .bookwrap {
+    translate: 0 var(--art-dy, -120px);
+    scale: min(calc(var(--art-fit, .3) * .94), var(--fit-w, .4));
+    rotate: 0deg; opacity: 1;
+  }
+  .stage[data-mfold="3"] .book { transform: translateX(0px) rotateY(0deg) }
 
-  /* 4 — small, low and right: tucked beside the companion box. Smaller than it was: at
-         .19 the cover was as wide as the Companion node it is meant to be an output of,
-         so the chart read as decoration around the passport rather than flowing into it. */
-  .stage[data-mfold="4"] .bookwrap { translate: 22vw -6vh;  scale: .16;  rotate: -6deg; opacity: 1 }
-  .stage[data-mfold="4"] .book     { transform: translateX(-230px) rotateY(-15deg) }
+  /* 4 — the passport's bottom-right corner ON the Companion box's bottom-right corner. Both
+         the offset and the scale come from the measurement, because the alignment is a
+         relationship between two measured boxes; splitting it between CSS and JS would drift
+         the moment either side changed. Straight, for the same reason as fold 1 — and because
+         a corner alignment you have to rotate is not an alignment. */
+  .stage[data-mfold="4"] .bookwrap {
+    translate: var(--f4-dx, 22vw) var(--f4-dy, -6vh);
+    scale: var(--f4-scale, .16);
+    rotate: 0deg; opacity: 1;
+  }
+  .stage[data-mfold="4"] .book { transform: translateX(-230px) rotateY(0deg) }
 
   /* 5 — deliberately absent. It leaves to the right and fades; this is a real state. */
-  .stage[data-mfold="5"] .bookwrap { translate: 70vw 22vh;  scale: .18; rotate: -14deg; opacity: 0 }
-  .stage[data-mfold="5"] .book     { transform: translateX(-230px) rotateY(-15deg) }
+  .stage[data-mfold="5"] .bookwrap { translate: 70vw 22vh; scale: .18; rotate: -14deg; opacity: 0 }
+  .stage[data-mfold="5"] .book     { transform: translateX(-230px) rotateY(0deg) }
 
-  /* 6 — returns, centred, inside the ring. The offset and the scale are not free: they are
-         the ring's own centre and the ring's own slot, pinned together in the fold-6 block
-         below so the two cannot drift apart while the section scrolls. */
-  .stage[data-mfold="6"] .bookwrap { translate: 0 -21vh;    scale: .34; rotate: 0deg;  opacity: 1 }
-  .stage[data-mfold="6"] .book     { transform: translateX(-230px) rotateY(-8deg) }
+  /* 6 — returns, centred, inside the ring. The ring fills the same band (see .oart below), so
+         the two are locked to each other by construction rather than by two offsets that
+         happened to agree at one screen size. */
+  .stage[data-mfold="6"] .bookwrap {
+    translate: 0 var(--art-dy, -120px);
+    scale: calc(var(--art-fit, .3) * .72);
+    rotate: 0deg; opacity: 1;
+  }
+  .stage[data-mfold="6"] .book { transform: translateX(-230px) rotateY(0deg) }
 
   /* ---- fold 3 is the only state that changes the passport itself ----------------------
      The cover swings open, and ONE leaf turns, landing on PAGE 03 (The Claim) + PAGE 04
@@ -377,8 +384,13 @@
      costs no hard edge.
      svh rather than px so the seating holds on a short phone as well as a tall one. */
   .stage[data-mfold] .cbg {
-    left: -12%; right: -12%;
-    margin-top: -34svh;
+    /* the plate covers the band's height and at least the full width, whichever asks for
+       more — --cbg-w carries that decision from the measurement */
+    top: var(--cbg-top, 90px);
+    margin-top: 0;
+    left: var(--cbg-left, -10vw); right: auto;
+    width: var(--cbg-w, 120vw);
+    translate: none;
   }
 
   /* The claim callouts. These were never missing from the page — they are built at load and
@@ -390,9 +402,13 @@
      The same box, declared instead of measured: identical insets to .cbg, and the plate's own
      aspect ratio in place of a measured height. */
   .stage[data-mfold] .claims {
-    left: -12%; right: -12%;
-    width: auto; height: auto;
-    top: 50%; margin-top: -34svh;
+    /* exactly the plate's box, so the cards' percentage coordinates land on people's heads */
+    top: var(--cbg-top, 90px);
+    margin-top: 0;
+    left: var(--cbg-left, -10vw); right: auto;
+    width: var(--cbg-w, 120vw);
+    height: auto;
+    translate: none;
     aspect-ratio: 2528 / 1696;
     opacity: 0;
     transition: opacity 700ms var(--m-ease);
@@ -449,6 +465,21 @@
      out rather than hanging into empty space */
   .stage[data-mfold] .fline { display: none }
 
+  /* and the chart itself occupies the band rather than a percentage of the viewport. It was
+     `top:8%; bottom:42%` of a full-height .zone, which is a different slice of the screen on
+     every phone — the reason the Companion box landed at a different height on each of your
+     two devices. */
+  .stage[data-mfold] .flow {
+    /* height:auto so the box hugs the chart, then positioned and scaled from its top edge —
+       see the note in mobile-passport.js for why stretching it between the band's edges and
+       scaling that does not work. */
+    top: var(--flow-top, 90px);
+    bottom: auto; height: auto;
+    left: var(--gut, 20px); right: var(--gut, 20px);
+    transform: scale(var(--flow-fit, 1));
+    transform-origin: 50% 0;
+  }
+
   /* ==========================================================================================
      FOLD 6 — the closing frame: passport and ring, locked together
      ==========================================================================================
@@ -466,12 +497,18 @@
      With both fixed, #outro's own height is free, so it carries scroll rather than layout. */
   .outro[data-mfold] .oart {
     position: fixed; left: 0; right: 0;
-    top: calc(var(--hdr, 76px) + 2svh);
-    min-height: 0; height: min(36svh, 320px);
+    /* the same band the passport is centred in, so the ring and the passport cannot drift
+       apart — they are now two things filling one measured box, not two offsets that agreed
+       at exactly one screen size */
+    top: var(--art-top, 90px);
+    min-height: 0; height: var(--art-h, 300px);
     z-index: 5;
     opacity: 0; transition: opacity 500ms var(--m-ease);
     pointer-events: none;
   }
+  /* and the ring is sized off the band too, capped to the viewport so it stops being clipped
+     at both sides — it was overhanging by 18-44px on every size */
+  .outro[data-mfold] .oring { width: min(var(--art-h, 300px), calc(100vw - 2 * var(--gut, 20px))) }
   .outro[data-mfold="6"] .oart { opacity: 1 }
 
   .outro[data-mfold] .ocopy {

@@ -225,6 +225,74 @@ nothing — `__cpManual` is undefined there, so the driver starts exactly as it 
 
 ---
 
+## D3c — The mobile passport state machine, and the measured art band
+
+**Files:** `src/styles/mobile-passport.css`, `src/scripts/mobile-passport.js`,
+`src/pages/index.astro` (three lines: two imports and the `__cpManual` flag)
+
+Additive. The design file has no mobile layer of its own, so nothing in an export can revert
+this — but nothing in an export produces it either, and the page is broken on a phone without
+it. The one line that CAN be reverted is `index.astro`'s inline flag, which is why the check
+asserts that specifically.
+
+**What it replaces.** The scroll driver animates the passport from `requestAnimationFrame`,
+reading layout and writing styles several times per frame. On a phone that cost 825ms of style
+recalculation and 207ms of layout over one scroll, and blocked the main thread for two seconds.
+The mobile layer switches the driver off below 1025px and drives the same choreography from
+seven CSS states, changed by one IntersectionObserver — six attribute writes for the whole page.
+
+**The art band, added 11 Sep, is the part worth reading.** Before it, the copy column and the
+passport were positioned by two systems that could not see each other: the column is fixed,
+anchored to the viewport bottom, and sizes itself to its own text; the passport was placed by a
+hand-tuned scale and offset per fold. The gap between them was therefore an accident. Measured
+across six viewports, fold 4 sat 46px clear at 412x915 and overlapped its own headline by 68px
+at 360x640 — the same code producing four different compositions, which is exactly what was
+reported from two phones side by side.
+
+`measure()` now takes the band between the header (or fold 1's eyebrow) and wherever the copy
+actually ended up, and publishes it as custom properties. Every piece of art — passport, crowd
+plate, callout layer, flow chart, closing ring — is then expressed as a fraction of that band
+rather than as an absolute size. Four layout reads per state change, seven state changes per
+visit.
+
+---
+
+## D3d — The driver exposes two hooks to the mobile layer
+
+**File:** `src/scripts/homepage.js` — `window.__cpBuildOnce`, `window.__cpPlaceClaims`
+
+Two one-line exports. Both exist because the mobile layer replaced the rAF loop that used to
+call them internally, and neither has any effect on desktop.
+
+- `__cpBuildOnce` builds fold 4's flow chart. The driver did it on its first frame; without the
+  call the Companion flow simply does not exist on a phone.
+- `__cpPlaceClaims` re-places fold 2's callout cards. `place()` clamps each card's lane using
+  the callout layer's own `offsetWidth`/`offsetLeft`, and at parse time on mobile that layer
+  has no box yet — it is sized from the measured art band. Without the call the first placement
+  a reader can see puts a card about 7,000px off screen until the 2.5s refresh corrects it.
+
+---
+
+## D5 — Eyebrows removed from every fold but two
+
+**Files:** thirteen deletions across `src/components/**`, plus one rule in
+`src/styles/local-overrides.css`
+
+Removed on request, 11 Sep, from every fold on all three pages and on both viewports. Two are
+kept: **"Tell us who you need"** (For Companies hero, both viewports) and **"Built on real
+experiences"** (homepage hero, *mobile only*).
+
+Thirteen are gone from the markup outright. The fourteenth is the homepage hero's, which has to
+survive on one side of the breakpoint and not the other, so it is a rule rather than a deletion
+— and it is the reason `local-overrides.css` exists at all: it is a desktop-side rule, and
+`mobile-passport.css`'s entire contract is that nothing in it applies above 1024px.
+
+The design file still carries all fifteen, so every export brings them back and the deletions
+have to be re-applied by hand until Claude Design removes them from the canvas. The check's
+`reverted` signal watches for "The problem" returning to `index.html`.
+
+---
+
 ## Retired
 
 Everything below was fixed in Claude Design and re-derived cleanly on 10 Sep. Kept as a

@@ -72,6 +72,149 @@
     function clearVar(k) { for (var i = 0; i < hosts.length; i++) hosts[i].style.removeProperty(k); }
     function setState(n) { for (var i = 0; i < hosts.length; i++) hosts[i].setAttribute('data-mfold', n); }
 
+    /* ============================================================================================
+       THE ART BAND — measured, not guessed
+       ============================================================================================
+       This is the thing that makes every fold arrange itself the same way on every phone.
+
+       The fault it replaces: the copy column and the passport were positioned by two systems
+       that could not see each other. The column is fixed, anchored to the viewport bottom, and
+       sizes itself to its own text — so its top edge moves with the screen AND with how the
+       text rewraps. The passport was placed by a hand-tuned scale and offset per fold. The gap
+       between them was therefore an accident, and it came out at 152px on one phone and -2px on
+       another. Measured across six viewports before this change, fold 4 overlapped its own
+       headline by 34px at 412x730, 43px at 390x700 and 68px at 360x640, while sitting 46px
+       clear at 412x915. Same code, four different compositions.
+
+       What happens instead: at each state change we measure where the copy actually ended up,
+       and hand the art everything above it. The art then FILLS that band rather than being
+       positioned into a gap, so the proportions are identical everywhere and only the band's
+       absolute size changes — which is exactly "the relative positions stay the same, only the
+       padding changes with the screen".
+
+       Cost: four layout reads per state change. Seven state changes in a visit. Not per frame.
+
+       Fold 1 is the one inversion — eyebrow, then art, then copy — so its band starts under the
+       eyebrow rather than under the header. Every other fold is art, then copy. */
+    var hdrEl = document.querySelector('.hdr');
+    var GAP = 14;   /* air between the art and the first line of copy */
+    var GUT = 20;   /* the page's own side gutter, for width-limited art */
+
+    function copyTopFor(n) {
+      /* fold 1's copy begins at the handle row, not at the eyebrow: the eyebrow is ABOVE the
+         passport there, and is the band's top edge rather than its bottom. */
+      if (n === 1) {
+        var first = document.querySelector('#f1 .metarow') || document.querySelector('#f1 .field');
+        return first ? first.getBoundingClientRect().top : innerHeight;
+      }
+      var col = n >= 6 ? document.querySelector('.outro .ocopy')
+                       : document.querySelector('#f' + n + ' .col');
+      return col ? col.getBoundingClientRect().top : innerHeight;
+    }
+
+    function bandTopFor(n) {
+      var hdrB = hdrEl ? hdrEl.getBoundingClientRect().bottom : 76;
+      if (n === 1) {
+        var eb = document.querySelector('#f1 .eyebrow');
+        return (eb ? eb.getBoundingClientRect().bottom : hdrB) + GAP;
+      }
+      return hdrB + GAP;
+    }
+
+    function measure(n) {
+      var vh = innerHeight, vw = innerWidth;
+      var top = bandTopFor(n);
+      var bot = copyTopFor(n) - GAP;
+      if (bot - top < 80) bot = top + 80;       /* a floor, so nothing ever inverts */
+      var h = bot - top;
+
+      setVar('--art-top', top.toFixed(1) + 'px');
+      setVar('--art-bot', bot.toFixed(1) + 'px');
+      setVar('--art-h',   h.toFixed(1) + 'px');
+      /* the band's centre, expressed the way .bookwrap needs it: as an offset from the
+         viewport centre, which is where the wrap's own origin sits */
+      setVar('--art-dy',  ((top + bot) / 2 - vh / 2).toFixed(1) + 'px');
+      /* a book page is 640 tall, so this is "scale 1 = exactly fills the band's height".
+         Every state then asks for a FRACTION of the band rather than an absolute size. */
+      setVar('--art-fit', (h / 640).toFixed(4));
+      /* and the same for width, for the one state that is wider than it is tall: the open
+         spread is the full 920, and on a phone the width runs out before the height does */
+      setVar('--fit-w',   ((vw - 2 * GUT) / 920).toFixed(4));
+      /* THE CROWD PLATE IS SIZED BY WIDTH, NOT BY THE BAND. Fold 2's copy is short and sits
+         low, so its band is the tallest on the page — 592px at 412x915. A plate stretched to
+         fill that is a 1.5:1 photograph blown up to 882px wide: the hall stops being a room
+         and becomes three enormous silhouettes. It takes 125% of the viewport width (enough
+         to bleed past both gutters and hide its feathered edges) and only falls back to the
+         band when the band is the tighter of the two. */
+      var PLATE_AR = 2528 / 1696;
+      var plateW = Math.min(vw * 1.25, h * PLATE_AR);
+      var plateH = plateW / PLATE_AR;
+      setVar('--cbg-w',   plateW.toFixed(1) + 'px');
+      setVar('--cbg-top', (top + (h - plateH) / 2).toFixed(1) + 'px');
+      /* LEFT AS A NUMBER, not left:50% + translate:-50%. The driver clamps each claim card's
+         lane to keep it on screen using the callout layer's offsetLeft — and offsetLeft is a
+         layout value that knows nothing about transforms, so a translated layer reports the
+         position it would have had untranslated and every card is clamped against the wrong
+         edge. That is the cards colliding in the middle and hanging off the left edge. */
+      setVar('--cbg-left', ((vw - plateW) / 2).toFixed(1) + 'px');
+      /* and the passport in fold 2 is scaled against the PLATE, not the band — it is standing
+         in front of the hall, so its size is a relationship with the hall */
+      setVar('--plate-fit', (plateH / 640).toFixed(4));
+
+      /* fold 2: the callout layer only just got its real box, so the cards are re-placed now.
+         Their lanes are clamped against that box's width, and until this measurement ran there
+         was nothing to clamp against. */
+      if (n === 2 && typeof window.__cpPlaceClaims === 'function') window.__cpPlaceClaims();
+
+      /* fold 4: the passport's bottom-right corner sits ON the Companion box's bottom-right
+         corner. That is a relationship between two measured boxes, so it is computed here in
+         full — scale included — rather than split between a fraction in CSS and arithmetic
+         here, which would drift the moment either side changed. Read AFTER the band is
+         written, because .flow is positioned from it. */
+      if (n === 4) {
+        var flow  = document.getElementById('flow');
+        var box   = document.querySelector('#orbSrc .fbot');
+        if (flow && box) {
+          /* The chart's content is a fixed 231px — five source tiles, a gap, and the Companion
+             node — and it does not reflow. On a tall phone the band is 437px and it fits with
+             room to spare; at 360x640 the band is 201px and it overruns by 30, which is how the
+             Companion box ended up below the band with the passport corner-aligned to it and
+             therefore sitting on the headline.
+             It shrinks to fit and NEVER grows: unlike the passport, the chart is type and it has
+             an intrinsic legible size. Scaling it up to fill a tall band would just make a
+             diagram of 10px labels into a diagram of 19px labels. */
+          setVar('--flow-fit', '1');
+          /* the BOX's height, not the tiles-to-node span: the box carries a little more than
+             its two visible children, and fitting the span left the node 4px past the band */
+          var natural = flow.getBoundingClientRect().height;
+          var fit = natural > 0 ? Math.min(1, h / natural) : 1;
+          setVar('--flow-fit', fit.toFixed(4));
+          /* .flow's box hugs its content (height:auto) and is POSITIONED here rather than
+             stretched between the band's two edges. Stretching it and scaling was the obvious
+             thing and it does not work: the transform shrinks the box and the content by the
+             same factor, so content that overran a fixed-height box still overruns it after
+             scaling, exactly as far in proportion. Measured at 360x640: 231px of content in a
+             201px box stayed 30px over, scaled or not. With height:auto the box IS the content,
+             so the scale genuinely reduces it, and this centres the result in the band. */
+          setVar('--flow-top', (top + (h - natural * fit) / 2).toFixed(1) + 'px');
+
+          /* the corner, read AFTER the fit — the box has just moved */
+          var r = box.getBoundingClientRect();
+          /* SIZED AGAINST THE NODE, not the band. The passport's corner is pinned to the
+             node's corner, so the two are one object and its size is a relationship with the
+             node — not with the band, which is a different height in every fold. Against the
+             band it came out 175px tall on a big phone (taller than the 131px node it hangs
+             off) and 60px on a small one, where it stopped reading as a passport at all.
+             At 0.92 of the node's height it is the same card, in the same place, everywhere. */
+          var s = (r.height * 0.92) / 640;
+          var cw = 460 * s, ch = 640 * s;
+          setVar('--f4-scale', s.toFixed(4));
+          setVar('--f4-dx', (r.right  - vw / 2 - cw / 2).toFixed(1) + 'px');
+          setVar('--f4-dy', (r.bottom - vh / 2 - ch / 2).toFixed(1) + 'px');
+        }
+      }
+    }
+
     var SNAP_ABOVE = 2.2;                    /* px/ms — a deliberate flick, not a read */
 
     /* ---- hold still while someone is typing ----
@@ -134,6 +277,8 @@
          invalidates style for the whole document — measured, and it wiped out the entire
          saving this file exists to produce. */
       setState(String(n));
+      /* after the attribute, so the new fold's copy is the one measured */
+      measure(n);
       companionLoop(n === 4);
     }
 
@@ -166,6 +311,17 @@
     /* first paint: whichever section is already on screen, with no glide */
     setVar('--m-glide', '0ms'); setVar('--m-copy', '0ms');
     setState('1');
+    measure(1);
+
+    /* The band depends on where the text ended up, so it has to be re-taken whenever the text
+       could have moved: a rotation, a resize, and web fonts arriving — that last one changes
+       every line's metrics and therefore the column's height, and it lands well after the
+       first paint. */
+    var remeasure = function () { measure(current || 1); };
+    addEventListener('resize', remeasure);
+    addEventListener('orientationchange', remeasure);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(remeasure);
+    addEventListener('load', remeasure);
     requestAnimationFrame(function () {
       requestAnimationFrame(function () { clearVar('--m-glide'); clearVar('--m-copy'); });
     });

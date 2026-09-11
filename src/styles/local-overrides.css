@@ -1,0 +1,32 @@
+/* ============================================================================================
+   LOCAL OVERRIDES — decisions made in code that are not yet in the design file
+   ============================================================================================
+
+   Why this file exists, and why it is not in homepage.css: the re-derivation after a Claude
+   Design export rewrites src/styles/homepage.css from index.html's own <style> block, so
+   anything put there is lost on the next export. Files that do not exist in the design are
+   never touched, so they survive.
+
+   mobile-passport.css already works this way, but its whole contract is "nothing here applies
+   above 1024px" — that is what makes the desktop driver provably untouched. A desktop-side
+   rule does not belong in it. This is where those go.
+
+   Every rule here should have a matching entry in DESIGN-BRIEF.md. When Claude Design makes
+   the same change on the canvas, the rule here becomes a no-op and can be deleted.
+   -------------------------------------------------------------------------------------------- */
+
+/* ---- the eyebrows ---------------------------------------------------------------------------
+   Removed from every fold on every page, on both mobile and desktop, with two exceptions:
+
+     "Tell us who you need"        For Companies hero — kept on both
+     "Built on real experiences"   homepage hero      — kept on MOBILE ONLY
+
+   Thirteen of the fifteen are gone from the markup outright. The fourteenth is the homepage
+   hero's, which has to survive on one side of the breakpoint and not the other, so it is the
+   one that needs a rule rather than a deletion.
+
+   Scoped to #f1 rather than .eyebrow, so that if an eyebrow ever returns to another fold this
+   rule does not silently swallow it too. */
+@media (min-width: 1025px) {
+  #f1 .eyebrow { display: none }
+}

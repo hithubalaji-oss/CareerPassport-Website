@@ -208,6 +208,29 @@ happened to work because the crowd is homepage-only.
 
 ---
 
+## 6b. Remove the eyebrows
+
+Decided 11 Sep. Every fold's eyebrow comes out, on all three pages and at every width, with two
+exceptions:
+
+| eyebrow | page | keep |
+|---|---|---|
+| **Tell us who you need** | For Companies, hero | yes — both viewports |
+| **Built on real experiences** | index, hero | yes — **mobile only** |
+
+Everything else goes: *The problem*, *The shift*, *How it works*, *What this changes for you*,
+*Your passport issued* (index); *Intent in. Evidence out*, *The difference* (For Companies);
+*The partner problem*, *01 / Your data*, *02 / Your operating system*, *03 / Your AI workforce*,
+*04 / Partner network*, *What changes*, *Partner with CareerPassport* (For Recruitment Partners).
+
+Thirteen are deleted from the markup in the shipped site; the homepage hero's is hidden above
+1024px by a rule, since it has to survive on one side of the breakpoint and not the other.
+
+Until this lands on the canvas, every export brings all fifteen back and the deletions are
+re-applied by hand. `npm run check:deltas` reports it as D5.
+
+---
+
 ## 7. Housekeeping — artboards deleted from the repository
 
 These were removed from GitHub because no live page, artboard wrapper or shipped file referenced
