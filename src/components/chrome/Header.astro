@@ -14,6 +14,10 @@
 import { NAV_LINKS, isCurrent } from './nav-links';
 
 const pathname = Astro.url.pathname;
+
+/* The drawer's own list: home, then the two interior pages. Derived from NAV_LINKS rather
+   than written out, so a route added there reaches the drawer too. */
+const DRAWER_LINKS = [{ href: '/', label: 'Home' }, ...NAV_LINKS];
 ---
 
 <header class="hdr">
@@ -34,14 +38,50 @@ const pathname = Astro.url.pathname;
 </header>
 
 <nav class="mnav" id="mnav">
-  {NAV_LINKS.map(({ href, label }) => <a href={href}>{label}</a>)}
-  <div class="mcta">
-    <a class="nbtn gh" href="#outro">Sign up</a>
-    <a class="nbtn" href="#outro">Free demo</a>
+  {/* The drawer lists home as well as the two interior pages. In the bar the brand lockup is
+      the way home and a "Home" link would be redundant beside it — but the drawer is a full
+      screen given over to where you can go, and leaving the homepage off it reads as an
+      omission rather than as restraint. `isCurrent` marks whichever page you are on. */}
+  <div class="mlinks">
+    {DRAWER_LINKS.map(({ href, label }) => (
+      <a class={isCurrent(href, pathname) ? 'here' : undefined} href={href}>{label}</a>
+    ))}
+  </div>
+  <div class="mfoot">
+    <span class="mlabel">Get started</span>
+    <div class="mcta">
+      <a class="nbtn gh" href="#outro">Sign up</a>
+      <a class="nbtn" href="#outro">Free demo</a>
+    </div>
+    <p class="mfine">Evidence, not CVs</p>
   </div>
 </nav>
 
 <script>
+  /* The drawer is a full-screen sheet, so two things have to be true that did not matter
+     when it was a 58px strip: Escape must close it, and the page behind it must not scroll
+     under the reader's finger. Both live here rather than in each page's own driver —
+     homepage.js, companies.js and cp-page.js each wire the burger's click separately, and
+     three copies of this is how the three headers drifted apart in the first place.
+
+     The class goes on <html> rather than a `position:fixed` body: fixing the body discards
+     the scroll position, and the reader would be returned to the top of the page on close. */
+  {
+    const burgerEl = document.getElementById('burger');
+    const sheet = document.getElementById('mnav');
+    if (burgerEl && sheet) {
+      const sync = () => document.documentElement.classList.toggle('mnav-open', sheet.classList.contains('open'));
+      /* the page drivers own the toggle; this follows whatever they did to it */
+      new MutationObserver(sync).observe(sheet, { attributes: true, attributeFilter: ['class'] });
+      document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape' || !sheet.classList.contains('open')) return;
+        sheet.classList.remove('open');
+        burgerEl.setAttribute('aria-expanded', 'false');
+        burgerEl.focus();
+      });
+    }
+  }
+
   /* `--hdr` feeds hero padding, section scroll-margin and scroll-padding-top. Each page
      declares its own value (For Companies 83px, Partners 60px); the Homepage neither
      declares nor reads it.
