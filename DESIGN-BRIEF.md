@@ -231,6 +231,81 @@ re-applied by hand. `npm run check:deltas` reports it as D5.
 
 ---
 
+## 6c. The two interior pages need the homepage's mobile treatment
+
+The homepage's mobile layout was rebuilt over several passes. None of it reached **For
+Companies** or **For Recruitment Partners**, which are still drawn on the canvas with whatever
+each was authored with. All of this is carried in code today — `src/styles/mobile-pages.css`
+and `src/scripts/mobile-pages.js`, both mobile-only and neither part of the export — so nothing
+is broken while it waits. But it is a page-level design decision and belongs on the canvas.
+
+Measured at 390px wide before the code fix:
+
+| | authored | should be |
+|---|---|---|
+| For Companies `--gut` | 40px | 20px, as the other two pages |
+| For Companies body copy | 11.5px (42 paragraphs) | 15px |
+| The comparison rows | 11.5 / 12.5px | 15px |
+| Partners lede | 14px | 15px |
+| Partners list and card copy | 13.5px | 15px |
+| Every marketing CTA | 12px in a 44px pill | 14px in a 52px control |
+| Section rhythm `--sec` | `clamp(96px,13vh,152px)` | `clamp(48px,7vh,88px)` |
+
+The ladder is the homepage's own, five steps on a ~1.25 ratio: display 30px (stepping to 28 /
+26 / 24 as the viewport shortens), heading 23px, body 15px, label 11px, control 52px. `--m-body`
+and `--m-label` are floors, not parameters.
+
+Two things that should **not** change: the simulated product screens on both pages keep their
+miniature type — it is standing in for a dense UI seen at a distance, and setting it at 15px
+would break the illusion and overflow the panels. And `.fine` is secondary prose separated by
+colour rather than by size; a footnote at the 11px label size is the defect, not the fix.
+
+Two layout consequences came with it, both also in code today:
+
+- **Partners' three stack cards** are a two-column grid whose art column is
+  `clamp(176px,42%,236px)` below 1024px, leaving the copy about 170px of measure on a 390px
+  phone — four words a line. Below 760px the card should be one column, glyph beneath the copy.
+- **For Companies' demo panel** is `min(clamp(452px,63vh,572px), 100svh - hdr)`. On a 640px-high
+  phone the 452px floor wins over the 403px 63vh would give, and the panel plus its text column
+  come to 687px inside 557px of pinned space. `.aidemopin` is `overflow:hidden`, so it was
+  cropped rather than shown — 65px of it below the fold. The floor should not apply on a phone.
+
+---
+
+## 6d. For Companies is 26 screens long on a phone
+
+The hero pins for `420svh` and the process demo for `1750svh`. On a 390px phone that is 21.7
+screens of the page's 26, against the homepage's 8.6. Both are scroll-linked, so the length *is*
+the animation and neither can be shortened on its own.
+
+Handled in code by shortening both on mobile (150svh and 210svh) and running the acts on a timer
+while the section is in view — the same thing the homepage's fold 4 does with its Companion
+loop. That needed four hooks in `companies.js`, registered as **D7**; if the canvas adopts the
+same idea the hooks stop being local deltas.
+
+The result is 8.9 screens at 360x640, 7.9 at 390x844 and 7.7 at 412x915 — consistent across
+devices and matching the homepage, where before it was 27.0 / 26.0 / 25.8.
+
+---
+
+## 6e. The burger's rules need their own contrast
+
+`.hdr .burger i` is `#f4f7f5`, and below 900px `.hdr` is `background:none` by design — the bar is
+the frosted blur alone. That leaves the rules reading against whatever the page puts behind them.
+On For Companies that is a light panel for a good stretch: measured **1.53:1** against the
+brightest backdrop pixel under the bars at 360px wide, where a non-text control needs 3:1.
+
+In code the burger now carries its own dark chip with a hairline, which is invisible over a dark
+section and is what makes the rules legible over a light one — 17:1 averaged across 84 samples
+spanning three pages, two widths and fourteen scroll positions each. Dropped under
+`prefers-reduced-transparency`, where the bar is opaque anyway.
+
+Separately, `.mnav` is `inset:58px 0 auto` against a bar that is **76px** tall — 16px of padding
+either side of a 44px burger — so the top 18px of the menu sheet sits under the header on every
+page at every width measured. The sheet should start at the bar's real height.
+
+---
+
 ## 7. Housekeeping — artboards deleted from the repository
 
 These were removed from GitHub because no live page, artboard wrapper or shipped file referenced
@@ -268,6 +343,6 @@ npm run check:design    # the export is internally consistent
 npm run check:deltas    # each fixed item now reports "can be retired"
 ```
 
-Every item above has a matching entry in `LOCAL-DELTAS.md` (D1–D5) and a machine check that fails
+Every item above has a matching entry in `LOCAL-DELTAS.md` (D1–D7) and a machine check that fails
 if the fix is missing. As each one is fixed here, its entry gets deleted there and the design file
 becomes the single source of truth for that behaviour again.

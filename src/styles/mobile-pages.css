@@ -175,6 +175,23 @@
   .sec, .artsec, .close { padding-inline: var(--gut) }
   .close { padding-bottom: max(var(--sec), env(safe-area-inset-bottom, 0px)) }
 
+  /* ---- the demo panel fits inside the pinned frame --------------------------------------
+     `.aibox.big` is authored `min(clamp(452px,63vh,572px), 100svh - hdr)`. On a 640px-high
+     phone the 452px floor beats the 403px that 63vh would give, and the panel plus its text
+     column come to 687px inside 557px of pinned space. `.aidemopin` has overflow:hidden, so the
+     surplus was cropped rather than shown: measured at 360x640, the panel's bottom edge landed
+     65px below the fold.
+
+     --ai-h is the space the text column actually left, measured by mobile-pages.js — the same
+     move the homepage makes for its art. The fallback is the authored expression with the floor
+     removed, so the panel still fits if the script never runs.
+
+     The wrap also takes the page gutter. It was `min(1240px,94vw)`, which resolves to an 11px
+     inset on a 360px phone against the 20px every other edge on the page uses. */
+  .aiwrap { width: auto; margin-inline: var(--gut) }
+  .aibox.big { min-height: var(--ai-h, min(63svh, calc(100svh - var(--hdr) - 4px))) }
+  .aidemopin { padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)) }
+
   /* ---- the logo strips bleed on purpose, but they must not create a scrollbar -----------
      Both pages duplicate their strip to loop it seamlessly, so the track is ~1876px wide inside
      a 390px frame. cp-shared.css sets body{overflow-x:hidden}, which is the one rule iOS Safari

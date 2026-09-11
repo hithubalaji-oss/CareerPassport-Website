@@ -32,7 +32,17 @@ import '../styles/mobile-pages.css';
   <Closing />
   <Footer cta="Hire on evidence" />
 
+  {/* The two pinned sections' mobile lengths, declared inline in the document rather than in
+      mobile-pages.js. Astro bundles the page's module scripts together and orders them by its
+      own import graph, not by tag order — verified: companies.js landed first in the bundle, so
+      it had already sized both sections before mobile-pages.js could publish anything, and the
+      page stayed 26 screens long while every other part of the override worked. An inline
+      script runs where it is written. Same pattern as the homepage's window.__cpManual. */}
+  <script is:inline>
+    if (window.matchMedia('(max-width: 1024px)').matches) window.__cpSVH = { hero: 150, demo: 210 };
+  </script>
   <script src="/image-slot.js" is:inline></script>
+  <script src="../scripts/mobile-pages.js"></script>
   <script src="../scripts/companies.js"></script>
   <script src="../scripts/cp-keys.js"></script>
 </Base>
