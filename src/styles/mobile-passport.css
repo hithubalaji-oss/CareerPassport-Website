@@ -50,7 +50,15 @@
       scale     var(--m-glide, 400ms) var(--m-ease),
       rotate    var(--m-glide, 400ms) var(--m-ease),
       opacity   var(--m-glide, 400ms) var(--m-ease);
-    will-change: transform, opacity;
+    /* NO will-change. It was here and it is why the S23 Ultra flickered, blanked and showed
+       the passport sliced open while a 1080p phone was fine.
+       .bookwrap is 920x640 CSS with six 3D leaves inside it, and it is displayed at scale
+       0.19-0.40. will-change:transform tells Chrome to promote it permanently and rasterise
+       it at full quality — so it rasters 920x640 at the device's own pixel ratio and then
+       scales the result down, instead of rastering at the size actually shown. On a 3.5x
+       display that is roughly 29MB for the wrap and ~14MB for EACH leaf. Dropping the hint
+       lets Chrome raster at the composited scale, and a transition promotes the element
+       while it runs and releases it afterwards, which is all that was ever needed. */
   }
   /* the book's own tilt settles per state rather than per frame */
   .stage[data-mfold] .book {
@@ -157,7 +165,7 @@
     transition:
       opacity   var(--m-copy, 420ms) var(--m-ease),
       translate var(--m-copy, 420ms) var(--m-ease);
-    will-change: transform, opacity;
+    /* no will-change here either — six viewport-sized text layers pinned permanently */
   }
   main[data-mfold="1"] #f1 .col,
   main[data-mfold="2"] #f2 .col,
@@ -177,7 +185,9 @@
   main[data-mfold="5"] #f1 .col, main[data-mfold="5"] #f2 .col, main[data-mfold="5"] #f3 .col,
   main[data-mfold="5"] #f4 .col,
   main[data-mfold="6"] #f1 .col, main[data-mfold="6"] #f2 .col, main[data-mfold="6"] #f3 .col,
-  main[data-mfold="6"] #f4 .col, main[data-mfold="6"] #f5 .col {
+  main[data-mfold="6"] #f4 .col, main[data-mfold="6"] #f5 .col,
+  main[data-mfold="7"] #f1 .col, main[data-mfold="7"] #f2 .col, main[data-mfold="7"] #f3 .col,
+  main[data-mfold="7"] #f4 .col, main[data-mfold="7"] #f5 .col {
     translate: -34vw 0;
   }
 
@@ -200,19 +210,96 @@
 
      The clip is released and the same left-to-right wipe is done in CSS instead, on
      clip-path, which the compositor can run. Same reveal, no JavaScript. */
-  main[data-mfold] .drawline text[data-fill] { clip-path: none }
-  main[data-mfold] .drawline {
-    clip-path: inset(0 100% 0 0);
-    transition: clip-path 780ms var(--m-ease);
-  }
-  main[data-mfold="5"] .drawline { clip-path: inset(0 0 0 0) }
-  main[data-mfold="5"] .drawline[data-i="0"] { transition-delay: .18s }
-  main[data-mfold="5"] .drawline[data-i="1"] { transition-delay: .46s }
-  main[data-mfold="5"] .drawline[data-i="2"] { transition-delay: .74s }
+  /* (the wrapper-level wipe that used to live here now happens on .sr, below) */
 
   /* the ring behind fold 5 is faded by the driver too */
   main[data-mfold] .dring { opacity: 0; transition: opacity 700ms var(--m-ease) }
   main[data-mfold="5"] .dring { opacity: 1 }
+
+  /* ---- content the driver used to REVEAL, which CSS hides by default -----------------
+     The driver was never only an animator. These elements are opacity:0 in the stylesheet
+     and only became visible because a frame wrote an opacity onto them. With the driver off
+     they stayed invisible, which is why the crowd scene, the incoming sources and the drawn
+     lines were all simply missing rather than mispositioned. */
+
+  /* fold 2's crowd scene — .crowd{opacity:0} in homepage.css */
+  .stage[data-mfold] .crowd { opacity: 0; transition: opacity 700ms var(--m-ease) }
+  .stage[data-mfold="2"] .crowd,
+  .stage[data-mfold="3"] .crowd { opacity: 1 }
+
+  /* fold 4's incoming sources — .orb{opacity:0} */
+  .stage[data-mfold] .orb { opacity: 0; transition: opacity 700ms var(--m-ease) }
+  .stage[data-mfold="4"] .orb { opacity: 1 }
+
+  /* ---- fold 5: the MOBILE component, not the desktop one ------------------------------
+     This fold cost two wasted rounds because the obvious element is the wrong one. On a
+     phone `.drawline{display:none}` — the SVG lines are a DESKTOP presentation. The design
+     swaps in `.mspine`, six lines built at load from the same copy, and reveals them by
+     adding `.on` to each `.msl`. That toggle lives in drawLines(), inside the frame loop, so
+     with the driver off nothing ever gets `.on` and all six lines sit at opacity 0.
+
+     Nothing needed rebuilding. The lines only needed to be told to arrive. */
+  main[data-mfold="5"] .mspine .msl { opacity: 1; translate: 0 0 }
+  main[data-mfold="5"] .mspine .msl .shi { translate: 0 0 }
+
+  /* ...and the column itself needs an anchor. Every other fold's column is
+     `position:fixed; bottom:3.5svh`, but `#f5 .col{top:auto;bottom:auto}` cancels that —
+     on desktop the driver wrote a position for it, so it never needed one. With no driver
+     it has neither edge and falls back to its static position, which is 9,100px down a
+     10,400px page. That, not the reveal, is why this fold was blank: the content was never
+     on screen to be revealed. */
+  main[data-mfold] #f5 .col {
+    top: calc(var(--hdr, 76px) + 5svh);
+    bottom: 5svh;
+    max-height: none;
+  }
+
+  /* six steps, the pair for each statement arriving together, in the order the driver used */
+  main[data-mfold="5"] .msg:nth-of-type(1) .msb { transition-delay: .10s }
+  main[data-mfold="5"] .msg:nth-of-type(1) .mst { transition-delay: .20s }
+  main[data-mfold="5"] .msg:nth-of-type(2) .msb { transition-delay: .38s }
+  main[data-mfold="5"] .msg:nth-of-type(2) .mst { transition-delay: .48s }
+  main[data-mfold="5"] .msg:nth-of-type(3) .msb { transition-delay: .66s }
+  main[data-mfold="5"] .msg:nth-of-type(3) .mst { transition-delay: .76s }
+
+  /* ---- state 7: past the outro -------------------------------------------------------
+     The footer is the last section, and it exists as a state so the passport has somewhere
+     to go. Without it the passport stayed parked in state 6 and the entire footer scrolled
+     over the top of it. */
+  .stage[data-mfold="7"] .bookwrap { translate: 0 -34vh;  scale: .30; rotate: 0deg; opacity: 0 }
+  .stage[data-mfold="7"] .book     { transform: translateX(-230px) rotateY(-8deg) }
+  main[data-mfold="7"] .outro .ocopy { opacity: 1; translate: 0 0 }
+
+  /* ---- the layer budget: undo the promotions the driver needed and this does not -------
+     THIS IS THE S23 FIX, and it is the whole of it.
+
+     homepage.css promotes a lot, correctly, FOR THE DRIVER: .leaf carries
+     will-change:transform for all six leaves, .stage and .bookwrap carry it inside the
+     mobile block, .cbg carries it, and fold 1's column carries it. When something is
+     transformed every frame that hint is right.
+
+     Here nothing is transformed every frame. The hint then does active harm: it makes
+     Chrome promote each element permanently AND rasterise it at full quality — so a
+     460x640 leaf is rastered at the device pixel ratio and scaled down, rather than
+     rastered at the ~0.2-0.4 scale it is actually shown at. Six leaves plus the wrap at
+     DPR 3.5 is well over a hundred megabytes of texture for a passport a few centimetres
+     tall. On a 1080p phone that fits. On a 1440p one it does not, and the compositor starts
+     discarding tiles — which is text that will not paint, backgrounds that blank, and a
+     passport drawn sliced open with its inner pages showing through.
+
+     Releasing the hints lets Chrome raster at the size actually displayed. The two elements
+     that really do animate here, #cover and #leaf1, are promoted by their own transition
+     while it runs and released when it finishes, which is the correct lifetime. */
+  .stage[data-mfold] .leaf,
+  .stage[data-mfold] .bookwrap,
+  .stage[data-mfold] .book,
+  .stage[data-mfold] .cbg,
+  .stage[data-mfold],
+  main[data-mfold] .col { will-change: auto }
+
+  /* the passport is displayed at a fraction of its authored size; tell the compositor to
+     raster it accordingly rather than at full resolution */
+  .stage[data-mfold] .bookwrap { contain: paint }
 
   /* ---- reduced motion: states still change, they just do not glide ------------------- */
   @media (prefers-reduced-motion: reduce) {

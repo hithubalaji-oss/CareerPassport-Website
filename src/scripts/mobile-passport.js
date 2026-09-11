@@ -28,10 +28,13 @@
     var main = document.querySelector('main');
     var folds = [].slice.call(document.querySelectorAll('.fold'));
     var outro = document.querySelector('.outro');
+    var footer = document.querySelector('.ftr');
     if (!stage || !folds.length) return;
 
-    /* fold 6 is the outro, which is not a .fold */
-    var sections = folds.concat(outro ? [outro] : []);
+    /* 6 is the outro, which is not a .fold; 7 is the footer, which exists so the passport
+       has somewhere to GO once the outro is read. Without it the passport parked in state 6
+       and the whole footer scrolled over the top of it. */
+    var sections = folds.concat(outro ? [outro] : []).concat(footer ? [footer] : []);
     var current = 0;
 
     /* ---- scroll velocity, sampled only when the observer fires ----
@@ -98,6 +101,10 @@
       el.setAttribute('data-mfold-index', String(i + 1));
       io.observe(el);
     });
+
+    /* The driver builds the fold-4 flow chart on its first frame. It never runs here, so
+       build it explicitly — otherwise the Companion flow simply does not exist in the page. */
+    if (typeof window.__cpBuildOnce === 'function') window.__cpBuildOnce();
 
     /* first paint: whichever section is already on screen, with no glide */
     setVar('--m-glide', '0ms'); setVar('--m-copy', '0ms');

@@ -1049,6 +1049,12 @@ try{
   if(!window.__cpManual) requestAnimationFrame(frame);
 }catch(e){ if(!window.__cpErrLogged){window.__cpErrLogged=1;console.error('frame:',e);} if(!window.__cpManual) setTimeout(function(){requestAnimationFrame(frame)},250); }
 }
+/* D3b: the frame loop is not only an animator — it also BUILDS the fold-4 flow chart, the
+   one piece of page content that does not exist until a frame runs. With the driver off on
+   mobile that content never appeared at all. Exposed so the mobile path can build it
+   explicitly at load, without running a frame and having its inline styles fight the
+   mobile stylesheet. */
+window.__cpBuildOnce=function(){ if(fstage&&!flowBuilt){ flowBuilt=1; buildFlow(); return true; } return false; };
 window.__cpFrame=function(y){ if(y!=null) scrollTo(0,y); window.__cpManual=1; try{frame()}finally{window.__cpManual=0} };
 /* D4: the loop's own guard covers every iteration but not this first kick, so on a phone the
    driver would still run one frame and write inline styles that outrank the mobile stylesheet.
