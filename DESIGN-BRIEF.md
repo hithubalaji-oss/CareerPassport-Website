@@ -133,13 +133,30 @@ already cost a feature.
 
 All four are deletion scars: a rule was removed and part of its syntax left behind.
 
-**Number 4 cost the passport seal its rotation.** On 8 Sep `.cring` carried
-`animation:cringspin 44s linear infinite` with a matching `@keyframes cringspin{to{rotate:360deg}}`.
-The 10 Sep export dropped both and left the closing brace — so the seal legend no longer turns,
-while the comment above it still describes it turning and the `prefers-reduced-motion` rule below
-still tries to switch off an animation that no longer exists. **Please confirm whether stopping
-that rotation was deliberate.** If it was not, restore both lines; it is a one-line fix and the
-shipped site will pick it up automatically.
+**Number 4 is next to where the passport seal lost its rotation — and that part is settled.**
+On 8 Sep `.cring` carried `animation:cringspin 44s linear infinite` with a matching
+`@keyframes cringspin{to{rotate:360deg}}`. The 10 Sep export dropped both and left the closing
+brace behind.
+
+**Stopping the rotation was deliberate — confirmed 11 Sep. Please do not restore it.** The seal
+legend is static by design. The shipped homepage already matches, and carries a comment saying so
+in case anyone reads the missing animation as a regression later.
+
+The orphan `}` is still a syntax fix and still needs deleting. It is only adjacent to the
+rotation, not the cause of it.
+
+**And it applies to all three pages, at every width.** Decided 11 Sep. `For Companies.html` and
+`For Recruitment Partners.html` still carry `animation:cringspin 44s linear infinite` on
+`.cpface .cring` — three declarations between them, one inside a `prefers-reduced-motion` block —
+plus a `@keyframes cringspin` in each file. **Delete all of them, and the keyframes with them.**
+For Companies draws six seals on the page; every one of them was turning.
+
+Delete rather than override: `@media (prefers-reduced-motion:reduce){.cpface .cring{animation:none}}`
+in `For Companies.html` exists only to switch off an animation that should not be declared in the
+first place, so it goes too.
+
+The shipped site already has this (all three pages, desktop, mobile and reduced-motion, verified
+by computed style). Until the design files match, every export brings the rotation back.
 
 ---
 
