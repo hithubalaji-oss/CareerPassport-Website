@@ -48,3 +48,32 @@
    whole reason this file exists. */
 .fbot b { font-size: 9.5px }
 .frl p  { font-size: 12px }
+
+
+/* ---- For Companies fold 2: one progress bar, not four dots -------------------------------
+   The four acts were marked by three dots and a dash in the panel's corner. As a bar it says
+   the same thing continuously rather than in four steps, and it is the treatment the Partners
+   story band already uses — so the two pages stop having two different ideas about what
+   "progress through a pinned sequence" looks like.
+
+   The track and fill are the Partners rule verbatim (partners.css:1353), re-declared here
+   because that sheet is design-derived and this one is not. --sp is written by companies.js
+   from the fold's own progress. */
+.actdots { display: none }
+
+.actbar {
+  position: absolute;
+  left: calc(var(--gut) + var(--bleed, 0px));
+  right: calc(var(--gut) + var(--bleed, 0px));
+  bottom: clamp(16px, 2.6vh, 30px);
+  z-index: 8;
+  height: 1px;
+  background: var(--hairline);
+}
+.actbar i {
+  display: block;
+  height: 1px;
+  width: calc(var(--sp, 0) * 100%);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--emerald) 40%, transparent),
+    var(--emerald));
+}

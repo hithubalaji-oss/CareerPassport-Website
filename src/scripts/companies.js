@@ -200,6 +200,7 @@
   var title=document.getElementById('actTitle');
   var desc=document.getElementById('actDesc');
   var dots=[].slice.call(document.querySelectorAll('#actDots i'));
+  var actBar=document.getElementById('actBar');   /* D10 */
   var ex=document.getElementById('aiEx'), ev=document.getElementById('aiEv'), dc=document.getElementById('aiDc');
   var wires=[].slice.call(ex.querySelectorAll('.wire:not(.reach)'));
   var reach=[].slice.call(ex.querySelectorAll('.wire.reach'));
@@ -586,6 +587,13 @@
     var span=r.height-vh;
     var g=G0+(span>0 ? clamp(-r.top/span,0,1) : 0)*(1-G0);
     if(window.__cpAutoG!=null) g=window.__cpAutoG;   /* D7 */
+    /* D10 · the act progress, as one bar. --sp is 0..1 across the whole of the four acts,
+       which is the same contract the Partners story band's bar reads. Written only on real
+       change: it feeds a width, so every write invalidates layout for that element. */
+    if(actBar){
+      var sp=((g-G0)/(1-G0)).toFixed(4);
+      if(actBar._sp!==sp){ actBar._sp=sp; actBar.style.setProperty('--sp',sp); }
+    }
 
     /* the board drifts and reshuffles as the fold is scrolled. Its per-row transforms are
        the most expensive work in this function, so they are written only when the drift has
