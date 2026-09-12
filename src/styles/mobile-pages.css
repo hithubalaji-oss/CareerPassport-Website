@@ -336,6 +336,33 @@
   .flapbg{ display:none }
   .aidemopin{ background:transparent;border-block:0 }
 
+  /* ---- and the card inside it goes with it -----------------------------------------------
+     `.aibox.big` is the demo's surface: `background-color:var(--panel)` (#121514) over the
+     page's own #0a0c0b, a hairline border, a float shadow and the passport's laid hatch. On
+     desktop it is a panel sitting in a wide scene and it reads as one. On a phone it is a
+     dark rectangle occupying the whole lower two thirds of every one of the four acts, and
+     what it actually communicates is "here is a box", which is not the point of the act.
+
+     The contents already carry their own edges — every chip, tile, matrix cell, record card
+     and the passport itself has a border and a fill of its own — so the composition holds
+     without a surface underneath. Taken out whole rather than lightened: fill, border, float
+     shadow, hatch and the emerald top hairline are all parts of the same card, and leaving
+     any one of them behind reads as a card that failed to paint. */
+  .aibox.big{
+    background-color:transparent;
+    background-image:none;
+    border-color:transparent;
+    box-shadow:none;
+  }
+  .aibox.big::before{ opacity:0 }
+
+  /* With the surface gone, its inset is a stray indent. The four act layers each carry 18px
+     of padding, which held their content off the card's edge; measured at 390px the copy
+     column starts at x=20 and the panel's content started at x=38. Two left edges 18px apart,
+     with nothing drawn between them to explain why, reads as a misalignment rather than as
+     nesting. Inline only — the block padding still keeps the act off the fold's edges. */
+  .aibp, .aiex, .aiev, .aidc{ padding-inline:0 }
+
   /* ---- the four-dot progress marker ------------------------------------------------------
      It told you which of the four acts you were in when they were a timed carousel you could
      not control. They are four scroll folds now: the scrollbar is the progress indicator, and
@@ -394,6 +421,45 @@
   .dcsent.on{ flex:0 0 auto;width:auto;padding-left:10px }
   .dcsent b{ font-size:11px }
   .dcsentmeta{ font-size:8px;letter-spacing:.1em }
+
+  /* ---- the passport's layer budget, the homepage's fix ported ---------------------------
+     THIS IS THE OTHER HALF OF THE "SEE THROUGH THE COVER" REPORT. The first half was the
+     coincident shut, fixed in companies.js; this is the one the homepage already paid for
+     on an S23 Ultra, and the Decide act reproduces it exactly.
+
+     `.dcpp .leaf` carries `will-change:transform`, and the markup carries SIX leaves —
+     #dcCover and #dcLeaf1..#dcLeaf5. `will-change` tells Chrome to promote the element
+     permanently AND to rasterise it at full quality, which means each 460x640 leaf is
+     rastered at the device's pixel ratio and then scaled down, rather than rastered at the
+     ~0.3 scale it is actually drawn at. Six of those at DPR 3.5 is well over a hundred
+     megabytes of texture for a passport a few centimetres tall. When it does not fit, the
+     compositor discards tiles — which is text that will not paint, a cover that blanks, and
+     a passport drawn sliced open with its inner pages showing through.
+
+     Two things fix it, both of them the homepage's:
+
+     1. The leaves that are never turned are taken out. The driver's own dcFlips are
+        [[.930,.952],[.952,.968],[9,9],[9,9],[9,9]] — the cover and leaf 1 turn, and leaves
+        2, 3 and 4 are pinned at a range that can never be entered. Leaf 5 is not even in the
+        dcLeaves array. Of those, leaf 2 is visible: after leaf 1 turns, its .lf is the right
+        page of the open spread, and it hosts #dcStampGrid and #dcVerifying. Leaves 3, 4 and
+        5 sit flat BEHIND leaf 2's .lf, which is opaque (`linear-gradient(200deg,#fdfaf1,
+        #e8e2d2)`), for the whole visit — zw at lp=0 puts leaf 2 at 3.6px and the rest at
+        1.8px and 0. Nothing that is ever visible is removed.
+
+     2. The promotion is released everywhere except the two leaves that genuinely animate.
+        #dcCover and #dcLeaf1 are written every frame while the act runs and keep the hint;
+        the rest raster at the size actually displayed. Two layers instead of six.
+
+     Mobile only — desktop has the room, and its diff stays empty. */
+  .dcpp #dcLeaf3,
+  .dcpp #dcLeaf4,
+  .dcpp #dcLeaf5 { display: none }
+  .dcpp .leaf, .dcpp .book { will-change: auto }
+  .dcpp #dcCover, .dcpp #dcLeaf1 { will-change: transform }
+  /* the book is drawn at a fraction of its authored size; let the compositor raster it
+     accordingly rather than at full resolution */
+  .dcpp { contain: paint }
 
   /* ---- the differences, as a grid --------------------------------------------------------
      Three columns, seven bands: the headers, then one band per capability. Every cell is two

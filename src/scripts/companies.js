@@ -778,13 +778,42 @@
     });
 
     /* the leaves turn on the same easing and the same geometry the homepage uses, and
-       the book shuts again as the offer goes out — the record closes on the decision */
+       the book shuts again as the offer goes out — the record closes on the decision.
+
+       D11 · ONLY THE COVER SHUTS, AND IT SHUTS AFTER THE PRESS, NOT DURING IT.
+
+       What was here applied one `dcShut` to every leaf: `ease(...)*(1-dcShut)`, for the
+       cover and for leaf 1 alike. Both had already reached lp=1, so both came back down
+       the SAME ramp, which put them at the same rotateY on the same frame. Measured on a
+       390x844 phone, mid-shut: cover `rotateY(-45.74deg) translateZ(15.85px)`, leaf 1
+       `rotateY(-45.74deg) translateZ(14.97px)`. Two 460x640 planes, coincident in angle,
+       0.88px apart in z — 0.26px at the 0.3 scale they are drawn at. That is not a near
+       miss, it is an intersection, and an intersection inside a preserve-3d context is
+       resolved per-fragment: the dark cover and the white page tear into each other. It
+       reads on a phone exactly as it was reported — as seeing the inner pages THROUGH the
+       cover — and as a smear while it moves.
+
+       The two are never at the same angle again, because they no longer close together.
+       They close in the order a book actually closes: THE PAGE LIES DOWN FIRST, THEN THE
+       COVER COMES OVER IT. Leaf 1 returns across .976-.988 while the cover holds flat at
+       -180deg, and the cover returns across .988-1 with leaf 1 already down at 0deg. At no
+       point in either half do the two share an angle, and the leaf that is moving always
+       carries the `sin(PI*lp)*14` lift while the one that is still does not — so the
+       separation is ~14px for the whole motion instead of collapsing to 0.88px, which is
+       what happened when one ramp drove both and the lift term cancelled.
+
+       (The leaf does have to come back. Leaving it turned looks right in the abstract, and
+       is wrong here: this book has no back cover. A shut passport is the right half alone —
+       the cover over `.pg.recto.base` — and `--bx` slides the box 230 units left to centre
+       it. A leaf left at -180deg is then an opaque page standing out to the LEFT of a shut
+       passport, with the verso beneath it already faded to nothing.) */
     var dcFlips=[[.930,.952],[.952,.968],[9,9],[9,9],[9,9]];
-    var dcShut=ease(seg(g,.980,.992));
+    var dcLeafShut=ease(seg(g,.976,.988));
+    var dcShut=ease(seg(g,.988,1));
     var dcCoverOpen=0;
     for(var li=0;li<dcLeaves.length;li++){
       var dlf=dcLeaves[li]; if(!dlf) continue;
-      var lp=dcOpen?ease(seg(g,dcFlips[li][0],dcFlips[li][1]))*(1-dcShut):0;
+      var lp=dcOpen?ease(seg(g,dcFlips[li][0],dcFlips[li][1]))*(1-(li===0?dcShut:dcLeafShut)):0;
       if(li===0) dcCoverOpen=lp;
       var zw=(1-lp)*(4-li)*1.8 + lp*(li+1)*1.8 + Math.sin(Math.PI*lp)*14;
       dlf.style.transform='translateZ('+zw.toFixed(2)+'px) rotateY('+(-180*lp).toFixed(2)+'deg)';
