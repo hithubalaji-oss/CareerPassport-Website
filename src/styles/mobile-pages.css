@@ -447,6 +447,25 @@
   /* the stacked-card rules this replaces */
   .cmpb{ display:none }
 
+  /* ---- the folds are sized in svh, not vh ------------------------------------------------
+     `.fold{height:calc(var(--h) * 1vh)}` is the only rule that sizes the tall scrolling
+     sections, and `vh` tracks the LAYOUT viewport. `.pin` inside it is already `100svh`, so
+     the two were in different units to begin with: a fold of `--h:125` was 1.25 pins only
+     while the browser's toolbar happened to be showing.
+
+     It matters much more than a rounding. When the on-screen keyboard opens and the layout
+     viewport shrinks, every fold shrinks with it and the whole document halves — measured on
+     the homepage at 390x844: 7233px of document became 3877px the moment the handle field was
+     focused and the keyboard came up. A reader part-way down fold 1 is then part-way down a
+     document half as long, and one ordinary flick carries them to the end of it. That is the
+     "scroll jumps straight to the footer" report.
+
+     svh is the small-viewport unit: it is defined against the viewport with the dynamic
+     toolbars EXPANDED and does not move while they retract, so the document keeps one height
+     for the whole session. On desktop svh and vh are identical, so this changes nothing there.
+     Mobile-only all the same, so the desktop diff stays provably empty. */
+  .fold{ height:calc(var(--h) * 1svh) }
+
   /* ---- the logo strips bleed on purpose, but they must not create a scrollbar -----------
      Both pages duplicate their strip to loop it seamlessly, so the track is ~1876px wide inside
      a 390px frame. cp-shared.css sets body{overflow-x:hidden}, which is the one rule iOS Safari

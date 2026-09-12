@@ -108,4 +108,51 @@
   addEventListener('load', build);
   build();
   window.__keyStops = function(){ return stops };
+
+  /* ---- a deliberate scroll releases a focused field --------------------------------------
+     Reported on the homepage: with the caret in the handle field, scrolling took the reader
+     straight to the footer, and clicking anywhere else first made it behave again.
+
+     This is the fix that actually holds. The folds were also moved from vh to svh, which
+     corrects a real unit mismatch against the `100svh` pins inside them — but it does NOT
+     rescue this case: if a browser shrinks the layout viewport for the keyboard, svh shrinks
+     with it. What reliably works is letting go: if the reader is scrolling they have finished
+     with the field, so the field releases and the keyboard closes.
+
+     It listens for the GESTURE (touchmove / wheel) rather than the scroll event, and that
+     distinction is the whole safety of it. Focusing an input makes the browser scroll it into
+     view; blurring on the scroll event would fire on that, and the field would be impossible
+     to type in at all. A gesture is unambiguously the reader's.
+
+     A drag that starts inside the field is left alone — that is text selection, not scrolling. */
+  (function(){
+    var y0 = null;
+
+    function focusedField(){
+      var e = document.activeElement;
+      if (!e) return null;
+      var t = (e.tagName||'').toLowerCase();
+      return (t==='input' || t==='textarea' || e.isContentEditable) ? e : null;
+    }
+
+    addEventListener('touchstart', function(e){
+      y0 = e.touches && e.touches.length === 1 ? e.touches[0].clientY : null;
+      /* a drag begun on the field itself is selection; remember that and leave it be */
+      var f = focusedField();
+      if (f && e.target && (e.target === f || f.contains(e.target))) y0 = null;
+    }, {passive:true});
+
+    addEventListener('touchmove', function(e){
+      if (y0 === null || !e.touches || e.touches.length !== 1) return;
+      if (Math.abs(e.touches[0].clientY - y0) < 12) return;   /* not yet a scroll */
+      var f = focusedField();
+      if (f) f.blur();
+      y0 = null;
+    }, {passive:true});
+
+    addEventListener('touchend', function(){ y0 = null }, {passive:true});
+    /* Touch only, deliberately. On a pointer device nothing is covering the page, so a
+       focused field costs the reader nothing and taking their focus away mid-thought would
+       be a change for its own sake. This also keeps the desktop diff empty. */
+  })();
 })();
