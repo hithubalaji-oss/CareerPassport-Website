@@ -135,7 +135,8 @@ const DELTAS = [
     // the mobile layer itself, and the inline declaration that has to beat Astro's bundler
     extraFiles: ['src/scripts/mobile-pages.js', 'src/pages/for-companies.astro',
                  'src/styles/mobile-pages.css'],
-    extraPresent: ['function autoplay(', 'window.__cpSVH = { hero: 150, demo: 520 }',
+    // the mobile arm of the per-viewport ternary; D10 asserts the desktop one
+    extraPresent: ['function autoplay(', '{ hero: 150, demo: 520 }',
                    '--ai-h'],
   },
   {
@@ -213,6 +214,37 @@ const DELTAS = [
       ['src/components/chrome/Header.astro', 'Evidence, not CVs'],
       ['src/components/chrome/Header.astro', '>Get started<'],
     ],
+  },
+  {
+    id: 'D10',
+    title: 'For Companies: the desktop layer — autofilled brief, five stops, one progress bar',
+    file: 'src/scripts/companies.js',
+    design: 'For Companies.html',
+    present: [
+      'if(window.__cpHeroCursorOn) on=!!window.__cpHeroCursorOn(q);',
+      'var aim = window.__cpHeroAim ? window.__cpHeroAim(q) : undefined;',
+      "var actBar=document.getElementById('actBar');",
+      "actBar.style.setProperty('--sp',sp)",
+    ],
+    // the unhooked forms: the cursor pinned to the button and shown on the authored window
+    reverted: [
+      /\n    cur\.classList\.toggle\('click',press\);\n    park\(sendBtn,2,2\);/,
+    ],
+    extraFiles: [
+      'src/scripts/companies-desktop.js',
+      'src/components/companies/ProcessDemo.astro',
+      'src/styles/local-overrides.css',
+      'src/pages/for-companies.astro',
+      'src/pages/for-companies.astro',
+    ],
+    extraPresent: [
+      'function demoStops(',
+      'class="actbar"',
+      '.actbar {',
+      "import '../styles/local-overrides.css';",
+      '{ hero: 200, demo: 620 }',   // the desktop arm of the per-viewport ternary
+    ],
+
   },
 ];
 

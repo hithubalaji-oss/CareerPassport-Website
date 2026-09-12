@@ -61,6 +61,13 @@
    from the fold's own progress. */
 .actdots { display: none }
 
+/* Desktop only. On a phone the four acts are four scroll folds, and that decision came with
+   removing the dots outright: the scrollbar already says where you are, and a second indicator
+   in the corner of the panel is noise. The bar was asked for on desktop, so it stays there. */
+@media (max-width: 1024px) {
+  .actbar { display: none }
+}
+
 .actbar {
   position: absolute;
   left: calc(var(--gut) + var(--bleed, 0px));

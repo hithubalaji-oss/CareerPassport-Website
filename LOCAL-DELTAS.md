@@ -548,6 +548,79 @@ sits inside the band the control (baseline against itself) establishes.
 
 ---
 
+## D10 — For Companies: the desktop layer
+
+**Files:** three hooks in `src/scripts/companies.js`, plus the new
+`src/scripts/companies-desktop.js`, `ProcessDemo.astro`, `local-overrides.css` and the page's
+own inline script
+
+**The standing rule flips for this page.** "Mobile only, desktop untouched" held for every pass
+up to this one; these desktop behaviours were asked for. What is still proven is that nothing
+ELSE moved — see the readings below.
+
+### What changed
+
+**The hero's brief writes itself.** The whole animation is one scalar mapped straight from
+scroll, so every beat of the sentence being typed was a slice of scroll distance. `q` now runs
+0 → .62 on a timer as soon as the page is up, and the scroll is remapped into `.62 → 1`, so it
+can only carry the manager arriving, pressing send and leaving. Scrolling cannot un-type the
+sentence.
+
+The manager's window moved with it. Authored it opens at `q=.52` — before the words finish at
+`.60` — so with the typing on its own clock he would have been standing there on arrival. He
+appears at `.655`, presses at `.72–.80`, and is gone by `.815`. Past the press `__cpHeroAim`
+returns `null` and he walks off-stage rather than blinking out, because the glide keeps running.
+
+**Fold 2 is five stops, not a 1750svh scrub.**
+
+| | |
+|---|---|
+| 1 | DESIGN — the form assembles and the manager modifies the selection (`G0 → .363`, p=.845) |
+| 2 | DESIGN — the click and what follows (`.363 → .4515`) |
+| 3 | EXECUTE — the whole graph at once (`.452 → .6515`) |
+| 4 | EVIDENCE — straight to "See candidate" and press (`.652 → .8515`) |
+| 5 | DECIDE — the record opened, the invite sent (`.852 → 1`) |
+
+**The section had to come down with them**, and this is the one thing not literally asked for.
+Five stops inside 1750svh is three and a half screens between events, which is worse than the
+scrub it replaces. 620svh desktop, and the hero 200svh since it now carries one event. Both
+numbers are in the page's inline `__cpSVH`, which branches by viewport.
+
+**The four act dots became one bar**, the Partners story band's treatment verbatim. Desktop
+only: on a phone the acts are four scroll folds and the scrollbar already says where you are.
+
+### The three hooks
+
+```js
+if(window.__cpHeroCursorOn) on=!!window.__cpHeroCursorOn(q);
+var aim = window.__cpHeroAim ? window.__cpHeroAim(q) : undefined;   /* null = off-stage */
+if(actBar){ …actBar.style.setProperty('--sp',sp); }                  /* written on change only */
+```
+
+### One thing worth knowing
+
+`local-overrides.css` was imported by the HOMEPAGE ONLY. Its contract is "code-side decisions
+that are not mobile-only", and For Companies had no such file at all — `companies.css` is
+design-derived and `mobile-pages.css` is mobile by construction, so a both-viewports decision
+for that page had nowhere to live. It is loaded there now. Nothing already in it can reach the
+page: the eyebrow rule is scoped to `#f1` and the fold-4 type rules to `.fbot` / `.frl`.
+
+### What was proven not to move
+
+| | doc height | pixels vs control |
+|---|---|---|
+| Partners desktop | identical | 0.013–0.023% against a 0.000–0.017% control |
+| Partners mobile | identical | 0.039–0.043% against 0.000–0.038% |
+| Homepage desktop | identical | 0.42–0.55% against 0.55–0.59% |
+| Homepage mobile | identical | differs in fold 4 only — the intended type and passport change |
+| Companies mobile | identical | differs in ONE frame, the send button's post-press colour, which is the intended both-viewports change |
+| Companies desktop | 21783 → 9633 | **deliberately changed** |
+
+Mobile behaviour re-checked in the same run: hero 150svh, demo 520svh, four folds, `__cpSVH`
+reading `{150,520}`, and both desktop hooks `undefined`.
+
+---
+
 ## Retired
 
 Everything below was fixed in Claude Design and re-derived cleanly on 10 Sep. Kept as a
