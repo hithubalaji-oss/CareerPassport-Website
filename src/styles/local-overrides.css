@@ -77,3 +77,45 @@
   background: linear-gradient(90deg, color-mix(in srgb, var(--emerald) 40%, transparent),
     var(--emerald));
 }
+
+
+/* ---- the send button, once it has been pressed -------------------------------------------
+   The manager presses send and the only feedback was the icon nudging and the fill dimming —
+   which still reads as a live button you could press again. At that moment it is not one: the
+   brief is gone and the work has started.
+
+   So it stops looking pressable. The emerald fill goes, the arrow goes with it, and the button
+   becomes a quiet panel-coloured pill naming the work it just started. "Building your
+   blueprint" rather than a generic "processing", because it is also the handover to the next
+   fold, which opens on exactly that.
+
+   Both viewports. The request named desktop, but the state is the same state and a gold
+   pressable-looking button on a phone is the same defect. Driven entirely off `.sending`,
+   which companies.js already sets at the press, so this needs no markup and no driver change. */
+.hcomp.sending .aisearch {
+  width: auto;
+  padding: 0 12px;
+  gap: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  /* beats .aisearch.armed, which is still on the element at this point */
+  background: var(--panel-raised);
+  color: var(--mute);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+  scale: 1;
+}
+.hcomp.sending .aisearch svg { display: none }
+.hcomp.sending .aisearch::after {
+  content: "Building your blueprint";
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+@media (max-width: 1024px) {
+  .hcomp.sending .aisearch::after { font-size: 8.5px }
+}

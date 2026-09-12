@@ -151,11 +151,20 @@
 
     /* the manager is on stage only for the send */
     var on=q>=.52&&q<.90;
+    /* D10 · the desktop layer narrows this. With the brief filling itself on load rather than
+       on scroll, the authored window opens before the typing has finished — so the manager
+       would already be standing there when you arrive. Both hooks are inert unless published. */
+    if(window.__cpHeroCursorOn) on=!!window.__cpHeroCursorOn(q);
     cur.classList.toggle('on',on);
     cur.classList.toggle('away',!on);
     setVisible(on);
     cur.classList.toggle('click',press);
-    park(sendBtn,2,2);
+    /* D10 · a null aim sends the cursor off-stage instead of holding it on the button, which
+       is what "leaves the frame once the click is done" needs — the glide keeps running, so
+       it walks out rather than blinking off. */
+    var aim = window.__cpHeroAim ? window.__cpHeroAim(q) : undefined;
+    if(aim===null){ var o=offstage(); tx=o.x; ty=o.y; }
+    else park(sendBtn,2,2);
   };
   window.__cpHeroFrame=frame;   /* D7 */
   frame();
