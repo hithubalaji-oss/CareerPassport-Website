@@ -246,6 +246,33 @@ const DELTAS = [
     ],
 
   },
+  {
+    id: 'D11',
+    title: 'For Companies: the passport shuts in order, and mobile stops rastering six leaves',
+    file: 'src/scripts/companies.js',
+    design: 'For Companies.html',
+    present: [
+      "var dcLeafShut=ease(seg(g,.976,.988));",
+      "var dcShut=ease(seg(g,.988,1));",
+      "*(1-(li===0?dcShut:dcLeafShut))",
+    ],
+    // the single ramp that drove the cover and the leaf down together, which put them at the
+    // same rotateY 0.88px apart and tore the two planes into each other
+    reverted: [
+      /var dcShut=ease\(seg\(g,\.980,\.992\)\);/,
+      /dcFlips\[li\]\[1\]\)\)\*\(1-dcShut\)/,
+    ],
+    extraFiles: [
+      'src/styles/mobile-pages.css',
+    ],
+    extraPresent: [
+      '.dcpp #dcLeaf5 { display: none }',
+      '.dcpp #dcCover, .dcpp #dcLeaf1 { will-change: transform }',
+      '.dcpp { contain: paint }',
+      'background-color:transparent;',              // .aibox.big, the demo card
+      '.aibp, .aiex, .aiev, .aidc{ padding-inline:0 }',
+    ],
+  },
 ];
 
 const hit = (src, needle) =>

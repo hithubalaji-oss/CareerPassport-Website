@@ -621,6 +621,85 @@ reading `{150,520}`, and both desktop hooks `undefined`.
 
 ---
 
+## D11 — For Companies: the passport shuts in order, and stops rastering six leaves
+
+**Files:** `src/scripts/companies.js` (the Decide act's close), `src/styles/mobile-pages.css`
+(the layer budget and the panel)
+
+Reported as "for those folds where we have the passport there are some glitches — we can see
+through the coverpage" on a phone recording. Two independent causes, one of them the homepage's
+old S23 bug arriving on a second page.
+
+### 1 · One shut ramp drove the cover and the leaf, so they met at the same angle
+
+`var lp = ease(seg(g,dcFlips[li]))*(1-dcShut)` applied a single `dcShut` to every leaf. The
+cover and leaf 1 had both reached `lp=1`, so both came back down the same ramp at the same
+rate. Measured mid-shut at 390×844:
+
+```
+#dcCover  translateZ(15.85px) rotateY(-45.74deg)
+#dcLeaf1  translateZ(14.97px) rotateY(-45.74deg)
+```
+
+Two 460×640 planes at the same angle, **0.88px apart in z** — 0.26px at the 0.3 scale they are
+drawn at. The `sin(PI*lp)*14` lift that is supposed to separate a turning leaf from the stack
+was identical for both and cancelled. Inside a `preserve-3d` context that is resolved
+per-fragment, and the dark cover and the white page tear into each other: on a phone it reads
+exactly as reported, as seeing the pages through the cover, and as a smear while it moves.
+
+It now closes in the order a book closes. Leaf 1 returns over `.976–.988` while the cover holds
+flat at −180°; the cover returns over `.988–1` with the leaf already down. Neither half shares
+an angle, and the moving one always carries the lift while the still one does not, so the
+separation stays ~14px. Verified frame by frame at `g` = .940 … 1.000: on `origin/main` the
+g=.990 frame shows a white page and the EXPERIENCE VISA spine standing out of the left edge of
+a shut cover; it is gone.
+
+The leaf has to come back, which is not obvious — leaving it turned is more like a real book.
+This book has no back cover: a shut passport is the right half alone, and `--bx` slides the box
+230 units left to centre it. A leaf left at −180° is an opaque page standing beside the shut
+passport with the verso beneath it already faded out.
+
+Applies to both viewports, because it is the same driver. Desktop had it worse — the act is
+4400ms there against 6400ms on mobile.
+
+### 2 · Six promoted leaves, three of them never visible
+
+`.dcpp .leaf{will-change:transform}` promotes all six of `#dcCover` and `#dcLeaf1..5`
+permanently AND rasters each at full quality, so a 460×640 leaf is rastered at the device pixel
+ratio and scaled down rather than rastered at the ~0.3 it is drawn at. This is the homepage's
+S23 finding word for word, and the remedy is the same:
+
+- `#dcLeaf3/4/5 { display:none }` on mobile. `dcFlips` pins leaves 2–4 at `[9,9]`, a range `g`
+  cannot enter, and leaf 5 is not in `dcLeaves` at all. Leaf 2 is kept — after leaf 1 turns its
+  `.lf` is the right page of the spread and it hosts `#dcStampGrid` and `#dcVerifying`. Leaves
+  3–5 sit behind that opaque page for the whole visit.
+- `will-change:auto` on `.dcpp .leaf` and `.dcpp .book`, restored only on `#dcCover` and
+  `#dcLeaf1`, which are written every frame. Two layers instead of six.
+- `contain:paint` on `.dcpp`.
+
+Mobile only.
+
+### 3 · The demo's card, on mobile
+
+Asked for separately: "from Design till Decide we can see a dark solid colour BG — remove
+that". `.aibox.big` is `background-color:var(--panel)` (#121514) over the page's own #0a0c0b,
+plus a hairline, a float shadow and the passport's laid hatch. Removed whole rather than
+lightened — fill, border, shadow, hatch and the emerald top hairline are all one card, and
+leaving any of them reads as a card that failed to paint.
+
+Its inset went with it: the four act layers carry 18px of padding, which put the panel's
+content at x=38 while the copy column starts at x=20. `padding-inline:0` on `.aibp/.aiex/.aiev/
+.aidc`, block padding kept.
+
+And the Execute map's `.wire.reach` paths, which deliberately run from viewBox x=88 to x=101 to
+say the network continues past the frame, needed an ending. With the card they ran into its
+rounded edge; without it they stop in open space at x=372 of a 390px viewport, which reads as
+the channel columns having been cut off — which is how it was reported once already. A mask
+fades them from 84% out to the gutter. The channel nodes are spans outside the SVG and are
+untouched, as is every wire a packet travels.
+
+---
+
 ## Retired
 
 Everything below was fixed in Claude Design and re-derived cleanly on 10 Sep. Kept as a
