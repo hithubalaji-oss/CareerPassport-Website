@@ -34,7 +34,7 @@ scripts/check-design-files.mjs   npm run check:design
 
 **Re-derivation is destructive.** Every change made in code that has no counterpart on the
 canvas is silently reverted by the next export. That is what `LOCAL-DELTAS.md` and
-`scripts/check-deltas.mjs` exist for: **D1–D9**, each with a machine check. Run
+`scripts/check-deltas.mjs` exist for: **D1–D10**, each with a machine check. Run
 `npm run check:deltas` after every import; anything MISSING must be re-applied before pushing.
 `DESIGN-BRIEF.md` is the other half — what Claude Design should change on the canvas so a
 delta can be retired.
@@ -43,8 +43,12 @@ delta can be retired.
 
 ## The rules that were paid for
 
-**Mobile only, desktop untouched.** This has been the standing constraint for the whole
-mobile effort. The way it is kept provable: every mobile rule lives inside
+**Mobile only, desktop untouched — with one page now excepted.** This was the standing
+constraint for the whole mobile effort, and still is for the homepage and Partners. **For
+Companies' desktop is now deliberately changed** (12 Sep): the hero's brief autofills and fold 2
+is five stops rather than a 1750svh scrub, both on request. The invariant there is now "nothing
+moved that was not asked for", proven by diffing the OTHER two pages and both mobile layouts.
+For everything else: The way it is kept provable: every mobile rule lives inside
 `@media (max-width:1024px)` in a file the export does not own, and every JS override falls
 through to the authored value when nothing is published. Prove it before pushing — build
 `origin/main` into a worktree, serve both, and diff. **Always run the control** (baseline
@@ -94,6 +98,10 @@ message describing a change that was never in the code.
 - **A scale recomputed mid-animation is a visible size step.** Learned on the homepage, repeated
   on For Companies: a ResizeObserver refitting the passport while its pane narrowed shrank it to
   58% as it opened. Freeze the scale for the length of a beat, or stop the box changing.
+- **A stylesheet is only loaded where it is imported.** `local-overrides.css` — the file whose
+  whole job is both-viewport code decisions — was imported by the homepage alone for weeks, so
+  rules written into it for another page silently did nothing. Check the page's imports before
+  concluding a rule lost a specificity fight.
 - **A shared class name is a shared rule.** `.hero` is the section class on BOTH interior pages
   and `mobile-pages.css` is loaded by both, so a rule written for one padded the other by 101px.
   Scope by something structural (`:not(:has(.heropin))`) when a rule is meant for one page.

@@ -214,25 +214,6 @@
   /* and smaller, so the flip has less to place */
   .hmlbl{font-size:11px;padding:3px 7px;letter-spacing:0}
 
-  /* ---- the send button says what it is doing --------------------------------------------
-     The hiring manager presses send and the composer's only feedback was the icon dimming.
-     On a phone, where the whole hero is the composer, that beat needs to say something: the
-     button becomes a pill that names the work it just started. It is also the handover to the
-     next fold, which opens on the blueprint being drafted — so it names that rather than a
-     generic "processing".
-
-     Driven entirely off `.sending`, which companies.js already puts on the composer at the
-     press, so this needs no markup and no driver change. */
-  .hcomp.sending .aisearch{
-    width:auto;padding:0 11px;gap:7px;
-    display:inline-flex;align-items:center;justify-content:center;
-  }
-  .hcomp.sending .aisearch::after{
-    content:"Building your blueprint";
-    font-family:var(--font-mono);font-size:8.5px;font-weight:500;
-    letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;
-  }
-
   /* ---- the technology chips, on one row -------------------------------------------------
      They wrapped to three rows and took a third of the panel. Set at their natural widths one
      row is 470px inside a 250px panel, so the row cannot simply be made nowrap — it would crop
@@ -360,23 +341,6 @@
      not control. They are four scroll folds now: the scrollbar is the progress indicator, and
      a second one in the corner of the panel is noise. */
   .actdots{ display:none }
-
-  /* ---- Execute arrives whole ---------------------------------------------------------------
-     The graph draws itself in sequence — sources, then wires, then hub, then channels — which
-     is worth watching at desktop size where the whole thing is 600px wide and the beats are
-     legible. At phone size it reads as the diagram being slow to load. The act has its own
-     movement already: the packets running the wires never stop.
-
-     Forced rather than re-timed, because the sequence is class-gated by the driver frame and
-     would otherwise be re-applied on every tick. */
-  .aiex .exnode,
-  .aiex .exdiv,
-  .aiex .exhub{ opacity:1 !important;scale:1 !important }
-  .aiex .exwires .wire{
-    opacity:1 !important;
-    stroke:color-mix(in srgb,var(--emerald) 82%,transparent) !important;
-  }
-  .aiex .exwires .exdotg{ opacity:.95 !important }
 
   /* ---- the ticker fits the panel ---------------------------------------------------------
      "Agent matched 504 profiles against the blueprint" ran past the panel's right edge, and it

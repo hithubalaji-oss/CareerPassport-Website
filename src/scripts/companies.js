@@ -151,11 +151,20 @@
 
     /* the manager is on stage only for the send */
     var on=q>=.52&&q<.90;
+    /* D10 · the desktop layer narrows this. With the brief filling itself on load rather than
+       on scroll, the authored window opens before the typing has finished — so the manager
+       would already be standing there when you arrive. Both hooks are inert unless published. */
+    if(window.__cpHeroCursorOn) on=!!window.__cpHeroCursorOn(q);
     cur.classList.toggle('on',on);
     cur.classList.toggle('away',!on);
     setVisible(on);
     cur.classList.toggle('click',press);
-    park(sendBtn,2,2);
+    /* D10 · a null aim sends the cursor off-stage instead of holding it on the button, which
+       is what "leaves the frame once the click is done" needs — the glide keeps running, so
+       it walks out rather than blinking off. */
+    var aim = window.__cpHeroAim ? window.__cpHeroAim(q) : undefined;
+    if(aim===null){ var o=offstage(); tx=o.x; ty=o.y; }
+    else park(sendBtn,2,2);
   };
   window.__cpHeroFrame=frame;   /* D7 */
   frame();
@@ -200,6 +209,7 @@
   var title=document.getElementById('actTitle');
   var desc=document.getElementById('actDesc');
   var dots=[].slice.call(document.querySelectorAll('#actDots i'));
+  var actBar=document.getElementById('actBar');   /* D10 */
   var ex=document.getElementById('aiEx'), ev=document.getElementById('aiEv'), dc=document.getElementById('aiDc');
   var wires=[].slice.call(ex.querySelectorAll('.wire:not(.reach)'));
   var reach=[].slice.call(ex.querySelectorAll('.wire.reach'));
@@ -586,6 +596,13 @@
     var span=r.height-vh;
     var g=G0+(span>0 ? clamp(-r.top/span,0,1) : 0)*(1-G0);
     if(window.__cpAutoG!=null) g=window.__cpAutoG;   /* D7 */
+    /* D10 · the act progress, as one bar. --sp is 0..1 across the whole of the four acts,
+       which is the same contract the Partners story band's bar reads. Written only on real
+       change: it feeds a width, so every write invalidates layout for that element. */
+    if(actBar){
+      var sp=((g-G0)/(1-G0)).toFixed(4);
+      if(actBar._sp!==sp){ actBar._sp=sp; actBar.style.setProperty('--sp',sp); }
+    }
 
     /* the board drifts and reshuffles as the fold is scrolled. Its per-row transforms are
        the most expensive work in this function, so they are written only when the drift has

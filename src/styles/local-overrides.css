@@ -30,3 +30,119 @@
 @media (min-width: 1025px) {
   #f1 .eyebrow { display: none }
 }
+
+
+/* ---- fold 4: the step line is the content, the COMPANION label is the chrome -------------
+   Measured before this: the label rendered at 11px on a phone against a 9px step line, and
+   10.5px against 11px on desktop. On a phone the label was the louder of the two, which is
+   backwards — "Growing your Companion memory" is what the box is actually saying and the
+   label is the thing saying it.
+
+   Inverted rather than swapped, deliberately. A literal swap works on mobile (11/9 becomes
+   9/11) but on desktop the two are already 10.5 against 11, so swapping them would make the
+   label the bigger of the two — the opposite of the intent. Both viewports now carry the same
+   relationship, with the desktop gap widened from half a pixel to something a reader can
+   actually see.
+
+   Here rather than in mobile-passport.css because it applies to both viewports, which is the
+   whole reason this file exists. */
+.fbot b { font-size: 9.5px }
+.frl p  { font-size: 12px }
+
+
+/* ---- For Companies fold 2: one progress bar, not four dots -------------------------------
+   The four acts were marked by three dots and a dash in the panel's corner. As a bar it says
+   the same thing continuously rather than in four steps, and it is the treatment the Partners
+   story band already uses — so the two pages stop having two different ideas about what
+   "progress through a pinned sequence" looks like.
+
+   The track and fill are the Partners rule verbatim (partners.css:1353), re-declared here
+   because that sheet is design-derived and this one is not. --sp is written by companies.js
+   from the fold's own progress. */
+.actdots { display: none }
+
+/* Desktop only. On a phone the four acts are four scroll folds, and that decision came with
+   removing the dots outright: the scrollbar already says where you are, and a second indicator
+   in the corner of the panel is noise. The bar was asked for on desktop, so it stays there. */
+@media (max-width: 1024px) {
+  .actbar { display: none }
+}
+
+.actbar {
+  position: absolute;
+  left: calc(var(--gut) + var(--bleed, 0px));
+  right: calc(var(--gut) + var(--bleed, 0px));
+  bottom: clamp(16px, 2.6vh, 30px);
+  z-index: 8;
+  height: 1px;
+  background: var(--hairline);
+}
+.actbar i {
+  display: block;
+  height: 1px;
+  width: calc(var(--sp, 0) * 100%);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--emerald) 40%, transparent),
+    var(--emerald));
+}
+
+
+/* ---- the send button, once it has been pressed -------------------------------------------
+   The manager presses send and the only feedback was the icon nudging and the fill dimming —
+   which still reads as a live button you could press again. At that moment it is not one: the
+   brief is gone and the work has started.
+
+   So it stops looking pressable. The emerald fill goes, the arrow goes with it, and the button
+   becomes a quiet panel-coloured pill naming the work it just started. "Building your
+   blueprint" rather than a generic "processing", because it is also the handover to the next
+   fold, which opens on exactly that.
+
+   Both viewports. The request named desktop, but the state is the same state and a gold
+   pressable-looking button on a phone is the same defect. Driven entirely off `.sending`,
+   which companies.js already sets at the press, so this needs no markup and no driver change. */
+.hcomp.sending .aisearch {
+  width: auto;
+  padding: 0 12px;
+  gap: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  /* beats .aisearch.armed, which is still on the element at this point */
+  background: var(--panel-raised);
+  color: var(--mute);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+  scale: 1;
+}
+.hcomp.sending .aisearch svg { display: none }
+.hcomp.sending .aisearch::after {
+  content: "Building your blueprint";
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+@media (max-width: 1024px) {
+  .hcomp.sending .aisearch::after { font-size: 8.5px }
+}
+
+
+/* ---- Execute arrives whole ----------------------------------------------------------------
+   The graph drew itself in sequence — sources, then wires, then the hub, then the channels —
+   with each beat keyed to a slice of scroll. Asked for on desktop and already done on mobile,
+   so the rule moves here and covers both.
+
+   Worth saying why it is no loss: the act is not still once it has arrived. The packets never
+   stop running the wires, and the ticker keeps counting. What went was the waiting.
+
+   Forced rather than re-timed, because the sequence is class-gated by the driver frame and
+   would be re-applied on every tick. */
+.aiex .exnode,
+.aiex .exdiv,
+.aiex .exhub { opacity: 1 !important; scale: 1 !important }
+.aiex .exwires .wire {
+  opacity: 1 !important;
+  stroke: color-mix(in srgb, var(--emerald) 82%, transparent) !important;
+}
+.aiex .exwires .exdotg { opacity: .95 !important }

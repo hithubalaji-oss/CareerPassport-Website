@@ -18,6 +18,12 @@ import Closing from '../components/companies/Closing.astro';
 import '../styles/cp-header.css';
 import '../styles/companies.css';
 import '../styles/mobile-pages.css';
+/* Loaded here as well as on the homepage. Its contract is "code-side decisions that are NOT
+   mobile-only", and the act progress bar is exactly that — it replaces the four dots on both
+   viewports, and companies.css is design-derived so it cannot hold the rule. Nothing else in
+   the file can reach this page: the eyebrow rule is scoped to #f1 and the fold-4 type rules to
+   .fbot / .frl, none of which exist outside the homepage. */
+import '../styles/local-overrides.css';
 ---
 
 <Base
@@ -39,10 +45,13 @@ import '../styles/mobile-pages.css';
       page stayed 26 screens long while every other part of the override worked. An inline
       script runs where it is written. Same pattern as the homepage's window.__cpManual. */}
   <script is:inline>
-    if (window.matchMedia('(max-width: 1024px)').matches) window.__cpSVH = { hero: 150, demo: 520 };
+    window.__cpSVH = window.matchMedia('(max-width: 1024px)').matches
+      ? { hero: 150, demo: 520 }     /* four scroll folds */
+      : { hero: 200, demo: 620 };    /* the send, then five stops */
   </script>
   <script src="/image-slot.js" is:inline></script>
   <script src="../scripts/mobile-pages.js"></script>
+  <script src="../scripts/companies-desktop.js"></script>
   <script src="../scripts/companies.js"></script>
   <script src="../scripts/cp-keys.js"></script>
 </Base>
