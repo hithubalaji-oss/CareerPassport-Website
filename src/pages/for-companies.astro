@@ -45,7 +45,9 @@ import '../styles/local-overrides.css';
       page stayed 26 screens long while every other part of the override worked. An inline
       script runs where it is written. Same pattern as the homepage's window.__cpManual. */}
   <script is:inline>
-    if (window.matchMedia('(max-width: 1024px)').matches) window.__cpSVH = { hero: 150, demo: 520 };
+    window.__cpSVH = window.matchMedia('(max-width: 1024px)').matches
+      ? { hero: 150, demo: 520 }     /* four scroll folds */
+      : { hero: 200, demo: 620 };    /* the send, then five stops */
   </script>
   <script src="/image-slot.js" is:inline></script>
   <script src="../scripts/mobile-pages.js"></script>

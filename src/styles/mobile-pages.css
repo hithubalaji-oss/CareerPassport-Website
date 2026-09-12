@@ -342,23 +342,6 @@
      a second one in the corner of the panel is noise. */
   .actdots{ display:none }
 
-  /* ---- Execute arrives whole ---------------------------------------------------------------
-     The graph draws itself in sequence — sources, then wires, then hub, then channels — which
-     is worth watching at desktop size where the whole thing is 600px wide and the beats are
-     legible. At phone size it reads as the diagram being slow to load. The act has its own
-     movement already: the packets running the wires never stop.
-
-     Forced rather than re-timed, because the sequence is class-gated by the driver frame and
-     would otherwise be re-applied on every tick. */
-  .aiex .exnode,
-  .aiex .exdiv,
-  .aiex .exhub{ opacity:1 !important;scale:1 !important }
-  .aiex .exwires .wire{
-    opacity:1 !important;
-    stroke:color-mix(in srgb,var(--emerald) 82%,transparent) !important;
-  }
-  .aiex .exwires .exdotg{ opacity:.95 !important }
-
   /* ---- the ticker fits the panel ---------------------------------------------------------
      "Agent matched 504 profiles against the blueprint" ran past the panel's right edge, and it
      took two goes to fix because the rule that does it is an ID: `#exTicker{font-size:12px;

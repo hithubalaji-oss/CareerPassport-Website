@@ -119,3 +119,23 @@
 @media (max-width: 1024px) {
   .hcomp.sending .aisearch::after { font-size: 8.5px }
 }
+
+
+/* ---- Execute arrives whole ----------------------------------------------------------------
+   The graph drew itself in sequence — sources, then wires, then the hub, then the channels —
+   with each beat keyed to a slice of scroll. Asked for on desktop and already done on mobile,
+   so the rule moves here and covers both.
+
+   Worth saying why it is no loss: the act is not still once it has arrived. The packets never
+   stop running the wires, and the ticker keeps counting. What went was the waiting.
+
+   Forced rather than re-timed, because the sequence is class-gated by the driver frame and
+   would be re-applied on every tick. */
+.aiex .exnode,
+.aiex .exdiv,
+.aiex .exhub { opacity: 1 !important; scale: 1 !important }
+.aiex .exwires .wire {
+  opacity: 1 !important;
+  stroke: color-mix(in srgb, var(--emerald) 82%, transparent) !important;
+}
+.aiex .exwires .exdotg { opacity: .95 !important }
