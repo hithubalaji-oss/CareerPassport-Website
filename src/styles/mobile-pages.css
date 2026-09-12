@@ -363,6 +363,21 @@
      nesting. Inline only — the block padding still keeps the act off the fold's edges. */
   .aibp, .aiex, .aiev, .aidc{ padding-inline:0 }
 
+  /* ---- and the graph's reach wires need an ending now -----------------------------------
+     The Execute map's `.wire.reach` paths deliberately run from viewBox x=88 to x=101 — past
+     the right edge of their own box — to say that the network carries on past the frame. With
+     the card there they ran into its rounded edge and stopped for a visible reason. Without it
+     they stop in open space at x=372 of a 390px viewport, which does not read as "it continues"
+     but as the three columns of channels having been cut off, which is how it was reported.
+
+     A fade gives them the ending the card used to. Fully opaque out to 84%, where the channel
+     nodes and every wire the packets travel sit, then gone by the gutter. The nodes themselves
+     are spans outside the SVG and are untouched. */
+  .exwires{
+    -webkit-mask-image:linear-gradient(90deg,#000 0 84%,transparent 100%);
+            mask-image:linear-gradient(90deg,#000 0 84%,transparent 100%);
+  }
+
   /* ---- the four-dot progress marker ------------------------------------------------------
      It told you which of the four acts you were in when they were a timed carousel you could
      not control. They are four scroll folds now: the scrollbar is the progress indicator, and

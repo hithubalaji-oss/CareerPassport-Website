@@ -691,6 +691,13 @@ Its inset went with it: the four act layers carry 18px of padding, which put the
 content at x=38 while the copy column starts at x=20. `padding-inline:0` on `.aibp/.aiex/.aiev/
 .aidc`, block padding kept.
 
+And the Execute map's `.wire.reach` paths, which deliberately run from viewBox x=88 to x=101 to
+say the network continues past the frame, needed an ending. With the card they ran into its
+rounded edge; without it they stop in open space at x=372 of a 390px viewport, which reads as
+the channel columns having been cut off — which is how it was reported once already. A mask
+fades them from 84% out to the gutter. The channel nodes are spans outside the SVG and are
+untouched, as is every wire a packet travels.
+
 ---
 
 ## Retired
