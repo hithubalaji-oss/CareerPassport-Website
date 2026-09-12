@@ -206,7 +206,11 @@
              band it came out 175px tall on a big phone (taller than the 131px node it hangs
              off) and 60px on a small one, where it stopped reading as a passport at all.
              At 0.92 of the node's height it is the same card, in the same place, everywhere. */
-          var s = (r.height * 0.92) / 640;
+          /* 0.92 of the node's height was the size that made it read as the same card in the
+             same place on every phone. It is now 30% smaller on request — 0.644 — and the two
+             offsets below are derived from `s`, so the bottom-right corner stays pinned to the
+             node's bottom-right corner without any other change. */
+          var s = (r.height * 0.92 * 0.7) / 640;
           var cw = 460 * s, ch = 640 * s;
           setVar('--f4-scale', s.toFixed(4));
           setVar('--f4-dx', (r.right  - vw / 2 - cw / 2).toFixed(1) + 'px');

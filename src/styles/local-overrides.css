@@ -30,3 +30,21 @@
 @media (min-width: 1025px) {
   #f1 .eyebrow { display: none }
 }
+
+
+/* ---- fold 4: the step line is the content, the COMPANION label is the chrome -------------
+   Measured before this: the label rendered at 11px on a phone against a 9px step line, and
+   10.5px against 11px on desktop. On a phone the label was the louder of the two, which is
+   backwards — "Growing your Companion memory" is what the box is actually saying and the
+   label is the thing saying it.
+
+   Inverted rather than swapped, deliberately. A literal swap works on mobile (11/9 becomes
+   9/11) but on desktop the two are already 10.5 against 11, so swapping them would make the
+   label the bigger of the two — the opposite of the intent. Both viewports now carry the same
+   relationship, with the desktop gap widened from half a pixel to something a reader can
+   actually see.
+
+   Here rather than in mobile-passport.css because it applies to both viewports, which is the
+   whole reason this file exists. */
+.fbot b { font-size: 9.5px }
+.frl p  { font-size: 12px }

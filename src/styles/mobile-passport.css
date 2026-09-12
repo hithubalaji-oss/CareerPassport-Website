@@ -462,6 +462,13 @@
     border-color: rgba(216,184,119,.3);
     box-shadow: 0 0 20px rgba(216,184,119,.07);
   }
+  /* ---- fold 4: the step line is the content, the label is the chrome --------------------
+     Rendered before this at 11px for the COMPANION label against 9px for "Growing your
+     Companion memory" — the label louder than the thing it labels. Inverted. The desktop half
+     of the same pair is in local-overrides.css, which is where a both-viewports decision goes. */
+  .stage[data-mfold] .flow .fbot b{ font-size:9px }
+  .stage[data-mfold] .flow .frl p{ font-size:11px }
+
   .stage[data-mfold="4"] .flow .fbot {
     opacity: 1;
     border-color: rgba(216,184,119,.5);
