@@ -189,8 +189,72 @@
      The wrap also takes the page gutter. It was `min(1240px,94vw)`, which resolves to an 11px
      inset on a 360px phone against the 20px every other edge on the page uses. */
   .aiwrap { width: auto; margin-inline: var(--gut) }
-  .aibox.big { min-height: var(--ai-h, min(63svh, calc(100svh - var(--hdr) - 4px))) }
-  .aidemopin { padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)) }
+  /* The panel fills its grid row. It used to carry `min-height:var(--ai-h)` — a height
+     `fitPanel()` measured once at boot — and that is exactly what has to go: a min-height of
+     525px beats a `1fr` row every time, so the panel kept the height it was given and ran 58px
+     past the fold on Decide. The row governs now; `fitPanel()` and `--ai-h` are gone with it. */
+  .aibox.big { flex:1;min-height:240px }
+  /* ---- the act sits under the header, not against it, and the panel reaches up to the copy
+     ------------------------------------------------------------------------------------------
+     Two complaints, one construction, and they pull in opposite directions until you see what
+     the reserve actually is.
+
+     `.aidemopin` padded its top by `var(--hdr)` ALONE — the header's height and not a pixel
+     more — so the act's chip landed 2px below the bar at 360, 390 and 430. `--hdr` is
+     clearance, not spacing. And because the pin was `align-items:center`, an act whose content
+     did not fit was centred INTO the header: at 320x568 the chip measured 20px ABOVE the bar's
+     bottom edge, i.e. underneath it.
+
+     So the pin is top-anchored now and pads by `--hdr` plus a real gap. `flex-start` also makes
+     the chip's position a constant — `padding-top`, nothing else — instead of something that
+     fell out of centring content whose height changes with every act.
+
+     The other half is the gap BELOW the copy, measured at 134px on Design and Evidence and
+     161px on Evidence at 430. That gap was `.aitextcol{min-height:268px}`, which reserved the
+     tallest act's height so the panel's top would not move as the acts swap. The reserve IS the
+     gap: the column is flex-start, so whatever an act does not use of 268px is empty space, and
+     no amount of padding can move it, because the gap is (reserve - natural height + row gap).
+
+     The reserve is gone, and the panel takes the room instead of being held off it. The wrap's
+     second grid row is `minmax(240px,1fr)`, so the panel starts wherever the copy ends plus the
+     22px row gap and grows DOWN to the fold's bottom edge. The gap is now the row gap — 22px,
+     on every act, at every size — the panel's bottom is pinned where it always was, and its top
+     rises and falls with the length of the copy above it, which is the one thing in this
+     composition that should move, because it is the thing that changes.
+
+     240px is the same floor `fitPanel()` uses and for the same reason: below it the simulated
+     UI inside the panel stops reading as a screen. Nothing here overflows the way the old
+     construction did — the panel can only take what is left rather than being given a height
+     computed once at boot from whichever act happened to be on screen. */
+  .aidemopin {
+    /* `stretch`, NOT `flex-start`. The pin is a flex row, so align-items is the vertical axis,
+       and the wrap has to FILL the pin for `grid-template-rows:auto minmax(240px,1fr)` to have
+       anything to distribute — with flex-start the wrap shrank to its content and the panel sat
+       at its 240px floor 300px clear of the fold's bottom edge. Stretch also fixes what
+       `center` broke without needing flex-start: the wrap's top IS the padding edge, so the
+       chip cannot be pushed under the header by content that does not fit. */
+    align-items: stretch;
+    padding-top: calc(var(--hdr) + clamp(10px, 3.2vh, 30px));
+    padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  }
+  .aiwrap{ align-items:stretch;align-content:stretch;min-height:0;
+    grid-template-rows:auto minmax(240px,1fr) }
+  .aivisual{ min-height:0;display:flex }
+  .aistage{ flex:1;min-height:0;display:flex }
+
+  /* ---- the short phones cannot have all three ---------------------------------------------
+     At 320x568 the Decide act wants 65px of header, 263px of copy, a 22px row gap and a 240px
+     panel: 602px into 568. The old construction "fit" it by centring the overflow, which is
+     what put the chip 20px underneath the header — it did not fit, it hid. Something has to
+     give, and it is the panel's floor, because 200px of simulated UI still reads as a screen
+     where copy set below the type ladder's floor does not read as copy. With a 10px gap under
+     the header instead of 18, Decide lands 4px proud at 320x568 against 8px before, and every
+     other act and size clears. */
+  @media (max-height:700px){
+    .aidemopin{ padding-top:calc(var(--hdr) + 10px) }
+    .aiwrap{ grid-template-rows:auto minmax(200px,1fr) }
+    .aibox.big{ min-height:200px }
+  }
 
   /* ============================================================================================
      3 · THE DEMO PANEL'S INTERIOR
@@ -347,47 +411,26 @@
   .flapbg{ display:none }
   .aidemopin{ background:transparent;border-block:0 }
 
-  /* ---- and the card inside it goes with it -----------------------------------------------
-     `.aibox.big` is the demo's surface: `background-color:var(--panel)` (#121514) over the
-     page's own #0a0c0b, a hairline border, a float shadow and the passport's laid hatch. On
-     desktop it is a panel sitting in a wide scene and it reads as one. On a phone it is a
-     dark rectangle occupying the whole lower two thirds of every one of the four acts, and
-     what it actually communicates is "here is a box", which is not the point of the act.
+  /* ---- what the wash over these four acts actually was -----------------------------------
+     Reported as "there is an overlay on the background" across DESIGN / EXECUTE / EVIDENCE /
+     DECIDE, and the first attempt took out the wrong layer — the demo's own card — which is
+     not the overlay at all but the rounded enclosure the visuals are supposed to sit in. The
+     card is back exactly as authored: hatch, hairline, float shadow and emerald top rule, and
+     the 18px of inset on the four act layers that holds their content off its edge.
 
-     The contents already carry their own edges — every chip, tile, matrix cell, record card
-     and the passport itself has a border and a fill of its own — so the composition holds
-     without a surface underneath. Taken out whole rather than lightened: fill, border, float
-     shadow, hatch and the emerald top hairline are all parts of the same card, and leaving
-     any one of them behind reads as a card that failed to paint. */
-  .aibox.big{
-    background-color:transparent;
-    background-image:none;
-    border-color:transparent;
-    box-shadow:none;
-  }
-  .aibox.big::before{ opacity:0 }
+     The wash is `.aiwrap::before`: `inset:-8% -6%` of solid `--void` fading out through a
+     radial, on `z-index:-1` behind the whole act. It is "a soft plate directly behind the copy,
+     so type always wins over the board" — and on desktop that is exactly what it is for,
+     because the board is there. On a phone `.flapbg` is already `display:none` (see above), so
+     the plate is a large dark radial over nothing, and against the page's own #0a0c0b it reads
+     as a rectangular haze starting partway down the screen. That is the overlay.
 
-  /* With the surface gone, its inset is a stray indent. The four act layers each carry 18px
-     of padding, which held their content off the card's edge; measured at 390px the copy
-     column starts at x=20 and the panel's content started at x=38. Two left edges 18px apart,
-     with nothing drawn between them to explain why, reads as a misalignment rather than as
-     nesting. Inline only — the block padding still keeps the act off the fold's edges. */
-  .aibp, .aiex, .aiev, .aidc{ padding-inline:0 }
+     It goes with the thing it was protecting the copy from. Nothing else uses it.
 
-  /* ---- and the graph's reach wires need an ending now -----------------------------------
-     The Execute map's `.wire.reach` paths deliberately run from viewBox x=88 to x=101 — past
-     the right edge of their own box — to say that the network carries on past the frame. With
-     the card there they ran into its rounded edge and stopped for a visible reason. Without it
-     they stop in open space at x=372 of a 390px viewport, which does not read as "it continues"
-     but as the three columns of channels having been cut off, which is how it was reported.
-
-     A fade gives them the ending the card used to. Fully opaque out to 84%, where the channel
-     nodes and every wire the packets travel sit, then gone by the gutter. The nodes themselves
-     are spans outside the SVG and are untouched. */
-  .exwires{
-    -webkit-mask-image:linear-gradient(90deg,#000 0 84%,transparent 100%);
-            mask-image:linear-gradient(90deg,#000 0 84%,transparent 100%);
-  }
+     The reach-wire mask went too: `.wire.reach` runs past the frame on purpose, and with the
+     card back it runs into the card's rounded edge again, which is the ending it was authored
+     to have. The mask only ever existed to replace an edge that should not have been removed. */
+  .aiwrap::before{ display:none }
 
   /* ---- the four-dot progress marker ------------------------------------------------------
      It told you which of the four acts you were in when they were a timed carousel you could
@@ -423,10 +466,11 @@
      Decide panel — sitting lowest — ran 23px past the bottom of the fold and cut off its own
      action buttons.
 
-     Reserving the tallest of the four makes the panel's position constant, which is the point:
-     four folds that each place their panel somewhere different read as the layout settling
-     rather than as four views of one thing. */
-  .aitextcol{ min-height:268px;justify-content:flex-start }
+     Reserving the tallest of the four made the panel's position constant — but it did it by
+     leaving the difference as empty space under the copy, which is the reported gap. The panel
+     fills its grid row now (see `.aiwrap` above), so its BOTTOM is the constant and its top
+     follows the copy. The reserve is not needed and was never free. */
+  .aitextcol{ min-height:0;justify-content:flex-start }
 
   /* ---- the sent-confirmation stops stealing the passport's box ---------------------------
      `.dcsent.on` is `flex:0 0 42%` in a flex row with `.dcpp`, so the moment the invite lands
