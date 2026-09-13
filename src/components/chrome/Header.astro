@@ -8,8 +8,15 @@
  * shared `cp-header.css` rather than each page's own block, so the three pages cannot
  * disagree about their chrome.
  *
- * No logo file has ever been supplied. The mark is a passport chip plus the wordmark set
- * in type; supply an SVG and it replaces the chip here and in the footer.
+ * The mark is now the supplied logo lockup — icon and wordmark in one image
+ * (`public/assets/careerpassport-logo.webp`, lossless alpha WebP off `assets/Careerpassport.png`,
+ * 444x186). It replaces the passport chip AND the typeset wordmark, which were a stand-in for
+ * exactly this. Height is what carries over: 27px, the chip's, on both viewports; width follows
+ * the image's own 2.387:1. The alt text is the wordmark the image contains, so the link still
+ * announces itself; nothing else in the header moved.
+ *
+ * The footer is deliberately untouched — its giant stacked CAREER / PASSPORT is live SVG text
+ * with a light that walks the letterforms, which a raster cannot do.
  */
 import { NAV_LINKS, isCurrent } from './nav-links';
 
@@ -21,7 +28,7 @@ const DRAWER_LINKS = [{ href: '/', label: 'Home' }, ...NAV_LINKS];
 ---
 
 <header class="hdr">
-  <a class="brand" href="/"><i></i><span>CAREERPASSPORT</span></a>
+  <a class="brand" href="/"><img src="/assets/careerpassport-logo.webp" width="444" height="186" alt="CareerPassport" decoding="async" fetchpriority="high"></a>
   <div class="hend">
     <nav class="nav">
       {NAV_LINKS.map(({ href, label }) => (
