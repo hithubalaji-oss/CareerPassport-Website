@@ -8,12 +8,17 @@
  * shared `cp-header.css` rather than each page's own block, so the three pages cannot
  * disagree about their chrome.
  *
- * The mark is now the supplied logo lockup — icon and wordmark in one image
- * (`public/assets/careerpassport-logo.webp`, lossless alpha WebP off `assets/Careerpassport.png`,
- * 444x186). It replaces the passport chip AND the typeset wordmark, which were a stand-in for
- * exactly this. Height is what carries over: 27px, the chip's, on both viewports; width follows
- * the image's own 2.387:1. The alt text is the wordmark the image contains, so the link still
- * announces itself; nothing else in the header moved.
+ * The mark is the supplied logo lockup, and there are TWO of them because the bar has two
+ * shapes. Wide, it is a single line — icon then CareerPassport across, 792x186 — which needs
+ * horizontal room it only has next to a nav. Narrow, it is the stacked two-line cut, 444x186,
+ * which keeps the wordmark readable when the bar is mostly burger. `<picture>` picks between
+ * them at 901px, THE HEADER'S OWN BREAKPOINT, the same one that swaps the nav for the burger
+ * in cp-header.css — so the logo changes shape exactly when the bar does, and never in a band
+ * where the bar is one shape and the logo the other.
+ *
+ * `width`/`height` on both the <source> and the <img> matter here: the two files have
+ * different aspect ratios (4.258 and 2.387), so without them the box is the wrong shape until
+ * the bytes land and the header reflows around it on first paint.
  *
  * The footer is deliberately untouched — its giant stacked CAREER / PASSPORT is live SVG text
  * with a light that walks the letterforms, which a raster cannot do.
@@ -28,7 +33,12 @@ const DRAWER_LINKS = [{ href: '/', label: 'Home' }, ...NAV_LINKS];
 ---
 
 <header class="hdr">
-  <a class="brand" href="/"><img src="/assets/careerpassport-logo.webp" width="444" height="186" alt="CareerPassport" decoding="async" fetchpriority="high"></a>
+  <a class="brand" href="/">
+    <picture>
+      <source media="(min-width:901px)" srcset="/assets/careerpassport-logo-desk.webp" width="792" height="186">
+      <img src="/assets/careerpassport-logo.webp" width="444" height="186" alt="CareerPassport" decoding="async" fetchpriority="high">
+    </picture>
+  </a>
   <div class="hend">
     <nav class="nav">
       {NAV_LINKS.map(({ href, label }) => (

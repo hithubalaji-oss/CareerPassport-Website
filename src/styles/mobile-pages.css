@@ -303,12 +303,23 @@
      ============================================================================================ */
 
   /* ---- the header's real height ----------------------------------------------------------
-     `companies.css` declares `--hdr:83px`, which is the desktop bar. The bar on a phone is
-     76px, and --hdr feeds the hero's top padding, every section's scroll-margin and the
-     document's scroll-padding — so anchor jumps overshot and the hero carried 7px of padding
-     for a header that was not there. Partners already declares 76px below 900px; this brings
-     For Companies into line. */
-  :root{ --hdr:76px }
+     `--hdr` feeds the hero's top padding, every section's scroll-margin and the document's
+     scroll-padding. Declared too small and headings slide under the bar on an anchor jump;
+     declared too large and the hero carries padding for a header that is not there.
+     `companies.css` says 83px and `partners.css` says 69px, both of them the DESKTOP bar, and
+     this file is loaded after each of them on its page, so this is where the real numbers go.
+
+     Two bands, because the header has two forms and its breakpoint is 900, not this file's
+     1024. Between 901 and 1024 the burger is still hidden and `.hdr .nav` is still flex, so
+     the bar keeps its desktop 69px. A single `--hdr:76px` across the whole file — which is
+     what was here — over-declared that band by 7px; it is the same "900 is the HEADER's
+     breakpoint, not the layout's 1024" that `partners.css` records, and the reason the logo's
+     own draw height was wrong in that band too.
+
+         <=900   10.5 * 2 padding + 44 burger + 0 rule   = 65px
+         901..   16   * 2 padding + 36 .hend  + 1 rule   = 69px            */
+  @media (max-width:900px){ :root{ --hdr:65px } }
+  @media (min-width:901px){ :root{ --hdr:69px } }
 
   /* ---- the hero owns its screen ----------------------------------------------------------
      `.herotop` is `min-height:50%` with the copy centred in it, on top of a padding-top of

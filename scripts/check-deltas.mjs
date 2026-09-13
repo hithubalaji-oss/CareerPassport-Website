@@ -263,6 +263,12 @@ const DELTAS = [
       /dcFlips\[li\]\[1\]\)\)\*\(1-dcShut\)/,
     ],
     extraFiles: [
+      // one entry per marker below: the checker pairs these two lists by index
+      'src/styles/mobile-pages.css',
+      'src/styles/mobile-pages.css',
+      'src/styles/mobile-pages.css',
+      'src/styles/mobile-pages.css',
+      'src/styles/mobile-pages.css',
       'src/styles/mobile-pages.css',
     ],
     extraPresent: [
@@ -271,6 +277,7 @@ const DELTAS = [
       '.dcpp { contain: paint }',
       'background-color:transparent;',              // .aibox.big, the demo card
       '.aibp, .aiex, .aiev, .aidc{ padding-inline:0 }',
+      'mask-image:linear-gradient(90deg,#000 0 84%,transparent 100%)',   // the reach wires
     ],
   },
   {
@@ -279,6 +286,8 @@ const DELTAS = [
     file: 'src/components/chrome/Header.astro',
     design: 'Homepage.html',
     present: [
+      // both cuts, and the breakpoint that picks between them — the HEADER's 901, not 1025
+      '<source media="(min-width:901px)" srcset="/assets/careerpassport-logo-desk.webp"',
       'src="/assets/careerpassport-logo.webp"',
       'alt="CareerPassport"',
     ],
@@ -287,13 +296,35 @@ const DELTAS = [
       /<a class="brand" href="\/"><i><\/i><span>CAREERPASSPORT<\/span><\/a>/,
     ],
     extraFiles: [
+      // one entry per marker below: the checker pairs these two lists by index
       'src/styles/cp-header.css',
+      'src/styles/cp-header.css',
+      'src/styles/cp-header.css',
+      'src/styles/cp-header.css',
+      'src/styles/cp-header.css',
+      'src/styles/cp-header.css',
+      'src/styles/mobile-pages.css',
+      'src/styles/mobile-pages.css',
     ],
     extraPresent: [
       // the layout box, and the trick that lets the paint exceed it without moving the bar
-      '--brand-h:27px;--brand-draw:60px;',
+      '--brand-h:27px;--brand-draw:52px;',
       'margin-block:calc((var(--brand-h) - var(--brand-draw)) / 2)',
-      '.hdr .brand{--brand-draw:67px}',
+      // the shorter phone bar, and the sheet keyed to it rather than to a literal
+      ':root{ --hdr-pad:10.5px; --hdr-burger:44px }',
+      '.hdr{ padding-block:var(--hdr-pad) }',
+      '.hdr .brand{ --brand-draw:48px }',
+      '--bar:calc(var(--hdr-pad) * 2 + var(--hdr-burger));',
+      // --hdr split at the header's own breakpoint, in the file loaded last on both pages
+      '@media (max-width:900px){ :root{ --hdr:65px } }',
+      '@media (min-width:901px){ :root{ --hdr:69px } }',
+    ],
+    /* The 1024-band bug this replaced. `max-width:1024px` is the LAYOUT breakpoint; the
+       header's is 900, so from 901 to 1024 the bar keeps its 69px desktop form while that
+       rule handed it the phone's draw height — measured half a pixel of clearance under the
+       hairline at 901, 950, 1000 and 1024. Watch for it coming back. */
+    deleted: [
+      ['src/styles/cp-header.css', /@media \(max-width:1024px\)\{\s*\.hdr \.brand\{--brand-draw:67px\}/],
     ],
   },
 ];
@@ -316,10 +347,20 @@ for (const d of DELTAS) {
   }
 
   const absent = d.present.filter((m) => !hit(src, m));
-  for (const [i, extra] of (d.extraFiles ?? []).entries()) {
-    const es = read(extra);
-    const marker = d.extraPresent[i];
-    if (es === null || !hit(es, marker)) absent.push(`${marker}  (in ${extra})`);
+  /* extraFiles and extraPresent are paired BY INDEX. Iterating over extraFiles alone meant a
+     surplus marker was never read — D10 carried five markers against four files and its fifth,
+     the desktop arm of the per-viewport `__cpSVH` ternary, had never once been checked. A
+     guard that fails loudly is the only way a delta list can be trusted to be complete. */
+  const files = d.extraFiles ?? [];
+  const markers = d.extraPresent ?? [];
+  if (files.length !== markers.length) {
+    absent.push(`extraFiles (${files.length}) and extraPresent (${markers.length}) disagree — ` +
+                `pair them one to one, repeating the file path where several markers share it`);
+  }
+  for (const [i, marker] of markers.entries()) {
+    const extra = files[i];
+    const es = extra === undefined ? null : read(extra);
+    if (es === null || !hit(es, marker)) absent.push(`${marker}  (in ${extra ?? 'NO FILE'})`);
   }
   const returned = (d.reverted ?? []).filter((m) => hit(src, m));
   /* Some deltas are deletions — the eyebrows, the Companion pill — and for those the thing

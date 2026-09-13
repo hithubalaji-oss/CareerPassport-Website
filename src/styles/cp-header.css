@@ -28,43 +28,47 @@
   border-bottom:1px solid var(--hairline)}
 
 /* ---- wordmark ---- */
-/* The brand is one image now — the supplied lockup, icon and wordmark together.
+/* The brand is one image — the supplied lockup, icon and wordmark together, in the two cuts
+   `<picture>` chooses between at 901px (see Header.astro).
 
    IT IS DRAWN AT TWICE ITS LAYOUT BOX, AND THAT IS THE WHOLE TRICK. `.hdr` is a flex row with
-   `align-items:center` and NO height of its own: it is 16px of padding, plus whatever its
-   tallest child is, plus the bottom hairline — 36px of nav pill on desktop and 43px of burger
-   on mobile, giving the 69px and 76px that `--hdr` is declared as. Every pinned section, fold
-   and `calc(100svh - var(--hdr))` on all three pages is measured against those two numbers, and
-   `Header.astro` carries a ResizeObserver that republishes `--hdr` if the bar's real height ever
-   disagrees. So growing the logo the obvious way — `height:54px` — does not just make the logo
-   bigger, it makes the header 87px and reflows all three pages.
+   `align-items:center` and NO height of its own: padding, plus whatever its tallest child is,
+   plus the bottom hairline where there is one. Measured:
+
+     >=901   16 + 36 (.hend) + 16 + 1 hairline = 69px, inner band 68px
+     <=900   10.5 + 44 (burger) + 10.5 + 0     = 65px, inner band 65px   (no rule on a phone)
+
+   `--hdr` is declared as those numbers in the page sheets, and every pinned section, fold and
+   `calc(100svh - var(--hdr))` on all three pages is measured against them, with a
+   ResizeObserver in `Header.astro` republishing `--hdr` if the bar ever measures taller. So
+   growing the logo the obvious way — `height:52px` — does not just make the logo bigger, it
+   makes the header 85px and reflows all three pages.
 
    `--brand-h` is the LAYOUT height and stays at 27px, exactly what the passport chip this
    replaced was, so the brand contributes precisely what it contributed before and the bar's
    height is unchanged by construction rather than by inspection. `--brand-draw` is the PAINTED
    height. The negative block margin is the difference, halved, so the image's margin box comes
-   back to `--brand-h` and the overflow is shared evenly above and below the centre line.
+   back to `--brand-h` and the overflow is shared evenly above and below the centre line. The
+   spill lands inside the header's own padding; `.hdr` sets no `overflow`, so nothing clips.
 
-   `--brand-draw` is then free to take the whole bar, which is what it does. The arithmetic:
+   THE DRAW HEIGHTS ARE SET FROM THE VISIBLE MARK, NOT THE BOX. Both files carry their own
+   transparent margin — the opaque artwork occupies y 6..177 of 186, so 7.5% of any painted
+   height is nothing. Asking for 10px of air on desktop therefore means:
 
-     desktop   69px header - 1px hairline - 4px - 4px     = 60px
-     <=1024    76px header - 1px hairline - 4.5px - 4.5px = 67px
+     visible mark  = 68 inner band - 10 - 10 = 48px
+     painted box   = 48 * 186/172            = 51.9  ->  52px
 
-   The 4px is deliberately small because the artwork brings its own. The supplied file is
-   444x186 with the opaque mark occupying y 6..177 — 172 of 186, so ~7.5% of the painted height
-   is transparent. At 60px that is 2px above and 2.6px below on top of the 4px, so the mark
-   itself clears the hairline by ~6px while the box clears by 4. Measured, not assumed.
+   which is what `height` is set to, and the mark then clears top and bottom by 10.0px. Setting
+   the box to 52 and calling it 8px of padding would have been the other, wronger, answer.
 
-   The overflow spills into the header's own 16px of padding and stops there; `.hdr` sets no
-   `overflow`, so nothing clips.
-
-   Width stays `auto` so the image's own 2.387:1 decides it (143px desktop, 160px mobile),
-   rather than a number written here that would go stale if the artwork is ever recut. The
-   `width`/`height` attributes on the <img> give it that ratio before the file arrives, so the
-   header never reflows around it. At 320px — the narrowest supported width, where the burger
-   is the only thing on the right — that still leaves 76px of clear space between the two. */
-.hdr .brand{--brand-h:27px;--brand-draw:60px;
+   Width stays `auto` so each file's own ratio decides it — 221px for the single-line desktop
+   cut at 4.258:1, 115px for the stacked phone cut at 2.387:1 — rather than a second number
+   here that would go stale if either is recut. */
+.hdr .brand{--brand-h:27px;--brand-draw:52px;
   display:flex;align-items:center;color:var(--ink)}
+/* `display:block` + `line-height:0` so <picture> collapses to exactly the <img>'s margin box
+   and adds no half-leading of its own */
+.hdr .brand picture{display:block;line-height:0}
 .hdr .brand img{display:block;width:auto;
   height:var(--brand-draw);
   margin-block:calc((var(--brand-h) - var(--brand-draw)) / 2)}
@@ -126,6 +130,25 @@
   .hdr .hend{display:none}
   .hdr .nav{display:none}
   .hdr .burger{display:flex}
+
+  /* ---- the phone bar is 15% shorter, and the logo comes down with it ---------------------
+     The bar was 76px: 16px of padding either side of the 44px burger, and no rule below 900.
+     15% off is 64.6, taken as 65 — and taken out of the PADDING, not the burger, which stays
+     44px square because that is the touch target and the one number both this bar and the
+     expanded sheet are built from.
+
+         --hdr-pad * 2 + 44 = 10.5 * 2 + 44 = 65px
+
+     Both live on :root rather than on .hdr because `.mnav` is a SIBLING of the header, not a
+     descendant, and its top padding is keyed to the bar's composition (see THE EXPANDED MENU
+     below). A custom property on .hdr would not reach it and the sheet would drift 11px.
+
+     The logo then takes two 15% reductions, which is what was asked: the first is the bar's,
+     the second its own. 67 * 0.85 * 0.85 = 48.4 -> 48px, clearing 8.5px top and bottom in the
+     65px band. */
+  :root{ --hdr-pad:10.5px; --hdr-burger:44px }
+  .hdr{ padding-block:var(--hdr-pad) }
+  .hdr .brand{ --brand-draw:48px }
 }
 
 /* The frosted bar runs on phones too, matching desktop. It was made solid earlier because
@@ -193,13 +216,14 @@
      width measured. Rather than move the strip down by 18px, the sheet becomes what a menu on
      a phone should be: the whole screen, given over to the four things you can do.
 
-     The bar is 76px — 16px of padding either side of a 44px burger — and the sheet is keyed to
-     those two numbers rather than a third literal, so changing either moves the sheet with it.
+     The sheet is keyed to the bar's composition rather than to a literal, so changing either
+     number moves the sheet with it — which is exactly what happened when the bar came down
+     from 76px to 65px: `--hdr-pad` changed in one place and this followed.
      The header keeps z-index 80 over the sheet's 79, so the burger stays visible and tappable
      as the close control while the sheet is open.
      ---------------------------------------------------------------------------------------- */
   .mnav{
-    --bar:calc(16px * 2 + 44px);
+    --bar:calc(var(--hdr-pad) * 2 + var(--hdr-burger));
     inset:0;
     display:none;
     flex-direction:column;
@@ -320,11 +344,13 @@
     backdrop-filter:none;-webkit-backdrop-filter:none}
 }
 
-/* The bar is 76px below 1025 rather than 69px — the burger is taller than the nav pills — so
-   the logo takes the extra 7px too. Same arithmetic: 76 - 1 hairline - 4.5 - 4.5. */
-@media (max-width:1024px){
-  .hdr .brand{--brand-draw:67px}
-}
+/* THIS BLOCK USED TO SAY `max-width:1024px`, AND THAT WAS WRONG BY 124 PIXELS OF VIEWPORT.
+   The header's breakpoint is 900, not 1024 — between 901 and 1024 the burger is still hidden
+   and `.hdr .nav` is still flex, so the bar keeps its desktop 69px form. Giving that band the
+   phone's draw height left the logo with HALF A PIXEL of clearance under the hairline, measured
+   at 901, 950, 1000 and 1024. It is the same mistake `partners.css` records for `--hdr` — "900
+   is the HEADER's breakpoint, not the layout's 1024" — made a second time, and it is why this
+   file now keys everything about the bar to one number. */
 
 /* The mobile wordmark step that used to live here is gone with the wordmark. It read
    `.hdr .brand span{font-size:11px}` and existed because this file is linked after each page's
