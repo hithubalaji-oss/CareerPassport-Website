@@ -917,25 +917,31 @@ Adding an import is never only additive.**
 edge — the only inset in there is `.wfgrid{padding:14px}`, which the cards at the extremes reach
 past.
 
-The padding has to move TWO things. `.wfgrid` is in flow, so it sits in the canvas's **content**
-box; `.wfwire` is `position:absolute;inset:0`, which resolves against the canvas's **padding**
-box — padding does not move it. The wire paths are authored in a `0 0 100 100` viewBox against the
-full canvas and hand-tuned to meet the node edges, so moving one without the other breaks every
-join. Shrinking both by the same 20px keeps the relationship exact.
+**The inset goes on the grid's padding, not on the canvas.** Padding the canvas is the obvious
+move and it is wrong: it shifts `.wfgrid`'s BORDER box down 20px, and the foil hairline that
+catches the top of this box is drawn against that border box — so the line detached from the
+rounded edge and floated 21px inside it, measured at row y=21.0 against y=1.0 on `main`. Growing
+the grid's own padding leaves its border box exactly where it was and moves only its content.
 
-Two things only measuring caught:
+The wires have to move with the nodes. `.wfwire` is `position:absolute;inset:0` against the
+canvas, and the paths are authored in a `0 0 100 100` viewBox across that full box and hand-tuned
+to meet the node edges — so the two have a fixed relationship (the grid's content sat 14px inside
+the wire box) and it has to survive. It does: the wire box comes in by 20 and the grid's content
+by 34, so the 14px stands.
+
+Two more things only measuring caught:
 
 1. `.wfwire` needs `.wfcanvas .wfwire`. A bare `.wfwire` ties `partners.css` on specificity and
    loses the source-order tiebreak, because Astro bundles by its own import graph.
 2. **The wire box cannot be sized by insets alone.** An inline `<svg>` is a REPLACED element with
    an intrinsic ratio from its viewBox, so `width:auto` takes that ratio instead of resolving
    from left/right — the box came out square, `preserveAspectRatio="none"` stretched the paths to
-   fit it, and every connector drew as a straight line running out of the frame. `100%` on an
-   absolutely positioned child resolves against the padding box, so `calc(100% - 40px)` at
-   `left/top:20px` lands the wire box exactly on the content box.
+   fit it, and every connector drew as a straight line running out of the frame. The size has to
+   be stated.
 
 Desktop only, as asked: below 1025 `.wfgrid` already drops to 10px for a box a third of the width.
-Nodes now clear the box by 34px (20 + the grid's own 14) against 14px before.
+Nodes now clear the box by 34px against 14px before, and the hairline is back at row y=1.0 at the
+same brightness as `main` (166.3 against 166.2).
 
 ### Folds 2 and 5 read from the centre
 
