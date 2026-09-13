@@ -700,6 +700,45 @@ untouched, as is every wire a packet travels.
 
 ---
 
+## D12 — The header brand is the supplied logo lockup
+
+**Files:** `src/components/chrome/Header.astro`, `src/styles/cp-header.css`, and the asset pair
+`assets/Careerpassport.png` → `public/assets/careerpassport-logo.webp`
+
+A logo was finally supplied. Everything the header carried before it — a 20x27 gradient passport
+chip and CAREERPASSPORT set in `var(--display)` — was a stand-in for exactly this, and the export
+still ships the stand-in, so this has to be re-applied after every re-derivation.
+
+```
+- <a class="brand" href="/"><i></i><span>CAREERPASSPORT</span></a>
++ <a class="brand" href="/"><img src="/assets/careerpassport-logo.webp" width="444" height="186"
++    alt="CareerPassport" decoding="async" fetchpriority="high"></a>
+```
+
+**The conversion.** `sharp(...).webp({lossless:true, effort:6})`, which is both the best quality
+and the smallest of the three encodings tried — 3412 bytes against 5886 at q82 and 7274 at q90.
+Flat vector-style artwork is what lossless WebP is good at; a lossy pass costs bytes to add
+ringing around the letterforms. Alpha is preserved (4 channels, 444x186), and the source PNG
+stays in `assets/` beside `fingerprint.png`, which is the convention this repo already uses:
+sources in the repo root's `assets/`, what ships in `public/assets/`.
+
+**The sizing.** Height, not width: `height:27px; width:auto`, 27px being exactly what the chip it
+replaces was. The image's own 2.387:1 then gives ~64.4px of width, so the number is never written
+down twice and cannot go stale if the artwork is recut. The `width`/`height` attributes give the
+box its ratio before the file arrives, so the header never reflows around it. Measured 64.4x27 on
+all six page/viewport combinations, and `--hdr` still reads 69px desktop / 76px mobile.
+
+**One rule died with the wordmark.** `@media (max-width:1024px){ .hdr .brand span{font-size:11px} }`
+existed because this sheet is linked after each page's inline `<style>` and its 13.5px was
+beating the pages' mobile scale at equal specificity. The lockup is an image now and the chip
+beside it never stepped, so the brand keeps one height on both viewports.
+
+**The footer is deliberately untouched.** Its giant stacked CAREER / PASSPORT is live SVG text
+with `#fmedge` walking a light across the letterforms on an 11s loop; a raster cannot do that,
+and there is no small brand lockup in the footer to swap.
+
+---
+
 ## Retired
 
 Everything below was fixed in Claude Design and re-derived cleanly on 10 Sep. Kept as a

@@ -273,6 +273,26 @@ const DELTAS = [
       '.aibp, .aiex, .aiev, .aidc{ padding-inline:0 }',
     ],
   },
+  {
+    id: 'D12',
+    title: 'The header brand is the supplied logo lockup, not a chip and typeset wordmark',
+    file: 'src/components/chrome/Header.astro',
+    design: 'Homepage.html',
+    present: [
+      'src="/assets/careerpassport-logo.webp"',
+      'alt="CareerPassport"',
+    ],
+    // the stand-in the export still ships: a gradient passport chip plus the word in type
+    reverted: [
+      /<a class="brand" href="\/"><i><\/i><span>CAREERPASSPORT<\/span><\/a>/,
+    ],
+    extraFiles: [
+      'src/styles/cp-header.css',
+    ],
+    extraPresent: [
+      '.hdr .brand img{display:block;height:27px;width:auto}',
+    ],
+  },
 ];
 
 const hit = (src, needle) =>
