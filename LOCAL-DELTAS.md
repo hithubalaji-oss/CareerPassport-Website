@@ -700,78 +700,130 @@ untouched, as is every wire a packet travels.
 
 ---
 
-## D12 — The header brand is the supplied logo lockup
+## D12 — The header brand is the supplied logo lockup, in two cuts, in a shorter phone bar
 
-**Files:** `src/components/chrome/Header.astro`, `src/styles/cp-header.css`, and the asset pair
-`assets/Careerpassport.png` → `public/assets/careerpassport-logo.webp`
+**Files:** `src/components/chrome/Header.astro`, `src/styles/cp-header.css`,
+`src/styles/mobile-pages.css`, and the asset pairs
+`assets/Careerpassport.png` → `public/assets/careerpassport-logo.webp` (stacked, phone) and
+`assets/Careerpassportdesk.png` → `public/assets/careerpassport-logo-desk.webp` (single line,
+wide)
 
-A logo was finally supplied. Everything the header carried before it — a 20x27 gradient passport
-chip and CAREERPASSPORT set in `var(--display)` — was a stand-in for exactly this, and the export
-still ships the stand-in, so this has to be re-applied after every re-derivation.
+Everything the header carried before — a 20x27 gradient passport chip and CAREERPASSPORT set in
+`var(--display)` — was a stand-in for exactly this, and the export still ships the stand-in, so
+this has to be re-applied after every re-derivation.
+
+### Two cuts, one breakpoint
+
+The bar has two shapes, so the logo does. Wide, it is a single line, 792x186 at 4.258:1, which
+needs horizontal room it only has beside a nav. Narrow, it is the stacked two-line cut, 444x186
+at 2.387:1, which keeps the wordmark readable when the bar is mostly burger. `<picture>` chooses
+at **901px — the header's own breakpoint**, the same one that swaps the nav for the burger, so
+the logo changes shape exactly when the bar does.
+
+`width`/`height` go on the `<source>` as well as the `<img>`: the two ratios differ, so without
+them the box is the wrong shape until the bytes land and the header reflows on first paint.
+
+**The conversion** is `sharp(...).webp({lossless:true, effort:6})` for both — the best quality
+*and* the smallest of the encodings tried (3412 and 3876 bytes, against 5886 / 9218 at q82/q90).
+Flat vector-style artwork is what lossless WebP is good at; a lossy pass spends bytes adding
+ringing around the letterforms. Sources stay in `assets/` beside `fingerprint.png`; what ships
+lives in `public/assets/`.
+
+### The bar's geometry, which everything else is derived from
+
+`.hdr` is a flex row with `align-items:center` and no height of its own: padding, plus its
+tallest child, plus the bottom hairline where there is one.
 
 ```
-- <a class="brand" href="/"><i></i><span>CAREERPASSPORT</span></a>
-+ <a class="brand" href="/"><img src="/assets/careerpassport-logo.webp" width="444" height="186"
-+    alt="CareerPassport" decoding="async" fetchpriority="high"></a>
+>=901   16   * 2 + 36 (.hend)  + 1 hairline = 69px,  inner band 68px
+<=900   10.5 * 2 + 44 (burger) + 0          = 65px,  inner band 65px
 ```
 
-**The conversion.** `sharp(...).webp({lossless:true, effort:6})`, which is both the best quality
-and the smallest of the three encodings tried — 3412 bytes against 5886 at q82 and 7274 at q90.
-Flat vector-style artwork is what lossless WebP is good at; a lossy pass costs bytes to add
-ringing around the letterforms. Alpha is preserved (4 channels, 444x186), and the source PNG
-stays in `assets/` beside `fingerprint.png`, which is the convention this repo already uses:
-sources in the repo root's `assets/`, what ships in `public/assets/`.
+The phone bar came down from 76px, which is 15% off (64.6, taken as 65 for whole pixels). It came
+out of the PADDING, not the burger — 44px square is the touch target, and it is the number both
+this bar and the expanded sheet are built from. `--hdr-pad` and `--hdr-burger` live on `:root`
+rather than on `.hdr`, because `.mnav` is a SIBLING of the header and its top padding is keyed to
+the bar's composition; a custom property on `.hdr` would not reach it and the sheet would drift
+11px.
 
-**The sizing, which is the part worth reading.** The logo is drawn at the full height of the bar
-while its LAYOUT box stays at 27px — exactly what the passport chip it replaced was.
+### The logo is drawn at twice its layout box
 
-That distinction is load-bearing. `.hdr` is a flex row with `align-items:center` and no height of
-its own: 16px of padding, plus its tallest child, plus the bottom hairline. That comes to 69px on
-desktop (36px nav pills) and 76px below 1025 (43px burger), and those two numbers are what `--hdr`
-is declared as and what every pinned section, fold and `calc(100svh - var(--hdr))` on all three
-pages is measured against — with a ResizeObserver in `Header.astro` republishing `--hdr` if the
-bar ever disagrees. So sizing the logo the obvious way, `height:60px`, does not make the logo
-bigger: it makes the header 93px and reflows all three pages.
+`--brand-h` is the LAYOUT height and stays at 27px, exactly what the chip was, so the brand
+contributes precisely what it contributed before and the bar's height is unchanged by
+construction rather than by inspection. `--brand-draw` is the PAINTED height, and the negative
+block margin is the difference halved, so the image's margin box comes back to `--brand-h` and
+the overflow is shared evenly above and below the centre line. The spill lands inside the
+header's own padding; `.hdr` sets no `overflow`, so nothing clips.
 
 ```css
-.hdr .brand{--brand-h:27px; --brand-draw:60px}          /* 67px below 1025 */
+.hdr .brand{--brand-h:27px; --brand-draw:52px}       /* 48px below 901 */
+.hdr .brand picture{display:block; line-height:0}
 .hdr .brand img{height:var(--brand-draw); width:auto;
   margin-block:calc((var(--brand-h) - var(--brand-draw)) / 2)}
 ```
 
-The negative block margin is the difference, halved, so the image's MARGIN box comes back to
-`--brand-h` and the overflow is shared evenly above and below the centre line. The brand then
-contributes exactly what it contributed before and the bar's height is unchanged by construction
-rather than by inspection. The spill lands inside the header's own 16px of padding; `.hdr` sets
-no `overflow`, so nothing clips.
-
-The draw heights are the bar minus the hairline minus a small margin:
+**The draw heights are set from the VISIBLE MARK, not the box.** Both files carry their own
+transparent margin — the opaque artwork occupies y 6..177 of 186, so 7.5% of any painted height
+is nothing. Asking for 10px of air on desktop therefore means:
 
 ```
-desktop   69 - 1 - 4   - 4   = 60px
-<=1024    76 - 1 - 4.5 - 4.5 = 67px
+visible mark = 68 inner band - 10 - 10 = 48px
+painted box  = 48 * 186/172            = 51.9  ->  52px
 ```
 
-4px is deliberately small because the artwork brings its own: the file is 444x186 with the opaque
-mark at y 6..177, so ~7.5% of the painted height is transparent. At 60px that is 2px above and
-2.6px below on top of the 4px, and the mark itself clears the hairline by ~6px.
+and the mark then clears top and bottom by 10.0px, measured. Setting the box to 52 and calling it
+8px of padding would have been the other, wronger, answer.
 
-Width stays `auto` so the image's 2.387:1 decides it — 143px desktop, 160px below 1025 — rather
-than a second number that could go stale if the artwork is recut. The `width`/`height` attributes
-give the box that ratio before the file arrives, so the header never reflows around it.
+The phone cut takes two 15% reductions — the first the bar's, the second its own:
+`67 * 0.85 * 0.85 = 48.4 -> 48px`, clearing 10.3px in the 65px band.
 
-Measured across five widths from 320 to 1440: the bar is 69px / 76px exactly as before, the brand
-box is 27px tall at every one of them, and at 320px — the narrowest supported width, where the
-burger is the only thing on the right — 76px of clear space still separates the two.
+Width stays `auto` so each file's ratio decides it (221px desktop, 115px phone), rather than a
+second number that could go stale if either is recut.
 
-**One rule died with the wordmark.** `@media (max-width:1024px){ .hdr .brand span{font-size:11px} }`
-existed because this sheet is linked after each page's inline `<style>` and its 13.5px was
-beating the pages' mobile scale at equal specificity. The lockup is an image now and the chip
-beside it never stepped, so the brand keeps one height on both viewports.
+### The band that was wrong by 124 pixels of viewport
 
-**The footer is deliberately untouched.** Its giant stacked CAREER / PASSPORT is live SVG text
-with `#fmedge` walking a light across the letterforms on an 11s loop; a raster cannot do that,
-and there is no small brand lockup in the footer to swap.
+The first cut of this delta scoped the phone's draw height to `@media (max-width:1024px)`. **The
+header's breakpoint is 900, not 1024** — between 901 and 1024 the burger is still hidden and
+`.hdr .nav` is still flex, so the bar keeps its desktop 69px. That band therefore got a 67px logo
+in a 68px inner band: **half a pixel of clearance**, measured at 901, 950, 1000 and 1024. It is
+the same mistake `partners.css` already records for `--hdr` — "900 is the HEADER's breakpoint,
+not the layout's 1024" — made a second time, which is why the file now keys everything about the
+bar to that one number.
+
+`--hdr` had it too. `mobile-pages.css` is one `@media (max-width:1024px)` block and declared
+`:root{--hdr:76px}` across all of it, over-declaring the 901–1024 band by 7px. It is now split at
+the header's breakpoint, in the file that is loaded last on both interior pages:
+
+```css
+@media (max-width:900px){ :root{ --hdr:65px } }
+@media (min-width:901px){ :root{ --hdr:69px } }
+```
+
+Verified across 42 page/width combinations that `--hdr` never under-declares the real bar — the
+direction that matters, since a value too small slides headings under the header on an anchor
+jump. The homepage declares none and is driven by the ResizeObserver in `Header.astro`, which
+tracks the bar down to 65px on its own.
+
+### What was proven not to move
+
+| | |
+|---|---|
+| Behaviour, all six page/viewport combinations | identical but for mobile `--hdr` 76px → 65px |
+| Document heights, 24 mobile combinations | byte-identical to before |
+| Partners desktop pixels | 0.304% on every one of ten frames against a 0.000–0.378% control — the header band and nothing else |
+| Homepage / Companies desktop | inside their own animation control bands plus that same 0.304% floor |
+| Mobile pixels | 1.5–23%, the 11px shorter bar and everything that follows `--hdr` up with it |
+
+Mobile still: no page errors, no horizontal scroll, burger present and in frame at all eight
+sizes on all three pages.
+
+### One thing left alone
+
+The three design-derived sheets pad their mobile footer with a `76px` literal keyed to the old
+bar (`homepage.css` twice, `companies.css`, `partners.css`, plus `mobile-pages.css:324`). Against
+a 65px bar they now over-reserve by 11px, which is the safe direction — the footer is
+`min-height:100svh` with an auto margin collecting the slack, so the surplus is invisible — and
+four of the five are rewritten on every export. Not worth a delta.
 
 ---
 
