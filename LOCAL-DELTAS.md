@@ -621,7 +621,7 @@ reading `{150,520}`, and both desktop hooks `undefined`.
 
 ---
 
-## D11 — For Companies: the passport shuts in order, and stops rastering six leaves
+## D11 — For Companies: the passport shuts in order, the leaf budget, and the demo's frame
 
 **Files:** `src/scripts/companies.js` (the Decide act's close), `src/styles/mobile-pages.css`
 (the layer budget and the panel)
@@ -679,24 +679,76 @@ S23 finding word for word, and the remedy is the same:
 
 Mobile only.
 
-### 3 · The demo's card, on mobile
+### 3 · The wash over the four acts — and what it was NOT
 
-Asked for separately: "from Design till Decide we can see a dark solid colour BG — remove
-that". `.aibox.big` is `background-color:var(--panel)` (#121514) over the page's own #0a0c0b,
-plus a hairline, a float shadow and the passport's laid hatch. Removed whole rather than
-lightened — fill, border, shadow, hatch and the emerald top hairline are all one card, and
-leaving any of them reads as a card that failed to paint.
+Reported twice. The first time as "from Design till Decide we can see a dark solid colour BG —
+remove that", which was read as `.aibox.big`, the demo's card, and taken out. That was the wrong
+layer: the card is the rounded enclosure the visuals are supposed to sit inside, and removing it
+left them loose on the page. It is back exactly as authored — hatch, hairline, float shadow,
+emerald top rule — along with the 18px of inset on the four act layers and the reach wires'
+own edge, which had been replaced with a mask only because the edge had been removed.
 
-Its inset went with it: the four act layers carry 18px of padding, which put the panel's
-content at x=38 while the copy column starts at x=20. `padding-inline:0` on `.aibp/.aiex/.aiev/
-.aidc`, block padding kept.
+The wash is `.aiwrap::before`: `inset:-8% -6%` of solid `--void` fading out through a radial, on
+`z-index:-1` behind the whole act. Its job is "a soft plate directly behind the copy, so type
+always wins over the board" — and on desktop that is exactly right, because the board is there.
+On a phone `.flapbg` is already `display:none`, so the plate is a large dark radial over nothing,
+and against the page's own `#0a0c0b` it reads as a rectangular haze that starts partway down the
+screen. It goes with the thing it was protecting the copy from.
 
-And the Execute map's `.wire.reach` paths, which deliberately run from viewBox x=88 to x=101 to
-say the network continues past the frame, needed an ending. With the card they ran into its
-rounded edge; without it they stop in open space at x=372 of a 390px viewport, which reads as
-the channel columns having been cut off — which is how it was reported once already. A mask
-fades them from 84% out to the gutter. The channel nodes are spans outside the SVG and are
-untouched, as is every wire a packet travels.
+### 4 · The act sits under the header, and the panel reaches up to the copy
+
+Two complaints that pull against each other until you see that one number causes both.
+
+`.aidemopin` padded its top by `var(--hdr)` ALONE — the header's height and not a pixel more —
+so the act's chip landed **2px** below the bar at 360, 390 and 430. And because the pin was
+`align-items:center`, an act whose content did not fit was centred INTO the header: at 320×568
+the chip measured **20px above the bar's bottom edge**, i.e. underneath it. `--hdr` is clearance,
+not spacing.
+
+The gap below the copy measured **134px** on Design and Evidence and **161px** on Evidence at
+430. That gap was `.aitextcol{min-height:268px}`, which reserved the tallest act's height so the
+panel's top would not move as the acts swap. **The reserve IS the gap**: the column is
+`flex-start`, so whatever an act does not use of 268px is empty space, and no amount of padding
+can move it, because the gap is `(reserve − natural height + row gap)` — invariant to where the
+block sits.
+
+So the reserve is gone and the panel takes the room instead of being held off it:
+
+```css
+.aidemopin{ align-items:stretch; padding-top:calc(var(--hdr) + clamp(10px,3.2vh,30px)) }
+.aiwrap  { align-items:stretch; grid-template-rows:auto minmax(240px,1fr) }
+.aitextcol{ min-height:0 }
+.aibox.big{ flex:1; min-height:240px }
+```
+
+`stretch`, not `flex-start` — the pin is a flex row, so `align-items` is the vertical axis and the
+wrap has to FILL the pin for the `1fr` row to have anything to distribute. With `flex-start` the
+wrap shrank to its content and the panel sat at its 240px floor 300px clear of the fold's bottom.
+Stretch also fixes what `center` broke without needing `flex-start`: the wrap's top IS the padding
+edge, so the chip cannot be pushed under the header by content that does not fit.
+
+**`fitPanel()` and `--ai-h` are gone with it.** They measured the pinned fold, subtracted the act's
+text column, and published the remainder as the panel's `min-height` — a height computed ONCE at
+boot, from whichever act happened to be on screen, for a panel whose copy above it changes height
+with every act. A min-height beats a `1fr` row every time, so it did not merely go stale, it
+actively fought the new row and ran the Decide panel 58px past the fold. The grid does the job
+per act and per viewport with no measurement and no boot ordering to get wrong. D7's marker moved
+from `--ai-h` to the grid row.
+
+Short viewports cannot have all three. At 320×568 the Decide act wants 65px of header, 263px of
+copy, a 22px row gap and a 240px panel: 602px into 568. The old construction "fit" it by centring
+the overflow, which is what put the chip under the header — it did not fit, it hid. Under
+`max-height:700px` the panel's floor drops to 200px and the gap to 10px; 200px of simulated UI
+still reads as a screen, where copy set below the type ladder's floor does not read as copy.
+
+Measured at 320×568, 360×640, 390×844 and 430×932, all four acts:
+
+| | before | after |
+|---|---|---|
+| gap under the header | 2px (−20px at 320, i.e. under the bar) | 10 / 10 / 27 / 30px, **constant across the four acts** |
+| gap from copy to panel | 61–161px | **56px everywhere** |
+| panel bottom vs fold bottom | over by 8px at 320×568 | inside at every size and act |
+| panel top | constant | follows the copy — the one thing here that should move |
 
 ---
 

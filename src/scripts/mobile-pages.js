@@ -21,15 +21,15 @@
        is a narrative that ends on the offer being sent; looping a twenty-second story back to
        its first frame reads as a glitch rather than as life. Scrolling away and back replays it.
 
-   3 · THE PANEL FITS THE FRAME.  `.aibox.big` is `min(clamp(452px,63vh,572px), 100svh - hdr)`.
-       On a 640px-high phone the 452px floor wins over the 403px that 63vh would give, and the
-       panel plus its text column come to 687px inside 557px of pinned space — overflowing by
-       130px, which `.aidemopin`'s overflow:hidden crops top and bottom. Measured at 360x640:
-       the panel's bottom edge landed 65px below the fold.
+   3 · THE PANEL FITS THE FRAME — and this one is no longer done here. It was: fitPanel()
+       measured the pinned fold, subtracted the act's text column, and published the remainder
+       as --ai-h. That fixed the authored `min(clamp(452px,63vh,572px), 100svh - hdr)`, which on
+       a 640px phone overflowed by 130px, but it measured ONCE at boot, from whichever act was
+       on screen, for a panel whose copy above it changes height with every act.
 
-       So the band is measured rather than guessed, exactly as the homepage measures the space
-       its art gets: ask what the text column actually took, hand the panel the rest, publish it
-       as --ai-h. The panel's internals are already keyed to vh clamps and follow it down.
+       mobile-pages.css does it with a grid row instead — `minmax(240px,1fr)` — so the panel
+       starts where the copy ends and grows to the fold's bottom edge, per act and per viewport,
+       with no measurement and no boot ordering to get wrong. See the note where fitPanel was.
    ---------------------------------------------------------------------------------------- */
 (function () {
   var MOBILE = window.matchMedia('(max-width: 1024px)');
@@ -93,32 +93,15 @@
   /* --------------------------------------------------------------------------------------
      The measured band for the demo panel.
      -------------------------------------------------------------------------------------- */
-  function fitPanel() {
-    var pin = document.querySelector('.aidemopin');
-    var wrap = document.querySelector('.aiwrap');
-    var text = document.querySelector('.aitextcol');
-    var box = document.getElementById('aiBox');
-    if (!pin || !wrap || !text || !box) return;
+  /* fitPanel() used to live here. It measured the pinned fold, subtracted the header padding,
+     the act's text column and the row gap, and published the remainder as `--ai-h` for
+     `.aibox.big{min-height:...}` — a height computed ONCE at boot, from whichever act happened
+     to be on screen, for a panel whose copy above it changes height with every act.
 
-    var cs = getComputedStyle(pin);
-    var padT = parseFloat(cs.paddingTop) || 0;
-    var padB = parseFloat(cs.paddingBottom) || 0;
-    var gap = parseFloat(getComputedStyle(wrap).rowGap) || 0;
-
-    /* the pin is 100svh by construction, but read it rather than assume it — a browser that
-       is mid-chrome-collapse reports something else and the panel would be sized for a
-       viewport that is not on screen */
-    /* 3px of slack: the three measured boxes each round to a subpixel and the errors stack in
-       whichever direction the layout happens to land. Without it a 390px phone sat 2px proud. */
-    var avail = pin.getBoundingClientRect().height - padT - padB - text.getBoundingClientRect().height - gap - 3;
-    if (!(avail > 0)) return;
-
-    /* never larger than the panel was ever drawn at, and never so small it stops reading as a
-       screen: below 240px the act text inside it is illegible whatever the clamp says, and it
-       is better to let the last few pixels crop than to render a stamp */
-    var h = Math.max(240, Math.min(avail, 572));
-    pin.style.setProperty('--ai-h', h.toFixed(0) + 'px');
-  }
+     The layout does it now, and correctly: the wrap's second grid row is `minmax(240px,1fr)`,
+     so the panel starts where the copy ends and grows to the fold's bottom edge, per act and
+     per viewport, with no measurement and no boot ordering to get wrong. A min-height from JS
+     could only ever fight that row — and did, running the Decide panel 58px past the fold. */
 
   /* --------------------------------------------------------------------------------------
      THE DEMO, AS FOUR FOLDS
@@ -253,7 +236,6 @@
 
     demoFolds(document.getElementById('aidemo'));
 
-    fitPanel();
   }
 
   /* companies.js publishes its frame functions as it runs, and it runs after this file, so
@@ -263,8 +245,4 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else setTimeout(boot, 0);
 
-  addEventListener('resize', fitPanel, { passive: true });
-  addEventListener('orientationchange', fitPanel);
-  addEventListener('load', fitPanel);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitPanel);
 })();

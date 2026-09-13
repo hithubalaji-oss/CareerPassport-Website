@@ -136,8 +136,10 @@ const DELTAS = [
     extraFiles: ['src/scripts/mobile-pages.js', 'src/pages/for-companies.astro',
                  'src/styles/mobile-pages.css'],
     // the mobile arm of the per-viewport ternary; D10 asserts the desktop one
+    /* the panel's mobile sizing. It was `--ai-h`, a height fitPanel() measured once at boot;
+       the panel fills a grid row now, so the marker is the row. */
     extraPresent: ['function autoplay(', '{ hero: 150, demo: 520 }',
-                   '--ai-h'],
+                   'grid-template-rows:auto minmax(240px,1fr)'],
   },
   {
     id: 'D8',
@@ -268,16 +270,17 @@ const DELTAS = [
       'src/styles/mobile-pages.css',
       'src/styles/mobile-pages.css',
       'src/styles/mobile-pages.css',
-      'src/styles/mobile-pages.css',
-      'src/styles/mobile-pages.css',
     ],
     extraPresent: [
       '.dcpp #dcLeaf5 { display: none }',
       '.dcpp #dcCover, .dcpp #dcLeaf1 { will-change: transform }',
       '.dcpp { contain: paint }',
-      'background-color:transparent;',              // .aibox.big, the demo card
-      '.aibp, .aiex, .aiev, .aidc{ padding-inline:0 }',
-      'mask-image:linear-gradient(90deg,#000 0 84%,transparent 100%)',   // the reach wires
+      /* The wash over the four acts. This was first attempted by taking out `.aibox.big`'s
+         card — the wrong layer, and the one the visuals are supposed to sit inside; that is
+         restored, along with the act layers' inset and the reach wires' own edge. `.flapbg`
+         is display:none on a phone, so the plate that protects the copy from it is a dark
+         radial over nothing. */
+      '.aiwrap::before{ display:none }',
     ],
   },
   {
