@@ -348,7 +348,7 @@ const DELTAS = [
       'src/styles/partners-overrides.css',
     ],
     extraPresent: [
-      '.wfcanvas { padding: 20px }',
+      '.wfgrid { padding: 34px }',   // the inset goes on the GRID, so the box's edge does not move
       // the wire box has to be SIZED, not just inset: an inline <svg> is a replaced element
       'width: calc(100% - 40px); height: calc(100% - 40px);',
       '.slab .slabin { align-items: center; text-align: center }',
