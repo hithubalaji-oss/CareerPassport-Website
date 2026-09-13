@@ -879,6 +879,95 @@ four of the five are rewritten on every export. Not worth a delta.
 
 ---
 
+## D13 — Partners: the workflow box is inset, and the two statement folds read from the centre
+
+**Files:** `src/styles/partners-overrides.css` (new), imported by
+`src/pages/for-recruitment-partners.astro`
+
+### The part worth reading first: why this is its own file
+
+`local-overrides.css` is the right home by contract — "code-side decisions that are NOT
+mobile-only" — and Partners had no such file, so the obvious move was to import it there, exactly
+as D10 did for For Companies. **Doing that changed the homepage**, which this pass touched
+nothing of.
+
+Astro chunks CSS by which pages share a sheet. With `local-overrides.css` used by two pages it
+was emitted into a late chunk; adding a third importer hoisted it into the common chunk that
+loads FIRST. Measured in the built bundles, the file's rules moved from byte **81797** — after
+`homepage.css` at 62050 and `mobile-passport.css` at 80090 — to byte **12108**, ahead of both. A
+sheet whose entire job is to override the design sheets was now being overridden by them.
+
+It showed up as the homepage's fold 4: `.fbot` measured **350px** wide against **301px**, moving
+the passport pinned to its bottom-right corner by 24px. **4.05% of the frame against a
+0.000–0.019% control** — not noise, and it would not have been caught by looking at the page that
+was being worked on.
+
+So the rules live in a file only this page imports. Partners' own chunking moves and no other
+page's does. Proven by the built output rather than by argument: every `_astro` asset the
+homepage and For Companies emit is byte-identical to `main`, and only
+`for-recruitment-partners.*.css` changes hash.
+
+**The general lesson, and it is the CSS half of the one this project already learned about script
+order: in Astro, which pages import a stylesheet determines where its rules land in the cascade.
+Adding an import is never only additive.**
+
+### The workflow box gets its 20px
+
+`.wfcanvas` is the rounded enclosure the agentic graph sits in, and its nodes ran to the box's own
+edge — the only inset in there is `.wfgrid{padding:14px}`, which the cards at the extremes reach
+past.
+
+The padding has to move TWO things. `.wfgrid` is in flow, so it sits in the canvas's **content**
+box; `.wfwire` is `position:absolute;inset:0`, which resolves against the canvas's **padding**
+box — padding does not move it. The wire paths are authored in a `0 0 100 100` viewBox against the
+full canvas and hand-tuned to meet the node edges, so moving one without the other breaks every
+join. Shrinking both by the same 20px keeps the relationship exact.
+
+Two things only measuring caught:
+
+1. `.wfwire` needs `.wfcanvas .wfwire`. A bare `.wfwire` ties `partners.css` on specificity and
+   loses the source-order tiebreak, because Astro bundles by its own import graph.
+2. **The wire box cannot be sized by insets alone.** An inline `<svg>` is a REPLACED element with
+   an intrinsic ratio from its viewBox, so `width:auto` takes that ratio instead of resolving
+   from left/right — the box came out square, `preserveAspectRatio="none"` stretched the paths to
+   fit it, and every connector drew as a straight line running out of the frame. `100%` on an
+   absolutely positioned child resolves against the padding box, so `calc(100% - 40px)` at
+   `left/top:20px` lands the wire box exactly on the content box.
+
+Desktop only, as asked: below 1025 `.wfgrid` already drops to 10px for a box a third of the width.
+Nodes now clear the box by 34px (20 + the grid's own 14) against 14px before.
+
+### Folds 2 and 5 read from the centre
+
+The two `.slab` sections — the three statistics, and the pull quote — are the only folds here that
+are pure statement: no artifact beside them, nothing for the eye to return to on the left. Left
+aligned they sat against the gutter with the frame empty to the right, measured 63px in from a
+1440px viewport with the heading ending at 786px.
+
+`.slabin` is a flex column, so `align-items:center` centres the heading and the stats row as
+blocks and `text-align:center` centres the lines inside them. Two that need saying out loud:
+`.stats` needs `align-self:stretch` or the three-column grid shrinks to its content and stops
+being three equal columns; and `.statv` is itself a flex row (the number and its unit share a
+baseline), so it needs its own `justify-content` — `text-align` does not reach a flex container's
+children.
+
+Both viewports. Measured equal on each side at both: 359/359 and 199/199 at 1440, 54/54 and 29/29
+at 390.
+
+### What was proven not to move
+
+| | |
+|---|---|
+| Behaviour, all six page/viewport combinations | **identical** |
+| Homepage and For Companies emitted assets | **byte-identical to `main`**, CSS and JS |
+| Homepage desktop and mobile pixels | inside their control bands at every frame |
+| For Companies pixels | inside control; the one 4.4% mobile frame is the demo's autoplay phase, and its bundles are byte-identical |
+| Partners | 7.4% / 3.6% / 6.6% desktop and 8.1% / 2.7% mobile — the two slabs and the box |
+
+24 mobile combinations clean. All 15 deltas pass.
+
+---
+
 ## Retired
 
 Everything below was fixed in Claude Design and re-derived cleanly on 10 Sep. Kept as a

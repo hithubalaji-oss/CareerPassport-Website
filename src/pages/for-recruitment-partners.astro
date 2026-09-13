@@ -19,6 +19,11 @@ import '../styles/cp-shared.css';
 import '../styles/partners.css';
 import '../styles/cp-header.css';
 import '../styles/mobile-pages.css';
+/* Code-side decisions for this page that are NOT mobile-only. This is what local-overrides.css
+   is for, and importing THAT here changed the homepage — Astro chunks CSS by which pages share
+   a sheet, and a third importer hoisted it ahead of the design sheets it exists to override.
+   Its own file instead, so only this page's chunking moves. See the note at the top of it. */
+import '../styles/partners-overrides.css';
 ---
 
 <Base

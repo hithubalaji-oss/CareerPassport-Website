@@ -1,0 +1,93 @@
+/* ==============================================================================================
+   FOR RECRUITMENT PARTNERS — code-side decisions, both viewports
+   ==============================================================================================
+
+   WHY THIS FILE EXISTS AT ALL, rather than the rules living in local-overrides.css.
+
+   local-overrides.css is the right home by contract — "code-side decisions that are NOT
+   mobile-only" — and Partners had no such file, so the obvious move was to import it there.
+   Doing that CHANGED THE HOMEPAGE, which imports it already and which this touched nothing of.
+
+   Astro chunks CSS by which pages share it. With local-overrides.css used by two pages it was
+   emitted into a late chunk; adding a third page hoisted it into the common chunk that loads
+   FIRST. Measured in the built bundles: the file's rules moved from byte 81797 — after
+   homepage.css at 62050 and mobile-passport.css at 80090 — to byte 12108, ahead of both. A
+   sheet whose entire job is to override the design sheets was now being overridden BY them, and
+   the homepage's fold 4 rendered differently: `.fbot` measured 350px wide against 301px, which
+   moved the passport pinned to its corner 24px, at 4.05% of the frame against a 0.000-0.019%
+   control.
+
+   So the rules go in a file only this page imports. Partners' own import graph changes and no
+   other page's does, which leaves every other page's chunking — and therefore every other
+   page's cascade — exactly where it was. Verified by the built CSS hashes: the homepage's are
+   unchanged.
+
+   The general lesson, and it is the CSS half of the one this project already learned about
+   script order: in Astro, WHICH PAGES IMPORT A STYLESHEET DETERMINES WHERE ITS RULES LAND IN
+   THE CASCADE. Adding an import is never only additive.
+   ============================================================================================ */
+
+/* ---- the workflow box gets its 20px, and the wires come with it -------------------------
+   `.wfcanvas` is the rounded enclosure the agentic graph sits in. Its nodes ran to the box's
+   own edge: `Shortlist to client` touched the top-right corner and `Keep nurturing` the
+   bottom, because the only inset in there is `.wfgrid{padding:14px}` and the cards' own grid
+   cells reach past it at the extremes.
+
+   THE PADDING HAS TO MOVE TWO THINGS, NOT ONE. `.wfgrid` is in flow, so it sits inside the
+   canvas's CONTENT box; `.wfwire` is `position:absolute;inset:0`, which resolves against the
+   canvas's PADDING box — padding does not move it. The wire paths (`M10 50H20Q24 50 24 17H30`
+   and the rest) are authored in a 0-100 viewBox against the full canvas and hand-tuned to meet
+   the node edges, so moving one without the other breaks every join.
+
+   Shrinking BOTH by the same 20px keeps the relationship exact: 20px of padding on the canvas
+   moves the grid in, and `inset:20px` moves the wire box with it. The dot pattern and the
+   vignette stay at `inset:0` — they are the surface, not the content, and should still reach
+   the edge.
+
+   Desktop only, as asked: below 1025 `.wfgrid` already drops to 10px of padding for a box that
+   is a third of the width, and 20px more would leave the nodes no room at all.
+
+   Two gotchas, both found by looking at the result rather than by reading the rule.
+
+   ONE: `.wfwire` needs `.wfcanvas .wfwire`. A bare `.wfwire` ties partners.css on specificity
+   and loses the source-order tiebreak, because Astro bundles stylesheets by its own import
+   graph and not by the order the page imports them in.
+
+   TWO: the wire box cannot be sized by insets alone. An inline `<svg>` is a REPLACED element
+   with an intrinsic ratio from its `viewBox="0 0 100 100"`, so `width:auto` takes that ratio
+   instead of resolving from left/right — the box came out square, `preserveAspectRatio="none"`
+   stretched the paths to fit it, and every connector drew as a straight line running out of the
+   frame. The size has to be stated. `100%` on an absolutely positioned child resolves against
+   the canvas's PADDING box, which is the content box plus the new 40px, so
+   `calc(100% - 40px)` at `left/top:20px` lands the wire box exactly on the content box — the
+   same rectangle the grid is laid out in, moved in by 20px, which is the whole point. */
+@media (min-width: 1025px) {
+  .wfcanvas { padding: 20px }
+  .wfcanvas .wfwire {
+    left: 20px; top: 20px; right: auto; bottom: auto;
+    width: calc(100% - 40px); height: calc(100% - 40px);
+  }
+}
+
+/* ---- folds 2 and 5 read from the centre -------------------------------------------------
+   The two `.slab` sections — the three statistics, and the pull quote — are the only two folds
+   on this page that are pure statement: no artifact beside them, no pinned stage, nothing for
+   the eye to return to on the left. Left-aligned they sat against the gutter with the rest of
+   the frame empty to the right, measured at 63px in from a 1440px viewport with the heading
+   ending at 786px. Centred, the fold reads as the pause it is.
+
+   `.slabin` is a flex column, so `align-items:center` centres the heading and the stats row as
+   BLOCKS and `text-align:center` centres the lines inside them. The two that need saying out
+   loud: `.stats` has to keep `align-self:stretch` or the three-column grid would shrink to its
+   content and stop being three equal columns; and `.statv` is itself a flex row (the number and
+   its unit share a baseline), so it needs its own `justify-content`, since text-align does not
+   reach a flex container's children.
+
+   Both viewports, as asked. On a phone `.stats` is already one column per `partners.css:1361`,
+   so this centres three stacked blocks rather than three side by side. */
+.slab .slabin { align-items: center; text-align: center }
+.slab .stats  { align-self: stretch }
+.slab .stat   { align-items: center }
+.slab .statv  { justify-content: center }
+.slab .stat b,
+.slab .stat i { margin-inline: auto }
