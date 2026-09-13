@@ -330,6 +330,37 @@ const DELTAS = [
       ['src/styles/cp-header.css', /@media \(max-width:1024px\)\{\s*\.hdr \.brand\{--brand-draw:67px\}/],
     ],
   },
+  {
+    id: 'D13',
+    title: 'Partners: the workflow box is inset, and the two statement folds read from the centre',
+    file: 'src/pages/for-recruitment-partners.astro',
+    design: 'For Recruitment Partners.html',
+    present: [
+      // its OWN sheet, not local-overrides.css — see the note at the top of the file
+      "import '../styles/partners-overrides.css';",
+    ],
+    reverted: [],
+    extraFiles: [
+      // one entry per marker below: the checker pairs these two lists by index
+      'src/styles/partners-overrides.css',
+      'src/styles/partners-overrides.css',
+      'src/styles/partners-overrides.css',
+      'src/styles/partners-overrides.css',
+    ],
+    extraPresent: [
+      '.wfcanvas { padding: 20px }',
+      // the wire box has to be SIZED, not just inset: an inline <svg> is a replaced element
+      'width: calc(100% - 40px); height: calc(100% - 40px);',
+      '.slab .slabin { align-items: center; text-align: center }',
+      '.slab .stats  { align-self: stretch }',
+    ],
+    /* Importing local-overrides.css here instead is what this replaced, and it is the thing to
+       watch for: a third page on that sheet hoists it ahead of the design sheets it exists to
+       override, and the HOMEPAGE renders differently. */
+    deleted: [
+      ['src/pages/for-recruitment-partners.astro', "import '../styles/local-overrides.css';"],
+    ],
+  },
 ];
 
 const hit = (src, needle) =>
