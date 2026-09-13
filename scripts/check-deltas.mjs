@@ -290,7 +290,10 @@ const DELTAS = [
       'src/styles/cp-header.css',
     ],
     extraPresent: [
-      '.hdr .brand img{display:block;height:27px;width:auto}',
+      // the layout box, and the trick that lets the paint exceed it without moving the bar
+      '--brand-h:27px;--brand-draw:60px;',
+      'margin-block:calc((var(--brand-h) - var(--brand-draw)) / 2)',
+      '.hdr .brand{--brand-draw:67px}',
     ],
   },
 ];

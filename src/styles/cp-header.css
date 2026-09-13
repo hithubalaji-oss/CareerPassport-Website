@@ -28,15 +28,46 @@
   border-bottom:1px solid var(--hairline)}
 
 /* ---- wordmark ---- */
-/* The brand is one image now — the supplied lockup, icon and wordmark together. It is sized
-   by HEIGHT, which is the dimension that carried over: 27px, exactly what the passport chip it
-   replaces was. Width is left to `auto` so the image's own 2.387:1 decides it (~64px) rather
-   than a number written here that would go stale if the artwork is ever recut.
+/* The brand is one image now — the supplied lockup, icon and wordmark together.
 
-   `width`/`height` attributes on the <img> give it an intrinsic ratio, so the box is the right
-   shape before the file arrives and the header never reflows around it. */
-.hdr .brand{display:flex;align-items:center;color:var(--ink)}
-.hdr .brand img{display:block;height:27px;width:auto}
+   IT IS DRAWN AT TWICE ITS LAYOUT BOX, AND THAT IS THE WHOLE TRICK. `.hdr` is a flex row with
+   `align-items:center` and NO height of its own: it is 16px of padding, plus whatever its
+   tallest child is, plus the bottom hairline — 36px of nav pill on desktop and 43px of burger
+   on mobile, giving the 69px and 76px that `--hdr` is declared as. Every pinned section, fold
+   and `calc(100svh - var(--hdr))` on all three pages is measured against those two numbers, and
+   `Header.astro` carries a ResizeObserver that republishes `--hdr` if the bar's real height ever
+   disagrees. So growing the logo the obvious way — `height:54px` — does not just make the logo
+   bigger, it makes the header 87px and reflows all three pages.
+
+   `--brand-h` is the LAYOUT height and stays at 27px, exactly what the passport chip this
+   replaced was, so the brand contributes precisely what it contributed before and the bar's
+   height is unchanged by construction rather than by inspection. `--brand-draw` is the PAINTED
+   height. The negative block margin is the difference, halved, so the image's margin box comes
+   back to `--brand-h` and the overflow is shared evenly above and below the centre line.
+
+   `--brand-draw` is then free to take the whole bar, which is what it does. The arithmetic:
+
+     desktop   69px header - 1px hairline - 4px - 4px     = 60px
+     <=1024    76px header - 1px hairline - 4.5px - 4.5px = 67px
+
+   The 4px is deliberately small because the artwork brings its own. The supplied file is
+   444x186 with the opaque mark occupying y 6..177 — 172 of 186, so ~7.5% of the painted height
+   is transparent. At 60px that is 2px above and 2.6px below on top of the 4px, so the mark
+   itself clears the hairline by ~6px while the box clears by 4. Measured, not assumed.
+
+   The overflow spills into the header's own 16px of padding and stops there; `.hdr` sets no
+   `overflow`, so nothing clips.
+
+   Width stays `auto` so the image's own 2.387:1 decides it (143px desktop, 160px mobile),
+   rather than a number written here that would go stale if the artwork is ever recut. The
+   `width`/`height` attributes on the <img> give it that ratio before the file arrives, so the
+   header never reflows around it. At 320px — the narrowest supported width, where the burger
+   is the only thing on the right — that still leaves 76px of clear space between the two. */
+.hdr .brand{--brand-h:27px;--brand-draw:60px;
+  display:flex;align-items:center;color:var(--ink)}
+.hdr .brand img{display:block;width:auto;
+  height:var(--brand-draw);
+  margin-block:calc((var(--brand-h) - var(--brand-draw)) / 2)}
 
 /* ---- the right-hand group: pages, a hairline, then actions ---- */
 .hdr .hend{display:flex;align-items:center;gap:clamp(10px,1.3vw,20px)}
@@ -287,6 +318,12 @@
      box drawn around the rules */
   .hdr .burger{background:none;border-color:transparent;box-shadow:none;
     backdrop-filter:none;-webkit-backdrop-filter:none}
+}
+
+/* The bar is 76px below 1025 rather than 69px — the burger is taller than the nav pills — so
+   the logo takes the extra 7px too. Same arithmetic: 76 - 1 hairline - 4.5 - 4.5. */
+@media (max-width:1024px){
+  .hdr .brand{--brand-draw:67px}
 }
 
 /* The mobile wordmark step that used to live here is gone with the wordmark. It read

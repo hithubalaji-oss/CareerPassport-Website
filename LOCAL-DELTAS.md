@@ -722,11 +722,47 @@ ringing around the letterforms. Alpha is preserved (4 channels, 444x186), and th
 stays in `assets/` beside `fingerprint.png`, which is the convention this repo already uses:
 sources in the repo root's `assets/`, what ships in `public/assets/`.
 
-**The sizing.** Height, not width: `height:27px; width:auto`, 27px being exactly what the chip it
-replaces was. The image's own 2.387:1 then gives ~64.4px of width, so the number is never written
-down twice and cannot go stale if the artwork is recut. The `width`/`height` attributes give the
-box its ratio before the file arrives, so the header never reflows around it. Measured 64.4x27 on
-all six page/viewport combinations, and `--hdr` still reads 69px desktop / 76px mobile.
+**The sizing, which is the part worth reading.** The logo is drawn at the full height of the bar
+while its LAYOUT box stays at 27px — exactly what the passport chip it replaced was.
+
+That distinction is load-bearing. `.hdr` is a flex row with `align-items:center` and no height of
+its own: 16px of padding, plus its tallest child, plus the bottom hairline. That comes to 69px on
+desktop (36px nav pills) and 76px below 1025 (43px burger), and those two numbers are what `--hdr`
+is declared as and what every pinned section, fold and `calc(100svh - var(--hdr))` on all three
+pages is measured against — with a ResizeObserver in `Header.astro` republishing `--hdr` if the
+bar ever disagrees. So sizing the logo the obvious way, `height:60px`, does not make the logo
+bigger: it makes the header 93px and reflows all three pages.
+
+```css
+.hdr .brand{--brand-h:27px; --brand-draw:60px}          /* 67px below 1025 */
+.hdr .brand img{height:var(--brand-draw); width:auto;
+  margin-block:calc((var(--brand-h) - var(--brand-draw)) / 2)}
+```
+
+The negative block margin is the difference, halved, so the image's MARGIN box comes back to
+`--brand-h` and the overflow is shared evenly above and below the centre line. The brand then
+contributes exactly what it contributed before and the bar's height is unchanged by construction
+rather than by inspection. The spill lands inside the header's own 16px of padding; `.hdr` sets
+no `overflow`, so nothing clips.
+
+The draw heights are the bar minus the hairline minus a small margin:
+
+```
+desktop   69 - 1 - 4   - 4   = 60px
+<=1024    76 - 1 - 4.5 - 4.5 = 67px
+```
+
+4px is deliberately small because the artwork brings its own: the file is 444x186 with the opaque
+mark at y 6..177, so ~7.5% of the painted height is transparent. At 60px that is 2px above and
+2.6px below on top of the 4px, and the mark itself clears the hairline by ~6px.
+
+Width stays `auto` so the image's 2.387:1 decides it — 143px desktop, 160px below 1025 — rather
+than a second number that could go stale if the artwork is recut. The `width`/`height` attributes
+give the box that ratio before the file arrives, so the header never reflows around it.
+
+Measured across five widths from 320 to 1440: the bar is 69px / 76px exactly as before, the brand
+box is 27px tall at every one of them, and at 320px — the narrowest supported width, where the
+burger is the only thing on the right — 76px of clear space still separates the two.
 
 **One rule died with the wordmark.** `@media (max-width:1024px){ .hdr .brand span{font-size:11px} }`
 existed because this sheet is linked after each page's inline `<style>` and its 13.5px was
