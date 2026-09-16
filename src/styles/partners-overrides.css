@@ -88,3 +88,29 @@
 .slab .statv  { justify-content: center }
 .slab .stat b,
 .slab .stat i { margin-inline: auto }
+
+/* ---- fold 2: the insight slab -----------------------------------------------------------
+   Content supplied as a slide (15 Sep): an eyebrow with a hairline either side, a two-line
+   heading whose second line is gold, a lede, then the three counters with a rule between them.
+   The heading's second sentence is a block so it breaks where the slide breaks it on desktop
+   and wraps on its own terms on a phone. Both viewports; only the column dividers are
+   desktop-only, since the counters stack on a phone. */
+#slab1 .slabhead { display: flex; flex-direction: column; align-items: center;
+  gap: clamp(14px, 2.2vh, 26px) }
+#slab1 .eyebrow { justify-content: center }
+#slab1 .eyebrow i { width: clamp(40px, 5vw, 88px) }
+#slab1 .slabh { max-width: none; text-wrap: balance }
+#slab1 .slabh em { display: block; font-style: normal; color: var(--emerald) }
+#slab1 .lede { max-width: 58ch; margin: 0 }
+#slab1 .stat b { font-size: clamp(16px, 1.45vw, 22px); max-width: 26ch }
+#slab1 .stat i { font-size: clamp(13px, 1.05vw, 16px); max-width: 32ch }
+@media (min-width: 1025px) {
+  #slab1 .stat + .stat { border-left: 1px solid var(--hairline) }
+}
+
+/* ---- the closing frame's product screen ---------------------------------------------------
+   Final artwork, not an <image-slot>: the screens are rendered from scripts/mocks/ by
+   `npm run render:mocks` and committed under public/assets/. The export's own rule targets
+   `.pscreen image-slot`, which no longer exists, so the <img> takes the same box here. */
+.pscreen .pshot { position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block }

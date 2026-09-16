@@ -13,19 +13,6 @@
   addEventListener('resize',sync,{passive:true});
 })();
 
-/* ---- the partners strip: user-filled slots, duplicated for a seamless loop ---- */
-(function(){
-  var track=document.getElementById('logoTrack'); if(!track) return;
-  var N=7, html='';
-  for(var pass=0;pass<2;pass++){
-    for(var i=1;i<=N;i++){
-      html+='<div class="lg"><image-slot id="rp-logo-'+i+'" shape="rect" '+
-        (pass?'aria-hidden="true" ':'')+'placeholder="Logo '+i+'"></image-slot></div>';
-    }
-  }
-  track.innerHTML=html;
-})();
-
 /* ---- the pinned narrative -----------------------------------------------------------
    One 0..1 progress for the fold, divided into four equal acts with a short cross-fade at
    each boundary. Ticked from the scroll event directly (rAF is throttled to nothing while

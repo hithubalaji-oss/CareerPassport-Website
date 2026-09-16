@@ -78,9 +78,9 @@
        This is the thing that makes every fold arrange itself the same way on every phone.
 
        The fault it replaces: the copy column and the passport were positioned by two systems
-       that could not see each other. The column is fixed, anchored to the viewport bottom, and
-       sizes itself to its own text — so its top edge moves with the screen AND with how the
-       text rewraps. The passport was placed by a hand-tuned scale and offset per fold. The gap
+       that could not see each other. The column rests at the foot of its fold's pin (it was
+       a fixed box until 15 Sep; now it scrolls, and is measured at rest) and sizes itself to
+       its own text — so its top edge moves with the screen AND with how the text rewraps. The passport was placed by a hand-tuned scale and offset per fold. The gap
        between them was therefore an accident, and it came out at 152px on one phone and -2px on
        another. Measured across six viewports before this change, fold 4 overlapped its own
        headline by 34px at 412x730, 43px at 390x700 and 68px at 360x640, while sitting 46px
@@ -100,29 +100,52 @@
     var GAP = 14;   /* air between the art and the first line of copy */
     var GUT = 20;   /* the page's own side gutter, for width-limited art */
 
+    /* The copy is in flow at the foot of its fold's sticky .pin (mobile-passport.css), so it
+       is measured where it RESTS — the pin stuck to the top of the viewport — not where it
+       happens to be when the state changes, which is half a screen lower and still rising.
+       The distance from the column's top to the pin's bottom never changes as it scrolls, so
+       its resting top is the pin's own height minus that distance. Same for the outro, whose
+       section is its own 100svh frame. */
+    function restingTop(el, host) {
+      var h = host.getBoundingClientRect(), r = el.getBoundingClientRect();
+      return h.height - (h.bottom - r.top);
+    }
+    function restingBottom(el, host) {
+      var h = host.getBoundingClientRect(), r = el.getBoundingClientRect();
+      return r.bottom - h.top;
+    }
     function copyTopFor(n) {
       /* fold 1's copy begins at the handle row, not at the eyebrow: the eyebrow is ABOVE the
          passport there, and is the band's top edge rather than its bottom. */
       if (n === 1) {
         var first = document.querySelector('#f1 .metarow') || document.querySelector('#f1 .field');
-        return first ? first.getBoundingClientRect().top : innerHeight;
+        var pin1 = document.querySelector('#f1 .pin');
+        return first && pin1 ? restingTop(first, pin1) : innerHeight;
       }
-      var col = n >= 6 ? document.querySelector('.outro .ocopy')
-                       : document.querySelector('#f' + n + ' .col');
-      return col ? col.getBoundingClientRect().top : innerHeight;
+      if (n >= 6) {
+        var oc = document.querySelector('.outro .ocopy'), ou = document.querySelector('.outro');
+        return oc && ou ? restingTop(oc, ou) : innerHeight;
+      }
+      var col = document.querySelector('#f' + n + ' .col');
+      var pin = document.querySelector('#f' + n + ' .pin');
+      return col && pin ? restingTop(col, pin) : innerHeight;
     }
 
     function bandTopFor(n) {
       var hdrB = hdrEl ? hdrEl.getBoundingClientRect().bottom : 76;
       if (n === 1) {
-        var eb = document.querySelector('#f1 .eyebrow');
-        return (eb ? eb.getBoundingClientRect().bottom : hdrB) + GAP;
+        var eb = document.querySelector('#f1 .eyebrow'), pin1 = document.querySelector('#f1 .pin');
+        return (eb && pin1 ? restingBottom(eb, pin1) : hdrB) + GAP;
       }
       return hdrB + GAP;
     }
 
     function measure(n) {
-      var vh = innerHeight, vw = innerWidth;
+      /* the art layer is a 100svh box at the current fold's top (see .stage[data-mfold] in
+         the stylesheet); every value below is relative to THAT box, not the viewport, so the
+         measurement is the same whether or not the fold is at rest when it is taken */
+      var sr = stage.getBoundingClientRect();
+      var vh = sr.height || innerHeight, vw = innerWidth;
       var top = bandTopFor(n);
       var bot = copyTopFor(n) - GAP;
       if (bot - top < 80) bot = top + 80;       /* a floor, so nothing ever inverts */
@@ -213,8 +236,8 @@
           var s = (r.height * 0.92 * 0.7) / 640;
           var cw = 460 * s, ch = 640 * s;
           setVar('--f4-scale', s.toFixed(4));
-          setVar('--f4-dx', (r.right  - vw / 2 - cw / 2).toFixed(1) + 'px');
-          setVar('--f4-dy', (r.bottom - vh / 2 - ch / 2).toFixed(1) + 'px');
+          setVar('--f4-dx', ((r.right  - sr.left) - vw / 2 - cw / 2).toFixed(1) + 'px');
+          setVar('--f4-dy', ((r.bottom - sr.top)  - vh / 2 - ch / 2).toFixed(1) + 'px');
         }
       }
     }
@@ -263,9 +286,31 @@
       loopT = setInterval(function () { i = (i + 1) % n; window.__cpStep(i); }, 1700);
     }
 
+    /* ---- the art layer's anchor ----
+       #stage is absolutely positioned at the top of the current section, in document
+       coordinates, so it scrolls with that section. Re-read on resize and font arrival with
+       the rest of the measurement, since section tops move when text rewraps. */
+    function placeStage(n) {
+      var el = sections[n - 1]; if (!el) return;
+      stage.style.setProperty('--stage-top', Math.round(el.getBoundingClientRect().top + (window.scrollY || 0)) + 'px');
+    }
+
+    var moveT = 0;
     function apply(n) {
       if (n === current) return;
       if (typing) { pending = n; return; }
+      /* The layer moves a whole section in one step, so it fades across the step: out where
+         it was, in where it now belongs. 140ms out, then the move, then 200ms back. A second
+         change inside that window simply retargets the pending move. */
+      if (moveT) clearTimeout(moveT);
+      stage.classList.add('moving');
+      moveT = setTimeout(function () {
+        moveT = 0;
+        commit(n);
+        requestAnimationFrame(function () { stage.classList.remove('moving'); });
+      }, 140);
+    }
+    function commit(n) {
       var fast = velocity() > SNAP_ABOVE || Math.abs(n - current) > 1;
       if (fast) {
         setVar('--m-glide', '0ms'); setVar('--m-open', '0ms'); setVar('--m-copy', '0ms');
@@ -281,7 +326,8 @@
          invalidates style for the whole document — measured, and it wiped out the entire
          saving this file exists to produce. */
       setState(String(n));
-      /* after the attribute, so the new fold's copy is the one measured */
+      placeStage(n);
+      /* after the attribute and the move, so the new fold's copy is the one measured */
       measure(n);
       companionLoop(n === 4);
     }
@@ -295,11 +341,13 @@
       }
       if (best) apply(+best.target.getAttribute('data-mfold-index'));
     }, {
-      /* A fold is 130-320vh tall, so it can never be 50% visible and a ratio threshold would
-         never fire for it. Collapsing the root to a 1px line across the middle of the screen
-         asks the right question instead: which fold is under the centre of the viewport?
-         Exactly one section satisfies that at a time, so the callback is unambiguous. */
-      rootMargin: '-50% 0px -50% 0px',
+      /* Collapsing the root to a 1px line asks the right question: which section is under
+         that line? Exactly one at a time, so the callback is unambiguous. The line sits at
+         55% down the screen rather than the centre: a section becomes current once its top
+         has risen past 45svh, by which point the previous section's art band (which ends at
+         most ~65svh below its own top) has already cleared the header. So when the art layer
+         steps to the new section, nothing was on screen where it left from. */
+      rootMargin: '-55% 0px -45% 0px',
       threshold: 0
     });
 
@@ -315,13 +363,14 @@
     /* first paint: whichever section is already on screen, with no glide */
     setVar('--m-glide', '0ms'); setVar('--m-copy', '0ms');
     setState('1');
+    placeStage(1);
     measure(1);
 
     /* The band depends on where the text ended up, so it has to be re-taken whenever the text
        could have moved: a rotation, a resize, and web fonts arriving — that last one changes
        every line's metrics and therefore the column's height, and it lands well after the
        first paint. */
-    var remeasure = function () { measure(current || 1); };
+    var remeasure = function () { placeStage(current || 1); measure(current || 1); };
     addEventListener('resize', remeasure);
     addEventListener('orientationchange', remeasure);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(remeasure);

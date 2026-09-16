@@ -1174,9 +1174,11 @@ function drawHeroFrame(liftP,outP,ms){
   });
 })();
 
-/* ---------- handle entry writes onto the cover ---------- */
-var reservedHandle='';
-var input=$('#handle'),field=$('#field'),chnd=$('#chnd'),chh=$('#chh'),avail=$('#avail'),pgH=$('#pgHandle');
+/* ---------- the email writes onto the cover ----------
+   One step (16 Sep): the hero asks for a work email and joins the waitlist. The part before
+   the @ is the handle the cover shows as it is typed — so the passport still becomes yours
+   while you type — and the reserve-a-handle step that used to come first is gone. */
+var input=$('#handle'),field=$('#field'),chnd=$('#chnd'),chh=$('#chh'),pgH=$('#pgHandle');
 /* The cover's handle line is rebuilt character by character, and only characters that
    were not there a keystroke ago get .nu — so appending one letter flashes one letter
    rather than the whole line, and deleting flashes nothing. */
@@ -1193,50 +1195,43 @@ function paintHandle(str, live){
   chh.innerHTML=out;
   hPrev=str;
 }
+/* the handle is the address's local part, kept to the characters a handle can carry */
+function localPart(v){
+  return (v||'').split('@')[0].toLowerCase().replace(/[^a-z0-9._-]/g,'').slice(0,22);
+}
 paintHandle('your-handle', false);
+var fbox=$('#fbox'),reserve=$('#reserve'),joined=false;
 input.addEventListener('input',function(){
-  if(reserveMode!=='handle') return;
-  var v=(input.value||'').toLowerCase().replace(/[^a-z0-9._-]/g,'').slice(0,22);
+  if(joined) return;
+  var v=localPart(input.value);
   paintHandle(v||'your-handle', !!v);
   pgH.textContent='/'+(v||'your-handle');
   chnd.classList.toggle('on',!!v);
   pgids.forEach(function(n){n.textContent='/'+(v||'your-handle')});
   field.classList.toggle('on',!!v);
-  /* the button stays enabled; an empty press shakes the field instead */
-  if(reserveMode==='handle') fbox.classList.remove('nudge');
-  avail.classList.toggle('on',!!v);
+  fbox.classList.remove('nudge');
 });
-var fbox=$('#fbox'),fpre=$('#fpre'),reserve=$('#reserve'),reserveMode='handle';
-reserve.addEventListener('click',function(){
-  if(reserveMode==='handle'){
-    if(!input.value){
-      /* restart the animation even on a repeated press: removing the class, forcing a
-         reflow and re-adding is the only way to replay it from frame zero */
-      fbox.classList.remove('nudge');
-      void fbox.offsetWidth;
-      fbox.classList.add('nudge');
-      input.focus();
-      return;
-    }
-    reserveMode='email';
-    field.classList.add('mode-email');
-    fpre.textContent='email:'; fpre.classList.add('email');
-    reservedHandle=input.value;   /* kept before the field is repurposed for the email */
-    input.type='email'; input.placeholder='you@work.com'; input.value=''; input.setAttribute('aria-label','Your email');
-    reserve.textContent='JOIN THE WAITLIST';
-    reserve.disabled=false;
+function join(){
+  if(joined) return;
+  if(!input.value || !input.checkValidity()){
+    /* restart the shake even on a repeated press: removing the class, forcing a reflow
+       and re-adding is the only way to replay it from frame zero */
+    fbox.classList.remove('nudge');
+    void fbox.offsetWidth;
+    fbox.classList.add('nudge');
     input.focus();
+    if(input.value && input.reportValidity) input.reportValidity();
     return;
   }
-  if(reserveMode==='email'){
-    if(!input.value || !input.checkValidity()){ input.focus(); input.reportValidity&&input.reportValidity(); return; }
-    reserveMode='done';
-    field.classList.add('done');
-    fbox.innerHTML='<span class="fhandle"><i>✓</i><b></b></span>';
-    fbox.querySelector('.fhandle b').textContent=reservedHandle||'reserved';
-    reserve.textContent='RESERVED';
-  }
-});
+  joined=true;
+  var v=localPart(input.value);
+  field.classList.add('done');
+  fbox.innerHTML='<span class="fhandle"><i>\u2713</i><b></b></span>';
+  fbox.querySelector('.fhandle b').textContent=(v?'/'+v+' \u00b7 ':'')+"you're on the list";
+  reserve.textContent='CONFIRMED \u2713';
+}
+reserve.addEventListener('click',join);
+input.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); join(); } });
 
 /* ---------- outro reveals ---------- */
 var waitEl=$('#wait'), waitEmail=$('#waitEmail'), waitBtn=$('#waitBtn');

@@ -12,7 +12,6 @@ import Footer from '../components/chrome/Footer.astro';
 import Ground from '../components/companies/Ground.astro';
 import Hero from '../components/companies/Hero.astro';
 import ProcessDemo from '../components/companies/ProcessDemo.astro';
-import Comparison from '../components/companies/Comparison.astro';
 import Closing from '../components/companies/Closing.astro';
 
 import '../styles/cp-header.css';
@@ -34,7 +33,6 @@ import '../styles/local-overrides.css';
   <Header />
   <Hero />
   <ProcessDemo />
-  <Comparison />
   <Closing />
   <Footer cta="Hire on evidence" />
 
@@ -49,7 +47,6 @@ import '../styles/local-overrides.css';
       ? { hero: 150, demo: 520 }     /* four scroll folds */
       : { hero: 200, demo: 620 };    /* the send, then five stops */
   </script>
-  <script src="/image-slot.js" is:inline></script>
   <script src="../scripts/mobile-pages.js"></script>
   <script src="../scripts/companies-desktop.js"></script>
   <script src="../scripts/companies.js"></script>

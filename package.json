@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Marketing site for CareerPassport — a verified-career-record product.",
+  "description": "Marketing site for CareerPassport \u2014 a verified-career-record product.",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "check": "npm run check:design && npm run check:deltas",
     "check:deltas": "node scripts/check-deltas.mjs",
-    "check:design": "node scripts/check-design-files.mjs"
+    "check:design": "node scripts/check-design-files.mjs",
+    "render:mocks": "node scripts/render-mocks.mjs"
   },
   "devDependencies": {
     "astro": "^5.6.1"

@@ -181,10 +181,54 @@ That works because every mobile override falls through to the authored value whe
 publishes it. Keep it that way — it is what makes "desktop untouched" true by construction
 rather than by inspection.
 
+### 15 Sep — the mobile homepage is a plain page
+
+Asked for twice in one session, the second time as "the Partners page has a normal scroll,
+I want this only". The fold copy on a phone had been a `position:fixed` box cross-fading
+between states while a spacer scrolled, so a swipe moved nothing on screen. A first pass put
+the copy in flow inside a sticky pin with a short hold and an exit fade; that still left
+something on screen that did not move with the finger. Now nothing is pinned.
+
+How it works (`mobile-passport.css`, `mobile-passport.js`, both export-proof):
+- Every fold is exactly one screen: `--h: 100`, `.pin` is `position:relative; height:100svh`,
+  `.col` is `position:static` at its foot (static rather than relative because homepage.css
+  still writes top/bottom offsets for the old fixed layout). The outro is a 100svh flex frame
+  with `.ocopy` at its foot and the ring absolute at the measured band inside it.
+- The art layer `#stage` is no longer fixed. It is `position:absolute`, a 100svh box whose
+  top is the current section's top (`--stage-top`, written by `placeStage()`). That box is
+  exactly the viewport the fixed layer used to occupy when the fold was at rest, so every
+  band measurement inside it is unchanged, and the art scrolls away with its fold.
+- On a state change the layer steps to the next section. `apply()` fades it out (140ms), moves
+  and re-measures, fades it back (200ms). The observer line is at 55% of the screen, so by the
+  time a section becomes current the previous section's band has already cleared the header
+  and the step is never seen on screen.
+- `measure()` reads everything relative to the stage box (`stage.getBoundingClientRect()`),
+  not the viewport, so it is correct whether or not the fold is at rest when it runs.
+- `copyTopFor()` measures the copy relative to its pin (pin height minus copy-top-to-pin-bottom
+  distance), which is the same box.
+
+Measured on 390x844 and 360x640 (Playwright, real wheel input): every fold's copy sits below
+the art band with a positive gap at rest; the state steps at 55% of the previous fold; the
+homepage is 7.1 screens. Desktop is untouched: the flag is never set above 1024px.
+
+### 16 Sep — For Companies
+
+- The comparison table ("Your tools …", `Comparison.astro`, section 04) is **removed** on
+  request. Its builder and styles are gone with it; D8/D9 no longer reference it. Sections are
+  still labelled 01–07 with 04 absent; nothing reads the labels.
+- The closing frames on both interior pages carry rendered product screens (see item 1 below).
+- **Homepage hero is one step**: a work-email field and "Join the waitlist"; the address's
+  local part is the handle the passport shows while typing (D14). The reserve-a-handle step,
+  the `careerpassport.ai/` prefix and the AVAILABLE chip are gone.
+
 ### Open, flagged to the user, not started
 
-1. **The `<image-slot>` placeholders are still unfilled** on both interior pages. One overlaps
-   the ring on the Partners outro. Waiting on real artwork; their ids say what belongs in each.
+1. ~~The `<image-slot>` placeholders~~ — **filled (15 Sep)**. Both closing frames now carry a
+   rendered product screen: sources in `scripts/mocks/`, rendered to `public/assets/` by
+   `npm run render:mocks` (headless Chrome + sharp), committed as `.webp`. The `<image-slot>`
+   component and its script are gone from both pages; the frame rule lives in
+   `local-overrides.css` / `partners-overrides.css`. Swap the mocks for real screen grabs by
+   replacing the two `.webp` files, or edit the mock HTML and re-render.
 2. **Two demo act layers never appear** on For Companies — `.verifying` and `.ctally`. Not on
    mobile and **not on the scroll-driven desktop path either**, so it is pre-existing and
    possibly dead states. Flagged, deliberately not changed.
