@@ -1268,43 +1268,6 @@ button{font-family:inherit;cursor:pointer}input{font-family:inherit}input:focus{
   #f1 .field:has(.fbox.nudge){animation:fieldNudgeFlash .5s ease-in-out both}
 }
 
-/* ================= video overlay ======================================================
-   Shared by both viewports. Fixed, top of the stack, and it blurs what is behind it with
-   backdrop-filter rather than by filtering a page wrapper — filtering an ancestor would
-   create a containing block and break every sticky pin on the page. */
-.vmodal{position:fixed;inset:0;z-index:200;display:grid;place-items:center;
-  padding:clamp(16px,4vw,56px);
-  background:rgba(10,18,34,.78);
-  backdrop-filter:blur(22px) saturate(.9);-webkit-backdrop-filter:blur(22px) saturate(.9);
-  opacity:0;transition:opacity .18s var(--ease)}
-.vmodal[hidden]{display:none}
-.vmodal.on{opacity:1}
-.vmstage{width:min(100%,1100px);aspect-ratio:16/9;
-  border-radius:var(--r-card-lg,16px);overflow:hidden;background:#05080f;
-  border:1px solid var(--hairline);
-  box-shadow:0 2px 2px rgba(0,0,0,.5),0 30px 70px -18px rgba(0,0,0,.9);
-  scale:.985;transition:scale .18s var(--ease)}
-.vmodal.on .vmstage{scale:1}
-.vmslot,.vmslot iframe,.vmslot video{display:block;width:100%;height:100%;border:0}
-.vmslot{display:grid;place-items:center}
-.vmph{display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center}
-.vmph svg{width:34px;height:34px;fill:var(--emerald);opacity:.5}
-.vmph b{font-size:15px;font-weight:600;color:var(--ink)}
-.vmph em{font-style:normal;font-family:var(--mono);font-size:11px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--faint)}
-.vmclose{position:absolute;top:clamp(12px,2.4vw,26px);right:clamp(12px,2.4vw,26px);
-  display:grid;place-items:center;width:44px;height:44px;padding:0;
-  border-radius:50%;background:rgba(16,28,51,.9);
-  border:1px solid var(--hairline-strong,#283350);
-  color:var(--ink);cursor:pointer;
-  transition:background .16s var(--ease),border-color .16s var(--ease)}
-.vmclose svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;
-  stroke-linecap:round}
-.vmclose:hover{background:rgba(26,36,56,.95);border-color:var(--emerald)}
-.vmclose:focus-visible{outline:2px solid var(--emerald);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){
-  .vmodal,.vmstage{transition:none}
-}
 /* the reserved handle, shown inside the field once the flow completes.
    NOT .fdone — that name is already the collapsed-reveal state in fold 5's artwork. */
 .fhandle{display:flex;align-items:center;gap:8px;min-width:0;

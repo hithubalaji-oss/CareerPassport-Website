@@ -14,7 +14,6 @@ import Ground from '../components/homepage/Ground.astro';
 import Passport from '../components/homepage/Passport.astro';
 import Folds from '../components/homepage/Folds.astro';
 import Outro from '../components/homepage/Outro.astro';
-import VideoOverlay from '../components/homepage/VideoOverlay.astro';
 
 import '../styles/cp-header.css';
 import '../styles/homepage.css';
@@ -29,7 +28,7 @@ import '../styles/local-overrides.css';
 
 <Base
   title="CareerPassport — The professional identity for ambitious people"
-  description="Your work, your projects, your skills — turned into a record employers can actually trust. One that keeps growing with you."
+  description="Your lived experiences, your projects, your skills turned into a living identity the world can trust. One that keeps growing with you."
 >
   <Fragment slot="head">
     {/* Both are injected by script, so the browser cannot see them in the markup.
@@ -65,7 +64,6 @@ import '../styles/local-overrides.css';
   <Folds />
   <Outro />
   <Footer cta="Your passport, waiting" />
-  <VideoOverlay />
 
   {/* BEFORE homepage.js: it sets window.__cpManual while the driver is still parsing, so on
       a phone the driver never starts. Above 1024px it returns immediately and changes nothing. */}
@@ -73,5 +71,4 @@ import '../styles/local-overrides.css';
   <script src="../scripts/homepage.js"></script>
   <script src="../scripts/homepage-extra.js"></script>
   <script src="../scripts/cp-keys.js"></script>
-  <script src="../scripts/video-overlay.js"></script>
 </Base>

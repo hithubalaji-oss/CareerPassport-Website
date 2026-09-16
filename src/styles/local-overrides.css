@@ -147,3 +147,15 @@
 }
 .aiex .exwires .exdotg { opacity: .95 !important }
 
+/* ---- the closing frame's product screen ---------------------------------------------------
+   Final artwork, not an <image-slot>: the screens are rendered from scripts/mocks/ by
+   `npm run render:mocks` and committed under public/assets/. The export's own rule targets
+   `.pscreen image-slot`, which no longer exists, so the <img> takes the same box here. */
+.pscreen .pshot { position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block }
+
+/* ---- the hero field asks for an email (16 Sep) -----------------------------------------
+   One control: the address, and "Join the waitlist". The button label is longer than
+   RESERVE was, so the pill gets the width the old email step already had. Mobile sets
+   max-width:none on this rule's target and is unaffected. */
+#f1 .field { max-width: 600px }

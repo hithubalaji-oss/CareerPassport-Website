@@ -20,19 +20,6 @@
    third of the source) and LIFT_PX raises it further. The video plays on its own loop;
    nothing here touches playback. */
 
-/* ---- the comparison arrives row by row ----
-   The grid is flat markup (one label cell + four value cells per row), so the rows are
-   recovered by counting columns. Each row's five elements share one --i, which makes them
-   land together while the rows themselves cascade. */
-(function(){
-  var grid=document.querySelector('.cmpg'); if(!grid) return;
-  var kids=[].slice.call(grid.children), COLS=5;
-  kids.forEach(function(el,n){
-    el.classList.add('rv');
-    el.style.setProperty('--i', Math.floor(n / COLS));
-  });
-})();
-
 /* ---- the ground's parallax: the rule grid drifts at a fraction of the page's speed ---- */
 (function(){
   var grid=document.querySelector('.grid-bg'); if(!grid) return;
@@ -912,75 +899,6 @@
   addEventListener('resize',function(){ lastDrift=null; frame() },{passive:true});
 })();
 
-
-/* ---- the stacked reading of the comparison, generated FROM the table ----
-   One source of truth: edit a cell in the markup above and the stacked version follows,
-   so the two readings can never drift apart. */
-(function(){
-  var grid=document.querySelector('.cmpg'), out=document.getElementById('cmpStack');
-  if(!grid||!out) return;
-  var kids=[].slice.call(grid.children);
-  /* head: [Compare][liftcol][us][3 others] then repeating [rowlabel][4 cells] */
-  var heads=kids.filter(function(k){ return k.classList.contains('cmph') })
-                .map(function(k){ return k.querySelector('b').textContent });
-  /* D8 · Three columns on the stacked reading, not four. The table compares CareerPassport
-     against Your ATS, Job boards and CV screening; on a phone that is four paragraphs per
-     capability, six times over, and it stopped reading as a comparison and became a wall.
-     CV screening is the one dropped — it is the narrowest of the three and the one whose
-     answer is most often a restatement of the CV column above it. The desktop table is
-     untouched and still carries all four. */
-  var cols=heads.slice(1,4);                     /* CareerPassport + ATS + Job boards */
-  var rows=[],cur=null;
-  kids.forEach(function(k){
-    if(k.classList.contains('cmpr')){
-      cur={label:k.querySelector('b').textContent,cells:[]};
-      rows.push(cur);
-    } else if(k.classList.contains('cell') && cur){
-      /* D8 · the phone reading prefers the cell's short form when one is authored. The full
-         sentence is what the table wants at desktop width; at 15px in a stacked card it is
-         three lines where one will do. data-m is inert markup, so the table is unchanged. */
-      var cp=k.querySelector('p');
-      cur.cells.push(cp.getAttribute('data-m') || cp.textContent);
-    }
-  });
-  /* D9 · A GRID, not a stack of cards. Six capabilities x four columns of full sentences was
-     eighteen paragraphs read one after another — it had stopped being a comparison and become
-     a page of prose you scroll past. Three columns now, each cell two or three words, so the
-     contrast is something you SEE across a row rather than something you read down a column.
-
-     The capability's name is a band spanning the three columns rather than a fourth column of
-     its own: at 320px a four-column table gives each cell about 70px, which no phrase survives.
-     So the section reads as three columns and seven bands — the headers, then one per
-     capability. Desktop still builds and hides this, exactly as before, and its own table is
-     untouched. */
-  out.innerHTML=
-    '<div class="cmpgrid">'+
-      cols.map(function(c,i){
-        return '<div class="cmphd'+(i===0?' us':'')+'">'+c+'</div>';
-      }).join('')+
-      rows.map(function(r){
-        return '<div class="cmpband">'+r.label+'</div>'+
-          r.cells.slice(0,3).map(function(c,i){
-            return '<div class="cmpc'+(i===0?' us':'')+'">'+
-              (i===0?'<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>':'')+
-              '<span>'+c+'</span></div>';
-          }).join('');
-      }).join('')+
-    '</div>';
-})();
-
-/* ---- the companies strip: user-filled slots, duplicated for a seamless loop ---- */
-(function(){
-  var track=document.getElementById('logoTrack'); if(!track) return;
-  var N=7, html='';
-  for(var pass=0;pass<2;pass++){
-    for(var i=1;i<=N;i++){
-      html+='<div class="lg"><image-slot id="cmp-logo-'+i+'" shape="rect" '+
-        (pass?'aria-hidden="true" ':'')+'placeholder="Logo '+i+'"></image-slot></div>';
-    }
-  }
-  track.innerHTML=html;
-})();
 
 /* ---- reveal on enter ----
    The animation is an enhancement and is never allowed to hide content, but it also must

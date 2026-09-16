@@ -146,41 +146,36 @@ const DELTAS = [
     title: 'For Companies: the content edits, and the hooks the four-fold demo needs',
     file: 'src/scripts/companies.js',
     design: 'For Companies.html',
-    // the guard, the three driver hooks, and the stacked comparison's three columns
+    // the guard and the three driver hooks
     present: [
       'if(pill) pill.classList.toggle',
       'window.__cpBookPane=function(on)',
       'if(window.__cpCursorOn) curOn2=',
       'var aim=window.__cpCursorAim;',
-      "cp.getAttribute('data-m') || cp.textContent",
-      'var cols=heads.slice(1,4);',
     ],
     // the unhooked forms. `pill.classList` returning unguarded is the dangerous one: with
     // the pill gone from the markup it throws and takes the whole hero driver with it.
     reverted: [
       /\n    pill\.classList\.toggle\('hot',done\);/,
-      /var cols=heads\.slice\(1\);/,
     ],
     // the pill is a DELETION: what is watched for is its return to the markup
     deleted: [['src/components/companies/Hero.astro', 'class="aipill"']],
     extraFiles: [
       'src/components/companies/ProcessDemo.astro',
       'src/components/chrome/Footer.astro',
-      'src/components/companies/Comparison.astro',
       'src/components/chrome/Header.astro',
       'src/scripts/mobile-pages.js',
     ],
     extraPresent: [
       '>Design the journey<',
       '>Sign up<',
-      '<p data-m="',   // the mechanism; D9 asserts the copy itself
       'DRAWER_LINKS',
       'function demoFolds(',
     ],
   },
   {
     id: 'D9',
-    title: 'For Companies: the cursor origin, the frozen book scale, and the comparison grid',
+    title: 'For Companies: the cursor origin and the frozen book scale',
     file: 'src/scripts/companies.js',
     design: 'For Companies.html',
     present: [
@@ -189,7 +184,6 @@ const DELTAS = [
       "cur.classList.toggle('left',tx>origin.offsetWidth*0.55)",
       'window.__cpBookFreeze=function(on)',
       'if(dcFrozen) return;',
-      "'<div class=\"cmpgrid\">'+",
     ],
     // the forms that were wrong. The first is the one that matters: measured against the
     // stage rather than the cursor's own offset parent, every target is drawn 212px high
@@ -200,15 +194,11 @@ const DELTAS = [
       /return \{x:stage\.offsetWidth\+150, y:stage\.offsetHeight\*0\.42\}/,
     ],
     extraFiles: [
-      'src/components/companies/Comparison.astro',
       'src/components/chrome/Header.astro',
-      'src/styles/mobile-pages.css',
       'src/scripts/mobile-pages.js',
     ],
     extraPresent: [
-      'data-m="Competencies mapped"',
       '<a class="nbtn" href="#outro">Sign up</a>',
-      '.cmpgrid{',
       'ACT = [[G0, 0.385]',
     ],
     // the two strings removed from the drawer
@@ -360,6 +350,17 @@ const DELTAS = [
     deleted: [
       ['src/pages/for-recruitment-partners.astro', "import '../styles/local-overrides.css';"],
     ],
+  },
+  {
+    id: 'D14',
+    title: 'Homepage: the hero asks for an email, and its local part writes onto the cover',
+    file: 'src/scripts/homepage.js',
+    design: 'index.html',
+    present: ['function localPart(', "reserve.addEventListener('click',join)"],
+    // the two-step reserve-a-handle flow the design still carries
+    reverted: [/reserveMode='handle'/],
+    extraFiles: ['src/components/homepage/Folds.astro'],
+    extraPresent: ['id="handle" type="email"'],
   },
 ];
 

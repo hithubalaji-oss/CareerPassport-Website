@@ -257,6 +257,12 @@ visit.
 
 ---
 
+**Update, 15 Sep.** The fixed, cross-fading copy columns described above are gone, and so are
+the sticky pins: every fold is one 100svh screen with the copy in flow at its foot, and `#stage`
+is absolutely positioned at the current fold's top so the art scrolls with it. See CLAUDE.md,
+"15 Sep — the mobile homepage is a plain page". The check for this delta is unchanged (the files and the
+`__cpManual` flag are what it verifies).
+
 ## D3d — The driver exposes two hooks to the mobile layer
 
 **File:** `src/scripts/homepage.js` — `window.__cpBuildOnce`, `window.__cpPlaceClaims`
@@ -547,6 +553,13 @@ Document heights byte-identical on all three pages at 1440x900 and 1280x800, and
 sits inside the band the control (baseline against itself) establishes.
 
 ---
+
+**Update, 16 Sep — the comparison section is gone.** `Comparison.astro` (the "Your tools …"
+table between the demo and the closing) was removed on request: it was not adding enough to
+the page. With it went the phone builder and the row cascade in `companies.js`, the `.cmpgrid`
+rules in `mobile-pages.css`, and the `#difference` rules in `local-overrides.css`. D8 and D9 no
+longer assert any of it. If an export brings the table back, delete the component and its
+import again.
 
 ## D10 — For Companies: the desktop layer
 
@@ -1027,3 +1040,20 @@ was removed on request on 9 Sep for both viewports — the "Seal of trust / Evid
 claims" legend is meant to be static. The stale comment and the dead
 `prefers-reduced-motion` rule that referenced it have been cleaned up upstream. Do not
 restore any of it.
+
+## D14 — Homepage: the hero asks for an email, not a handle
+
+**Asked for, 16 Sep.** The hero used to run two steps: type a handle, press RESERVE, then
+the same field became an email field with JOIN THE WAITLIST. Now there is one step. The
+field is `type="email"` with "Join the waitlist"; as the address is typed, its local part
+(before the `@`, kept to handle characters) is what the cover shows on the passport and on
+the passport's page-one handle line. Enter or the button joins; the done state shows the
+handle and "you're on the list", the button reads CONFIRMED. The `careerpassport.ai/` prefix,
+the AVAILABLE chip and the `.metarow` are gone from the markup.
+
+Files: `Folds.astro` (markup), `homepage.js` (`localPart()`, `join()`), `local-overrides.css`
+(`#f1 .field{max-width:600px}`). The mobile driver measures fold 1 from `.metarow` or,
+failing that, `.field` — so it falls through to `.field` now.
+
+Check: `function localPart(` and the click binding in homepage.js; the email input in
+Folds.astro; `reserveMode='handle'` returning means the export won.

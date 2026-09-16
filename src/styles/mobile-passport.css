@@ -189,48 +189,51 @@
   .stage[data-mfold="3"] .verifying { animation: mVerify 1.5s var(--m-ease) 380ms both }
   @keyframes mVerify { 0%,100% { opacity: 0 } 22%,60% { opacity: 1 } }
 
-  /* ---- the fold copy: one at a time -------------------------------------------------
-     Each .col sits in a sticky .pin, so with the driver switched off every fold's copy is
-     stuck on screen at once and they pile on top of each other. The driver used to slide
-     them: translateX from 114vw in, to -114vw out, with opacity tracking the same clock.
+  /* ---- a plain page: every fold is one screen, and everything in it scrolls ---------------
+     (15 Sep, second pass — "I want the Partners page's scroll".) Nothing is pinned any more.
+     The copy used to be a position:fixed box that cross-faded between states while a spacer
+     scrolled; then it was in flow inside a sticky pin with a short hold. Both left something
+     on screen that did not move with the finger. Now the pin is an ordinary 100svh box, the
+     fold is exactly that tall, and the copy sits at its foot. The art layer (#stage) is
+     absolutely positioned at the top of whichever fold is current — see the block below — so
+     it scrolls with the fold too. A swipe moves the whole screen, as it does on Partners.
 
-     Here that becomes the same movement keyed to the fold state — in from the right, out to
-     the left — on translate and opacity only, so it stays on the compositor. The pinning is
-     kept, because holding the copy still while the fold scrolls past is the design's own
-     behaviour, not an artifact of the driver. */
-  main[data-mfold] .fold .col,
-  .outro[data-mfold] .ocopy {
-    opacity: 0;
-    translate: 34vw 0;
-    pointer-events: none;
-    transition:
-      opacity   var(--m-copy, 420ms) var(--m-ease),
-      translate var(--m-copy, 420ms) var(--m-ease);
-    /* no will-change here either — six viewport-sized text layers pinned permanently */
-  }
-  main[data-mfold="1"] #f1 .col,
-  main[data-mfold="2"] #f2 .col,
-  main[data-mfold="3"] #f3 .col,
-  main[data-mfold="4"] #f4 .col,
-  main[data-mfold="5"] #f5 .col,
-  .outro[data-mfold="6"] .ocopy {
+     `static`, not `relative`: homepage.css still writes top/bottom offsets for the old fixed
+     layout, and a relatively positioned box would be shifted by them. Static ignores them.
+     The pin (z-index 5) carries the copy above the art layer (z-index 4). */
+  main[data-mfold] .pin { position: relative; top: auto; height: 100svh }
+  main[data-mfold] .fold .col {
+    position: static;
+    width: calc(100% - 2 * (var(--gut) + var(--bleed, 0px)));
+    margin: 0 auto;
+    max-height: none;
     opacity: 1;
-    translate: 0 0;
+    translate: none;
     pointer-events: auto;
+    transition: none;
   }
-  /* a fold already read leaves to the LEFT, so the run reads as one direction of travel
-     rather than everything arriving from the same side */
-  main[data-mfold="2"] #f1 .col,
-  main[data-mfold="3"] #f1 .col, main[data-mfold="3"] #f2 .col,
-  main[data-mfold="4"] #f1 .col, main[data-mfold="4"] #f2 .col, main[data-mfold="4"] #f3 .col,
-  main[data-mfold="5"] #f1 .col, main[data-mfold="5"] #f2 .col, main[data-mfold="5"] #f3 .col,
-  main[data-mfold="5"] #f4 .col,
-  main[data-mfold="6"] #f1 .col, main[data-mfold="6"] #f2 .col, main[data-mfold="6"] #f3 .col,
-  main[data-mfold="6"] #f4 .col, main[data-mfold="6"] #f5 .col,
-  main[data-mfold="7"] #f1 .col, main[data-mfold="7"] #f2 .col, main[data-mfold="7"] #f3 .col,
-  main[data-mfold="7"] #f4 .col, main[data-mfold="7"] #f5 .col {
-    translate: -34vw 0;
+  /* Fold 1's eyebrow sits above the art, not with the copy. It stays absolutely positioned,
+     but against the pin — the column is static, so the pin is its containing block — at the
+     same clearance under the header it always had. */
+  main[data-mfold] #f1 .col > .eyebrow { top: calc(var(--hdr) + var(--f1-lead)) }
+
+  /* ---- the art layer rides with the current fold -------------------------------------------
+     #stage is position:fixed on desktop: one passport, one viewport, the driver moves it.
+     Here it is absolutely positioned in the document, a 100svh box whose top is the current
+     fold's top (`--stage-top`, written by mobile-passport.js when the state changes). That
+     box is exactly the viewport the old fixed layer occupied when the fold was at rest, so
+     every band measurement inside it is unchanged — and now the whole thing scrolls away with
+     its fold like any other content.
+
+     When the state changes the layer moves to the next fold in one step. It fades across the
+     step (mobile-passport.js apply()): out where it was, in where it now belongs, so it never
+     visibly teleports. By then the previous fold's band has already left the screen. */
+  .stage[data-mfold] {
+    position: absolute; inset: auto; left: 0; right: 0; width: auto;
+    top: var(--stage-top, 0px); height: 100svh;
+    transition: opacity 200ms var(--m-ease);
   }
+  .stage[data-mfold].moving { opacity: 0; transition-duration: 140ms }
 
   /* ---- fold 4's four beats -----------------------------------------------------------
      .bt sits at opacity .3 and the driver added .on to light one at a time as scroll
@@ -286,17 +289,8 @@
   main[data-mfold="5"] .mspine .msl { opacity: 1; translate: 0 0 }
   main[data-mfold="5"] .mspine .msl .shi { translate: 0 0 }
 
-  /* ...and the column itself needs an anchor. Every other fold's column is
-     `position:fixed; bottom:3.5svh`, but `#f5 .col{top:auto;bottom:auto}` cancels that —
-     on desktop the driver wrote a position for it, so it never needed one. With no driver
-     it has neither edge and falls back to its static position, which is 9,100px down a
-     10,400px page. That, not the reveal, is why this fold was blank: the content was never
-     on screen to be revealed. */
-  main[data-mfold] #f5 .col {
-    top: calc(var(--hdr, 76px) + 5svh);
-    bottom: 5svh;
-    max-height: none;
-  }
+  /* the column is in flow now (see "the fold copy scrolls with the page"), so it needs no
+     anchor of its own: it sits at the foot of its pin like every other fold's */
 
   /* six steps, the pair for each statement arriving together, in the order the driver used */
   main[data-mfold="5"] .msg:nth-of-type(1) .msb { transition-delay: .10s }
@@ -312,7 +306,6 @@
      over the top of it. */
   .stage[data-mfold="7"] .bookwrap { translate: 0 -34vh;  scale: .30; rotate: 0deg; opacity: 0 }
   .stage[data-mfold="7"] .book     { transform: translateX(-230px) rotateY(-8deg) }
-  main[data-mfold="7"] .outro .ocopy { opacity: 1; translate: 0 0 }
 
   /* ==========================================================================================
      THE VERTICAL SCALE: how far you scroll to get from one state to the next
@@ -343,8 +336,9 @@
      the page gets shorter doing it, 9.0 screens to 8.5. The outro joins the ladder for the
      same reason. The footer stays at 100svh: it is the end of the page, nothing follows it to
      travel to, and padding it out to match would just be blank screen under the last line. */
-  #f1, #f2, #f3, #f4, #f5 { --h: 125 !important }
-  #outro { min-height: 125svh }
+  /* 100 (15 Sep): a fold IS its screen now. Nothing is pinned, so there is no hold to pay
+     for; the art band is measured against the fold's own box, which is the screen. */
+  #f1, #f2, #f3, #f4, #f5 { --h: 100 !important }
 
   /* ==========================================================================================
      THE DISPLAY SIZE FOLLOWS THE VIEWPORT'S HEIGHT, not just its width
@@ -513,84 +507,51 @@
   }
 
   /* ==========================================================================================
-     FOLD 6 — the closing frame: passport and ring, locked together
+     FOLD 6 — the closing frame: ring, passport and copy in one scrolling screen
      ==========================================================================================
-     The passport lives in #stage, which is position:fixed. The ring lives in .oart, which is
-     in normal flow. So for the ~1 screen of scrolling that state 6 lasts, the ring travelled
-     the full height of the viewport and the passport did not move at all — the passport
-     looked stationary because everything around it was moving past it.
-
-     Both halves are pinned instead. That is not a new idea on this page: every other fold's
-     copy is already position:fixed (see .col in homepage.css), for the same reason — a
-     composition that must hold still while its section scrolls through. The outro simply
-     never got the same treatment, because on desktop the driver moved the passport INTO the
-     ring's measured slot every frame and the question never came up.
-
-     With both fixed, #outro's own height is free, so it carries scroll rather than layout. */
+     The ring sits in the outro at the measured band; the art layer is placed over the outro
+     for state 6 and glides the passport into it. The copy is in flow at the foot of a 100svh
+     outro. All three scroll together. */
   .outro[data-mfold] .oart {
-    position: fixed; left: 0; right: 0;
-    /* the same band the passport is centred in, so the ring and the passport cannot drift
-       apart — they are now two things filling one measured box, not two offsets that agreed
-       at exactly one screen size */
+    position: absolute; left: 0; right: 0;
     top: var(--art-top, 90px);
     min-height: 0; height: var(--art-h, 300px);
     z-index: 5;
     opacity: 0; transition: opacity 500ms var(--m-ease);
     pointer-events: none;
   }
-  /* and the ring is sized off the band too, capped to the viewport so it stops being clipped
-     at both sides — it was overhanging by 18-44px on every size */
+  /* sized off the band too, capped to the viewport so it is never clipped at the sides */
   .outro[data-mfold] .oring { width: min(var(--art-h, 300px), calc(100vw - 2 * var(--gut, 20px))) }
   .outro[data-mfold="6"] .oart { opacity: 1 }
 
+  #outro[data-mfold] {
+    position: relative;
+    min-height: 0; height: 100svh;
+    justify-content: flex-end;
+    padding-bottom: calc(5svh + env(safe-area-inset-bottom, 0px));
+  }
   .outro[data-mfold] .ocopy {
-    position: fixed; left: 0; right: 0;
-    top: auto;
-    bottom: 6svh;
-    bottom: calc(100lvh - 100svh + 5svh);
-    width: auto; margin: 0 calc(var(--gut) + var(--bleed));
+    position: relative;
+    flex: 0 0 auto;
+    width: auto; margin: 0 calc(var(--gut) + var(--bleed, 0px));
     max-width: none;
+    opacity: 1; translate: none; transition: none;
     z-index: 6;
   }
-  /* it has scrolled past: the footer owns the frame now */
-  .outro[data-mfold="7"] .ocopy { opacity: 0; translate: -34vw 0; pointer-events: none }
 
-  /* Both halves of the outro are now fixed, so they cannot scroll out of the way by
-     themselves. The footer rises over them instead — which needs it to be opaque, since the
-     footer is transparent by design and sits at z-index 10 with the pinned copy at 6.
-     Same colour as the page, so nothing about the footer's own look changes; it simply stops
-     being a window onto the frame behind it. */
+  /* The ring is fixed, so it cannot scroll out of the way by itself: the footer rises over
+     it before state 7 fades it. That needs the footer opaque — it is transparent by design
+     and sits at z-index 10 with the ring at 5. Same colour as the page. */
   .ftr[data-mfold] { background: var(--bg) }
 
   /* ==========================================================================================
-     THE VERTICAL RHYTHM — closing the gap between the art and the copy
+     THE VERTICAL RHYTHM — the copy's foot
      ==========================================================================================
-     .col is pinned to bottom:3.5svh with a 44svh cap, and the art sits in the top band. On a
-     915px screen that left the copy hard against the bottom edge and a 300px hole in the
-     middle of every fold: the art finished at 40% and the copy started at 74%.
-
-     Two changes, both to the copy's band rather than to the art: it comes off the bottom edge
-     so the fold has a foot, and its cap rises so a long block grows upward into the gap
-     instead of down into the edge. The art is seated lower in its own blocks above. */
-  main[data-mfold] .fold .col {
-    /* A fixed element is positioned against the LARGE viewport — the one with the browser's
-       bars hidden — so `bottom: 6.5svh` put the last lines behind Safari's toolbar the
-       moment it was showing. That is the cropping: not overflow, the bar sitting on top of
-       content that is exactly where it was asked to be.
-
-       (100lvh - 100svh) IS the height of the browser's chrome, stated by the browser
-       itself. Adding the design gap to it lands the column's foot 5svh above the bottom of
-       the SMALL viewport — the one the reader can actually see — whether the bars are up or
-       down, on iOS and Android alike. Where there is no chrome the term is zero and this is
-       just `bottom: 5svh`.
-
-       The cap goes with it: a capped box whose content is taller overflows DOWNWARD, back
-       under the bar. Bottom-anchored and uncapped, a long block grows upward into the frame
-       instead, which is the direction with room in it. */
-    bottom: 6.5svh;
-    bottom: calc(100lvh - 100svh + 5svh);
-    max-height: none;
-  }
+     In flow at the bottom of a 100svh fold, the column's foot is the small viewport's bottom
+     edge when the fold fills the screen, whether or not the browser's bars are showing. 5svh of air keeps the last
+     line off that edge and off the home indicator. The art band above it is measured from
+     this resting position by mobile-passport.js. */
+  main[data-mfold] .fold .col { margin-bottom: calc(5svh + env(safe-area-inset-bottom, 0px)) }
 
   /* ---- the leaves that are never turned --------------------------------------------------
      The passport carries six leaves so that desktop can flip through 03/04, 05/06 and on to

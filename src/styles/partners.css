@@ -143,17 +143,6 @@
   body .ftr .fmark{margin-top:clamp(34px,7.8vh,80px)}
   body .ftr .fcr{margin-top:clamp(16px,4vh,40px);
     padding-bottom:clamp(18px,2.4vh,26px)}
-
-  /* ---- the logo strip: the placeholder must fit the slot ------------------------------
-     .lg is clamp(32px,3.2vw,44px), so on a phone it resolves to its 32px floor — but the
-     drop placeholder inside <image-slot> stacks an icon, "Logo n" and "or browse files",
-     which needs 38px. The sub-line was therefore cut off 6px from the bottom. The slot
-     is not stylable from outside (the component exports part="empty" but not the sub-line
-     within it), so the box grows to fit instead — and the strip's own padding comes down
-     by the same amount, so the strip keeps the height it has today. */
-  body .track .lg{height:46px}
-  body .track image-slot::part(empty){padding:2px;gap:2px}
-  body .strip{padding-top:8px;padding-bottom:8px}
 }@media (max-width:900px){ }
 
 /* ---------- footer: one compact row, so the closing fold and the footer land in the
@@ -615,22 +604,6 @@
    rides its OWN ring's rotation, so a label can never drift off its node. */
 @media (prefers-reduced-motion:reduce){
 }
-/* the partner strip, in the marquee idiom the other pages use */
-.strip{grid-area:strip;position:relative;z-index:2;
-  padding:clamp(10px,1.8vh,20px) 0 clamp(18px,3vh,34px);overflow:hidden;
-  margin-inline:calc(var(--gut) * -1);
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
-  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
-.track{display:flex;gap:clamp(28px,4vw,64px);width:max-content;
-  animation:rpmarq 46s linear infinite}
-.strip:hover .track{animation-play-state:paused}
-@keyframes rpmarq{to{translate:-50% 0}}
-.track .lg image-slot{display:block;width:100%;height:100%}
-.track .lg{width:clamp(108px,9.6vw,146px);height:clamp(32px,3.2vw,44px);flex-shrink:0;
-  opacity:.45;transition:opacity .3s var(--ease)}
-.track .lg:hover{opacity:1}
-.track image-slot{width:100%;height:100%}
-@media (prefers-reduced-motion:reduce){.track{animation:none}}
 
 .bloom{position:absolute;top:-34vh;left:50%;width:130%;height:900px;translate:-50% 0;
   z-index:0;pointer-events:none;filter:blur(40px);
@@ -1396,8 +1369,6 @@
 .hero .hcopy{grid-area:copy;max-width:min(100%,66vw);z-index:2;
   align-items:center;text-align:center}
 .hero .ctas{justify-content:center}
-/* the strip rises 48px out of the hero's foot */
-.hero .strip{grid-area:strip;justify-self:stretch;margin-bottom:48px}
 .hbig{margin:0;max-width:15em;margin-inline:auto;font-family:var(--display);
   font-size:clamp(38px,5.5vw,86px);font-weight:600;letter-spacing:-.055em;line-height:.94;
   color:var(--ink);text-wrap:balance}
@@ -1419,7 +1390,6 @@
   mask-image:radial-gradient(72% 82% at 76% 40%,#000 10%,transparent 72%)}
 @media (max-width:1024px){
   .hero .hcopy{max-width:100%}
-  .hero .strip{margin-bottom:48px}
   .hbig{font-size:clamp(34px,7.4vw,58px);letter-spacing:-.044em;max-width:16em}
   .hgrain{-webkit-mask-image:radial-gradient(90% 60% at 50% 30%,#000 10%,transparent 76%);
     mask-image:radial-gradient(90% 60% at 50% 30%,#000 10%,transparent 76%)}
